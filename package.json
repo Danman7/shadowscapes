@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "tsc --noEmit && eslint .",
     "preview": "vite preview",
-    "prettify": "prettier --write ."
+    "prettify": "prettier --write .",
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -16,6 +17,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",
