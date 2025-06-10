@@ -16,3 +16,9 @@ export const Character: Story = {
     card: orderCardBases.templeGuard,
   },
 }
+
+export const Instant: Story = {
+  args: {
+    card: orderCardBases.yoraSkull,
+  },
+}

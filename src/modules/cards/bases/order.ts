@@ -1,4 +1,7 @@
-import { TEMPLE_GUARD_BOOST } from 'src/modules/cards/bases/constants'
+import {
+  BROTHER_SACHELMAN_BOOST,
+  TEMPLE_GUARD_BOOST,
+} from 'src/modules/cards/bases/constants'
 import type { OrderBaseMap } from 'src/modules/cards/types'
 
 export const orderCardBases: OrderBaseMap = {
@@ -13,5 +16,27 @@ export const orderCardBases: OrderBaseMap = {
     flavor:
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     isElite: false,
+  },
+  brotherSachelman: {
+    type: 'Character',
+    name: 'Brother Sachelman',
+    strength: 4,
+    cost: 6,
+    isElite: true,
+    faction: 'Order',
+    categories: ['Hammerite'],
+    onPlayDescription: `Bboost all allied Hammerites on board with lower strength than this card's strength by ${BROTHER_SACHELMAN_BOOST}`,
+    flavor:
+      'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
+  },
+  yoraSkull: {
+    type: 'Instant',
+    name: "St. Yora's Skull",
+    cost: 5,
+    isElite: true,
+    faction: 'Order',
+    categories: ['Artifact'],
+    onPlayDescription: `Boost every Hammerite on the board by 1. If staring deck contains only Order cards boost all Hammerites in hand also.`,
+    flavor: 'Yora was a builder of vision and devout keeper of the faith.',
   },
 }

@@ -8,7 +8,7 @@ export const theme: DefaultTheme = {
     primary: '#b91c1c',
     background: '#fafaf9',
     text: '#3d2c29',
-    elite: '#ca8a04',
+    elite: '#a16207',
     faction: {
       order: '#731e0d',
       chaos: '#0d7351',

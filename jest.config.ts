@@ -12,6 +12,7 @@ const config: Config = {
       statements: 80,
     },
   },
+  coveragePathIgnorePatterns: ['src/GlobalStyle.ts'],
   moduleNameMapper: {
     'src/(.*)': '<rootDir>/src/$1',
   },

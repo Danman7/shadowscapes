@@ -29,7 +29,7 @@ export type CharacterCardBase = CardBaseCommon & {
 
 export type CardBase = InstantCardBase | CharacterCardBase
 
-export type OrderCardName = 'templeGuard'
+export type OrderCardName = 'templeGuard' | 'brotherSachelman' | 'yoraSkull'
 
 export type ChaosCardName = 'zombie'
 

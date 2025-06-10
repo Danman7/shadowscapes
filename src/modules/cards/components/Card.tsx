@@ -30,7 +30,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
       <CardHeader $background={getFactionBackground(faction, theme)}>
         <CardTitle>
           <strong>{name}</strong>
-          {strength && <strong>{strength}</strong>}
+          {strength ? <strong>{strength}</strong> : null}
         </CardTitle>
 
         <CardCategories $isElite={isElite}>
@@ -47,7 +47,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
         )}
       </CardBody>
 
-      <CardFooter>{cost}</CardFooter>
+      <CardFooter $isElite={isElite}>{cost}</CardFooter>
     </CardContainer>
   )
 }
