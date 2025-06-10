@@ -10,7 +10,7 @@ export const GlobalStyle = createGlobalStyle`
   html, body {
     height: 100%;
     width: 100%;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-family: 'Noto Serif', serif;
     background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
     -webkit-font-smoothing: antialiased;
