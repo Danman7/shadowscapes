@@ -1,5 +1,7 @@
 {
   "name": "shadowscapes",
+  "description": "A card game based in the world of the Thief games.",
+  "license": "MIT",
   "private": false,
   "version": "0.1.0",
   "type": "module",
@@ -9,7 +11,9 @@
     "lint": "tsc --noEmit && eslint .",
     "preview": "vite preview",
     "prettify": "prettier --write .",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "test": "jest",
+    "test:coverage": "jest --collectCoverage"
   },
   "dependencies": {
     "@types/styled-components": "^5.1.34",
@@ -22,6 +26,10 @@
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.5.14",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",
@@ -29,7 +37,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.0-beta.3",
     "prettier": "^3.5.3",
+    "ts-jest": "^29.3.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.33.0",
     "vite": "^6.3.5",

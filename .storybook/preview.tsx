@@ -1,15 +1,12 @@
 import type { Preview } from '@storybook/react'
-import { GlobalStyle } from '../src/GlobalStyle'
-import { theme } from '../src/theme'
-import { ThemeProvider } from 'styled-components'
+import { Providers } from '../src/Providers'
 
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
+      <Providers>
         <Story />
-      </ThemeProvider>
+      </Providers>
     ),
   ],
   parameters: {

@@ -5,9 +5,15 @@ export const theme: DefaultTheme = {
   transitionTime: 200, // in milliseconds
   card: { width: 250, height: 350 },
   colors: {
-    primary: '#4f46e5',
-    background: '#f8fafc',
-    text: '#1e293b',
+    primary: '#b91c1c',
+    background: '#fafaf9',
+    text: '#3d2c29',
+    elite: '#ca8a04',
+    faction: {
+      order: '#731e0d',
+      chaos: '#0d7351',
+      shadow: '#1241a1',
+    },
   },
   boxShadow: {
     level1:

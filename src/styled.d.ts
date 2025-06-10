@@ -9,6 +9,12 @@ declare module 'styled-components' {
       primary: string
       background: string
       text: string
+      elite: string
+      faction: {
+        order: string
+        chaos: string
+        shadow: string
+      }
     }
     boxShadow: { level1: string; level2: string; level3: string }
   }
