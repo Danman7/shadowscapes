@@ -1,5 +1,6 @@
 import {
   BROTHER_SACHELMAN_BOOST,
+  ELEVATED_ACOLYTE_SELF_DAMAGE,
   TEMPLE_GUARD_BOOST,
 } from 'src/modules/cards/bases/constants'
 import type { OrderBaseMap } from 'src/modules/cards/types'
@@ -24,9 +25,43 @@ export const orderCardBases: OrderBaseMap = {
     cost: 2,
     faction: 'Order',
     categories: ['Guard'],
-    onDiscardDescription: `Play all copies of this card from your hand or deck.`,
+    onDiscardDescription: `Play all copies of this card from your hand or deck for free.`,
     flavor:
       'The Sir will be taking his dinner and evening out tonight. The house guard is not to find this an opportunity to shirk, and lapses will be brought up with the Sir.',
+  },
+  hammeriteNovice: {
+    type: 'Character',
+    name: 'Hammerite Novice',
+    strength: 2,
+    cost: 2,
+    faction: 'Order',
+    categories: ['Hammerite'],
+    onPlayDescription: `If another Hammerite is on your board, play all copies of this card from your hand or deck for free.`,
+    flavor:
+      'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
+  },
+  elevatedAcolyte: {
+    type: 'Character',
+    name: 'Elevated Acolyte',
+    strength: 3,
+    cost: 2,
+    faction: 'Order',
+    categories: ['Hammerite'],
+    onPlayDescription: `On play, take ${ELEVATED_ACOLYTE_SELF_DAMAGE} damage unless played next to a stronger Hammerite.`,
+    flavor:
+      'He will endure a standard three-year contract of service, at the end of which he will be considered for indoctrination as an Elevated Acolyte.',
+  },
+  hammeritePriest: {
+    type: 'Character',
+    name: 'Hammerite Priest',
+    strength: 3,
+    cost: 5,
+    isElite: true,
+    faction: 'Order',
+    categories: ['Hammerite'],
+    onPlayDescription: `Choose a card from your board to discard and immediately recover its cost.`,
+    flavor:
+      'The priest did tarry. And was the priest crushed beneath the great gears, for the path of righteousness leads ever upwards, to where it is perilous to fall.',
   },
   brotherSachelman: {
     type: 'Character',

@@ -33,6 +33,9 @@ export type CardBase = InstantCardBase | CharacterCardBase
 export type OrderCardName =
   | 'templeGuard'
   | 'houseGuard'
+  | 'hammeriteNovice'
+  | 'elevatedAcolyte'
+  | 'hammeritePriest'
   | 'brotherSachelman'
   | 'yoraSkull'
 
