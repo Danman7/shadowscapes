@@ -1,3 +1,5 @@
+import { useTheme } from 'styled-components'
+
 import { messages } from 'src/i18n/indext'
 import {
   CardBody,
@@ -12,7 +14,6 @@ import {
   getFactionBackground,
   joinCardCategories,
 } from 'src/modules/cards/utils'
-import { useTheme } from 'styled-components'
 
 interface CardProps {
   card: CardBase

@@ -1,6 +1,7 @@
 import { fireEvent, render as rtlRender, waitFor } from '@testing-library/react'
-import { Providers } from 'src/Providers'
 import type { PropsWithChildren, ReactElement } from 'react'
+
+import { Providers } from 'src/Providers'
 
 export const render = (ui: ReactElement) => {
   const Wrapper = ({ children }: PropsWithChildren) => (

@@ -1,5 +1,6 @@
-import { CardCategory, CardFaction } from 'src/modules/cards/types'
 import { DefaultTheme } from 'styled-components/dist/types'
+
+import { CardCategory, CardFaction } from 'src/modules/cards/types'
 
 export const getFactionBackground = (
   faction: CardFaction,

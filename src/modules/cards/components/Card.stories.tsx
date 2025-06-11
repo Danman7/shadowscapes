@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Card } from 'src/modules/cards/components/Card'
+
 import { orderCardBases } from 'src/modules/cards/bases/order'
+import { Card } from 'src/modules/cards/components/Card'
 
 const meta: Meta<typeof Card> = {
   title: 'Card',

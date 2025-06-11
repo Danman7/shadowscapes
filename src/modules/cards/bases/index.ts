@@ -1,6 +1,6 @@
-import type { CardBaseMap } from 'src/modules/cards/types'
+import { chaosCardBases } from 'src/modules/cards/bases/chaos'
 import { orderCardBases } from 'src/modules/cards/bases/order'
-import { chaosCardBases } from './chaos'
+import type { CardBaseMap } from 'src/modules/cards/types'
 // import { shadowCardBases } from './shadow'
 // import { neutralCardBases } from './neutral'
 

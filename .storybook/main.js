@@ -1,2 +1,2 @@
-const config = require('./main.json')
-module.exports = config
+import config from './main.json'
+export default config
