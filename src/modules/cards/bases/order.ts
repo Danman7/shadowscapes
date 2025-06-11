@@ -25,7 +25,7 @@ export const orderCardBases: OrderBaseMap = {
     isElite: true,
     faction: 'Order',
     categories: ['Hammerite'],
-    onPlayDescription: `Bboost all allied Hammerites on board with lower strength than this card's strength by ${BROTHER_SACHELMAN_BOOST}`,
+    onPlayDescription: `Boost all allied Hammerites on board with lower strength than this card's strength by ${BROTHER_SACHELMAN_BOOST}`,
     flavor:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
   },

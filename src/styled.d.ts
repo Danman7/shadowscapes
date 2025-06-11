@@ -8,6 +8,7 @@ declare module 'styled-components' {
     colors: {
       primary: string
       background: string
+      surface: string
       text: string
       elite: string
       faction: {

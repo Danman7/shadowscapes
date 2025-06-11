@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const CardContainer = styled.div`
   width: ${({ theme }) => theme.card.width}px;
   height: ${({ theme }) => theme.card.height}px;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.surface};
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.spacing}px;
   padding: ${({ theme }) => theme.spacing}px;
@@ -14,7 +14,7 @@ export const CardContainer = styled.div`
 
 export const CardHeader = styled.div<{ $background: string }>`
   width: 100%;
-  border-radius: ${({ theme }) => theme.spacing / 2}px;
+  border-radius: ${({ theme }) => theme.spacing}px;
   background: ${({ $background }) => $background};
   color: ${({ theme }) => theme.colors.background};
   overflow: hidden;
@@ -44,7 +44,7 @@ export const CardFooter = styled.div<{ $isElite?: boolean }>`
     $isElite ? theme.colors.elite : theme.colors.text};
   padding: ${({ theme }) => theme.spacing}px;
   color: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.spacing / 2}px;
+  border-radius: ${({ theme }) => theme.spacing}px;
 `
 
 export const FlavorText = styled.small`

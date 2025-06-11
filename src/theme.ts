@@ -6,8 +6,9 @@ export const theme: DefaultTheme = {
   card: { width: 250, height: 350 },
   colors: {
     primary: '#dc2626',
-    background: '#fafaf9',
-    text: '#3d2c29',
+    background: '#fafafa',
+    surface: '#f4f4f5',
+    text: '#27272a',
     elite: '#854d0e',
     faction: {
       order: '#7f1d1d',
