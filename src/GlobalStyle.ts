@@ -15,6 +15,7 @@ export const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.colors.text};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
   }
   a {
     color: inherit;
@@ -25,5 +26,8 @@ export const GlobalStyle = createGlobalStyle`
     background: none;
     border: none;
     cursor: pointer;
+  }
+  p {
+    margin-bottom: 1em;
   }
 `

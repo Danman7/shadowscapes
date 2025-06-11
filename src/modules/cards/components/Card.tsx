@@ -8,6 +8,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  FlavorText,
 } from 'src/modules/cards/components/styles'
 import type { CardBase } from 'src/modules/cards/types'
 import {
@@ -20,8 +21,16 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ card }) => {
-  const { type, name, faction, categories, isElite, onPlayDescription, cost } =
-    card
+  const {
+    type,
+    name,
+    faction,
+    categories,
+    isElite,
+    onPlayDescription,
+    cost,
+    flavor,
+  } = card
 
   const theme = useTheme()
   const strength = type === 'Character' ? card.strength : 0
@@ -46,6 +55,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
             {onPlayDescription}
           </p>
         )}
+        {flavor && <FlavorText>{flavor}</FlavorText>}
       </CardBody>
 
       <CardFooter $isElite={isElite}>{cost}</CardFooter>

@@ -36,6 +36,7 @@ export const CardCategories = styled.div<{ $isElite?: boolean }>`
 export const CardBody = styled.div`
   flex: 1 1 auto;
   padding: ${({ theme }) => theme.spacing}px 0;
+  text-align: center;
 `
 
 export const CardFooter = styled.div<{ $isElite?: boolean }>`
@@ -44,4 +45,9 @@ export const CardFooter = styled.div<{ $isElite?: boolean }>`
   padding: ${({ theme }) => theme.spacing}px;
   color: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.spacing / 2}px;
+`
+
+export const FlavorText = styled.small`
+  color: ${({ theme }) => theme.colors.elite};
+  font-style: italic;
 `

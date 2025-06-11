@@ -12,13 +12,15 @@ it('displays all UI elements of a character card', () => {
 
   const { getByText } = render(<Card card={mockCard} />)
 
-  const { name, cost, strength, onPlayDescription, categories } = mockCard
+  const { name, cost, strength, onPlayDescription, categories, flavor } =
+    mockCard
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(strength)).toBeInTheDocument()
   expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
   expect(getByText(onPlayDescription as string)).toBeInTheDocument()
   expect(getByText(cost)).toBeInTheDocument()
+  expect(getByText(flavor as string)).toBeInTheDocument()
 })
 
 it('displays all UI elements of an instant card', () => {
@@ -26,11 +28,12 @@ it('displays all UI elements of an instant card', () => {
 
   const { getByText, queryByText } = render(<Card card={mockCard} />)
 
-  const { name, cost, onPlayDescription, categories } = mockCard
+  const { name, cost, onPlayDescription, categories, flavor } = mockCard
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
   expect(getByText(onPlayDescription as string)).toBeInTheDocument()
   expect(getByText(cost)).toBeInTheDocument()
+  expect(getByText(flavor as string)).toBeInTheDocument()
   expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
 })
