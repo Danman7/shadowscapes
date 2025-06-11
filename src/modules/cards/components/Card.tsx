@@ -1,3 +1,6 @@
+import { FaHandFist } from 'react-icons/fa6'
+import { GiTwoCoins } from 'react-icons/gi'
+import { GiPowerLightning } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
 import { messages } from 'src/i18n/indext'
@@ -41,7 +44,15 @@ export const Card: React.FC<CardProps> = ({ card }) => {
       <CardHeader $background={getFactionBackground(faction, theme)}>
         <CardTitle>
           <strong>{name}</strong>
-          {strength ? <strong>{strength}</strong> : null}
+          <strong>
+            {strength ? (
+              <>
+                <FaHandFist /> {strength}
+              </>
+            ) : (
+              <GiPowerLightning />
+            )}
+          </strong>
         </CardTitle>
 
         <CardCategories $isElite={isElite}>
@@ -67,7 +78,9 @@ export const Card: React.FC<CardProps> = ({ card }) => {
         {flavor && <FlavorText>{flavor}</FlavorText>}
       </CardBody>
 
-      <CardFooter $isElite={isElite}>{cost}</CardFooter>
+      <CardFooter $isElite={isElite}>
+        <GiTwoCoins /> {cost}
+      </CardFooter>
     </CardContainer>
   )
 }
