@@ -46,4 +46,6 @@ type ChaosCardBase = CardBase & { faction: 'Chaos' }
 
 export type OrderBaseMap = Record<OrderCardName, OrderCardBase>
 export type ChaosBaseMap = Record<ChaosCardName, ChaosCardBase>
-export type CardBaseMap = Record<string, CardBase>
+
+export type AllCardNames = OrderCardName | ChaosCardName
+export type CardBaseMap = Record<AllCardNames, CardBase>

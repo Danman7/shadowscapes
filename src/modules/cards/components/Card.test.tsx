@@ -1,4 +1,4 @@
-import { orderCardBases } from 'src/modules/cards/bases/order'
+import { allCardBases } from 'src/modules/cards/bases'
 import { Card } from 'src/modules/cards/components/Card'
 import type {
   CharacterCardBase,
@@ -8,7 +8,7 @@ import { joinCardCategories } from 'src/modules/cards/utils'
 import { render } from 'src/test-utils'
 
 it('displays all UI elements of a character card with on play effect', () => {
-  const mockCard = orderCardBases.templeGuard as CharacterCardBase
+  const mockCard = allCardBases.templeGuard as CharacterCardBase
 
   const { getByText } = render(<Card card={mockCard} />)
 
@@ -24,7 +24,7 @@ it('displays all UI elements of a character card with on play effect', () => {
 })
 
 it('displays all UI elements of an instant card', () => {
-  const mockCard = orderCardBases.yoraSkull as InstantCardBase
+  const mockCard = allCardBases.yoraSkull as InstantCardBase
 
   const { getByText, queryByText } = render(<Card card={mockCard} />)
 
@@ -39,11 +39,25 @@ it('displays all UI elements of an instant card', () => {
 })
 
 it('displays card on discard effect', () => {
-  const mockCard = orderCardBases.houseGuard as CharacterCardBase
+  const mockCard = allCardBases.houseGuard as CharacterCardBase
 
   const { getByText } = render(<Card card={mockCard} />)
 
   const { onDiscardDescription } = mockCard
 
   expect(getByText(onDiscardDescription as string)).toBeInTheDocument()
+})
+
+it('displays card description', () => {
+  const mockCard = allCardBases.zombie as CharacterCardBase
+
+  const { getByText } = render(<Card card={mockCard} />)
+
+  const { description } = mockCard
+
+  if (description) {
+    description.forEach((line) => {
+      expect(getByText(line)).toBeInTheDocument()
+    })
+  }
 })

@@ -30,6 +30,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
     faction,
     categories,
     isElite,
+    description,
     onPlayDescription,
     onDiscardDescription,
     cost,
@@ -67,6 +68,8 @@ export const Card: React.FC<CardProps> = ({ card }) => {
             {onPlayDescription}
           </p>
         )}
+
+        {description && description.map((item) => <p>{item}</p>)}
 
         {onDiscardDescription && (
           <p>
