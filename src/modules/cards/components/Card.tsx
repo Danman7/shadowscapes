@@ -28,6 +28,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
     categories,
     isElite,
     onPlayDescription,
+    onDiscardDescription,
     cost,
     flavor,
   } = card
@@ -55,6 +56,14 @@ export const Card: React.FC<CardProps> = ({ card }) => {
             {onPlayDescription}
           </p>
         )}
+
+        {onDiscardDescription && (
+          <p>
+            <strong>{messages.card.onDiscard}</strong>
+            {onDiscardDescription}
+          </p>
+        )}
+
         {flavor && <FlavorText>{flavor}</FlavorText>}
       </CardBody>
 

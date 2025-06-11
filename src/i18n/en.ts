@@ -1,5 +1,6 @@
 export const en = {
   card: {
-    onPlay: 'On Play: ',
+    onPlay: 'Play: ',
+    onDiscard: 'Discard: ',
   },
 }

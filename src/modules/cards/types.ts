@@ -16,6 +16,7 @@ export interface CardBaseCommon {
   faction: CardFaction
   categories: CardCategory[]
   onPlayDescription?: string
+  onDiscardDescription?: string
   description?: string[]
   flavor?: string
   isElite?: boolean // If true, only one copy allowed in deck
@@ -29,7 +30,11 @@ export type CharacterCardBase = CardBaseCommon & {
 
 export type CardBase = InstantCardBase | CharacterCardBase
 
-export type OrderCardName = 'templeGuard' | 'brotherSachelman' | 'yoraSkull'
+export type OrderCardName =
+  | 'templeGuard'
+  | 'houseGuard'
+  | 'brotherSachelman'
+  | 'yoraSkull'
 
 export type ChaosCardName = 'zombie'
 

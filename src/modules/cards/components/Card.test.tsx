@@ -7,7 +7,7 @@ import type {
 import { joinCardCategories } from 'src/modules/cards/utils'
 import { render } from 'src/test-utils'
 
-it('displays all UI elements of a character card', () => {
+it('displays all UI elements of a character card with on play effect', () => {
   const mockCard = orderCardBases.templeGuard as CharacterCardBase
 
   const { getByText } = render(<Card card={mockCard} />)
@@ -36,4 +36,14 @@ it('displays all UI elements of an instant card', () => {
   expect(getByText(cost)).toBeInTheDocument()
   expect(getByText(flavor as string)).toBeInTheDocument()
   expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
+})
+
+it('displays card on discard effect', () => {
+  const mockCard = orderCardBases.houseGuard as CharacterCardBase
+
+  const { getByText } = render(<Card card={mockCard} />)
+
+  const { onDiscardDescription } = mockCard
+
+  expect(getByText(onDiscardDescription as string)).toBeInTheDocument()
 })

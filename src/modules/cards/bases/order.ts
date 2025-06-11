@@ -17,6 +17,17 @@ export const orderCardBases: OrderBaseMap = {
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     isElite: false,
   },
+  houseGuard: {
+    type: 'Character',
+    name: 'House Guard',
+    strength: 2,
+    cost: 2,
+    faction: 'Order',
+    categories: ['Guard'],
+    onDiscardDescription: `Play all copies of this card from your hand or deck.`,
+    flavor:
+      'The Sir will be taking his dinner and evening out tonight. The house guard is not to find this an opportunity to shirk, and lapses will be brought up with the Sir.',
+  },
   brotherSachelman: {
     type: 'Character',
     name: 'Brother Sachelman',
@@ -31,7 +42,7 @@ export const orderCardBases: OrderBaseMap = {
   },
   yoraSkull: {
     type: 'Instant',
-    name: "St. Yora's Skull",
+    name: "Saint Yora's Skull",
     cost: 5,
     isElite: true,
     faction: 'Order',

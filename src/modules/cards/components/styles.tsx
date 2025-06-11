@@ -24,10 +24,16 @@ export const CardTitle = styled.div`
   display: flex;
   justify-content: space-between;
   padding: ${({ theme }) => theme.spacing}px;
+
+  > strong:first-child {
+    flex-grow: 2;
+    text-align: center;
+  }
 `
 
 export const CardCategories = styled.div<{ $isElite?: boolean }>`
   font-style: italic;
+  text-align: center;
   background: ${({ $isElite, theme }) =>
     $isElite ? theme.colors.elite : theme.colors.text};
   padding: 0 ${({ theme }) => `${theme.spacing}px ${theme.spacing / 2}px`};
