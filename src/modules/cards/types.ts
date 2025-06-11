@@ -39,7 +39,7 @@ export type OrderCardName =
   | 'brotherSachelman'
   | 'yoraSkull'
 
-export type ChaosCardName = 'zombie'
+export type ChaosCardName = 'zombie' | 'haunt' | 'azaranTheCruel' | 'bookOfAsh'
 
 type OrderCardBase = CardBase & { faction: 'Order' }
 type ChaosCardBase = CardBase & { faction: 'Chaos' }

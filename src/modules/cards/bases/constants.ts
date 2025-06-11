@@ -2,3 +2,6 @@
 export const TEMPLE_GUARD_BOOST = 1
 export const BROTHER_SACHELMAN_BOOST = 1
 export const ELEVATED_ACOLYTE_SELF_DAMAGE = 1
+
+// Chaos
+export const AZARAN_BOOST = 1
