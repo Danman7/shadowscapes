@@ -10,6 +10,7 @@ export const theme: DefaultTheme = {
     surface: '#f4f4f5',
     text: '#27272a',
     elite: '#854d0e',
+    hidden: '#e4e4e7',
     faction: {
       order: '#7f1d1d',
       chaos: '#14532d',

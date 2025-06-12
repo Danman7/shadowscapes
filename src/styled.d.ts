@@ -11,6 +11,7 @@ declare module 'styled-components' {
       surface: string
       text: string
       elite: string
+      hidden: string
       faction: {
         order: string
         chaos: string

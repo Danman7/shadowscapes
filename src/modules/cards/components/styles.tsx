@@ -1,15 +1,23 @@
 import styled from 'styled-components'
 
-export const CardContainer = styled.div`
+export const CardContainer = styled.div<{ $isHidden?: boolean }>`
   width: ${({ theme }) => theme.card.width}px;
   height: ${({ theme }) => theme.card.height}px;
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: ${({ $isHidden, theme }) =>
+    $isHidden ? theme.colors.hidden : theme.colors.surface};
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.spacing}px;
   padding: ${({ theme }) => theme.spacing}px;
   box-shadow: ${({ theme }) => theme.boxShadow.level1};
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  ${({ $isHidden, theme }) =>
+    $isHidden &&
+    `
+      border: 1px dashed ${theme.colors.text};
+    `}
 `
 
 export const CardHeader = styled.div<{ $background: string }>`

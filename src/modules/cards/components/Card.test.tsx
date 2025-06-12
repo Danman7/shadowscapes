@@ -1,3 +1,4 @@
+import { messages } from 'src/i18n/indext'
 import { allCardBases } from 'src/modules/cards/bases'
 import { Card } from 'src/modules/cards/components/Card'
 import type {
@@ -67,27 +68,42 @@ describe('Card Component', () => {
 
       expect(getByText(description as string)).toBeInTheDocument()
     })
+
+    it('shows counter icon and count', () => {
+      const mockCard = allCardBases.highPriestMarkander as CharacterCardBase
+
+      const { getByTestId, getByText } = render(<Card card={mockCard} />)
+
+      expect(getByTestId('counter-icon')).toBeInTheDocument()
+
+      if (mockCard.counter) {
+        expect(getByText(mockCard.counter.toString())).toBeInTheDocument()
+      }
+    })
   })
 
   describe('Traits', () => {
     it('shows retaliates icon and description if character has retaliates trait', () => {
       const mockCard = allCardBases.templeGuard as CharacterCardBase
-      const { getByTestId } = render(<Card card={mockCard} />)
+
+      const { getByText, getByTestId } = render(<Card card={mockCard} />)
+
+      const { retaliatesDescription } = messages.card.traits
+
       expect(getByTestId('retaliates-icon')).toBeInTheDocument()
+
+      expect(getByText(retaliatesDescription)).toBeInTheDocument()
     })
 
     it('shows hidden icon and description if character has hidden trait', () => {
       const mockCard = allCardBases.garrettMasterThief as CharacterCardBase
-      const { getByTestId } = render(<Card card={mockCard} />)
+
+      const { getByText, getByTestId } = render(<Card card={mockCard} />)
+
+      const { hiddenDescription } = messages.card.traits
+
       expect(getByTestId('hidden-icon')).toBeInTheDocument()
-    })
-
-    it('shows counter icon and count if character has counter trait', () => {
-      const mockCard = allCardBases.highPriestMarkander as CharacterCardBase
-
-      const { getByTestId } = render(<Card card={mockCard} />)
-
-      expect(getByTestId('counter-icon')).toBeInTheDocument()
+      expect(getByText(hiddenDescription)).toBeInTheDocument()
     })
   })
 })

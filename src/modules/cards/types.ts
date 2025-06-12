@@ -21,14 +21,12 @@ export interface CardBaseCommon {
   description?: string
   flavor?: string
   isElite?: boolean // If true, only one copy allowed in deck
+  counter?: number
 }
 
 export type InstantCardBase = CardBaseCommon & { type: 'Instant' }
 
-export type CharacterTrait =
-  | { type: 'retaliates'; value: boolean }
-  | { type: 'hidden'; value: boolean }
-  | { type: 'counter'; value: number }
+export type CharacterTrait = 'retaliates' | 'hidden'
 
 export type CharacterCardBase = CardBaseCommon & {
   type: 'Character'

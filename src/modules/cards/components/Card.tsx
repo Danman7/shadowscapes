@@ -15,7 +15,7 @@ import {
 import type { CardBase } from 'src/modules/cards/types'
 import {
   getCharacterTraitsDescriptions,
-  getCharacterTraitsFooterIcons,
+  getCharacterFooterIcons,
   getFactionBackground,
   joinCardCategories,
 } from 'src/modules/cards/utils'
@@ -36,14 +36,17 @@ export const Card: React.FC<CardProps> = ({ card }) => {
     onDiscardDescription,
     cost,
     flavor,
+    counter,
   } = card
 
   const theme = useTheme()
+
   const strength = type === 'Character' ? card.strength : 0
   const traits = type === 'Character' ? card.traits : undefined
+  const isHidden = traits && traits.includes('hidden')
 
   return (
-    <CardContainer>
+    <CardContainer $isHidden={isHidden}>
       <CardHeader $background={getFactionBackground(theme, faction)}>
         <CardTitle>
           <strong>{name}</strong>
@@ -89,7 +92,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
         <div>
           <GiTwoCoins /> {cost}
         </div>
-        {getCharacterTraitsFooterIcons(traits)}
+        {getCharacterFooterIcons(traits, counter)}
       </CardFooter>
     </CardContainer>
   )

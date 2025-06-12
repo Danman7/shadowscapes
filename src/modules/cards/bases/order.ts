@@ -17,7 +17,7 @@ export const orderCardBases: OrderBaseMap = {
     onPlayDescription: `Gain +${TEMPLE_GUARD_BOOST} strength if you have less cards on the board than your opponent.`,
     flavor:
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
-    traits: [{ type: 'retaliates', value: true }],
+    traits: ['retaliates'],
   },
   houseGuard: {
     type: 'Character',
@@ -87,7 +87,7 @@ export const orderCardBases: OrderBaseMap = {
       'When a Hammerite is played, lose 1 counter. At 0 counters, if in hand or deck, play for free.',
     flavor:
       "He is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
-    traits: [{ type: 'counter', value: HIGH_PRIEST_MAKANDER_COUNTER }],
+    counter: HIGH_PRIEST_MAKANDER_COUNTER,
   },
   yoraSkull: {
     type: 'Instant',

@@ -1,4 +1,4 @@
-import { Fragment } from 'react/jsx-runtime'
+import { IoHourglassOutline } from 'react-icons/io5'
 import { DefaultTheme } from 'styled-components/dist/types'
 
 import { traitInfoMap } from 'src/modules/cards/constants'
@@ -29,8 +29,8 @@ export const getCharacterTraitsDescriptions = (traits?: CharacterTrait[]) => (
   <>
     {traits ? (
       <div>
-        {traits.map(({ type }) => {
-          const { title, description } = traitInfoMap[type]
+        {traits.map((trait) => {
+          const { title, description } = traitInfoMap[trait]
 
           return title && description ? (
             <p key={`trait-desc-${generateId()}`}>
@@ -44,22 +44,25 @@ export const getCharacterTraitsDescriptions = (traits?: CharacterTrait[]) => (
   </>
 )
 
-export const getCharacterTraitsFooterIcons = (traits?: CharacterTrait[]) => (
-  <>
+export const getCharacterFooterIcons = (
+  traits?: CharacterTrait[],
+  counter?: number,
+) => (
+  <div>
     {traits ? (
       <div>
-        {traits.map(({ type, value }) => {
-          const IconComponent = traitInfoMap[type].icon
+        {traits.map((trait) => {
+          const IconComponent = traitInfoMap[trait].icon
 
-          return (
-            <Fragment key={`trait-icon-${generateId()}`}>
-              <IconComponent key={type} />
-
-              {typeof value === 'number' ? value : null}
-            </Fragment>
-          )
+          return <IconComponent />
         })}
       </div>
     ) : null}
-  </>
+
+    {counter !== undefined ? (
+      <span>
+        <IoHourglassOutline /> {counter}
+      </span>
+    ) : null}
+  </div>
 )
