@@ -7,17 +7,18 @@ export type CardCategory =
   | 'Guard'
   | 'Necromancer'
   | 'Artifact'
+  | 'Servant'
 
 export type CardFaction = 'Order' | 'Chaos' | 'Shadow'
 
 export interface CardBaseCommon {
   readonly name: string
   cost: number
-  faction: CardFaction
   categories: CardCategory[]
+  faction?: CardFaction
   onPlayDescription?: string
   onDiscardDescription?: string
-  description?: string[]
+  description?: string
   flavor?: string
   isElite?: boolean // If true, only one copy allowed in deck
 }
@@ -41,11 +42,23 @@ export type OrderCardName =
 
 export type ChaosCardName = 'zombie' | 'haunt' | 'azaranTheCruel' | 'bookOfAsh'
 
+export type ShadowCardName = 'downwinderThief' | 'garrettMasterThief'
+
+export type NeutralCardName = 'cook'
+
 type OrderCardBase = CardBase & { faction: 'Order' }
 type ChaosCardBase = CardBase & { faction: 'Chaos' }
+type ShadowCardBase = CardBase & { faction: 'Shadow' }
+type NeutralCardBase = CardBase
 
 export type OrderBaseMap = Record<OrderCardName, OrderCardBase>
 export type ChaosBaseMap = Record<ChaosCardName, ChaosCardBase>
+export type ShadowBaseMap = Record<ShadowCardName, ShadowCardBase>
+export type NeutralBaseMap = Record<NeutralCardName, NeutralCardBase>
 
-export type AllCardNames = OrderCardName | ChaosCardName
+export type AllCardNames =
+  | OrderCardName
+  | ChaosCardName
+  | ShadowCardName
+  | NeutralCardName
 export type CardBaseMap = Record<AllCardNames, CardBase>

@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "test": "jest",
     "test:coverage": "jest --collectCoverage",
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint-staged": "lint-staged"
   },
   "dependencies": {

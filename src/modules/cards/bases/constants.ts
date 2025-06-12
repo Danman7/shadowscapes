@@ -5,3 +5,6 @@ export const ELEVATED_ACOLYTE_SELF_DAMAGE = 1
 
 // Chaos
 export const AZARAN_BOOST = 1
+
+// Shadow
+export const DOWNWINDER_BOOST = 1

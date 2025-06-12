@@ -8,27 +8,25 @@ import { theme } from 'src/theme'
 
 describe('getFactionBackground', () => {
   it('returns correct color for Order', () => {
-    expect(getFactionBackground('Order' as CardFaction, theme)).toBe(
+    expect(getFactionBackground(theme, 'Order' as CardFaction)).toBe(
       theme.colors.faction.order,
     )
   })
 
   it('returns correct color for Chaos', () => {
-    expect(getFactionBackground('Chaos' as CardFaction, theme)).toBe(
+    expect(getFactionBackground(theme, 'Chaos' as CardFaction)).toBe(
       theme.colors.faction.chaos,
     )
   })
 
   it('returns correct color for Shadow', () => {
-    expect(getFactionBackground('Shadow' as CardFaction, theme)).toBe(
+    expect(getFactionBackground(theme, 'Shadow' as CardFaction)).toBe(
       theme.colors.faction.shadow,
     )
   })
 
   it('returns theme.colors.text for unknown faction', () => {
-    expect(getFactionBackground('Unknown' as CardFaction, theme)).toBe(
-      theme.colors.text,
-    )
+    expect(getFactionBackground(theme)).toBe(theme.colors.text)
   })
 })
 

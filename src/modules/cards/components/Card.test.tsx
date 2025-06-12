@@ -38,7 +38,7 @@ it('displays all UI elements of an instant card', () => {
   expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
 })
 
-it('displays card on discard effect', () => {
+it('displays on discard effect', () => {
   const mockCard = allCardBases.houseGuard as CharacterCardBase
 
   const { getByText } = render(<Card card={mockCard} />)
@@ -55,9 +55,5 @@ it('displays card description', () => {
 
   const { description } = mockCard
 
-  if (description) {
-    description.forEach((line) => {
-      expect(getByText(line)).toBeInTheDocument()
-    })
-  }
+  expect(getByText(description as string)).toBeInTheDocument()
 })

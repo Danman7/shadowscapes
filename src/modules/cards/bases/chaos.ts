@@ -9,9 +9,8 @@ export const chaosCardBases: ChaosBaseMap = {
     cost: 1,
     faction: 'Chaos',
     categories: ['Undead'],
-    description: [
+    description:
       'If this card is in your discard pile when a Necromancer is played, bring it back to your board.',
-    ],
     flavor:
       "The zombie's antipathy for all living creatures is both its strength and weakness.",
   },
@@ -22,9 +21,8 @@ export const chaosCardBases: ChaosBaseMap = {
     cost: 3,
     faction: 'Chaos',
     categories: ['Undead', 'Hammerite'],
-    description: [
+    description:
       'Whenever your opponent plays a character, if this card is on board it attacks that character.',
-    ],
     flavor:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
   },

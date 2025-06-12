@@ -3,8 +3,8 @@ import { DefaultTheme } from 'styled-components/dist/types'
 import { CardCategory, CardFaction } from 'src/modules/cards/types'
 
 export const getFactionBackground = (
-  faction: CardFaction,
   theme: DefaultTheme,
+  faction?: CardFaction,
 ) => {
   const factionMap: Record<string, string> = {
     Order: theme.colors.faction.order,
@@ -12,7 +12,7 @@ export const getFactionBackground = (
     Shadow: theme.colors.faction.shadow,
   }
 
-  return factionMap[faction] || theme.colors.text
+  return faction ? factionMap[faction] : theme.colors.text
 }
 
 export const joinCardCategories = (categories: CardCategory[]) =>

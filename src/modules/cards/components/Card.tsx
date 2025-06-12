@@ -42,7 +42,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
 
   return (
     <CardContainer>
-      <CardHeader $background={getFactionBackground(faction, theme)}>
+      <CardHeader $background={getFactionBackground(theme, faction)}>
         <CardTitle>
           <strong>{name}</strong>
           <strong>
@@ -69,7 +69,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
           </p>
         )}
 
-        {description && description.map((item) => <p>{item}</p>)}
+        {description && <p>{description}</p>}
 
         {onDiscardDescription && (
           <p>
