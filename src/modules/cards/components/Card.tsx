@@ -1,6 +1,5 @@
 import { FaHandFist } from 'react-icons/fa6'
-import { GiTwoCoins } from 'react-icons/gi'
-import { GiPowerLightning } from 'react-icons/gi'
+import { GiPowerLightning, GiTwoCoins } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
 import { messages } from 'src/i18n/indext'
@@ -15,6 +14,8 @@ import {
 } from 'src/modules/cards/components/styles'
 import type { CardBase } from 'src/modules/cards/types'
 import {
+  getCharacterTraitsDescriptions,
+  getCharacterTraitsFooterIcons,
   getFactionBackground,
   joinCardCategories,
 } from 'src/modules/cards/utils'
@@ -39,6 +40,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
 
   const theme = useTheme()
   const strength = type === 'Character' ? card.strength : 0
+  const traits = type === 'Character' ? card.traits : undefined
 
   return (
     <CardContainer>
@@ -78,11 +80,16 @@ export const Card: React.FC<CardProps> = ({ card }) => {
           </p>
         )}
 
+        {getCharacterTraitsDescriptions(traits)}
+
         {flavor && <FlavorText>{flavor}</FlavorText>}
       </CardBody>
 
       <CardFooter $isElite={isElite}>
-        <GiTwoCoins /> {cost}
+        <div>
+          <GiTwoCoins /> {cost}
+        </div>
+        {getCharacterTraitsFooterIcons(traits)}
       </CardFooter>
     </CardContainer>
   )

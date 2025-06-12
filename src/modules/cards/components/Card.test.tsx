@@ -7,53 +7,87 @@ import type {
 import { joinCardCategories } from 'src/modules/cards/utils'
 import { render } from 'src/test-utils'
 
-it('displays all UI elements of a character card with on play effect', () => {
-  const mockCard = allCardBases.templeGuard as CharacterCardBase
+describe('Card Component', () => {
+  describe('Base UI Elements', () => {
+    it('displays all base UI elements of a character card', () => {
+      const mockCard = allCardBases.templeGuard as CharacterCardBase
 
-  const { getByText } = render(<Card card={mockCard} />)
+      const { getByText } = render(<Card card={mockCard} />)
 
-  const { name, cost, strength, onPlayDescription, categories, flavor } =
-    mockCard
+      const { name, cost, strength, categories, flavor } = mockCard
 
-  expect(getByText(name)).toBeInTheDocument()
-  expect(getByText(strength)).toBeInTheDocument()
-  expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
-  expect(getByText(onPlayDescription as string)).toBeInTheDocument()
-  expect(getByText(cost)).toBeInTheDocument()
-  expect(getByText(flavor as string)).toBeInTheDocument()
-})
+      expect(getByText(name)).toBeInTheDocument()
+      expect(getByText(strength)).toBeInTheDocument()
+      expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
+      expect(getByText(cost)).toBeInTheDocument()
+      expect(getByText(flavor as string)).toBeInTheDocument()
+    })
 
-it('displays all UI elements of an instant card', () => {
-  const mockCard = allCardBases.yoraSkull as InstantCardBase
+    it('displays all base UI elements of an instant card', () => {
+      const mockCard = allCardBases.yoraSkull as InstantCardBase
 
-  const { getByText, queryByText } = render(<Card card={mockCard} />)
+      const { getByText, queryByText } = render(<Card card={mockCard} />)
 
-  const { name, cost, onPlayDescription, categories, flavor } = mockCard
+      const { name, cost, onPlayDescription, categories, flavor } = mockCard
 
-  expect(getByText(name)).toBeInTheDocument()
-  expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
-  expect(getByText(onPlayDescription as string)).toBeInTheDocument()
-  expect(getByText(cost)).toBeInTheDocument()
-  expect(getByText(flavor as string)).toBeInTheDocument()
-  expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
-})
+      expect(getByText(name)).toBeInTheDocument()
+      expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
+      expect(getByText(onPlayDescription as string)).toBeInTheDocument()
+      expect(getByText(cost)).toBeInTheDocument()
+      expect(getByText(flavor as string)).toBeInTheDocument()
+      expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
+    })
 
-it('displays on discard effect', () => {
-  const mockCard = allCardBases.houseGuard as CharacterCardBase
+    it('displays on play effect description', () => {
+      const mockCard = allCardBases.hammeriteNovice as CharacterCardBase
 
-  const { getByText } = render(<Card card={mockCard} />)
+      const { getByText } = render(<Card card={mockCard} />)
 
-  const { onDiscardDescription } = mockCard
+      const { onPlayDescription } = mockCard
 
-  expect(getByText(onDiscardDescription as string)).toBeInTheDocument()
-})
+      expect(getByText(onPlayDescription as string)).toBeInTheDocument()
+    })
 
-it('displays card description', () => {
-  const mockCard = allCardBases.zombie as CharacterCardBase
+    it('displays on discard effect description', () => {
+      const mockCard = allCardBases.houseGuard as CharacterCardBase
 
-  const { getByText } = render(<Card card={mockCard} />)
+      const { getByText } = render(<Card card={mockCard} />)
 
-  const { description } = mockCard
+      const { onDiscardDescription } = mockCard
 
-  expect(getByText(description as string)).toBeInTheDocument()
+      expect(getByText(onDiscardDescription as string)).toBeInTheDocument()
+    })
+
+    it('displays card description', () => {
+      const mockCard = allCardBases.zombie as CharacterCardBase
+
+      const { getByText } = render(<Card card={mockCard} />)
+
+      const { description } = mockCard
+
+      expect(getByText(description as string)).toBeInTheDocument()
+    })
+  })
+
+  describe('Traits', () => {
+    it('shows retaliates icon and description if character has retaliates trait', () => {
+      const mockCard = allCardBases.templeGuard as CharacterCardBase
+      const { getByTestId } = render(<Card card={mockCard} />)
+      expect(getByTestId('retaliates-icon')).toBeInTheDocument()
+    })
+
+    it('shows hidden icon and description if character has hidden trait', () => {
+      const mockCard = allCardBases.garrettMasterThief as CharacterCardBase
+      const { getByTestId } = render(<Card card={mockCard} />)
+      expect(getByTestId('hidden-icon')).toBeInTheDocument()
+    })
+
+    it('shows counter icon and count if character has counter trait', () => {
+      const mockCard = allCardBases.highPriestMarkander as CharacterCardBase
+
+      const { getByTestId } = render(<Card card={mockCard} />)
+
+      expect(getByTestId('counter-icon')).toBeInTheDocument()
+    })
+  })
 })

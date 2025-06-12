@@ -24,12 +24,25 @@ export interface CardBaseCommon {
 }
 
 export type InstantCardBase = CardBaseCommon & { type: 'Instant' }
+
+export type CharacterTrait =
+  | { type: 'retaliates'; value: boolean }
+  | { type: 'hidden'; value: boolean }
+  | { type: 'counter'; value: number }
+
 export type CharacterCardBase = CardBaseCommon & {
   type: 'Character'
   strength: number
+  traits?: CharacterTrait[]
 }
 
 export type CardBase = InstantCardBase | CharacterCardBase
+
+export interface TraitInfo {
+  icon: React.ComponentType
+  title?: string
+  description?: string
+}
 
 export type OrderCardName =
   | 'templeGuard'
@@ -38,6 +51,7 @@ export type OrderCardName =
   | 'elevatedAcolyte'
   | 'hammeritePriest'
   | 'brotherSachelman'
+  | 'highPriestMarkander'
   | 'yoraSkull'
 
 export type ChaosCardName = 'zombie' | 'haunt' | 'azaranTheCruel' | 'bookOfAsh'

@@ -1,4 +1,4 @@
-import { orderCardBases } from 'src/modules/cards/bases/order'
+import { allCardBases } from 'src/modules/cards/bases'
 import { CardFaction } from 'src/modules/cards/types'
 import {
   getFactionBackground,
@@ -32,7 +32,7 @@ describe('getFactionBackground', () => {
 
 describe('joinCardCategories', () => {
   it('joins categories with comma and space', () => {
-    expect(joinCardCategories(orderCardBases.templeGuard.categories)).toBe(
+    expect(joinCardCategories(allCardBases.templeGuard.categories)).toBe(
       'Guard, Hammerite',
     )
   })

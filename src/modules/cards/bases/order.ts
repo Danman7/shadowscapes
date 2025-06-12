@@ -1,6 +1,7 @@
 import {
   BROTHER_SACHELMAN_BOOST,
   ELEVATED_ACOLYTE_SELF_DAMAGE,
+  HIGH_PRIEST_MAKANDER_COUNTER,
   TEMPLE_GUARD_BOOST,
 } from 'src/modules/cards/bases/constants'
 import type { OrderBaseMap } from 'src/modules/cards/types'
@@ -16,7 +17,7 @@ export const orderCardBases: OrderBaseMap = {
     onPlayDescription: `Gain +${TEMPLE_GUARD_BOOST} strength if you have less cards on the board than your opponent.`,
     flavor:
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
-    isElite: false,
+    traits: [{ type: 'retaliates', value: true }],
   },
   houseGuard: {
     type: 'Character',
@@ -73,6 +74,20 @@ export const orderCardBases: OrderBaseMap = {
     onPlayDescription: `Boost all allied Hammerites on board with lower strength than this card's strength by ${BROTHER_SACHELMAN_BOOST}.`,
     flavor:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
+  },
+  highPriestMarkander: {
+    type: 'Character',
+    name: 'High Priest Markander',
+    strength: 4,
+    cost: 7,
+    isElite: true,
+    faction: 'Order',
+    categories: ['Hammerite'],
+    description:
+      'When a Hammerite is played, lose 1 counter. At 0 counters, if in hand or deck, play for free.',
+    flavor:
+      "He is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
+    traits: [{ type: 'counter', value: HIGH_PRIEST_MAKANDER_COUNTER }],
   },
   yoraSkull: {
     type: 'Instant',

@@ -18,6 +18,7 @@ export const CardHeader = styled.div<{ $background: string }>`
   background: ${({ $background }) => $background};
   color: ${({ theme }) => theme.colors.background};
   overflow: hidden;
+  flex-shrink: 0;
 `
 
 export const CardTitle = styled.div`
@@ -38,6 +39,17 @@ export const CardBody = styled.div`
   flex: 1 1 auto;
   padding: ${({ theme }) => theme.spacing}px 0;
   text-align: center;
+  overflow-y: auto;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+
+  min-height: 0;
 `
 
 export const CardFooter = styled.div<{ $isElite?: boolean }>`
@@ -46,9 +58,13 @@ export const CardFooter = styled.div<{ $isElite?: boolean }>`
   padding: ${({ theme }) => theme.spacing}px;
   color: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.spacing}px;
+  display: flex;
+  justify-content: space-between;
 `
 
 export const FlavorText = styled.small`
+  display: inline-block;
   color: ${({ theme }) => theme.colors.elite};
   font-style: italic;
+  line-height: 1.4;
 `

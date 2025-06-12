@@ -24,5 +24,6 @@ export const shadowCardBases: ShadowBaseMap = {
     description: 'This card never looses its Hidden trait.',
     flavor:
       'His heart was clouded, and his balance was lost, but his abilities were unmatched. -- Keeper Annals',
+    traits: [{ type: 'hidden', value: true }],
   },
 }
