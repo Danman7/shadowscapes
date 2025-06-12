@@ -38,8 +38,8 @@ export type CardBase = InstantCardBase | CharacterCardBase
 
 export interface TraitInfo {
   icon: React.ComponentType
-  title?: string
-  description?: string
+  title: string
+  description: string
 }
 
 export type OrderCardName =

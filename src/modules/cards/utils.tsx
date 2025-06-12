@@ -32,12 +32,12 @@ export const getCharacterTraitsDescriptions = (traits?: CharacterTrait[]) => (
         {traits.map((trait) => {
           const { title, description } = traitInfoMap[trait]
 
-          return title && description ? (
+          return (
             <p key={`trait-desc-${generateId()}`}>
               <strong>{title}</strong>
               {description}
             </p>
-          ) : null
+          )
         })}
       </div>
     ) : null}
@@ -54,7 +54,7 @@ export const getCharacterFooterIcons = (
         {traits.map((trait) => {
           const IconComponent = traitInfoMap[trait].icon
 
-          return <IconComponent />
+          return <IconComponent key={`trait-icon-${generateId()}`} />
         })}
       </div>
     ) : null}
