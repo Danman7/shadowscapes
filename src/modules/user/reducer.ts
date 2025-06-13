@@ -1,6 +1,13 @@
 import { UserAction, UserState } from 'src/modules/user/types'
 
-export const initialState: UserState = null
+export const initialState: UserState = {
+  user: {
+    id: '',
+    name: '',
+    deck: [],
+  },
+  isUserLoaded: false,
+}
 
 export const userReducer = (
   state: UserState,
@@ -8,7 +15,13 @@ export const userReducer = (
 ): UserState => {
   switch (action.type) {
     case 'LOAD_USER': {
-      return action.user
+      const { user } = action
+
+      return {
+        ...state,
+        user,
+        isUserLoaded: true,
+      }
     }
 
     default:

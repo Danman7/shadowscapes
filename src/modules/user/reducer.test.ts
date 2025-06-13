@@ -17,8 +17,9 @@ describe('User Reducer', () => {
       user: mockOrderUser,
     }
 
-    const newState = userReducer(initialState, action)
+    const { user, isUserLoaded } = userReducer(initialState, action)
 
-    expect(newState).toEqual(mockOrderUser)
+    expect(user).toEqual(mockOrderUser)
+    expect(isUserLoaded).toBe(true)
   })
 })

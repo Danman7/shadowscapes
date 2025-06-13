@@ -8,7 +8,10 @@ export type User = {
   deck: Deck
 }
 
-export type UserState = User | null
+export type UserState = {
+  user: User
+  isUserLoaded: boolean
+}
 
 // Action types
 export type LoadUserAction = { type: 'LOAD_USER'; user: User }
