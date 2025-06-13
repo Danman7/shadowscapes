@@ -1,0 +1,76 @@
+import styled, { keyframes } from 'styled-components'
+
+const cycle = keyframes`
+  0% {
+    border-left: 0 solid  var(--light-color);
+    border-right: 0.5em solid  var(--shadow-color);
+    background-color:  var(--shadow-color);
+    transform: rotate(-10deg);
+  }
+  24.9999% { background-color:  var(--shadow-color); }
+  25% {
+    border-left: 0.5em solid  var(--light-color);
+    border-right: 0.5em solid  var(--shadow-color);
+    background-color:  var(--light-color);
+  }
+  50% {
+    border-left: 0 solid  var(--light-color);
+    border-right: 0 solid  var(--shadow-color);
+    background-color:  var(--light-color);
+    transform: rotate(0deg);
+  }
+  50.0001% {
+    border-left: 0 solid  var(--shadow-color);
+  }
+  74.9999% {
+    background-color:  var(--light-color);
+    border-right: 0 solid  var(--light-color);
+  }
+  75% {
+    border-left: 0.5em solid  var(--shadow-color);
+    border-right: 0.5em solid  var(--light-color);
+    background-color:  var(--shadow-color);
+  }
+  100% {
+    border-left: 0.5em solid  var(--shadow-color);
+    border-right: 0 solid  var(--light-color);
+    background-color:  var(--shadow-color);
+    transform: rotate(10deg);
+  }
+`
+
+export const Moon = styled.div`
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  overflow: hidden;
+  border: ${({ theme }) => `0.03em solid ${theme.colors.primary}`};
+  position: relative;
+`
+
+export const Light = styled.div`
+  --light-color: ${({ theme }) => theme.colors.background};
+  --shadow-color: ${({ theme }) => theme.colors.primary};
+  box-sizing: border-box;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  animation: ${cycle} ${({ theme }) => theme.transitionTime * 10}ms linear
+    infinite reverse;
+`
+
+export const Crater = styled.div<{
+  $size: string
+  $top: string
+  $left: string
+}>`
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: -0.02em 0.02em 0 0.02em ${({ theme }) => theme.colors.primary};
+  position: absolute;
+  top: ${({ $top }) => $top};
+  left: ${({ $left }) => $left};
+`
