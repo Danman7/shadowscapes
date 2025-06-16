@@ -11,9 +11,13 @@ const meta: Meta<typeof Card> = {
     docs: {
       description: {
         component:
-          'This is a card component that displays a card from the game. It can be used to show character cards, instant cards, and other types of cards.',
+          'This is a card component that displays a card from the game.',
       },
     },
+  },
+  args: {
+    isFaceDown: false,
+    card: orderCardBases.templeGuard,
   },
 }
 
@@ -21,14 +25,10 @@ export default meta
 
 type Story = StoryObj<typeof Card>
 
-export const OrderCharacter: Story = {
-  args: {
-    card: orderCardBases.templeGuard,
-  },
-}
+export const Default: Story = {}
 
-export const EliteOrderInstant: Story = {
+export const FaceDown: Story = {
   args: {
-    card: orderCardBases.yoraSkull,
+    isFaceDown: true,
   },
 }
