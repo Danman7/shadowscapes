@@ -1,11 +1,11 @@
 import { AllCardNames } from 'src/modules/cards/types'
 
-type Deck = AllCardNames[]
+type UserDeck = AllCardNames[]
 
 export type User = {
   id: string
   name: string
-  deck: Deck
+  draftDeck: UserDeck
 }
 
 export type UserState = {

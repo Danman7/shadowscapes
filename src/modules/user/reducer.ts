@@ -4,13 +4,13 @@ export const initialState: UserState = {
   user: {
     id: '',
     name: '',
-    deck: [],
+    draftDeck: [],
   },
   isUserLoaded: false,
 }
 
 export const userReducer = (
-  state: UserState,
+  state: Readonly<UserState>,
   action: UserAction,
 ): UserState => {
   switch (action.type) {

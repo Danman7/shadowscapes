@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { MoonLoading } from 'src/shared/components/MoonLoading'
+import { MoonLoading } from 'src/components/MoonLoading'
 
 const meta: Meta<typeof MoonLoading> = {
   title: 'Shared/MoonLoading',

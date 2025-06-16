@@ -1,4 +1,4 @@
-import { Crater, Light, Moon } from 'src/shared/components/styles'
+import { Crater, Light, Moon } from 'src/components/styles'
 
 export const MoonLoading: React.FC = () => (
   <Moon>
