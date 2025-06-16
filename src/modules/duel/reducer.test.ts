@@ -1,5 +1,3 @@
-import { allCardBases } from 'src/modules/cards/bases'
-import { STARTING_COINS } from 'src/modules/duel/constants'
 import { duelReducer, initialState } from 'src/modules/duel/reducer'
 import {
   DuelAction,
@@ -17,7 +15,7 @@ describe('Duel Reducer', () => {
     expect(newState).toBe(initialState)
   })
 
-  it('should convert users to players when INITIALISE_DUEL is dispatched', () => {
+  it('should convert users to players and set activePlayerId when INITIALISE_DUEL is dispatched', () => {
     const users: DuelStartingUsers = [mockOrderUser, mockChaosUser]
 
     const action: InitialiseDuelAction = {
@@ -25,27 +23,24 @@ describe('Duel Reducer', () => {
       users,
     }
 
-    const { players, cards } = duelReducer(initialState, action)
+    const { players, cards, activePlayerId, inactivePlayerId } = duelReducer(
+      initialState,
+      action,
+    )
 
-    users.forEach(({ id, name, draftDeck }) => {
-      expect(players[id]).toEqual(
-        expect.objectContaining({
-          id,
-          name,
-          income: 0,
-          coins: STARTING_COINS,
-        }),
-      )
+    expect(Object.values(cards)).toHaveLength(
+      mockOrderUser.draftDeck.length + mockChaosUser.draftDeck.length,
+    )
 
-      const allDuelCards = Object.values(cards)
-
-      draftDeck.forEach((cardName) => {
-        expect(
-          allDuelCards.some(
-            (card) => card.name === allCardBases[cardName].name,
-          ),
-        ).toBe(true)
-      })
+    users.forEach(({ id }) => {
+      expect(players[id]).toBeDefined()
     })
+
+    expect(users).toContainEqual(
+      expect.objectContaining({ id: activePlayerId }),
+    )
+    expect(users).toContainEqual(
+      expect.objectContaining({ id: inactivePlayerId }),
+    )
   })
 })

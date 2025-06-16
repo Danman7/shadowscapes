@@ -1,5 +1,8 @@
 import { DuelAction, DuelState } from 'src/modules/duel/types'
-import { convertUsersToDuelPlayersAndCards } from 'src/modules/duel/utils'
+import {
+  convertUsersToDuelPlayersAndCards,
+  flipCoinForFirstPlayer,
+} from 'src/modules/duel/utils'
 
 export const initialState: DuelState = {
   activePlayerId: '',
@@ -15,12 +18,17 @@ export const duelReducer = (
 ): DuelState => {
   switch (action.type) {
     case 'INITIALISE_DUEL': {
-      const [cards, players] = convertUsersToDuelPlayersAndCards(action.users)
+      const { users } = action
+
+      const [cards, players] = convertUsersToDuelPlayersAndCards(users)
+      const [activePlayerId, inactivePlayerId] = flipCoinForFirstPlayer(users)
 
       return {
         ...state,
         players,
         cards,
+        activePlayerId,
+        inactivePlayerId,
       }
     }
 

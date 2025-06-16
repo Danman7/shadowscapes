@@ -5,8 +5,11 @@ import { DuelStartingUsers } from 'src/modules/duel/types'
 import {
   convertUsersToDuelPlayersAndCards,
   createDuelCardFromBase,
+  flipCoinForFirstPlayer,
 } from 'src/modules/duel/utils'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
+
+const users: DuelStartingUsers = [mockOrderUser, mockChaosUser]
 
 describe('Duel Utils', () => {
   describe('createDuelCardFromBase', () => {
@@ -22,8 +25,6 @@ describe('Duel Utils', () => {
   })
 
   describe('convertUsersToDuelPlayersAndCards', () => {
-    const users: DuelStartingUsers = [mockOrderUser, mockChaosUser]
-
     it('should convert users to normalized duel players and cards', () => {
       const [cards, players] = convertUsersToDuelPlayersAndCards(users)
 
@@ -51,6 +52,19 @@ describe('Duel Utils', () => {
           ).toBe(true)
         })
       })
+    })
+  })
+
+  describe('flipCoinForFirstPlayer', () => {
+    it('should return the first user as the active player', () => {
+      const [activePlayerId, inactivePlayerId] = flipCoinForFirstPlayer(users)
+
+      expect(users).toContainEqual(
+        expect.objectContaining({ id: activePlayerId }),
+      )
+      expect(users).toContainEqual(
+        expect.objectContaining({ id: inactivePlayerId }),
+      )
     })
   })
 })

@@ -40,3 +40,11 @@ export const convertUsersToDuelPlayersAndCards = (
 
   return [cards, players]
 }
+
+export const flipCoinForFirstPlayer = (
+  users: DuelStartingUsers,
+): [string, string] => {
+  const coinFlip = Math.floor(Math.random() * 2)
+
+  return [users[coinFlip].id, users[1 - coinFlip].id]
+}
