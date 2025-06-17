@@ -106,31 +106,4 @@ describe('Card Component', () => {
       expect(getByText(hiddenDescription)).toBeInTheDocument()
     })
   })
-
-  describe('Props', () => {
-    const mockCard = allCardBases.templeGuard as CharacterCardBase
-
-    it('should not show card information when isFaceDown is true', () => {
-      const { queryByText } = render(<Card card={mockCard} isFaceDown />)
-
-      expect(queryByText(mockCard.name)).not.toBeInTheDocument()
-      expect(queryByText(mockCard.flavor as string)).not.toBeInTheDocument()
-    })
-
-    it('flips the card when isFaceDown changes', () => {
-      const { rerender, getByText, queryByText } = render(
-        <Card card={mockCard} isFaceDown />,
-      )
-
-      expect(queryByText(mockCard.name)).not.toBeInTheDocument()
-
-      rerender(<Card card={mockCard} />)
-
-      expect(getByText(mockCard.name)).toBeInTheDocument()
-
-      rerender(<Card card={mockCard} isFaceDown />)
-
-      expect(queryByText(mockCard.name)).not.toBeInTheDocument()
-    })
-  })
 })

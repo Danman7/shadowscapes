@@ -1,12 +1,4 @@
-import { motion } from 'motion/react'
 import styled from 'styled-components'
-
-export const CardContainer = styled.div`
-  width: ${({ theme }) => theme.card.width}px;
-  height: ${({ theme }) => theme.card.height}px;
-  position: relative;
-  perspective: 1000px;
-`
 
 export const CardHeader = styled.div<{ $background: string }>`
   width: 100%;
@@ -42,7 +34,7 @@ export const CardBody = styled.div`
     display: none;
   }
 
-  -ms-overflow-style: none; /* IE and Edge */
+  -ms-overflow-style: none;
   scrollbar-width: none;
 
   min-height: 0;
@@ -65,23 +57,11 @@ export const FlavorText = styled.small`
   line-height: 1.4;
 `
 
-export const CardFlipper = styled(motion.div)`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  transform-style: preserve-3d;
-`
-
-const CardFace = styled.div`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  backface-visibility: hidden;
+export const CardFront = styled.div<{ $isHidden?: boolean }>`
+  width: ${({ theme }) => theme.card.width}px;
+  height: ${({ theme }) => theme.card.height}px;
   border-radius: ${({ theme }) => theme.spacing}px;
   box-shadow: ${({ theme }) => theme.boxShadow.level1};
-`
-
-export const CardFront = styled(CardFace)<{ $isHidden?: boolean }>`
   background-color: ${({ $isHidden, theme }) =>
     $isHidden ? theme.colors.hidden : theme.colors.surface};
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -94,16 +74,4 @@ export const CardFront = styled(CardFace)<{ $isHidden?: boolean }>`
     `
       border: 1px dashed ${theme.colors.text};
     `}
-`
-
-export const CardBack = styled(CardFace)`
-  transform: rotateY(180deg);
-  border: ${({ theme }) => `${theme.spacing}px solid  ${theme.colors.text}`};
-  background: ${({ theme }) => `repeating-linear-gradient(
-    45deg,
-    ${theme.colors.surface},
-    ${theme.colors.surface}, ${theme.spacing * 2}px,
-    ${theme.colors.text} ${theme.spacing * 2}px,
-    ${theme.colors.text} ${theme.spacing * 4}px
-  );`};
 `

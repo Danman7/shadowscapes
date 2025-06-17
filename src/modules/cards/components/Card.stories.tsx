@@ -11,12 +11,11 @@ const meta: Meta<typeof Card> = {
     docs: {
       description: {
         component:
-          'This is a card component that displays a card from the game.',
+          'This is the basic card component that displays a card from the game.',
       },
     },
   },
   args: {
-    isFaceDown: false,
     card: orderCardBases.templeGuard,
   },
 }
@@ -26,9 +25,3 @@ export default meta
 type Story = StoryObj<typeof Card>
 
 export const Default: Story = {}
-
-export const FaceDown: Story = {
-  args: {
-    isFaceDown: true,
-  },
-}

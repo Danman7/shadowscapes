@@ -48,3 +48,6 @@ export const flipCoinForFirstPlayer = (
 
   return [users[coinFlip].id, users[1 - coinFlip].id]
 }
+
+export const getBaseFromDuelCard = (duelCard: DuelCard) =>
+  allCardBases[duelCard.baseName]

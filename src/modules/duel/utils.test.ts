@@ -6,6 +6,7 @@ import {
   convertUsersToDuelPlayersAndCards,
   createDuelCardFromBase,
   flipCoinForFirstPlayer,
+  getBaseFromDuelCard,
 } from 'src/modules/duel/utils'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -64,6 +65,20 @@ describe('Duel Utils', () => {
       )
       expect(users).toContainEqual(
         expect.objectContaining({ id: inactivePlayerId }),
+      )
+    })
+  })
+
+  describe('getBaseFromDuelCard', () => {
+    it('should return the base card from a duel card', () => {
+      const mockBaseName: AllCardNames = 'templeGuard'
+
+      const [, card] = createDuelCardFromBase(mockBaseName)
+
+      const baseCard = getBaseFromDuelCard(card)
+
+      expect(baseCard).toEqual(
+        expect.objectContaining(allCardBases[mockBaseName]),
       )
     })
   })
