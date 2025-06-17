@@ -45,3 +45,11 @@ export const FaceDown: Story = {
       mockStackedDuelState.players[mockStackedDuelState.activePlayerId].deck[0],
   },
 }
+
+export const HiddenOnOpponentBoard: Story = {
+  args: {
+    cardId:
+      mockStackedDuelState.players[mockStackedDuelState.inactivePlayerId]
+        .board[1],
+  },
+}

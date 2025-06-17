@@ -37,7 +37,7 @@ export const mockOpponentStackSetup: PlayerStackSetup = {
   name: mockChaosUser.name,
   deck: ['zombie', 'bookOfAsh'],
   hand: ['azaranTheCruel'],
-  board: ['haunt'],
+  board: ['haunt', 'apparition'],
   discard: ['zombie'],
 }
 

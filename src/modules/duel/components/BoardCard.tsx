@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ImEyeBlocked } from 'react-icons/im'
 
 import { flipVariants } from 'src/modules/cards/components/animations'
 import { Card } from 'src/modules/cards/components/Card'
@@ -8,6 +9,7 @@ import {
   CardContainer,
   CardFace,
   CardFlipper,
+  HiddenAgent,
 } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
 import {
@@ -38,6 +40,12 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
     stack === 'discard' ||
     stack === 'deck' ||
     (!doesCardBelongToUser && stack === 'hand')
+
+  const isHidden =
+    !doesCardBelongToUser &&
+    stack === 'board' &&
+    duelCard.type === 'Character' &&
+    duelCard.traits?.includes('hidden')
 
   const [showFront, setShowFront] = useState(!isFaceDown)
 
@@ -74,7 +82,13 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
       >
         {showFront && (
           <CardFace>
-            <Card card={card} />
+            {isHidden ? (
+              <HiddenAgent>
+                <ImEyeBlocked />
+              </HiddenAgent>
+            ) : (
+              <Card card={card} />
+            )}
           </CardFace>
         )}
 

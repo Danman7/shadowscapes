@@ -26,6 +26,15 @@ export const chaosCardBases: ChaosBaseMap = {
     flavor:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
   },
+  apparition: {
+    type: 'Character',
+    name: 'Apparition',
+    strength: 2,
+    cost: 3,
+    faction: 'Chaos',
+    categories: ['Undead', 'Hammerite', 'Specter'],
+    traits: ['hidden'],
+  },
   azaranTheCruel: {
     type: 'Character',
     name: 'Azaran the Cruel',

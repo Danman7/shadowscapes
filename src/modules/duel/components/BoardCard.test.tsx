@@ -125,6 +125,14 @@ describe('BoardCard Component', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not show content when is not a user character and isHidden is true', () => {})
+    it("hide card content when card is on opponent's board but has hidden trait", () => {
+      const { players, inactivePlayerId, cards } = preloadedDuel
+
+      const cardId = players[inactivePlayerId].board[1]
+
+      const { queryByText } = renderResult(cardId)
+
+      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+    })
   })
 })

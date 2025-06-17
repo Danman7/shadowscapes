@@ -8,6 +8,7 @@ export type CardCategory =
   | 'Necromancer'
   | 'Artifact'
   | 'Servant'
+  | 'Specter'
 
 export type CardFaction = 'Order' | 'Chaos' | 'Shadow'
 
@@ -52,7 +53,12 @@ export type OrderCardName =
   | 'highPriestMarkander'
   | 'yoraSkull'
 
-export type ChaosCardName = 'zombie' | 'haunt' | 'azaranTheCruel' | 'bookOfAsh'
+export type ChaosCardName =
+  | 'zombie'
+  | 'haunt'
+  | 'apparition'
+  | 'azaranTheCruel'
+  | 'bookOfAsh'
 
 export type ShadowCardName = 'downwinderThief' | 'garrettMasterThief'
 
