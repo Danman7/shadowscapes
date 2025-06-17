@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ImEyeBlocked } from 'react-icons/im'
+import { GiSemiClosedEye } from 'react-icons/gi'
 
 import { flipVariants } from 'src/modules/cards/components/animations'
 import { Card } from 'src/modules/cards/components/Card'
@@ -44,7 +44,7 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
   const isHidden =
     !doesCardBelongToUser &&
     stack === 'board' &&
-    duelCard.type === 'Character' &&
+    duelCard.type === 'character' &&
     duelCard.traits?.includes('hidden')
 
   const [showFront, setShowFront] = useState(!isFaceDown)
@@ -84,7 +84,7 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
           <CardFace>
             {isHidden ? (
               <HiddenAgent>
-                <ImEyeBlocked />
+                <GiSemiClosedEye />
               </HiddenAgent>
             ) : (
               <Card card={card} />

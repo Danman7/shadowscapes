@@ -1,5 +1,9 @@
-import { FaHandFist } from 'react-icons/fa6'
-import { GiPowerLightning, GiTwoCoins } from 'react-icons/gi'
+import {
+  GiBlackHandShield,
+  GiFist,
+  GiPowerLightning,
+  GiTwoCoins,
+} from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
 import { messages } from 'src/i18n/indext'
@@ -41,8 +45,9 @@ export const Card: React.FC<CardProps> = ({ card }) => {
 
   const theme = useTheme()
 
-  const strength = type === 'Character' ? card.strength : 0
-  const traits = type === 'Character' ? card.traits : undefined
+  const strength = type === 'character' ? card.strength : 0
+  const role = type === 'character' ? card.role : undefined
+  const traits = type === 'character' ? card.traits : undefined
   const isHidden = traits && traits.includes('hidden')
 
   return (
@@ -54,7 +59,8 @@ export const Card: React.FC<CardProps> = ({ card }) => {
             <strong>
               {strength ? (
                 <>
-                  <FaHandFist /> {strength}
+                  {role === 'fighter' ? <GiFist /> : <GiBlackHandShield />}{' '}
+                  {strength}
                 </>
               ) : (
                 <GiPowerLightning />

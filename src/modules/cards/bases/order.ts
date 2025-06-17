@@ -8,7 +8,8 @@ import type { OrderBaseMap } from 'src/modules/cards/types'
 
 export const orderCardBases: OrderBaseMap = {
   templeGuard: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Temple Guard',
     cost: 5,
     strength: 4,
@@ -20,7 +21,8 @@ export const orderCardBases: OrderBaseMap = {
     traits: ['retaliates'],
   },
   houseGuard: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'House Guard',
     strength: 2,
     cost: 2,
@@ -31,7 +33,8 @@ export const orderCardBases: OrderBaseMap = {
       'The Sir will be taking his dinner and evening out tonight. The house guard is not to find this an opportunity to shirk, and lapses will be brought up with the Sir.',
   },
   hammeriteNovice: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Hammerite Novice',
     strength: 2,
     cost: 2,
@@ -42,7 +45,8 @@ export const orderCardBases: OrderBaseMap = {
       'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
   },
   elevatedAcolyte: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Elevated Acolyte',
     strength: 3,
     cost: 2,
@@ -53,7 +57,8 @@ export const orderCardBases: OrderBaseMap = {
       'He will endure a standard three-year contract of service, at the end of which he will be considered for indoctrination as an Elevated Acolyte.',
   },
   hammeritePriest: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Hammerite Priest',
     strength: 3,
     cost: 5,
@@ -64,10 +69,11 @@ export const orderCardBases: OrderBaseMap = {
       'The priest did tarry. And was the priest crushed beneath the great gears, for the path of righteousness leads ever upwards, to where it is perilous to fall.',
   },
   brotherSachelman: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Brother Sachelman',
-    strength: 4,
-    cost: 6,
+    strength: 3,
+    cost: 5,
     isElite: true,
     faction: 'Order',
     categories: ['Hammerite'],
@@ -76,7 +82,8 @@ export const orderCardBases: OrderBaseMap = {
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
   },
   highPriestMarkander: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'High Priest Markander',
     strength: 4,
     cost: 7,
@@ -90,7 +97,7 @@ export const orderCardBases: OrderBaseMap = {
     counter: HIGH_PRIEST_MAKANDER_COUNTER,
   },
   yoraSkull: {
-    type: 'Instant',
+    type: 'instant',
     name: "Saint Yora's Skull",
     cost: 5,
     isElite: true,

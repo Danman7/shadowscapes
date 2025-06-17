@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { orderCardBases } from 'src/modules/cards/bases/order'
+import { allCardBases } from 'src/modules/cards/bases'
 import { Card } from 'src/modules/cards/components/Card'
 
 const meta: Meta<typeof Card> = {
@@ -11,12 +11,12 @@ const meta: Meta<typeof Card> = {
     docs: {
       description: {
         component:
-          'This is the basic card component that displays a card from the game.',
+          'This is the fundamental stateless UI component that displays a card from the game.',
       },
     },
   },
   args: {
-    card: orderCardBases.templeGuard,
+    card: allCardBases.templeGuard,
   },
 }
 
@@ -24,4 +24,16 @@ export default meta
 
 type Story = StoryObj<typeof Card>
 
-export const Default: Story = {}
+export const Fighter: Story = {}
+
+export const Agent: Story = {
+  args: {
+    card: allCardBases.cook,
+  },
+}
+
+export const Instant: Story = {
+  args: {
+    card: allCardBases.yoraSkull,
+  },
+}

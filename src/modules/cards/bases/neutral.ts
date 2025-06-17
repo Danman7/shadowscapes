@@ -2,7 +2,8 @@ import { NeutralBaseMap } from 'src/modules/cards/types'
 
 export const neutralCardBases: NeutralBaseMap = {
   cook: {
-    type: 'Character',
+    type: 'character',
+    role: 'agent',
     name: 'Cook',
     categories: ['Servant'],
     cost: 2,

@@ -3,7 +3,8 @@ import type { ShadowBaseMap } from 'src/modules/cards/types'
 
 export const shadowCardBases: ShadowBaseMap = {
   downwinderThief: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Downwinder Thief',
     strength: 2,
     cost: 1,
@@ -14,7 +15,8 @@ export const shadowCardBases: ShadowBaseMap = {
       "We chose our profession in defiance of the greed of the monarchy. We will not live for the sake of taxes to fatten the noble's pockets. -- excerpt from the Downwinders Creed",
   },
   garrettMasterThief: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Garrett: Master Thief',
     strength: 4,
     cost: 5,

@@ -1,5 +1,4 @@
-import { GiBackForth } from 'react-icons/gi'
-import { ImEyeBlocked } from 'react-icons/im'
+import { GiBackForth, GiSemiClosedEye } from 'react-icons/gi'
 
 import { messages } from 'src/i18n/indext'
 import { CharacterTrait, TraitInfo } from 'src/modules/cards/types'
@@ -11,7 +10,7 @@ export const traitInfoMap: Record<CharacterTrait, TraitInfo> = {
     description: messages.card.traits.retaliatesDescription,
   },
   hidden: {
-    icon: ImEyeBlocked,
+    icon: GiSemiClosedEye,
     title: messages.card.traits.hiddenTitle,
     description: messages.card.traits.hiddenDescription,
   },

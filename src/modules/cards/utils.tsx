@@ -1,4 +1,4 @@
-import { IoHourglassOutline } from 'react-icons/io5'
+import { GiStoneStack } from 'react-icons/gi'
 import { DefaultTheme } from 'styled-components/dist/types'
 
 import { traitInfoMap } from 'src/modules/cards/constants'
@@ -61,7 +61,7 @@ export const getCharacterFooterIcons = (
 
     {counter !== undefined ? (
       <span>
-        <IoHourglassOutline /> {counter}
+        <GiStoneStack /> {counter}
       </span>
     ) : null}
   </div>

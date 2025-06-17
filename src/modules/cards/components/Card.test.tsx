@@ -1,4 +1,12 @@
 import { messages } from 'src/i18n/indext'
+import {
+  agentIcon,
+  counterIcon,
+  fighterIcon,
+  hiddenIcon,
+  instantIcon,
+  retaliatesIcon,
+} from 'src/jest.setup'
 import { allCardBases } from 'src/modules/cards/bases'
 import { Card } from 'src/modules/cards/components/Card'
 import type {
@@ -10,10 +18,10 @@ import { render } from 'src/test-utils'
 
 describe('Card Component', () => {
   describe('Base UI Elements', () => {
-    it('displays all base UI elements of a character card', () => {
+    it('displays all base UI elements of a fighter card', () => {
       const mockCard = allCardBases.templeGuard as CharacterCardBase
 
-      const { getByText } = render(<Card card={mockCard} />)
+      const { getByText, getByTestId } = render(<Card card={mockCard} />)
 
       const { name, cost, strength, categories, flavor } = mockCard
 
@@ -22,12 +30,15 @@ describe('Card Component', () => {
       expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
       expect(getByText(cost)).toBeInTheDocument()
       expect(getByText(flavor as string)).toBeInTheDocument()
+      expect(getByTestId(fighterIcon)).toBeInTheDocument()
     })
 
     it('displays all base UI elements of an instant card', () => {
       const mockCard = allCardBases.yoraSkull as InstantCardBase
 
-      const { getByText, queryByText } = render(<Card card={mockCard} />)
+      const { getByText, queryByText, getByTestId } = render(
+        <Card card={mockCard} />,
+      )
 
       const { name, cost, onPlayDescription, categories, flavor } = mockCard
 
@@ -37,6 +48,21 @@ describe('Card Component', () => {
       expect(getByText(cost)).toBeInTheDocument()
       expect(getByText(flavor as string)).toBeInTheDocument()
       expect(queryByText('0')).not.toBeInTheDocument() // No strength for instant cards
+      expect(getByTestId(instantIcon)).toBeInTheDocument()
+    })
+
+    it('displays all base UI elements of an agent card', () => {
+      const mockCard = allCardBases.cook as CharacterCardBase
+
+      const { getByText, getByTestId } = render(<Card card={mockCard} />)
+
+      const { name, cost, strength, categories } = mockCard
+
+      expect(getByText(name)).toBeInTheDocument()
+      expect(getByText(strength)).toBeInTheDocument()
+      expect(getByText(joinCardCategories(categories))).toBeInTheDocument()
+      expect(getByText(cost)).toBeInTheDocument()
+      expect(getByTestId(agentIcon)).toBeInTheDocument()
     })
 
     it('displays on play effect description', () => {
@@ -77,6 +103,7 @@ describe('Card Component', () => {
       expect(getByTestId('counter-icon')).toBeInTheDocument()
 
       if (mockCard.counter) {
+        expect(getByTestId(counterIcon)).toBeInTheDocument()
         expect(getByText(mockCard.counter.toString())).toBeInTheDocument()
       }
     })
@@ -90,7 +117,7 @@ describe('Card Component', () => {
 
       const { retaliatesDescription } = messages.card.traits
 
-      expect(getByTestId('retaliates-icon')).toBeInTheDocument()
+      expect(getByTestId(retaliatesIcon)).toBeInTheDocument()
 
       expect(getByText(retaliatesDescription)).toBeInTheDocument()
     })
@@ -102,7 +129,7 @@ describe('Card Component', () => {
 
       const { hiddenDescription } = messages.card.traits
 
-      expect(getByTestId('hidden-icon')).toBeInTheDocument()
+      expect(getByTestId(hiddenIcon)).toBeInTheDocument()
       expect(getByText(hiddenDescription)).toBeInTheDocument()
     })
   })

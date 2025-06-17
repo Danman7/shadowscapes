@@ -3,7 +3,8 @@ import type { ChaosBaseMap } from 'src/modules/cards/types'
 
 export const chaosCardBases: ChaosBaseMap = {
   zombie: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Zombie',
     strength: 3,
     cost: 1,
@@ -15,7 +16,8 @@ export const chaosCardBases: ChaosBaseMap = {
       "The zombie's antipathy for all living creatures is both its strength and weakness.",
   },
   haunt: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Haunt',
     strength: 7,
     cost: 3,
@@ -27,7 +29,8 @@ export const chaosCardBases: ChaosBaseMap = {
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
   },
   apparition: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Apparition',
     strength: 2,
     cost: 3,
@@ -36,7 +39,8 @@ export const chaosCardBases: ChaosBaseMap = {
     traits: ['hidden'],
   },
   azaranTheCruel: {
-    type: 'Character',
+    type: 'character',
+    role: 'fighter',
     name: 'Azaran the Cruel',
     strength: 5,
     cost: 5,
@@ -48,7 +52,7 @@ export const chaosCardBases: ChaosBaseMap = {
       "Be warned! The truth is hidden from the unworthy. Blacken thy heart, or face the prisoners of flesh. -- Azaran's last mortal written words",
   },
   bookOfAsh: {
-    type: 'Instant',
+    type: 'instant',
     name: 'The Book of Ash',
     cost: 5,
     isElite: true,

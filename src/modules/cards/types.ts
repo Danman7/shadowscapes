@@ -25,13 +25,16 @@ export interface CardBaseCommon {
   counter?: number
 }
 
-export type InstantCardBase = CardBaseCommon & { type: 'Instant' }
+export type InstantCardBase = CardBaseCommon & { type: 'instant' }
 
 export type CharacterTrait = 'retaliates' | 'hidden'
 
+export type CharacterRole = 'fighter' | 'agent'
+
 export type CharacterCardBase = CardBaseCommon & {
-  type: 'Character'
+  type: 'character'
   strength: number
+  role: CharacterRole
   traits?: CharacterTrait[]
 }
 
