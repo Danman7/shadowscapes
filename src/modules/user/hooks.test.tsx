@@ -9,7 +9,7 @@ describe('useUser', () => {
   it('should throw an error when useUser is used outside UserProvider', () => {
     expect(() => {
       renderHook(() => useUser())
-    }).toThrow(messages.user.userContextError)
+    }).toThrow(messages.user.contextError)
   })
 
   it('should return the user context when used within UserProvider', () => {

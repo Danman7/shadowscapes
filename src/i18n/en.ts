@@ -12,7 +12,11 @@ export const en = {
     },
   },
   user: {
-    userContextError:
+    contextError:
       'User context is not available. Please ensure you are within a UserProvider.',
+  },
+  duel: {
+    contextError:
+      'Duel context is not available. Please ensure you are within a DuelProvider.',
   },
 }
