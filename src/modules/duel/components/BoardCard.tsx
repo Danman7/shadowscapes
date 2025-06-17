@@ -9,18 +9,36 @@ import {
   CardFace,
   CardFlipper,
 } from 'src/modules/duel/components/styles'
-import { DuelCard } from 'src/modules/duel/types'
-import { getBaseFromDuelCard } from 'src/modules/duel/utils'
+import { useDuel } from 'src/modules/duel/hooks'
+import {
+  findPlayerAndStackFromId,
+  getBaseFromDuelCard,
+} from 'src/modules/duel/utils'
+import { useUser } from 'src/modules/user/hooks'
 
 interface BoardCardProps {
-  duelCard: DuelCard
-  isFaceDown?: boolean
+  cardId: string
 }
 
-export const BoardCard: React.FC<BoardCardProps> = ({
-  duelCard,
-  isFaceDown,
-}) => {
+export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
+  const {
+    state: {
+      user: { id: userId },
+    },
+  } = useUser()
+
+  const {
+    state: { cards, players },
+  } = useDuel()
+
+  const { stack, player } = findPlayerAndStackFromId(cardId, players)
+  const doesCardBelongToUser = userId === player.id
+  const duelCard = cards[cardId]
+  const isFaceDown =
+    stack === 'discard' ||
+    stack === 'deck' ||
+    (!doesCardBelongToUser && stack === 'hand')
+
   const [showFront, setShowFront] = useState(!isFaceDown)
 
   const handleCardFlipperAnimationStart = () => {

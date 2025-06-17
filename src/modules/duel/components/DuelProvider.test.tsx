@@ -1,6 +1,6 @@
 import { DuelProvider } from 'src/modules/duel/components/DuelProvider'
 import { useDuel } from 'src/modules/duel/hooks'
-import { initializeDuelMockState } from 'src/modules/duel/mocks'
+import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { DuelState } from 'src/modules/duel/types'
 import { render } from 'src/test-utils'
 
@@ -34,7 +34,7 @@ describe('DuelProvider', () => {
   })
 
   it('should initialize with preloaded state if provided', () => {
-    const preloadedState: DuelState = initializeDuelMockState
+    const preloadedState: DuelState = mockInitializeDuelMockState
 
     const { getByText } = render(
       <DuelProvider preloadedState={preloadedState}>

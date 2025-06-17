@@ -3,18 +3,20 @@ import { User } from 'src/modules/user/types'
 
 export type DuelCard = CardBase & { id: string; baseName: AllCardNames }
 
-export interface PlayerStacks {
-  deck: string[]
-  hand: string[]
-  board: string[]
-  discard: string[]
-}
+export type PlayerStack = 'deck' | 'hand' | 'board' | 'discard'
 
-export interface DuelPlayer extends Omit<User, 'draftDeck'>, PlayerStacks {
+export type PlayerStacks = Record<PlayerStack, string[]>
+
+export interface DuelPlayerProps {
   coins: number
   income: number
   hasPerformedAction: boolean
 }
+
+export interface DuelPlayer
+  extends Omit<User, 'draftDeck'>,
+    PlayerStacks,
+    DuelPlayerProps {}
 
 export type DuelPhase =
   | 'Pre-duel'
@@ -31,12 +33,15 @@ export interface DuelPlayers {
 
 export type DuelCards = { [id: string]: DuelCard }
 
-export interface DuelState {
-  phase: DuelPhase
+export type DuelPlayersAndCards = {
   players: DuelPlayers
+  cards: DuelCards
+}
+
+export interface DuelState extends DuelPlayersAndCards {
+  phase: DuelPhase
   activePlayerId: string
   inactivePlayerId: string
-  cards: DuelCards
 }
 
 export type DuelStartingUsers = [User, User]
@@ -47,3 +52,8 @@ export type InitialiseDuelAction = {
 }
 
 export type DuelAction = InitialiseDuelAction
+
+export type PlayerStackSetup = {
+  id: string
+  name: string
+} & Partial<Record<PlayerStack, AllCardNames[]>>

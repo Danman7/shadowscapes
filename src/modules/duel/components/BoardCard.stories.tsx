@@ -1,13 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { BoardCard } from 'src/modules/duel/components/BoardCard'
-import { createDuelCardFromBase } from 'src/modules/duel/utils'
-
-const [, duelCard] = createDuelCardFromBase('templeGuard')
+import { DuelProvider } from 'src/modules/duel/components/DuelProvider'
+import { mockStackedDuelState } from 'src/modules/duel/mocks'
+import { UserProvider } from 'src/modules/user/components/UserProvider'
+import { mockLoadedUserState } from 'src/modules/user/mocks'
 
 const meta: Meta<typeof BoardCard> = {
   title: 'Duel/BoardCard',
   component: BoardCard,
+  decorators: [
+    (Story) => (
+      <UserProvider preloadedState={mockLoadedUserState}>
+        <DuelProvider preloadedState={mockStackedDuelState}>
+          <Story />
+        </DuelProvider>
+      </UserProvider>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     docs: {
@@ -18,8 +28,8 @@ const meta: Meta<typeof BoardCard> = {
     },
   },
   args: {
-    isFaceDown: false,
-    duelCard,
+    cardId:
+      mockStackedDuelState.players[mockStackedDuelState.activePlayerId].hand[0],
   },
 }
 
@@ -27,10 +37,11 @@ export default meta
 
 type Story = StoryObj<typeof BoardCard>
 
-export const Default: Story = {}
+export const FaceUp: Story = {}
 
 export const FaceDown: Story = {
   args: {
-    isFaceDown: true,
+    cardId:
+      mockStackedDuelState.players[mockStackedDuelState.activePlayerId].deck[0],
   },
 }

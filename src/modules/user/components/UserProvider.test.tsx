@@ -1,7 +1,6 @@
 import { UserProvider } from 'src/modules/user/components/UserProvider'
 import { useUser } from 'src/modules/user/hooks'
-import { mockOrderUser } from 'src/modules/user/mocks'
-import { initialState } from 'src/modules/user/reducer'
+import { mockLoadedUserState, mockOrderUser } from 'src/modules/user/mocks'
 import { UserState } from 'src/modules/user/types'
 import { render } from 'src/test-utils'
 
@@ -30,11 +29,7 @@ describe('UserProvider', () => {
   })
 
   it('should initialize with preloaded state if provided', () => {
-    const preloadedState: UserState = {
-      ...initialState,
-      user: mockOrderUser,
-      isUserLoaded: true,
-    }
+    const preloadedState: UserState = mockLoadedUserState
 
     const { getByText } = render(
       <UserProvider preloadedState={preloadedState}>
