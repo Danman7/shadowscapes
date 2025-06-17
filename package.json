@@ -12,8 +12,8 @@
     "preview": "vite preview",
     "prettify": "prettier --write .",
     "storybook": "storybook dev -p 6006",
-    "test": "jest",
-    "test:coverage": "jest --collectCoverage",
+    "test": "jest --runInBand",
+    "test:coverage": "jest  --runInBand --collectCoverage",
     "prepare": "husky",
     "lint-staged": "lint-staged"
   },

@@ -12,7 +12,14 @@ const config: Config = {
       statements: 80,
     },
   },
+  cacheDirectory: '.jest-cache',
   coveragePathIgnorePatterns: ['src/GlobalStyle.ts'],
+  transformIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/.husky/',
+    '<rootDir>/.storybook/',
+    '<rootDir>/.jest-cache/',
+  ],
   moduleNameMapper: {
     'src/(.*)': '<rootDir>/src/$1',
   },
