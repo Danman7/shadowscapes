@@ -60,7 +60,6 @@ export const FlavorText = styled.small`
 `
 
 export const CardFront = styled.div<{
-  $factionColor: string
   $isHidden?: boolean
   $role?: CharacterRole
 }>`
@@ -77,21 +76,24 @@ export const CardFront = styled.div<{
   display: flex;
   flex-direction: column;
 
-  ${({ $isHidden, $role, $factionColor }) => {
+  ${({ $isHidden, $role, theme }) => {
     if ($isHidden)
-      return `
+      return `border-width: ${theme.spacing / 4}px;
       border-style: dashed;
-    `
+      padding: ${theme.spacing - 1}px;`
 
-    if ($role === 'fighter')
+    if (!$role)
       return `
-      border-color: ${$factionColor};
+      border-width: ${theme.spacing / 2}px;
+      border-style: double;
+      padding: ${theme.spacing / 2 + 1}px;
     `
 
     if ($role === 'agent')
       return `
-      border-style: dotted;
-      border-color: ${$factionColor};
+      border-width: ${theme.spacing / 2}px;
+      border-style: ridge;
+      padding: ${theme.spacing / 2 + 1}px;
     `
   }}
 `

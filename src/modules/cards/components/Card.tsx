@@ -52,7 +52,7 @@ export const Card: React.FC<CardProps> = ({ card }) => {
   const factionColor = getFactionBackground(theme, faction)
 
   return (
-    <CardFront $factionColor={factionColor} $isHidden={isHidden} $role={role}>
+    <CardFront $isHidden={isHidden} $role={role}>
       <>
         <CardHeader $background={factionColor}>
           <CardTitle>
