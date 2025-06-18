@@ -31,6 +31,7 @@ const meta: Meta<typeof BoardCard> = {
     cardId:
       mockStackedDuelState.players[mockStackedDuelState.activePlayerId].hand[0],
   },
+  tags: ['Stateful', 'Impure'],
 }
 
 export default meta

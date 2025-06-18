@@ -5,7 +5,7 @@ import { Card } from 'src/modules/cards/components/Card'
 
 const meta: Meta = {
   title: 'Cards/Gallery',
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'Showcase'],
 }
 
 export default meta

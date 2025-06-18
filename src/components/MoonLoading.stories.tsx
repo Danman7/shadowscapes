@@ -14,6 +14,7 @@ const meta: Meta<typeof MoonLoading> = {
       },
     },
   },
+  tags: ['Stateless', 'Pure'],
 }
 
 export default meta

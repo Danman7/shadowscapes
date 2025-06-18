@@ -18,6 +18,7 @@ const meta: Meta<typeof Card> = {
   args: {
     card: allCardBases.templeGuard,
   },
+  tags: ['Stateless', 'Pure'],
 }
 
 export default meta
