@@ -49,11 +49,12 @@ export const Card: React.FC<CardProps> = ({ card }) => {
   const role = type === 'character' ? card.role : undefined
   const traits = type === 'character' ? card.traits : undefined
   const isHidden = traits && traits.includes('hidden')
+  const factionColor = getFactionBackground(theme, faction)
 
   return (
-    <CardFront $isHidden={isHidden}>
+    <CardFront $factionColor={factionColor} $isHidden={isHidden} $role={role}>
       <>
-        <CardHeader $background={getFactionBackground(theme, faction)}>
+        <CardHeader $background={factionColor}>
           <CardTitle>
             <strong>{name}</strong>
             <strong>

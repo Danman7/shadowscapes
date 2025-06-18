@@ -38,7 +38,7 @@ export const CardBack = styled(CardFace)`
 
 export const HiddenAgent = styled(CardFace)`
   background-color: ${({ theme }) => theme.colors.hidden};
-  border: 1px dashed ${({ theme }) => theme.colors.text};
+  border: 2px dashed rgba(0, 0, 0, 0.1);
   color: ${({ theme }) => theme.colors.surface};
   font-size: 5em;
   display: flex;
