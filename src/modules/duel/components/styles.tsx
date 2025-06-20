@@ -1,6 +1,8 @@
 import { motion } from 'motion/react'
 import styled from 'styled-components'
 
+import { Paper } from 'src/components/styles'
+
 export const CardContainer = styled.div`
   width: ${({ theme }) => theme.card.width}px;
   height: ${({ theme }) => theme.card.height}px;
@@ -44,4 +46,15 @@ export const HiddenAgent = styled(CardFace)`
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+export const PlayerInfoPanel = styled(Paper)`
+  width: ${({ theme }) => theme.spacing * 30}px;
+  text-align: center;
+`
+
+export const PlayerName = styled(motion.h2)`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `

@@ -6,6 +6,7 @@ export const hiddenIcon = 'hidden-icon'
 export const fighterIcon = 'fighter-icon'
 export const agentIcon = 'agent-icon'
 export const instantIcon = 'instant-icon'
+export const playerTurnIcon = 'player-turn-icon'
 
 jest.mock('react-icons/gi', () => {
   return {
@@ -16,6 +17,7 @@ jest.mock('react-icons/gi', () => {
     GiBlackHandShield: () => <div data-testid={agentIcon} />,
     GiFist: () => <div data-testid={fighterIcon} />,
     GiPowerLightning: () => <div data-testid={instantIcon} />,
+    GiCardPlay: () => <div data-testid={playerTurnIcon} />,
     __esModule: true,
   }
 })

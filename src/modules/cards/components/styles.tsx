@@ -71,7 +71,7 @@ export const CardFront = styled.div<{
     $isHidden ? theme.colors.hidden : theme.colors.surface};
   border-width: 1px;
   border-style: solid;
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: ${({ theme }) => theme.colors.border};
   padding: ${({ theme }) => theme.spacing}px;
   display: flex;
   flex-direction: column;
@@ -90,10 +90,7 @@ export const CardFront = styled.div<{
     `
 
     if ($role === 'agent')
-      return `
-      border-width: ${theme.spacing / 2}px;
-      border-style: ridge;
-      padding: ${theme.spacing / 2 + 1}px;
-    `
+      return `border-width: ${theme.spacing / 4}px;
+      padding: ${theme.spacing - 1}px;`
   }}
 `

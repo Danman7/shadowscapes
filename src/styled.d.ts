@@ -7,11 +7,13 @@ declare module 'styled-components' {
     card: { width: number; height: number }
     colors: {
       primary: string
+      active: string
       background: string
       surface: string
       text: string
       elite: string
       hidden: string
+      border: string
       faction: {
         order: string
         chaos: string
