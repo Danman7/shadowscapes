@@ -22,7 +22,7 @@ const meta: Meta<typeof PlayerInfo> = {
   args: {
     player,
   },
-  tags: ['Stateless', 'Pure'],
+  tags: ['Stateless'],
 }
 
 export default meta

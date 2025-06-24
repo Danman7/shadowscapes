@@ -31,7 +31,7 @@ const meta: Meta<typeof BoardCard> = {
     cardId:
       mockStackedDuelState.players[mockStackedDuelState.activePlayerId].hand[0],
   },
-  tags: ['Stateful', 'Impure'],
+  tags: ['Stateful'],
 }
 
 export default meta
@@ -43,7 +43,16 @@ export const FaceUp: Story = {}
 export const FaceDown: Story = {
   args: {
     cardId:
-      mockStackedDuelState.players[mockStackedDuelState.activePlayerId].deck[0],
+      mockStackedDuelState.players[mockStackedDuelState.inactivePlayerId]
+        .hand[0],
+  },
+}
+
+export const Small: Story = {
+  args: {
+    cardId:
+      mockStackedDuelState.players[mockStackedDuelState.inactivePlayerId]
+        .board[0],
   },
 }
 

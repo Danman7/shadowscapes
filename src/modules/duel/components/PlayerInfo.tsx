@@ -28,14 +28,16 @@ export const PlayerInfo: React.FC<{
       >
         {isActive && <GiCardPlay />} {player.name}
       </PlayerName>
-      <span>
-        <GiTwoCoins /> {player.coins}
-      </span>{' '}
-      {player.income ? (
+      <div>
+        {player.income ? (
+          <span>
+            <GiReceiveMoney /> {player.income}{' '}
+          </span>
+        ) : null}
         <span>
-          <GiReceiveMoney /> {player.income}
-        </span>
-      ) : null}
+          <GiTwoCoins /> {player.coins}
+        </span>{' '}
+      </div>
     </PlayerInfoPanel>
   )
 }

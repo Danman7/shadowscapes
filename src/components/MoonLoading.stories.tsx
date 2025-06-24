@@ -14,7 +14,7 @@ const meta: Meta<typeof MoonLoading> = {
       },
     },
   },
-  tags: ['Stateless', 'Pure'],
+  tags: ['Stateless'],
 }
 
 export default meta
@@ -22,6 +22,16 @@ export default meta
 type Story = StoryObj<typeof MoonLoading>
 
 export const Default: Story = {}
+
+export const InheritColor: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ color: 'red' }}>
+        <Story />
+      </div>
+    ),
+  ],
+}
 
 export const Large: Story = {
   decorators: [

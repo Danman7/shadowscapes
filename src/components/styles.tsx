@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import styled, { keyframes } from 'styled-components'
 
 const cycle = keyframes`
@@ -45,13 +46,13 @@ export const Moon = styled.div`
   height: 1em;
   border-radius: 50%;
   overflow: hidden;
-  border: ${({ theme }) => `0.03em solid ${theme.colors.primary}`};
+  border: 0.03em solid currentcolor;
   position: relative;
 `
 
 export const Light = styled.div`
   --light-color: ${({ theme }) => theme.colors.background};
-  --shadow-color: ${({ theme }) => theme.colors.primary};
+  --shadow-color: currentcolor;
   box-sizing: border-box;
   width: 1em;
   height: 1em;
@@ -69,7 +70,7 @@ export const Crater = styled.div<{
   height: ${({ $size }) => $size};
   border-radius: 50%;
   background-color: transparent;
-  box-shadow: -0.02em 0.02em 0 0.02em ${({ theme }) => theme.colors.primary};
+  box-shadow: -0.02em 0.02em 0 0.02em currentcolor;
   position: absolute;
   top: ${({ $top }) => $top};
   left: ${({ $left }) => $left};
@@ -81,4 +82,23 @@ export const Paper = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 25px 10px / 5px 20px;
   box-shadow: ${({ theme }) => theme.boxShadow.level2};
+`
+
+export const FullScreenContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  min-height: 100dvh;
+  min-width: 100dvw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+`
+
+export const FullScreenCenteredContainer = styled(
+  motion.create(FullScreenContainer),
+)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

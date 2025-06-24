@@ -36,6 +36,7 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
   const { stack, player } = findPlayerAndStackFromId(cardId, players)
   const doesCardBelongToUser = userId === player.id
   const duelCard = cards[cardId]
+
   const isFaceDown =
     stack === 'discard' ||
     stack === 'deck' ||
@@ -74,6 +75,7 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
   return (
     <CardContainer>
       <CardFlipper
+        initial={false}
         variants={flipVariants}
         animate={isFaceDown ? 'faceDown' : 'faceUp'}
         transition={{ duration: 0.6, ease: [0.4, 0.2, 0.2, 1] }}

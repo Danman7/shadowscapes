@@ -13,6 +13,7 @@ import {
   flipCoinForFirstPlayer,
   getBaseFromDuelCard,
   setupPlayersAndCardsForTest,
+  sortUserIdsForDuel,
 } from 'src/modules/duel/utils'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -63,7 +64,7 @@ describe('Duel Utils', () => {
 
   describe('flipCoinForFirstPlayer', () => {
     it('should return the first user as the active player', () => {
-      const [activePlayerId, inactivePlayerId] = flipCoinForFirstPlayer(users)
+      const { activePlayerId, inactivePlayerId } = flipCoinForFirstPlayer(users)
 
       expect(users).toContainEqual(
         expect.objectContaining({ id: activePlayerId }),
@@ -148,5 +149,30 @@ describe('Duel Utils', () => {
         findPlayerAndStackFromId('nonExistentCardId', players),
       ).toThrow()
     })
+  })
+
+  describe('sortUserIdsForDuel', () => {
+    it('should return a players ids tuple with the given userId on second position if the user is in the game', () => {
+      const userId = 'user'
+      const opponentId = 'opponent'
+
+      const sortedIds = sortUserIdsForDuel([opponentId, userId], userId)
+
+      expect(sortedIds[0]).toBe(opponentId)
+      expect(sortedIds[1]).toBe(userId)
+    })
+  })
+
+  it('should return the player ids as passed if the user is not in the duel', () => {
+    const userId = 'user'
+    const player1Id = 'player 1'
+    const opponentId = 'opponent'
+
+    const ids = [player1Id, opponentId] as [string, string]
+
+    const sortedIds = sortUserIdsForDuel(ids, userId)
+
+    expect(sortedIds[0]).toBe(ids[0])
+    expect(sortedIds[1]).toBe(ids[1])
   })
 })

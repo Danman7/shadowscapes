@@ -14,6 +14,7 @@ export const en = {
   user: {
     contextError:
       'User context is not available. Please ensure you are within a UserProvider.',
+    loadingUser: 'Loading user data...',
   },
   duel: {
     contextError:

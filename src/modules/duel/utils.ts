@@ -29,10 +29,13 @@ export const getBaseFromDuelCard = (duelCard: DuelCard) =>
 
 export const flipCoinForFirstPlayer = (
   users: DuelStartingUsers,
-): [string, string] => {
+): { activePlayerId: string; inactivePlayerId: string } => {
   const coinFlip = Math.floor(Math.random() * 2)
 
-  return [users[coinFlip].id, users[1 - coinFlip].id]
+  return {
+    activePlayerId: users[coinFlip].id,
+    inactivePlayerId: users[1 - coinFlip].id,
+  }
 }
 
 export const convertUsersToDuelPlayersAndCards = (
@@ -113,4 +116,19 @@ export const findPlayerAndStackFromId = (
   }
 
   throw new Error(`Card with id "${cardId}" not found in any player's stacks.`)
+}
+
+export const sortUserIdsForDuel = (
+  userIds: [string, string],
+  userId: string,
+): [string, string] => {
+  const userPlayerId = userIds.includes(userId)
+
+  if (userPlayerId) {
+    return userIds[0] === userId
+      ? [userIds[1], userIds[0]]
+      : [userIds[0], userIds[1]]
+  }
+
+  return userIds
 }

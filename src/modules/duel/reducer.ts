@@ -21,7 +21,7 @@ export const duelReducer = (
       const { users } = action
 
       const { cards, players } = convertUsersToDuelPlayersAndCards(users)
-      const [activePlayerId, inactivePlayerId] = flipCoinForFirstPlayer(users)
+      const { activePlayerId, inactivePlayerId } = flipCoinForFirstPlayer(users)
 
       return {
         ...state,

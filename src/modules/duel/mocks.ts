@@ -26,19 +26,19 @@ export const mockInitializeDuelMockState: DuelState = {
 export const mockUserStackSetup: PlayerStackSetup = {
   id: mockLoadedUserState.user.id,
   name: mockLoadedUserState.user.name,
-  deck: ['hammeriteNovice', 'templeGuard', 'cook'],
-  hand: ['hammeriteNovice', 'templeGuard'],
+  deck: ['cook', 'elevatedAcolyte'],
+  hand: ['hammeriteNovice', 'templeGuard', 'houseGuard'],
   board: ['brotherSachelman', 'highPriestMarkander'],
-  discard: ['cook'],
+  discard: ['cook', 'elevatedAcolyte'],
 }
 
 export const mockOpponentStackSetup: PlayerStackSetup = {
   id: mockChaosUser.id,
   name: mockChaosUser.name,
-  deck: ['zombie', 'bookOfAsh'],
-  hand: ['azaranTheCruel'],
+  deck: ['zombie', 'cook'],
+  hand: ['azaranTheCruel', 'bookOfAsh'],
   board: ['haunt', 'apparition'],
-  discard: ['zombie'],
+  discard: ['zombie', 'cook'],
 }
 
 const { cards: stackedCards, players: stackedPlayers } =
