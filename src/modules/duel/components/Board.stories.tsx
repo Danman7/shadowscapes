@@ -36,6 +36,26 @@ type Story = StoryObj<typeof Board>
 
 export const Default: Story = {}
 
+export const UserNotInDuel: Story = {
+  decorators: [
+    (Story) => (
+      <UserProvider
+        preloadedState={{
+          ...mockLoadedUserState,
+          user: {
+            ...mockLoadedUserState.user,
+            id: 'user-not-in-game',
+          },
+        }}
+      >
+        <DuelProvider preloadedState={mockStackedDuelState}>
+          <Story />
+        </DuelProvider>
+      </UserProvider>
+    ),
+  ],
+}
+
 export const Loading: Story = {
   decorators: [
     (Story) => (

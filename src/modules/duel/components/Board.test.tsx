@@ -3,8 +3,10 @@ import { Board } from 'src/modules/duel/components/Board'
 import {
   bottomPlayerBoardCardId,
   bottomPlayerDeckCardId,
+  bottomPlayerHandCardId,
   topPlayerBoardCardId,
   topPlayerDeckCardId,
+  topPlayerHandCardId,
 } from 'src/modules/duel/components/constants'
 import { STARTING_COINS } from 'src/modules/duel/constants'
 import { mockStackedDuelState } from 'src/modules/duel/mocks'
@@ -12,14 +14,15 @@ import { DuelState } from 'src/modules/duel/types'
 import { mockLoadedUserState } from 'src/modules/user/mocks'
 import { UserState } from 'src/modules/user/types'
 import { render, RenderResult } from 'src/test-utils'
+import { deepClone } from 'src/utils'
 
 let preloadedDuel: DuelState
 let preloadedUser: UserState
 let renderResult: () => RenderResult
 
 beforeEach(() => {
-  preloadedDuel = { ...mockStackedDuelState }
-  preloadedUser = { ...mockLoadedUserState }
+  preloadedDuel = deepClone(mockStackedDuelState)
+  preloadedUser = deepClone(mockLoadedUserState)
 
   renderResult = () =>
     render(<Board />, {
@@ -67,6 +70,35 @@ describe('Board Component', () => {
         topPlayerName.compareDocumentPosition(bottomPlayerName) &
           Node.DOCUMENT_POSITION_FOLLOWING,
       ).toBeTruthy()
+    })
+
+    it('should show the deck and discard counts for both players', () => {
+      const { getAllByText } = renderResult()
+
+      const { players } = preloadedDuel
+
+      Object.values(players).forEach(({ deck }) => {
+        expect(
+          getAllByText(`${messages.duel.deckLabel}: ${deck.length}`).length,
+        ).toBeGreaterThan(0)
+      })
+    })
+
+    it('should not show the deck or discard counts if the stacks are empty', () => {
+      preloadedDuel.players[preloadedDuel.activePlayerId].deck = []
+      preloadedDuel.players[preloadedDuel.activePlayerId].discard = []
+      preloadedDuel.players[preloadedDuel.inactivePlayerId].deck = []
+      preloadedDuel.players[preloadedDuel.inactivePlayerId].discard = []
+
+      const { queryByText } = renderResult()
+
+      const { players } = preloadedDuel
+
+      Object.values(players).forEach(({ deck }) => {
+        expect(
+          queryByText(`${messages.duel.deckLabel}: ${deck.length}`),
+        ).not.toBeInTheDocument()
+      })
     })
 
     it("should show all face down cards in both players' decks", () => {
@@ -149,6 +181,62 @@ describe('Board Component', () => {
       bottomPlayerBoard.forEach((cardId) => {
         const card = cards[cardId]
         expect(getByText(card.name)).toBeInTheDocument()
+      })
+    })
+
+    it("should show all face up cards in the user's hand, but non in the opponent's hand", () => {
+      const { getAllByTestId, getByText, queryByText } = renderResult()
+
+      const { players, activePlayerId, inactivePlayerId, cards } = preloadedDuel
+      const topPlayerHand = players[inactivePlayerId].hand
+      const bottomPlayerHand = players[activePlayerId].hand
+
+      expect(getAllByTestId(topPlayerHandCardId)).toHaveLength(
+        topPlayerHand.length,
+      )
+
+      topPlayerHand.forEach((cardId) => {
+        const card = cards[cardId]
+
+        expect(queryByText(card.name)).not.toBeInTheDocument()
+      })
+
+      expect(getAllByTestId(bottomPlayerHandCardId)).toHaveLength(
+        bottomPlayerHand.length,
+      )
+
+      bottomPlayerHand.forEach((cardId) => {
+        const card = cards[cardId]
+        expect(getByText(card.name)).toBeInTheDocument()
+      })
+    })
+
+    it('should not show any cards in the players hands if the user is not in the game', () => {
+      preloadedUser.user.id = 'user-not-in-game'
+
+      const { getAllByTestId, queryByText } = renderResult()
+
+      const { players, activePlayerId, inactivePlayerId, cards } = preloadedDuel
+      const topPlayerHand = players[activePlayerId].hand
+      const bottomPlayerHand = players[inactivePlayerId].hand
+
+      expect(getAllByTestId(topPlayerHandCardId)).toHaveLength(
+        topPlayerHand.length,
+      )
+
+      topPlayerHand.forEach((cardId) => {
+        const card = cards[cardId]
+
+        expect(queryByText(card.name)).not.toBeInTheDocument()
+      })
+
+      expect(getAllByTestId(bottomPlayerHandCardId)).toHaveLength(
+        bottomPlayerHand.length,
+      )
+
+      bottomPlayerHand.forEach((cardId) => {
+        const card = cards[cardId]
+        expect(queryByText(card.name)).not.toBeInTheDocument()
       })
     })
   })

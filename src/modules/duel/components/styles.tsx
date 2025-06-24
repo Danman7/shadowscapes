@@ -110,10 +110,12 @@ export const PlayerInfoFieldContainer = styled(motion.div)<{
 
 export const Deck = styled.div`
   grid-area: deck;
+  position: relative;
 `
 
 export const Discard = styled.div`
   grid-area: discard;
+  position: relative;
 `
 
 export const FieldBoard = styled.div<{ $isOnTop?: boolean }>`
@@ -188,5 +190,23 @@ export const HandCardContainer = styled.div<{
     !$isOnTop &&
     `
     bottom: -${theme.spacing * 32}px;
+  `}
+`
+
+export const StackLabelAndCount = styled.div<{ $isOnTop?: boolean }>`
+  text-align: center;
+  position: absolute;
+  width: 100%;
+
+  ${({ $isOnTop, theme }) =>
+    !$isOnTop &&
+    `
+    top: -${theme.spacing * 3}px;
+  `}
+
+  ${({ $isOnTop, theme }) =>
+    $isOnTop &&
+    `
+    bottom: -${theme.spacing * 3}px;
   `}
 `

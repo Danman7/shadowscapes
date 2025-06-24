@@ -19,5 +19,7 @@ export const en = {
   duel: {
     contextError:
       'Duel context is not available. Please ensure you are within a DuelProvider.',
+    deckLabel: 'Deck',
+    discardLabel: 'Discard',
   },
 }

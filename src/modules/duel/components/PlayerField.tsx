@@ -1,13 +1,17 @@
+import { GiCardBurn, GiCardDraw } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
+import { messages } from 'src/i18n/indext'
 import { BoardCard } from 'src/modules/duel/components/BoardCard'
 import {
   bottomPlayerBoardCardId,
   bottomPlayerDeckCardId,
   bottomPlayerDiscardCardId,
+  bottomPlayerHandCardId,
   topPlayerBoardCardId,
   topPlayerDeckCardId,
   topPlayerDiscardCardId,
+  topPlayerHandCardId,
 } from 'src/modules/duel/components/constants'
 import { PlayerInfo } from 'src/modules/duel/components/PlayerInfo'
 import {
@@ -21,6 +25,7 @@ import {
   BoardCardsCointainer,
   Hand,
   HandCardContainer,
+  StackLabelAndCount,
 } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
 import { useUser } from 'src/modules/user/hooks'
@@ -68,6 +73,11 @@ export const PlayerField: React.FC<{
       </PlayerInfoFieldContainer>
 
       <Deck>
+        {deck.length ? (
+          <StackLabelAndCount $isOnTop={isOnTop}>
+            <GiCardDraw /> {messages.duel.deckLabel}: {deck.length}
+          </StackLabelAndCount>
+        ) : null}
         {deck.map((cardId, index) => (
           <SmallCard
             key={cardId}
@@ -81,6 +91,11 @@ export const PlayerField: React.FC<{
       </Deck>
 
       <Discard>
+        {discard.length ? (
+          <StackLabelAndCount $isOnTop={isOnTop}>
+            <GiCardBurn /> {messages.duel.discardLabel}: {discard.length}
+          </StackLabelAndCount>
+        ) : null}
         {discard.map((cardId, index) => (
           <SmallCard
             key={cardId}
@@ -119,6 +134,7 @@ export const PlayerField: React.FC<{
             $total={hand.length}
             $isOnTop={isOnTop}
             $isUser={isUser}
+            data-testid={isOnTop ? topPlayerHandCardId : bottomPlayerHandCardId}
           >
             <BoardCard cardId={cardId} />
           </HandCardContainer>
