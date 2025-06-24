@@ -36,15 +36,6 @@ export const PlayerField: React.FC<{
 }> = ({ playerId, isOnTop }) => {
   const theme = useTheme()
 
-  const getStackedCardOffset = (index: number) => {
-    const baseOffset = isOnTop ? -226 : 0
-    const stackOffset = isOnTop
-      ? -(index * theme.spacing)
-      : index * theme.spacing
-
-    return baseOffset + stackOffset
-  }
-
   const {
     state: {
       user: { id: userId },
@@ -79,14 +70,16 @@ export const PlayerField: React.FC<{
           </StackLabelAndCount>
         ) : null}
         {deck.map((cardId, index) => (
-          <SmallCard
+          <StackedCard
+            $offset={index * (theme.spacing / 2)}
+            $isOnTop={isOnTop}
             key={cardId}
             data-testid={isOnTop ? topPlayerDeckCardId : bottomPlayerDeckCardId}
           >
-            <StackedCard $top={getStackedCardOffset(index)}>
+            <SmallCard $origin={isOnTop ? 'bottom left' : 'top left'}>
               <BoardCard cardId={cardId} />
-            </StackedCard>
-          </SmallCard>
+            </SmallCard>
+          </StackedCard>
         ))}
       </Deck>
 
@@ -97,16 +90,18 @@ export const PlayerField: React.FC<{
           </StackLabelAndCount>
         ) : null}
         {discard.map((cardId, index) => (
-          <SmallCard
+          <StackedCard
+            $offset={index * (theme.spacing / 2)}
+            $isOnTop={isOnTop}
             key={cardId}
             data-testid={
               isOnTop ? topPlayerDiscardCardId : bottomPlayerDiscardCardId
             }
           >
-            <StackedCard $top={getStackedCardOffset(index)}>
+            <SmallCard $origin={isOnTop ? 'bottom left' : 'top left'}>
               <BoardCard cardId={cardId} />
-            </StackedCard>
-          </SmallCard>
+            </SmallCard>
+          </StackedCard>
         ))}
       </Discard>
 

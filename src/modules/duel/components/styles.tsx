@@ -15,9 +15,20 @@ export const SmallCard = styled.div<{ $origin?: string }>`
   transform-origin: ${({ $origin }) => ($origin ? $origin : 'top left')};
 `
 
-export const StackedCard = styled.div<{ $top?: number }>`
+export const StackedCard = styled.div<{ $offset: number; $isOnTop?: boolean }>`
   position: absolute;
-  top: ${({ $top }) => ($top ? `${$top}px` : '0')};
+
+  ${({ $isOnTop, $offset }) =>
+    $isOnTop &&
+    `
+    bottom: ${$offset}px;
+  `}
+
+  ${({ $isOnTop, $offset }) =>
+    !$isOnTop &&
+    `
+    top: ${$offset}px;
+  `}
 `
 
 export const CardFlipper = styled(motion.div)`
@@ -95,7 +106,7 @@ export const StyledPlayerField = styled.div<{ $isOnTop?: boolean }>`
     `${theme.spacing * 20}px auto ${theme.spacing * 20}px`};
 
   grid-template-rows: ${({ $isOnTop, theme }) =>
-    $isOnTop ? `${theme.spacing * 10}px 1fr` : `1fr ${theme.spacing * 10}px`};
+    $isOnTop ? `${theme.spacing * 5}px 1fr` : `1fr ${theme.spacing * 5}px`};
 `
 
 export const PlayerInfoFieldContainer = styled(motion.div)<{
@@ -176,7 +187,7 @@ export const HandCardContainer = styled.div<{
         !$isOnTop &&
         $isUser &&
         `&:hover {
-        transform: translateY(-${theme.spacing * 32}px) translate(${xOffset}px);
+        transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 34}px) translate(${xOffset}px);
         z-index: 3;}`
       }
     `
@@ -189,7 +200,7 @@ export const HandCardContainer = styled.div<{
   ${({ $isOnTop, theme }) =>
     !$isOnTop &&
     `
-    bottom: -${theme.spacing * 32}px;
+    top: -${theme.spacing * 5}px;
   `}
 `
 
