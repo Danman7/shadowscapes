@@ -10,9 +10,9 @@ export const CardContainer = styled.div`
   position: relative;
 `
 
-export const SmallCard = styled.div<{ $origin?: string }>`
+export const SmallCard = styled.div<{ $origin: string }>`
   transform: scale(0.64);
-  transform-origin: ${({ $origin }) => ($origin ? $origin : 'top left')};
+  transform-origin: ${({ $origin }) => $origin};
 `
 
 export const StackedCard = styled.div<{ $offset: number; $isOnTop?: boolean }>`
@@ -187,7 +187,7 @@ export const HandCardContainer = styled.div<{
         !$isOnTop &&
         $isUser &&
         `&:hover {
-        transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 34}px) translate(${xOffset}px);
+        transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 3}px) translate(${xOffset}px);
         z-index: 3;}`
       }
     `
@@ -220,4 +220,12 @@ export const StackLabelAndCount = styled.div<{ $isOnTop?: boolean }>`
     `
     bottom: -${theme.spacing * 3}px;
   `}
+`
+
+export const StyledPhaseModal = styled(motion.create(Paper))`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
 `

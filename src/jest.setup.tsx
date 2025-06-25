@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { ReactNode } from 'react'
 
 export const counterIcon = 'counter-icon'
 export const retaliatesIcon = 'retaliates-icon'
@@ -21,3 +22,8 @@ jest.mock('react-icons/gi', () => {
     __esModule: true,
   }
 })
+
+jest.mock('motion/react', () => ({
+  ...jest.requireActual('motion/react'),
+  AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
+}))

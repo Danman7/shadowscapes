@@ -1,6 +1,6 @@
 import { render as rtlRender, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { PropsWithChildren, ReactElement } from 'react'
+import { act, type PropsWithChildren, type ReactElement } from 'react'
 
 import { DuelProvider } from 'src/modules/duel/components/DuelProvider'
 import { DuelState } from 'src/modules/duel/types'
@@ -25,7 +25,7 @@ export const render = (
     </Providers>
   )
 
-  return { ...rtlRender(ui, { wrapper: Wrapper }), userEvent, waitFor }
+  return { ...rtlRender(ui, { wrapper: Wrapper }), userEvent, waitFor, act }
 }
 
 export type RenderResult = ReturnType<typeof render>
