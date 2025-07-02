@@ -21,5 +21,7 @@ export const en = {
       'Duel context is not available. Please ensure you are within a DuelProvider.',
     deckLabel: 'Deck',
     discardLabel: 'Discard',
+    vs: 'VS',
+    firstPlayer: '{playerName} plays first.',
   },
 }

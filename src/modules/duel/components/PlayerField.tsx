@@ -69,6 +69,7 @@ export const PlayerField: React.FC<{
             <GiCardDraw /> {messages.duel.deckLabel}: {deck.length}
           </StackLabelAndCount>
         ) : null}
+
         {deck.map((cardId, index) => (
           <StackedCard
             $offset={index * (theme.spacing / 2)}
@@ -89,6 +90,7 @@ export const PlayerField: React.FC<{
             <GiCardBurn /> {messages.duel.discardLabel}: {discard.length}
           </StackLabelAndCount>
         ) : null}
+
         {discard.map((cardId, index) => (
           <StackedCard
             $offset={index * (theme.spacing / 2)}
