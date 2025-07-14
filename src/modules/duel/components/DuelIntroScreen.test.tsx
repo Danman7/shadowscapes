@@ -4,7 +4,8 @@ import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { render } from 'src/test-utils'
 
 describe('Duel Intro Screen', () => {
-  const { players, activePlayerId } = mockInitializeDuelMockState
+  const { players, activePlayerId, inactivePlayerId } =
+    mockInitializeDuelMockState
 
   beforeEach(() => {
     jest.useFakeTimers()
@@ -14,7 +15,7 @@ describe('Duel Intro Screen', () => {
     jest.useRealTimers()
   })
 
-  it('should show both player names and who starts message', () => {
+  it('should show both player names', () => {
     const { getByText } = render(
       <DuelIntroScreen
         players={players}
@@ -28,6 +29,34 @@ describe('Duel Intro Screen', () => {
     Object.values(players).forEach((player) => {
       expect(getByText(player.name)).toBeInTheDocument()
     })
+  })
+
+  it('should show who is first', () => {
+    const { getByText } = render(
+      <DuelIntroScreen
+        players={players}
+        activePlayerId={inactivePlayerId}
+        userId={activePlayerId}
+      />,
+    )
+
+    expect(
+      getByText(
+        formatString(messages.duel.firstPlayer, {
+          playerName: players[inactivePlayerId].name,
+        }),
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('should show first user starts if player is not in game', () => {
+    const { getByText } = render(
+      <DuelIntroScreen
+        players={players}
+        activePlayerId={activePlayerId}
+        userId="not-in-game"
+      />,
+    )
 
     expect(
       getByText(
