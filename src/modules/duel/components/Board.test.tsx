@@ -260,8 +260,6 @@ describe('Board Component', () => {
 
       const { players, activePlayerId } = preloadedDuel
 
-      expect(getByText(messages.duel.vs)).toBeInTheDocument()
-
       Object.values(players).forEach((player) => {
         expect(getByText(player.name)).toBeInTheDocument()
       })
@@ -277,8 +275,6 @@ describe('Board Component', () => {
       act(() => {
         jest.advanceTimersByTime(7000)
       })
-
-      expect(queryByText(messages.duel.vs)).not.toBeInTheDocument()
 
       expect(
         queryByText(

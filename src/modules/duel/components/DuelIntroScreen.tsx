@@ -1,4 +1,3 @@
-import { motion } from 'motion/react'
 import { useTheme } from 'styled-components'
 
 import { FullScreenCenteredContainer } from 'src/components/styles'
@@ -48,19 +47,7 @@ export const DuelIntroScreen: React.FC<{
           {playerNames[0]}
         </IntroPlayerName>
 
-        <motion.h1
-          initial={{ opacity: 0, y: spacing * 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: delayInSeconds * 4,
-            duration: delayInSeconds * 10,
-            ease: 'easeInOut',
-            type: 'spring',
-            bounce: 0.3,
-          }}
-        >
-          {messages.duel.vs}
-        </motion.h1>
+        <CoinFlip result={coinSide} />
 
         <IntroPlayerName
           initial={{ opacity: 0, x: '50vw' }}
@@ -75,11 +62,9 @@ export const DuelIntroScreen: React.FC<{
         </IntroPlayerName>
       </VersusContainer>
 
-      <CoinFlip result={coinSide} />
-
       <FirstPlayerMessage
-        initial={{ opacity: 0, y: '60vh' }}
-        animate={{ opacity: 1, y: '40vh' }}
+        initial={{ opacity: 0, y: spacing * 8 }}
+        animate={{ opacity: 1, y: spacing * 7 }}
         transition={{
           delay: delayInSeconds * 20,
           duration: delayInSeconds * 4,

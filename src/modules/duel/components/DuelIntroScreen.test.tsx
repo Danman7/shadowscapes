@@ -16,8 +16,6 @@ describe('Duel Intro Screen', () => {
       />,
     )
 
-    expect(getByText(messages.duel.vs)).toBeInTheDocument()
-
     Object.values(players).forEach((player) => {
       expect(getByText(player.name)).toBeInTheDocument()
     })

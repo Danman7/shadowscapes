@@ -14,7 +14,7 @@ import {
   PlayerStacks,
   PlayerStackSetup,
 } from 'src/modules/duel/types'
-import { generateId } from 'src/utils'
+import { generateId, shuffleArray } from 'src/utils'
 
 export const createDuelCardFromBase = (
   baseName: AllCardNames,
@@ -55,7 +55,7 @@ export const convertUsersToDuelPlayersAndCards = (
     players[user.id] = {
       ...user,
       ...STARTING_DUEL_PLAYER_PROPS,
-      deck: deckIds,
+      deck: shuffleArray(deckIds),
       hand: [],
       board: [],
       discard: [],

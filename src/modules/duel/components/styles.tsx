@@ -256,18 +256,12 @@ export const IntroPlayerName = styled(motion.create('h1'))<{
 `
 
 export const CoinContainer = styled(motion.div)`
-  width: ${({ theme }) => theme.spacing * 10}px;
-  height: ${({ theme }) => theme.spacing * 10}px;
-  position: absolute;
-  transform: translateY(20vh);
-  margin: 0 auto;
   perspective: 1000px;
-  cursor: pointer;
 `
 
 export const CoinWrapper = styled(motion.div)`
-  width: 100%;
-  height: 100%;
+  width: ${({ theme }) => theme.spacing * 10}px;
+  height: ${({ theme }) => theme.spacing * 10}px;
   position: relative;
   transform-style: preserve-3d;
 `
