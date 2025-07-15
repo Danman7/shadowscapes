@@ -275,7 +275,7 @@ describe('Board Component', () => {
       ).toBeInTheDocument()
 
       act(() => {
-        jest.advanceTimersByTime(6000)
+        jest.advanceTimersByTime(7000)
       })
 
       expect(queryByText(messages.duel.vs)).not.toBeInTheDocument()

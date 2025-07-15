@@ -14,7 +14,7 @@ export const useIntroScreenTimer = () => {
     if (phase === 'Intro Screen') {
       timerId = setTimeout(() => {
         dispatch({ type: 'PROGRESS_TO_INITIAL_DRAW' })
-      }, transitionTime * 30)
+      }, transitionTime * 32)
     }
 
     return () => {

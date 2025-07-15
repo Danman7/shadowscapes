@@ -34,7 +34,8 @@ export const PlayerField: React.FC<{
   playerId: string
   isOnTop?: boolean
 }> = ({ playerId, isOnTop }) => {
-  const theme = useTheme()
+  const { spacing, transitionTime, card } = useTheme()
+  const transitionInSeconds = transitionTime / 1000
 
   const {
     state: {
@@ -55,9 +56,11 @@ export const PlayerField: React.FC<{
   return (
     <StyledPlayerField $isOnTop={isOnTop}>
       <PlayerInfoFieldContainer
-        initial={{ right: -theme.spacing * 40 }}
+        initial={{ right: -spacing * 40 }}
         animate={{ right: 0 }}
-        transition={{ delay: (theme.transitionTime / 1000) * 3 }}
+        transition={{
+          delay: transitionInSeconds * (isActive ? 3 : 4),
+        }}
         $isOnTop={isOnTop}
       >
         <PlayerInfo player={player} isActive={isActive} />
@@ -72,8 +75,13 @@ export const PlayerField: React.FC<{
 
         {deck.map((cardId, index) => (
           <StackedCard
-            $offset={index * (theme.spacing / 2)}
-            $isOnTop={isOnTop}
+            initial={isOnTop ? { bottom: card.height } : { top: card.height }}
+            animate={
+              isOnTop
+                ? { bottom: index * (spacing / 2) }
+                : { top: index * (spacing / 2) }
+            }
+            transition={{ delay: (transitionInSeconds / 2) * index }}
             key={cardId}
             data-testid={isOnTop ? topPlayerDeckCardId : bottomPlayerDeckCardId}
           >
@@ -93,7 +101,7 @@ export const PlayerField: React.FC<{
 
         {discard.map((cardId, index) => (
           <StackedCard
-            $offset={index * (theme.spacing / 2)}
+            $offset={index * (spacing / 2)}
             $isOnTop={isOnTop}
             key={cardId}
             data-testid={

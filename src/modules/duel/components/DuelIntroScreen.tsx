@@ -81,7 +81,7 @@ export const DuelIntroScreen: React.FC<{
         initial={{ opacity: 0, y: '60vh' }}
         animate={{ opacity: 1, y: '40vh' }}
         transition={{
-          delay: delayInSeconds * 16,
+          delay: delayInSeconds * 20,
           duration: delayInSeconds * 4,
           ease: 'easeInOut',
         }}

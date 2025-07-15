@@ -15,7 +15,10 @@ export const SmallCard = styled.div<{ $origin: string }>`
   transform-origin: ${({ $origin }) => $origin};
 `
 
-export const StackedCard = styled.div<{ $offset: number; $isOnTop?: boolean }>`
+export const StackedCard = styled(motion.create('div'))<{
+  $offset?: number
+  $isOnTop?: boolean
+}>`
   position: absolute;
 
   ${({ $isOnTop, $offset }) =>
@@ -253,8 +256,8 @@ export const IntroPlayerName = styled(motion.create('h1'))<{
 `
 
 export const CoinContainer = styled(motion.div)`
-  width: 20vh;
-  height: 20vh;
+  width: ${({ theme }) => theme.spacing * 10}px;
+  height: ${({ theme }) => theme.spacing * 10}px;
   position: absolute;
   transform: translateY(20vh);
   margin: 0 auto;
