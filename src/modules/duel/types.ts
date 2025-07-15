@@ -19,7 +19,7 @@ export interface DuelPlayer
     DuelPlayerProps {}
 
 export type DuelPhase =
-  | 'Pre-duel'
+  | 'Intro Screen'
   | 'Initial Draw'
   | 'Redrawing'
   | 'Player Turn'
@@ -51,7 +51,11 @@ export type InitialiseDuelAction = {
   users: DuelStartingUsers
 }
 
-export type DuelAction = InitialiseDuelAction
+export type ProgressToInitialDraw = {
+  type: 'PROGRESS_TO_INITIAL_DRAW'
+}
+
+export type DuelAction = InitialiseDuelAction | ProgressToInitialDraw
 
 export type PlayerStackSetup = {
   id: string

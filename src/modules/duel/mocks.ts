@@ -48,4 +48,5 @@ export const mockStackedDuelState: DuelState = {
   ...mockInitializeDuelMockState,
   cards: stackedCards,
   players: stackedPlayers,
+  phase: 'Player Turn',
 }

@@ -17,9 +17,8 @@ export const DuelIntroScreen: React.FC<{
   userId: string
 }> = ({ players, activePlayerId, userId }) => {
   const playerNames = Object.values(players).map((player) => player.name)
-  const theme = useTheme()
+  const { transitionTime, spacing } = useTheme()
 
-  const { transitionTime, spacing } = theme
   const delayInSeconds = transitionTime / 1000
   const isUserFirst = activePlayerId === userId
   const isActivePlayerFirst = Object.keys(players)[0] === activePlayerId
@@ -33,6 +32,8 @@ export const DuelIntroScreen: React.FC<{
     <FullScreenCenteredContainer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: delayInSeconds * 4 }}
     >
       <VersusContainer>
         <IntroPlayerName
@@ -77,8 +78,8 @@ export const DuelIntroScreen: React.FC<{
       <CoinFlip result={coinSide} />
 
       <FirstPlayerMessage
-        initial={{ opacity: 0, y: spacing * 16 }}
-        animate={{ opacity: 1, y: spacing * 14 }}
+        initial={{ opacity: 0, y: '60vh' }}
+        animate={{ opacity: 1, y: '40vh' }}
         transition={{
           delay: delayInSeconds * 16,
           duration: delayInSeconds * 4,

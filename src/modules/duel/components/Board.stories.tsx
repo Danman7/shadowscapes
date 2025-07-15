@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { Board } from 'src/modules/duel/components/Board'
 import { DuelProvider } from 'src/modules/duel/components/DuelProvider'
-import { mockStackedDuelState } from 'src/modules/duel/mocks'
+import {
+  mockInitializeDuelMockState,
+  mockStackedDuelState,
+} from 'src/modules/duel/mocks'
 import { UserProvider } from 'src/modules/user/components/UserProvider'
 import { mockLoadedUserState } from 'src/modules/user/mocks'
 
@@ -63,6 +66,18 @@ export const Loading: Story = {
         preloadedState={{ ...mockLoadedUserState, isUserLoaded: false }}
       >
         <DuelProvider preloadedState={mockStackedDuelState}>
+          <Story />
+        </DuelProvider>
+      </UserProvider>
+    ),
+  ],
+}
+
+export const DuelStart: Story = {
+  decorators: [
+    (Story) => (
+      <UserProvider preloadedState={mockLoadedUserState}>
+        <DuelProvider preloadedState={mockInitializeDuelMockState}>
           <Story />
         </DuelProvider>
       </UserProvider>

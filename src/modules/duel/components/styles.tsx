@@ -253,10 +253,10 @@ export const IntroPlayerName = styled(motion.create('h1'))<{
 `
 
 export const CoinContainer = styled(motion.div)`
-  width: ${({ theme }) => theme.spacing * 6}px;
-  height: ${({ theme }) => theme.spacing * 6}px;
+  width: 20vh;
+  height: 20vh;
   position: absolute;
-  transform: translateY(${({ theme }) => theme.spacing * 8}px);
+  transform: translateY(20vh);
   margin: 0 auto;
   perspective: 1000px;
   cursor: pointer;

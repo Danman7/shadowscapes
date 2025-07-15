@@ -3,6 +3,7 @@ import {
   DuelAction,
   DuelStartingUsers,
   InitialiseDuelAction,
+  ProgressToInitialDraw,
 } from 'src/modules/duel/types'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -42,5 +43,15 @@ describe('Duel Reducer', () => {
     expect(users).toContainEqual(
       expect.objectContaining({ id: inactivePlayerId }),
     )
+  })
+
+  it('should update phase when PROGRESS_TO_INITIAL_DRAW is dispatched', () => {
+    const action: ProgressToInitialDraw = {
+      type: 'PROGRESS_TO_INITIAL_DRAW',
+    }
+
+    const { phase } = duelReducer(initialState, action)
+
+    expect(phase).toBe('Initial Draw')
   })
 })

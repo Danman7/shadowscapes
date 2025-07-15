@@ -7,14 +7,6 @@ describe('Duel Intro Screen', () => {
   const { players, activePlayerId, inactivePlayerId } =
     mockInitializeDuelMockState
 
-  beforeEach(() => {
-    jest.useFakeTimers()
-  })
-
-  afterEach(() => {
-    jest.useRealTimers()
-  })
-
   it('should show both player names', () => {
     const { getByText } = render(
       <DuelIntroScreen

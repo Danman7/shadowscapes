@@ -1,12 +1,14 @@
 import { AnimatePresence } from 'motion/react'
 import React from 'react'
+import { useTheme } from 'styled-components'
 
-import { MoonLoading } from 'src/components/MoonLoading'
-import { FullScreenCenteredContainer } from 'src/components/styles'
+import { FullScreenLoader } from 'src/components/FullScreenLoader'
 import { messages } from 'src/i18n/indext'
+import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
 import { PlayerField } from 'src/modules/duel/components/PlayerField'
 import { DuelBoard } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
+import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
 import { sortUserIdsForDuel } from 'src/modules/duel/utils'
 import { useUser } from 'src/modules/user/hooks'
 
@@ -19,7 +21,7 @@ export const Board: React.FC = () => {
   } = useUser()
 
   const {
-    state: { activePlayerId, inactivePlayerId },
+    state: { players, phase, activePlayerId, inactivePlayerId },
   } = useDuel()
 
   const sortedPlayerIds = sortUserIdsForDuel(
@@ -27,32 +29,41 @@ export const Board: React.FC = () => {
     id,
   )
 
+  const { transitionTime } = useTheme()
+
+  const delayInSeconds = transitionTime / 1000
+
+  useIntroScreenTimer()
+
   return (
     <AnimatePresence>
       {isUserLoaded ? (
-        <DuelBoard
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {sortedPlayerIds.map((playerId, index) => (
-            <PlayerField
-              key={`${playerId}-field`}
-              playerId={playerId}
-              isOnTop={!index}
+        <>
+          {phase === 'Intro Screen' ? (
+            <DuelIntroScreen
+              userId={id}
+              activePlayerId={activePlayerId}
+              players={players}
             />
-          ))}
-        </DuelBoard>
+          ) : (
+            <DuelBoard
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: delayInSeconds * 4 }}
+            >
+              {sortedPlayerIds.map((playerId, index) => (
+                <PlayerField
+                  key={`${playerId}-field`}
+                  playerId={playerId}
+                  isOnTop={!index}
+                />
+              ))}
+            </DuelBoard>
+          )}
+        </>
       ) : (
-        <FullScreenCenteredContainer
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
-        >
-          <h1>
-            <MoonLoading /> {messages.user.loadingUser}
-          </h1>
-        </FullScreenCenteredContainer>
+        <FullScreenLoader message={messages.user.loadingUser} />
       )}
     </AnimatePresence>
   )

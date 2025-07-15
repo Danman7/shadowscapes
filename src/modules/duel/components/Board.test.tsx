@@ -1,4 +1,4 @@
-import { messages } from 'src/i18n/indext'
+import { formatString, messages } from 'src/i18n/indext'
 import { Board } from 'src/modules/duel/components/Board'
 import {
   bottomPlayerBoardCardId,
@@ -9,7 +9,10 @@ import {
   topPlayerHandCardId,
 } from 'src/modules/duel/components/constants'
 import { STARTING_COINS } from 'src/modules/duel/constants'
-import { mockStackedDuelState } from 'src/modules/duel/mocks'
+import {
+  mockInitializeDuelMockState,
+  mockStackedDuelState,
+} from 'src/modules/duel/mocks'
 import { DuelState } from 'src/modules/duel/types'
 import { mockLoadedUserState } from 'src/modules/user/mocks'
 import { UserState } from 'src/modules/user/types'
@@ -32,6 +35,14 @@ beforeEach(() => {
 })
 
 describe('Board Component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   describe('UI and Stacks', () => {
     it('should show loader if user is not loaded', () => {
       preloadedUser.isUserLoaded = false
@@ -238,6 +249,44 @@ describe('Board Component', () => {
         const card = cards[cardId]
         expect(queryByText(card.name)).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('Duel Start Sequence', () => {
+    it('should show intro screen when duel is initialized then move on to initial draw', () => {
+      preloadedDuel = mockInitializeDuelMockState
+
+      const { getByText, queryByText, act } = renderResult()
+
+      const { players, activePlayerId } = preloadedDuel
+
+      expect(getByText(messages.duel.vs)).toBeInTheDocument()
+
+      Object.values(players).forEach((player) => {
+        expect(getByText(player.name)).toBeInTheDocument()
+      })
+
+      expect(
+        getByText(
+          formatString(messages.duel.firstPlayer, {
+            playerName: players[activePlayerId].name,
+          }),
+        ),
+      ).toBeInTheDocument()
+
+      act(() => {
+        jest.advanceTimersByTime(6000)
+      })
+
+      expect(queryByText(messages.duel.vs)).not.toBeInTheDocument()
+
+      expect(
+        queryByText(
+          formatString(messages.duel.firstPlayer, {
+            playerName: players[activePlayerId].name,
+          }),
+        ),
+      ).not.toBeInTheDocument()
     })
   })
 })

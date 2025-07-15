@@ -57,7 +57,7 @@ export const PlayerField: React.FC<{
       <PlayerInfoFieldContainer
         initial={{ right: -theme.spacing * 40 }}
         animate={{ right: 0 }}
-        transition={{ delay: (theme.transitionTime / 1000) * 2 }}
+        transition={{ delay: (theme.transitionTime / 1000) * 3 }}
         $isOnTop={isOnTop}
       >
         <PlayerInfo player={player} isActive={isActive} />

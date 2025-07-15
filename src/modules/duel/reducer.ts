@@ -7,7 +7,7 @@ import {
 export const initialState: DuelState = {
   activePlayerId: '',
   inactivePlayerId: '',
-  phase: 'Pre-duel',
+  phase: 'Intro Screen',
   players: {},
   cards: {},
 }
@@ -29,6 +29,13 @@ export const duelReducer = (
         cards,
         activePlayerId,
         inactivePlayerId,
+      }
+    }
+
+    case 'PROGRESS_TO_INITIAL_DRAW': {
+      return {
+        ...state,
+        phase: 'Initial Draw',
       }
     }
 
