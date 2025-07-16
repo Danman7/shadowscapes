@@ -3,9 +3,11 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'
 
 import { StyledPhaseModal } from 'src/modules/duel/components/styles'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 
 export const PhaseModal: React.FC<{ children: ReactNode }> = ({ children }) => {
   const theme = useTheme()
+  const delayInSeconds = useThemeTransitionTimeInSeconds()
 
   const [isVisible, setIsVisible] = useState(true)
   const [childKey, setChildKey] = useState(Date.now())
@@ -32,7 +34,7 @@ export const PhaseModal: React.FC<{ children: ReactNode }> = ({ children }) => {
           animate={{ opacity: 1, left: '50%' }}
           exit={{ opacity: 0, left: '60%' }}
           transition={{
-            duration: (theme.transitionTime / 1000) * 2,
+            duration: delayInSeconds * 2,
             type: 'spring',
           }}
         >

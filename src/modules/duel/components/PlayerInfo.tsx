@@ -3,6 +3,7 @@ import { GiCardPlay, GiReceiveMoney, GiTwoCoins } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
 import { PlayerInfoPanel, PlayerName } from 'src/modules/duel/components/styles'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { DuelPlayer } from 'src/modules/duel/types'
 
 export const PlayerInfo: React.FC<{
@@ -10,6 +11,7 @@ export const PlayerInfo: React.FC<{
   isActive?: boolean
 }> = ({ player, isActive }) => {
   const theme = useTheme()
+  const delayInSeconds = useThemeTransitionTimeInSeconds()
 
   return (
     <PlayerInfoPanel>
@@ -21,7 +23,7 @@ export const PlayerInfo: React.FC<{
             : 'none',
         }}
         transition={{
-          duration: (theme.transitionTime / 1000) * 5,
+          duration: delayInSeconds * 5,
           repeat: Infinity,
           repeatType: 'reverse',
         }}

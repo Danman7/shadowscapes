@@ -1,18 +1,15 @@
-import { useTheme } from 'styled-components'
-
 import {
   CoinBack,
   CoinContainer,
   CoinFront,
   CoinWrapper,
 } from 'src/modules/duel/components/styles'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 
 export const CoinFlip: React.FC<{
   result?: 'heads' | 'tails'
 }> = ({ result }) => {
-  const theme = useTheme()
-
-  const transitionTimeInMs = theme.transitionTime / 1000
+  const transitionTimeInMs = useThemeTransitionTimeInSeconds()
 
   return (
     <CoinContainer

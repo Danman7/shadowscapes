@@ -28,14 +28,15 @@ import {
   StackLabelAndCount,
 } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { useUser } from 'src/modules/user/hooks'
 
 export const PlayerField: React.FC<{
   playerId: string
   isOnTop?: boolean
 }> = ({ playerId, isOnTop }) => {
-  const { spacing, transitionTime, card } = useTheme()
-  const transitionInSeconds = transitionTime / 1000
+  const { spacing, card } = useTheme()
+  const transitionInSeconds = useThemeTransitionTimeInSeconds()
 
   const {
     state: {

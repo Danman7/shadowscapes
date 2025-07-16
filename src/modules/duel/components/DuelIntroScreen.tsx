@@ -8,6 +8,7 @@ import {
   IntroPlayerName,
   VersusContainer,
 } from 'src/modules/duel/components/styles'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { DuelPlayers } from 'src/modules/duel/types'
 
 export const DuelIntroScreen: React.FC<{
@@ -16,9 +17,9 @@ export const DuelIntroScreen: React.FC<{
   userId: string
 }> = ({ players, activePlayerId, userId }) => {
   const playerNames = Object.values(players).map((player) => player.name)
-  const { transitionTime, spacing } = useTheme()
+  const { spacing } = useTheme()
 
-  const delayInSeconds = transitionTime / 1000
+  const delayInSeconds = useThemeTransitionTimeInSeconds()
   const isUserFirst = activePlayerId === userId
   const isActivePlayerFirst = Object.keys(players)[0] === activePlayerId
   const coinSide = isUserFirst

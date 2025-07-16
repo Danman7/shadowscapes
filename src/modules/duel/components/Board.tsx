@@ -1,5 +1,4 @@
 import { AnimatePresence } from 'motion/react'
-import { useTheme } from 'styled-components'
 
 import { FullScreenLoader } from 'src/components/FullScreenLoader'
 import { messages } from 'src/i18n'
@@ -9,6 +8,7 @@ import { DuelBoard } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
 import { useDrawInitialCards } from 'src/modules/duel/hooks/useDrawInitialCards'
 import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
+import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { sortUserIdsForDuel } from 'src/modules/duel/utils'
 import { useUser } from 'src/modules/user/hooks'
 
@@ -29,9 +29,7 @@ export const Board: React.FC = () => {
     id,
   )
 
-  const { transitionTime } = useTheme()
-
-  const delayInSeconds = transitionTime / 1000
+  const delayInSeconds = useThemeTransitionTimeInSeconds()
 
   useIntroScreenTimer()
 
