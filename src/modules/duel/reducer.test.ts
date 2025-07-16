@@ -1,9 +1,12 @@
+import { INITIAL_CARDS_DRAWN_AMOUNT } from 'src/modules/duel/constants'
+import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { duelReducer, initialState } from 'src/modules/duel/reducer'
 import {
+  DrawInitialCardsAction,
   DuelAction,
   DuelStartingUsers,
   InitialiseDuelAction,
-  ProgressToInitialDraw,
+  ProgressToInitialDrawAction,
 } from 'src/modules/duel/types'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -46,12 +49,30 @@ describe('Duel Reducer', () => {
   })
 
   it('should update phase when PROGRESS_TO_INITIAL_DRAW is dispatched', () => {
-    const action: ProgressToInitialDraw = {
+    const action: ProgressToInitialDrawAction = {
       type: 'PROGRESS_TO_INITIAL_DRAW',
     }
 
     const { phase } = duelReducer(initialState, action)
 
     expect(phase).toBe('Initial Draw')
+  })
+
+  describe('Duel Start Sequence', () => {
+    it('should draw initial cards for both players when DRAW_INITIAL_CARDS is dispatched', () => {
+      const action: DrawInitialCardsAction = {
+        type: 'DRAW_INITIAL_CARDS',
+      }
+
+      const { players } = duelReducer(mockInitializeDuelMockState, action)
+
+      Object.values(players).forEach(({ hand, deck, id }) => {
+        expect(hand.length).toBe(INITIAL_CARDS_DRAWN_AMOUNT)
+        expect(deck.length).toBe(
+          mockInitializeDuelMockState.players[id].deck.length -
+            INITIAL_CARDS_DRAWN_AMOUNT,
+        )
+      })
+    })
   })
 })

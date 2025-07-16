@@ -98,7 +98,6 @@ export const StyledPlayerField = styled.div<{ $isOnTop?: boolean }>`
   position: relative;
   display: grid;
   gap: ${({ theme }) => theme.spacing}px;
-  overflow: hidden; /* Prevent overflow */
 
   grid-template-areas: ${({ $isOnTop }) =>
     $isOnTop
@@ -190,7 +189,7 @@ export const HandCardContainer = styled.div<{
         !$isOnTop &&
         $isUser &&
         `&:hover {
-        transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 3}px) translate(${xOffset}px);
+        transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 34}px) translate(${xOffset}px);
         z-index: 3;}`
       }
     `

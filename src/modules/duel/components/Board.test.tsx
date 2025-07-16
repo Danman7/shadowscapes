@@ -8,7 +8,10 @@ import {
   topPlayerDeckCardId,
   topPlayerHandCardId,
 } from 'src/modules/duel/components/constants'
-import { STARTING_COINS } from 'src/modules/duel/constants'
+import {
+  INITIAL_CARDS_DRAWN_AMOUNT,
+  STARTING_COINS,
+} from 'src/modules/duel/constants'
 import {
   mockInitializeDuelMockState,
   mockStackedDuelState,
@@ -283,6 +286,41 @@ describe('Board Component', () => {
           }),
         ),
       ).not.toBeInTheDocument()
+    })
+
+    it('should draw initial cards for both players', () => {
+      preloadedDuel = mockInitializeDuelMockState
+      preloadedDuel.phase = 'Initial Draw'
+
+      const { getAllByTestId, getByText, act } = renderResult()
+
+      const { players, activePlayerId, inactivePlayerId, cards } = preloadedDuel
+      const topPlayerDeck = players[inactivePlayerId].deck
+      const bottomPlayerDeck = players[activePlayerId].deck
+      const bottomPlayerHand = players[activePlayerId].hand
+
+      act(() => {
+        jest.advanceTimersByTime(2000)
+      })
+
+      expect(getAllByTestId(topPlayerHandCardId)).toHaveLength(
+        INITIAL_CARDS_DRAWN_AMOUNT,
+      )
+      expect(getAllByTestId(topPlayerDeckCardId)).toHaveLength(
+        topPlayerDeck.length - INITIAL_CARDS_DRAWN_AMOUNT,
+      )
+
+      expect(getAllByTestId(bottomPlayerHandCardId)).toHaveLength(
+        INITIAL_CARDS_DRAWN_AMOUNT,
+      )
+      expect(getAllByTestId(bottomPlayerDeckCardId)).toHaveLength(
+        bottomPlayerDeck.length - INITIAL_CARDS_DRAWN_AMOUNT,
+      )
+
+      bottomPlayerHand.forEach((cardId) => {
+        const card = cards[cardId]
+        expect(getByText(card.name)).toBeInTheDocument()
+      })
     })
   })
 })

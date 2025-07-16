@@ -14,3 +14,5 @@ export const STARTING_DUEL_PLAYER_PROPS = {
   income: 0,
   hasPerformedAction: false,
 }
+
+export const INITIAL_CARDS_DRAWN_AMOUNT = 4

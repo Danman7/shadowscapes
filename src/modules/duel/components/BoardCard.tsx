@@ -20,9 +20,13 @@ import { useUser } from 'src/modules/user/hooks'
 
 interface BoardCardProps {
   cardId: string
+  animationDelay?: number
 }
 
-export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
+export const BoardCard: React.FC<BoardCardProps> = ({ 
+  cardId, 
+  animationDelay = 0 
+}) => {
   const {
     state: {
       user: { id: userId },
@@ -75,10 +79,15 @@ export const BoardCard: React.FC<BoardCardProps> = ({ cardId }) => {
   return (
     <CardContainer>
       <CardFlipper
+        layoutId={cardId}
         initial={false}
         variants={flipVariants}
         animate={isFaceDown ? 'faceDown' : 'faceUp'}
-        transition={{ duration: 0.6, ease: [0.4, 0.2, 0.2, 1] }}
+        transition={{ 
+          duration: 0.6, 
+          ease: [0.4, 0.2, 0.2, 1],
+          layout: { delay: animationDelay }
+        }}
         onAnimationStart={handleCardFlipperAnimationStart}
         onAnimationComplete={handleCardFlipperAnimationComplete}
       >

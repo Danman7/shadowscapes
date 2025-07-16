@@ -84,3 +84,20 @@ export const DuelStart: Story = {
     ),
   ],
 }
+
+export const InitialDraw: Story = {
+  decorators: [
+    (Story) => (
+      <UserProvider preloadedState={mockLoadedUserState}>
+        <DuelProvider
+          preloadedState={{
+            ...mockInitializeDuelMockState,
+            phase: 'Initial Draw',
+          }}
+        >
+          <Story />
+        </DuelProvider>
+      </UserProvider>
+    ),
+  ],
+}

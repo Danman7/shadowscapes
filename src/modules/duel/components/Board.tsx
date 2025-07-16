@@ -1,5 +1,4 @@
 import { AnimatePresence } from 'motion/react'
-import React from 'react'
 import { useTheme } from 'styled-components'
 
 import { FullScreenLoader } from 'src/components/FullScreenLoader'
@@ -8,6 +7,7 @@ import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
 import { PlayerField } from 'src/modules/duel/components/PlayerField'
 import { DuelBoard } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
+import { useDrawInitialCards } from 'src/modules/duel/hooks/useDrawInitialCards'
 import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
 import { sortUserIdsForDuel } from 'src/modules/duel/utils'
 import { useUser } from 'src/modules/user/hooks'
@@ -34,6 +34,8 @@ export const Board: React.FC = () => {
   const delayInSeconds = transitionTime / 1000
 
   useIntroScreenTimer()
+
+  useDrawInitialCards()
 
   return (
     <AnimatePresence>

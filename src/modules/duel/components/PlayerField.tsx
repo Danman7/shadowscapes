@@ -141,7 +141,7 @@ export const PlayerField: React.FC<{
             $isUser={isUser}
             data-testid={isOnTop ? topPlayerHandCardId : bottomPlayerHandCardId}
           >
-            <BoardCard cardId={cardId} />
+            <BoardCard cardId={cardId} animationDelay={index * 0.1} />
           </HandCardContainer>
         ))}
       </Hand>

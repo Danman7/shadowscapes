@@ -1,6 +1,8 @@
+import { INITIAL_CARDS_DRAWN_AMOUNT } from 'src/modules/duel/constants'
 import { DuelAction, DuelState } from 'src/modules/duel/types'
 import {
   convertUsersToDuelPlayersAndCards,
+  drawCards,
   flipCoinForFirstPlayer,
 } from 'src/modules/duel/utils'
 
@@ -36,6 +38,31 @@ export const duelReducer = (
       return {
         ...state,
         phase: 'Initial Draw',
+      }
+    }
+
+    case 'DRAW_INITIAL_CARDS': {
+      const updatedPlayers = { ...state.players }
+
+      // Draw initial cards for each player
+      Object.keys(updatedPlayers).forEach((playerId) => {
+        const player = updatedPlayers[playerId]
+        const { updatedFrom, updatedTo } = drawCards(
+          player.deck,
+          player.hand,
+          INITIAL_CARDS_DRAWN_AMOUNT,
+        )
+
+        updatedPlayers[playerId] = {
+          ...player,
+          deck: updatedFrom,
+          hand: updatedTo,
+        }
+      })
+
+      return {
+        ...state,
+        players: updatedPlayers,
       }
     }
 

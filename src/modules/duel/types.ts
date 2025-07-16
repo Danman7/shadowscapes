@@ -51,11 +51,18 @@ export type InitialiseDuelAction = {
   users: DuelStartingUsers
 }
 
-export type ProgressToInitialDraw = {
+export type ProgressToInitialDrawAction = {
   type: 'PROGRESS_TO_INITIAL_DRAW'
 }
 
-export type DuelAction = InitialiseDuelAction | ProgressToInitialDraw
+export type DrawInitialCardsAction = {
+  type: 'DRAW_INITIAL_CARDS'
+}
+
+export type DuelAction =
+  | InitialiseDuelAction
+  | ProgressToInitialDrawAction
+  | DrawInitialCardsAction
 
 export type PlayerStackSetup = {
   id: string

@@ -9,6 +9,7 @@ import { DuelStartingUsers, PlayerStackSetup } from 'src/modules/duel/types'
 import {
   convertUsersToDuelPlayersAndCards,
   createDuelCardFromBase,
+  drawCards,
   findPlayerAndStackFromId,
   flipCoinForFirstPlayer,
   getBaseFromDuelCard,
@@ -161,18 +162,99 @@ describe('Duel Utils', () => {
       expect(sortedIds[0]).toBe(opponentId)
       expect(sortedIds[1]).toBe(userId)
     })
+
+    it('should return the player ids as passed if the user is not in the duel', () => {
+      const userId = 'user'
+      const player1Id = 'player 1'
+      const opponentId = 'opponent'
+
+      const ids = [player1Id, opponentId] as [string, string]
+
+      const sortedIds = sortUserIdsForDuel(ids, userId)
+
+      expect(sortedIds[0]).toBe(ids[0])
+      expect(sortedIds[1]).toBe(ids[1])
+    })
   })
 
-  it('should return the player ids as passed if the user is not in the duel', () => {
-    const userId = 'user'
-    const player1Id = 'player 1'
-    const opponentId = 'opponent'
+  describe('drawCards', () => {
+    it('should return only the first id from an array if no count is given', () => {
+      const fromArray = ['card1', 'card2', 'card3']
+      const toArray: string[] = []
 
-    const ids = [player1Id, opponentId] as [string, string]
+      const { updatedFrom, updatedTo, drawnItems } = drawCards(
+        fromArray,
+        toArray,
+      )
 
-    const sortedIds = sortUserIdsForDuel(ids, userId)
+      expect(drawnItems).toHaveLength(1)
+      expect(drawnItems[0]).toBe('card1')
+      expect(updatedFrom).toEqual(['card2', 'card3'])
+      expect(updatedTo).toEqual(['card1'])
+    })
 
-    expect(sortedIds[0]).toBe(ids[0])
-    expect(sortedIds[1]).toBe(ids[1])
+    it('should move specified number of items from one array to another', () => {
+      const fromArray = ['card1', 'card2', 'card3', 'card4']
+      const toArray = ['existingCard']
+
+      const { updatedFrom, updatedTo, drawnItems } = drawCards(
+        fromArray,
+        toArray,
+        2,
+      )
+
+      expect(drawnItems).toHaveLength(2)
+      expect(drawnItems).toEqual(['card1', 'card2'])
+      expect(updatedFrom).toEqual(['card3', 'card4'])
+      expect(updatedTo).toEqual(['existingCard', 'card1', 'card2'])
+    })
+
+    it('should move all items if requested count is greater than available items', () => {
+      const fromArray = ['card1', 'card2']
+      const toArray: string[] = []
+
+      const { updatedFrom, updatedTo, drawnItems } = drawCards(
+        fromArray,
+        toArray,
+        5,
+      )
+
+      expect(drawnItems).toHaveLength(2)
+      expect(drawnItems).toEqual(['card1', 'card2'])
+      expect(updatedFrom).toEqual([])
+      expect(updatedTo).toEqual(['card1', 'card2'])
+    })
+
+    it('should handle empty from array', () => {
+      const fromArray: string[] = []
+      const toArray = ['existingCard']
+
+      const { updatedFrom, updatedTo, drawnItems } = drawCards(
+        fromArray,
+        toArray,
+        3,
+      )
+
+      expect(drawnItems).toHaveLength(0)
+      expect(drawnItems).toEqual([])
+      expect(updatedFrom).toEqual([])
+      expect(updatedTo).toEqual(['existingCard'])
+    })
+
+    it('should handle zero count', () => {
+      const fromArray = ['card1', 'card2', 'card3']
+      const toArray = ['existingCard']
+
+      const { updatedFrom, updatedTo, drawnItems } = drawCards(
+        fromArray,
+        toArray,
+        0,
+      )
+
+      expect(drawnItems).toHaveLength(0)
+      expect(drawnItems).toEqual([])
+      expect(updatedFrom).toEqual(['card1', 'card2', 'card3'])
+      expect(updatedTo).toEqual(['existingCard'])
+    })
   })
 })
