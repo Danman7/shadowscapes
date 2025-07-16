@@ -80,7 +80,7 @@ export const Paper = styled.div`
   padding: ${({ theme }) => theme.spacing}px;
   background-color: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 25px 10px / 5px 20px;
+  border-radius: ${({ theme }) => theme.spacing}px;
   box-shadow: ${({ theme }) => theme.boxShadow.level2};
 `
 

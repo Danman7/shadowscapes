@@ -2,66 +2,23 @@ import { AnimatePresence } from 'motion/react'
 
 import { FullScreenLoader } from 'src/components/FullScreenLoader'
 import { messages } from 'src/i18n'
-import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
-import { PlayerField } from 'src/modules/duel/components/PlayerField'
-import { DuelBoard } from 'src/modules/duel/components/styles'
-import { useDuel } from 'src/modules/duel/hooks'
+import { DuelContent } from 'src/modules/duel/components/DuelContent'
 import { useDrawInitialCards } from 'src/modules/duel/hooks/useDrawInitialCards'
 import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
-import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
-import { sortUserIdsForDuel } from 'src/modules/duel/utils'
 import { useUser } from 'src/modules/user/hooks'
 
 export const Board: React.FC = () => {
   const {
-    state: {
-      isUserLoaded,
-      user: { id },
-    },
+    state: { isUserLoaded },
   } = useUser()
 
-  const {
-    state: { players, phase, activePlayerId, inactivePlayerId },
-  } = useDuel()
-
-  const sortedPlayerIds = sortUserIdsForDuel(
-    [activePlayerId, inactivePlayerId],
-    id,
-  )
-
-  const delayInSeconds = useThemeTransitionTimeInSeconds()
-
   useIntroScreenTimer()
-
   useDrawInitialCards()
 
   return (
     <AnimatePresence>
       {isUserLoaded ? (
-        <>
-          {phase === 'Intro Screen' ? (
-            <DuelIntroScreen
-              userId={id}
-              activePlayerId={activePlayerId}
-              players={players}
-            />
-          ) : (
-            <DuelBoard
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: delayInSeconds * 4 }}
-            >
-              {sortedPlayerIds.map((playerId, index) => (
-                <PlayerField
-                  key={`${playerId}-field`}
-                  playerId={playerId}
-                  isOnTop={!index}
-                />
-              ))}
-            </DuelBoard>
-          )}
-        </>
+        <DuelContent />
       ) : (
         <FullScreenLoader message={messages.user.loadingUser} />
       )}
