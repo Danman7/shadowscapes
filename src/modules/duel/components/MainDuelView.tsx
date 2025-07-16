@@ -1,4 +1,4 @@
-import { PlayerField } from 'src/modules/duel/components/PlayerField'
+import { PlayerField } from 'src/modules/duel/components/PlayerField/PlayerField'
 import { DuelBoard } from 'src/modules/duel/components/styles'
 import { useDuel } from 'src/modules/duel/hooks'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
