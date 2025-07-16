@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Board } from 'src/modules/duel/components/Board'
+import { Board } from 'src/modules/duel/components/Board/Board'
 import { DuelProvider } from 'src/modules/duel/components/DuelProvider'
 import {
   mockInitializeDuelMockState,

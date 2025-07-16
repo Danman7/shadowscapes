@@ -3,7 +3,7 @@ import {
   CoinContainer,
   CoinFront,
   CoinWrapper,
-} from 'src/modules/duel/components/styles'
+} from 'src/modules/duel/components/Board/styles'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 
 export const CoinFlip: React.FC<{

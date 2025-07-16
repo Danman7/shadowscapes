@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
+import { DuelIntroScreen } from 'src/modules/duel/components/Board/DuelIntroScreen'
 import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 
 const { players, activePlayerId, inactivePlayerId } =

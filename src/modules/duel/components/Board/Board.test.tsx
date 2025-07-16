@@ -1,5 +1,5 @@
 import { formatString, messages } from 'src/i18n'
-import { Board } from 'src/modules/duel/components/Board'
+import { Board } from 'src/modules/duel/components/Board/Board'
 import {
   bottomPlayerBoardCardId,
   bottomPlayerDeckCardId,

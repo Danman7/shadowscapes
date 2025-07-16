@@ -2,12 +2,12 @@ import { useTheme } from 'styled-components'
 
 import { FullScreenCenteredContainer } from 'src/components/styles'
 import { formatString, messages } from 'src/i18n'
-import { CoinFlip } from 'src/modules/duel/components/CoinFlip'
+import { CoinFlip } from 'src/modules/duel/components/Board/CoinFlip'
 import {
   FirstPlayerMessage,
   IntroPlayerName,
   VersusContainer,
-} from 'src/modules/duel/components/styles'
+} from 'src/modules/duel/components/Board/styles'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { DuelPlayers } from 'src/modules/duel/types'
 

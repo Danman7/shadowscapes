@@ -2,7 +2,7 @@ import { AnimatePresence } from 'motion/react'
 
 import { FullScreenLoader } from 'src/components/FullScreenLoader'
 import { messages } from 'src/i18n'
-import { DuelContent } from 'src/modules/duel/components/DuelContent'
+import { DuelContent } from 'src/modules/duel/components/Board/DuelContent'
 import { useDrawInitialCards } from 'src/modules/duel/hooks/useDrawInitialCards'
 import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
 import { useUser } from 'src/modules/user/hooks'

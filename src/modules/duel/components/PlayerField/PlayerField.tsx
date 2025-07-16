@@ -4,11 +4,11 @@ import { BoardSection } from 'src/modules/duel/components/PlayerField/BoardSecti
 import { DeckSection } from 'src/modules/duel/components/PlayerField/DeckSection'
 import { DiscardSection } from 'src/modules/duel/components/PlayerField/DiscardSection'
 import { HandSection } from 'src/modules/duel/components/PlayerField/HandSection'
+import { PlayerInfo } from 'src/modules/duel/components/PlayerField/PlayerInfo'
 import {
   PlayerInfoFieldContainer,
   StyledPlayerField,
 } from 'src/modules/duel/components/PlayerField/styles'
-import { PlayerInfo } from 'src/modules/duel/components/PlayerInfo'
 import { useDuel } from 'src/modules/duel/hooks'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { useUser } from 'src/modules/user/hooks'

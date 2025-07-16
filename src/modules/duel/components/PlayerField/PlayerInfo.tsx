@@ -2,7 +2,10 @@ import React from 'react'
 import { GiCardPlay, GiReceiveMoney, GiTwoCoins } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
-import { PlayerInfoPanel, PlayerName } from 'src/modules/duel/components/styles'
+import {
+  PlayerInfoPanel,
+  PlayerName,
+} from 'src/modules/duel/components/PlayerField/styles'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { DuelPlayer } from 'src/modules/duel/types'
 

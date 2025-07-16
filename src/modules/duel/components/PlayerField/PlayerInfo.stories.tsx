@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { PlayerInfo } from 'src/modules/duel/components/PlayerInfo'
+import { PlayerInfo } from 'src/modules/duel/components/PlayerField/PlayerInfo'
 import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { DuelPlayer } from 'src/modules/duel/types'
 

@@ -1,6 +1,23 @@
 import { motion } from 'motion/react'
 import styled from 'styled-components'
 
+import { Paper } from 'src/components/styles'
+
+export const PlayerInfoPanel = styled(Paper)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing}px;
+  width: ${({ theme }) => theme.spacing * 30}px;
+`
+
+export const PlayerName = styled(motion.div)`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: ${({ theme }) => theme.spacing * 17}px;
+`
+
 export const StyledPlayerField = styled.div<{ $isOnTop?: boolean }>`
   width: 100%;
   height: 50%;

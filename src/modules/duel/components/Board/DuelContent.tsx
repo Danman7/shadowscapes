@@ -1,5 +1,5 @@
-import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
-import { MainDuelView } from 'src/modules/duel/components/MainDuelView'
+import { DuelIntroScreen } from 'src/modules/duel/components/Board/DuelIntroScreen'
+import { MainDuelView } from 'src/modules/duel/components/Board/MainDuelView'
 import { useDuel } from 'src/modules/duel/hooks'
 import { useUser } from 'src/modules/user/hooks'
 
