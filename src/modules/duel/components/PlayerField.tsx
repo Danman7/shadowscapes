@@ -1,7 +1,7 @@
 import { GiCardBurn, GiCardDraw } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { BoardCard } from 'src/modules/duel/components/BoardCard'
 import {
   bottomPlayerBoardCardId,

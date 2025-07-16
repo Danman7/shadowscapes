@@ -1,7 +1,7 @@
 import { useTheme } from 'styled-components'
 
 import { FullScreenCenteredContainer } from 'src/components/styles'
-import { formatString, messages } from 'src/i18n/indext'
+import { formatString, messages } from 'src/i18n'
 import { CoinFlip } from 'src/modules/duel/components/CoinFlip'
 import {
   FirstPlayerMessage,

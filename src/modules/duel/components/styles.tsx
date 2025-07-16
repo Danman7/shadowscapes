@@ -190,7 +190,8 @@ export const HandCardContainer = styled.div<{
         $isUser &&
         `&:hover {
         transform: rotate(${adjustedRotation / 2}deg) translateY(-${theme.spacing * 34}px) translate(${xOffset}px);
-        z-index: 3;}`
+        z-index: 3;
+      }`
       }
     `
   }};

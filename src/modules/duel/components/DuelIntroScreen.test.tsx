@@ -1,4 +1,4 @@
-import { formatString, messages } from 'src/i18n/indext'
+import { formatString, messages } from 'src/i18n'
 import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
 import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { render } from 'src/test-utils'

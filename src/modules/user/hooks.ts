@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { UserContext } from 'src/modules/user/UserContext'
 
 export const useUser = () => {

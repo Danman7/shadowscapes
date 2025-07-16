@@ -2,7 +2,7 @@ import { AnimatePresence } from 'motion/react'
 import { useTheme } from 'styled-components'
 
 import { FullScreenLoader } from 'src/components/FullScreenLoader'
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { DuelIntroScreen } from 'src/modules/duel/components/DuelIntroScreen'
 import { PlayerField } from 'src/modules/duel/components/PlayerField'
 import { DuelBoard } from 'src/modules/duel/components/styles'

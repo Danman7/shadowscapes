@@ -1,6 +1,6 @@
 import { GiBackForth, GiSemiClosedEye } from 'react-icons/gi'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { CharacterTrait, TraitInfo } from 'src/modules/cards/types'
 
 export const traitInfoMap: Record<CharacterTrait, TraitInfo> = {

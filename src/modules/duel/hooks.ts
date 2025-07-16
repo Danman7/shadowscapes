@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { DuelContext } from 'src/modules/duel/DuelContext'
 
 export const useDuel = () => {

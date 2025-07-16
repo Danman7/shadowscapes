@@ -1,4 +1,4 @@
-import { formatString, messages } from 'src/i18n/indext'
+import { formatString, messages } from 'src/i18n'
 import { Board } from 'src/modules/duel/components/Board'
 import {
   bottomPlayerBoardCardId,

@@ -6,7 +6,7 @@ import {
 } from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import {
   CardBody,
   CardCategories,
@@ -53,56 +53,54 @@ export const Card: React.FC<CardProps> = ({ card }) => {
 
   return (
     <CardFront $isHidden={isHidden} $role={role}>
-      <>
-        <CardHeader $background={factionColor}>
-          <CardTitle>
-            <strong>{name}</strong>
-            <strong>
-              {strength ? (
-                <>
-                  {role === 'fighter' ? <GiFist /> : <GiBlackHandShield />}{' '}
-                  {strength}
-                </>
-              ) : (
-                <GiPowerLightning />
-              )}
-            </strong>
-          </CardTitle>
+      <CardHeader $background={factionColor}>
+        <CardTitle>
+          <strong>{name}</strong>
+          <strong>
+            {strength ? (
+              <>
+                {role === 'fighter' ? <GiFist /> : <GiBlackHandShield />}{' '}
+                {strength}
+              </>
+            ) : (
+              <GiPowerLightning />
+            )}
+          </strong>
+        </CardTitle>
 
-          <CardCategories $isElite={isElite}>
-            <small>{joinCardCategories(categories)}</small>
-          </CardCategories>
-        </CardHeader>
+        <CardCategories $isElite={isElite}>
+          <small>{joinCardCategories(categories)}</small>
+        </CardCategories>
+      </CardHeader>
 
-        <CardBody>
-          {onPlayDescription && (
-            <p>
-              <strong>{messages.card.onPlay}</strong>
-              {onPlayDescription}
-            </p>
-          )}
+      <CardBody>
+        {onPlayDescription && (
+          <p>
+            <strong>{messages.card.onPlay}</strong>
+            {onPlayDescription}
+          </p>
+        )}
 
-          {description && <p>{description}</p>}
+        {description && <p>{description}</p>}
 
-          {onDiscardDescription && (
-            <p>
-              <strong>{messages.card.onDiscard}</strong>
-              {onDiscardDescription}
-            </p>
-          )}
+        {onDiscardDescription && (
+          <p>
+            <strong>{messages.card.onDiscard}</strong>
+            {onDiscardDescription}
+          </p>
+        )}
 
-          {getCharacterTraitsDescriptions(traits)}
+        {getCharacterTraitsDescriptions(traits)}
 
-          {flavor && <FlavorText>{flavor}</FlavorText>}
-        </CardBody>
+        {flavor && <FlavorText>{flavor}</FlavorText>}
+      </CardBody>
 
-        <CardFooter $isElite={isElite}>
-          <div>
-            <GiTwoCoins /> {cost}
-          </div>
-          {getCharacterFooterIcons(traits, counter)}
-        </CardFooter>
-      </>
+      <CardFooter $isElite={isElite}>
+        <div>
+          <GiTwoCoins /> {cost}
+        </div>
+        {getCharacterFooterIcons(traits, counter)}
+      </CardFooter>
     </CardFront>
   )
 }

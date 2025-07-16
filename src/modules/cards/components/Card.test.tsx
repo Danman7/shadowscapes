@@ -1,4 +1,4 @@
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import {
   agentIcon,
   counterIcon,

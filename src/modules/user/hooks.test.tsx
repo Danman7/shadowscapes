@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 
-import { messages } from 'src/i18n/indext'
+import { messages } from 'src/i18n'
 import { UserProvider } from 'src/modules/user/components/UserProvider'
 import { useUser } from 'src/modules/user/hooks'
 import { initialState } from 'src/modules/user/reducer'
