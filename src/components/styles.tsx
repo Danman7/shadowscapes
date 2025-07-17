@@ -61,21 +61,6 @@ export const Light = styled.div`
     infinite reverse;
 `
 
-export const Crater = styled.div<{
-  $size: string
-  $top: string
-  $left: string
-}>`
-  width: ${({ $size }) => $size};
-  height: ${({ $size }) => $size};
-  border-radius: 50%;
-  background-color: transparent;
-  box-shadow: -0.02em 0.02em 0 0.02em currentcolor;
-  position: absolute;
-  top: ${({ $top }) => $top};
-  left: ${({ $left }) => $left};
-`
-
 export const Paper = styled.div`
   padding: ${({ theme }) => theme.spacing}px;
   background-color: ${({ theme }) => theme.colors.surface};
@@ -101,4 +86,35 @@ export const FullScreenCenteredContainer = styled(
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+export const StyledButton = styled(motion.create('button'))`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.background};
+  height: ${({ theme }) => theme.spacing * 6}px;
+  gap: ${({ theme }) => theme.spacing}px;
+  border-radius: ${({ theme }) => theme.spacing * 3}px;
+  padding: ${({ theme }) => theme.spacing * 2}px;
+  text-transform: uppercase;
+  box-shadow: ${({ theme }) => theme.boxShadow.level1};
+  border: none;
+  cursor: pointer;
+`
+
+export const Crater = styled.div<{
+  $size: string
+  $top: string
+  $left: string
+}>`
+  width: ${({ $size }) => $size};
+  height: ${({ $size }) => $size};
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: -0.02em 0.02em 0 0.02em currentcolor;
+  position: absolute;
+  top: ${({ $top }) => $top};
+  left: ${({ $left }) => $left};
 `
