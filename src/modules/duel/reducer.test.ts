@@ -7,6 +7,7 @@ import {
   DuelStartingUsers,
   InitialiseDuelAction,
   ProgressToInitialDrawAction,
+  ProgressToRedrawAction,
 } from 'src/modules/duel/types'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -73,6 +74,16 @@ describe('Duel Reducer', () => {
             INITIAL_CARDS_DRAWN_AMOUNT,
         )
       })
+    })
+
+    it('should update phase when PROGRESS_TO_REDRAW is dispatched', () => {
+      const action: ProgressToRedrawAction = {
+        type: 'PROGRESS_TO_REDRAW',
+      }
+
+      const { phase } = duelReducer(initialState, action)
+
+      expect(phase).toBe('Redrawing')
     })
   })
 })

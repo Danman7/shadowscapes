@@ -63,3 +63,10 @@ export const DuelBoard = styled(motion.create(FullScreenContainer))`
   background: ${({ theme }) => theme.colors.background};
   padding: 0 ${({ theme }) => theme.spacing}px;
 `
+
+export const ActionButtonWrapper = styled(motion.create('div'))`
+  position: absolute;
+  left: ${({ theme }) => theme.spacing * 2}px;
+  bottom: ${({ theme }) => theme.spacing * 10}px;
+  z-index: 5;
+`

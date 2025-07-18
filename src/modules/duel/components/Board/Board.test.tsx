@@ -288,11 +288,11 @@ describe('Board Component', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should draw initial cards for both players', () => {
+    it('should draw initial cards for both players and move on to redraw', () => {
       preloadedDuel = mockInitializeDuelMockState
       preloadedDuel.phase = 'Initial Draw'
 
-      const { getAllByTestId, getByText, act } = renderResult()
+      const { getAllByTestId, queryByText, getByText, act } = renderResult()
 
       const { players, activePlayerId, inactivePlayerId, cards } = preloadedDuel
       const topPlayerDeck = players[inactivePlayerId].deck
@@ -321,6 +321,27 @@ describe('Board Component', () => {
         const card = cards[cardId]
         expect(getByText(card.name)).toBeInTheDocument()
       })
+
+      expect(
+        queryByText(messages.duel.redrawPhaseModal),
+      ).not.toBeInTheDocument()
+      expect(queryByText(messages.duel.skipRedraw)).not.toBeInTheDocument()
+
+      act(() => {
+        jest.advanceTimersByTime(2000)
+      })
+
+      expect(getByText(messages.duel.redrawPhaseModal)).toBeInTheDocument()
+    })
+
+    it('should show redraw modal and skip button after initial draw', () => {
+      preloadedDuel = mockInitializeDuelMockState
+      preloadedDuel.phase = 'Redrawing'
+
+      const { getByText } = renderResult()
+
+      expect(getByText(messages.duel.redrawPhaseModal)).toBeInTheDocument()
+      expect(getByText(messages.duel.skipRedraw)).toBeInTheDocument()
     })
   })
 })

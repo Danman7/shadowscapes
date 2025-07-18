@@ -59,10 +59,15 @@ export type DrawInitialCardsAction = {
   type: 'DRAW_INITIAL_CARDS'
 }
 
+export type ProgressToRedrawAction = {
+  type: 'PROGRESS_TO_REDRAW'
+}
+
 export type DuelAction =
   | InitialiseDuelAction
   | ProgressToInitialDrawAction
   | DrawInitialCardsAction
+  | ProgressToRedrawAction
 
 export type PlayerStackSetup = {
   id: string

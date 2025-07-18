@@ -6,7 +6,5 @@ export const getTestId = (
   return isOnTop ? topId : bottomId
 }
 
-export const getCardOrigin = (isOnTop: boolean, defaultOrigin = 'top left') => {
-  if (defaultOrigin === 'top center') return 'top center'
-  return isOnTop ? 'bottom left' : 'top left'
-}
+export const getCardOrigin = (isOnTop: boolean) =>
+  isOnTop ? 'bottom left' : 'top left'

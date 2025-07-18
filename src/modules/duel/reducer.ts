@@ -66,6 +66,13 @@ export const duelReducer = (
       }
     }
 
+    case 'PROGRESS_TO_REDRAW': {
+      return {
+        ...state,
+        phase: 'Redrawing',
+      }
+    }
+
     default:
       return state
   }

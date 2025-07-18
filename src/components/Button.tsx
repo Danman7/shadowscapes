@@ -5,9 +5,8 @@ import { StyledButton } from 'src/components/styles'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 
 export const Button: React.FC<{
-  message?: string
-  icon?: React.ReactNode
-}> = ({ message, icon }) => {
+  children?: React.ReactNode
+}> = ({ children }) => {
   const { colors } = useTheme()
   const duration = useThemeTransitionTimeInSeconds()
 
@@ -20,8 +19,7 @@ export const Button: React.FC<{
         duration,
       }}
     >
-      {icon}
-      {message && <span>{message}</span>}
+      {children}
     </StyledButton>
   )
 }

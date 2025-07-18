@@ -15,8 +15,8 @@ import { useUser } from 'src/modules/user/hooks'
 
 export const PlayerField: React.FC<{
   playerId: string
-  isOnTop?: boolean
-}> = ({ playerId, isOnTop = false }) => {
+  isOnTop: boolean
+}> = ({ playerId, isOnTop }) => {
   const { spacing, card } = useTheme()
   const transitionInSeconds = useThemeTransitionTimeInSeconds()
 

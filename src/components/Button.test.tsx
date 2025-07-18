@@ -7,14 +7,14 @@ import { render } from 'src/test-utils'
 describe('Button', () => {
   it('shows message when one is supplied', () => {
     const message = 'Click me'
-    const { getByText } = render(<Button message={message} />)
+    const { getByText } = render(<Button>{message}</Button>)
 
     expect(getByText(message)).toBeInTheDocument()
   })
 
   it('renders icon when one is provided', () => {
     const icon = <GiFist />
-    const { getByTestId } = render(<Button icon={icon} />)
+    const { getByTestId } = render(<Button>{icon}</Button>)
 
     expect(getByTestId(fighterIcon)).toBeInTheDocument()
   })
@@ -23,7 +23,9 @@ describe('Button', () => {
     const message = 'Click me'
     const icon = <GiFist />
     const { getByText, getByTestId } = render(
-      <Button message={message} icon={icon} />,
+      <Button>
+        {icon} {message}
+      </Button>,
     )
 
     expect(getByText(message)).toBeInTheDocument()

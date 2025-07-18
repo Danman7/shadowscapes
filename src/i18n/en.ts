@@ -22,5 +22,7 @@ export const en = {
     deckLabel: 'Deck',
     discardLabel: 'Discard',
     firstPlayer: '{playerName} plays first.',
+    redrawPhaseModal: 'Redraw',
+    skipRedraw: 'Skip Redraw',
   },
 }

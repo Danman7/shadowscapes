@@ -5,6 +5,7 @@ import { messages } from 'src/i18n'
 import { DuelContent } from 'src/modules/duel/components/Board/DuelContent'
 import { useDrawInitialCards } from 'src/modules/duel/hooks/useDrawInitialCards'
 import { useIntroScreenTimer } from 'src/modules/duel/hooks/useIntroScreenTimer'
+import { useStartRedraw } from 'src/modules/duel/hooks/useStartRedraw'
 import { useUser } from 'src/modules/user/hooks'
 
 export const Board: React.FC = () => {
@@ -13,7 +14,10 @@ export const Board: React.FC = () => {
   } = useUser()
 
   useIntroScreenTimer()
+
   useDrawInitialCards()
+
+  useStartRedraw()
 
   return (
     <AnimatePresence>
