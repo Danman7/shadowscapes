@@ -24,5 +24,6 @@ export const en = {
     firstPlayer: '{playerName} plays first.',
     redrawPhaseModal: 'Redraw',
     skipRedraw: 'Skip Redraw',
+    replaceCard: 'Replace card',
   },
 }

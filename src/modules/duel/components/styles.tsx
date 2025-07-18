@@ -3,11 +3,15 @@ import styled from 'styled-components'
 
 import { Paper } from 'src/components/styles'
 
-export const CardContainer = styled.div`
+export const CardContainer = styled(motion.create('div'))<{
+  $isClickable?: boolean
+}>`
   width: ${({ theme }) => theme.card.width}px;
   height: ${({ theme }) => theme.card.height}px;
   perspective: 1000px;
   position: relative;
+  cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
+  border-radius: ${({ theme }) => theme.spacing}px;
 `
 
 export const CardFlipper = styled(motion.div)`
@@ -54,4 +58,16 @@ export const StyledPhaseModal = styled(motion.create(Paper))`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 5;
+`
+
+export const CardClickHelpText = styled(motion.create('p'))`
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  font-style: italic;
+  top: -${({ theme }) => theme.spacing * 4}px;
+`
+
+export const BoardCardContainer = styled.div`
+  position: relative;
 `
