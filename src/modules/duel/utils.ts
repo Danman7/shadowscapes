@@ -138,13 +138,10 @@ export const drawCards = <T>(
   toArray: T[],
   count: number = 1,
 ): { updatedFrom: T[]; updatedTo: T[]; drawnItems: T[] } => {
-  // Calculate how many items we can actually draw
   const itemsToMove = Math.min(count, fromArray.length)
 
-  // Get the items to move (from the beginning of the array)
   const drawnItems = fromArray.slice(0, itemsToMove)
 
-  // Create new arrays with the moved items
   const updatedFrom = fromArray.slice(itemsToMove)
   const updatedTo = [...toArray, ...drawnItems]
 

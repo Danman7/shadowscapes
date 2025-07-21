@@ -63,11 +63,24 @@ export type ProgressToRedrawAction = {
   type: 'PROGRESS_TO_REDRAW'
 }
 
+export type PutCardAtBottomOfDeckAction = {
+  type: 'PUT_CARD_AT_BOTTOM_OF_DECK'
+  playerId: string
+  cardId: string
+}
+
+export type DrawACardAction = {
+  type: 'DRAW_A_CARD'
+  playerId: string
+}
+
 export type DuelAction =
   | InitialiseDuelAction
   | ProgressToInitialDrawAction
   | DrawInitialCardsAction
   | ProgressToRedrawAction
+  | PutCardAtBottomOfDeckAction
+  | DrawACardAction
 
 export type PlayerStackSetup = {
   id: string

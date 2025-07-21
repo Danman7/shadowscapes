@@ -23,7 +23,7 @@ export const PlayerInfo: React.FC<{
           color: isActive ? theme.colors.active : theme.colors.text,
           textShadow: isActive
             ? `0 0 ${theme.spacing / 4}px ${theme.colors.active}`
-            : 'none',
+            : '0 0 transparent',
         }}
         transition={{
           duration: delayInSeconds * 5,

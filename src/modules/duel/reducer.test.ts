@@ -1,13 +1,18 @@
 import { INITIAL_CARDS_DRAWN_AMOUNT } from 'src/modules/duel/constants'
-import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
+import {
+  mockInitializeDuelMockState,
+  mockStackedDuelState,
+} from 'src/modules/duel/mocks'
 import { duelReducer, initialState } from 'src/modules/duel/reducer'
 import {
+  DrawACardAction,
   DrawInitialCardsAction,
   DuelAction,
   DuelStartingUsers,
   InitialiseDuelAction,
   ProgressToInitialDrawAction,
   ProgressToRedrawAction,
+  PutCardAtBottomOfDeckAction,
 } from 'src/modules/duel/types'
 import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
 
@@ -84,6 +89,40 @@ describe('Duel Reducer', () => {
       const { phase } = duelReducer(initialState, action)
 
       expect(phase).toBe('Redrawing')
+    })
+
+    it('should put a card at the end of the deck when PUT_CARD_AT_BOTTOM_OF_DECK is dispatched', () => {
+      const { activePlayerId } = mockStackedDuelState
+
+      const movedCardId = mockStackedDuelState.players[activePlayerId].hand[0]
+
+      const action: PutCardAtBottomOfDeckAction = {
+        type: 'PUT_CARD_AT_BOTTOM_OF_DECK',
+        playerId: activePlayerId,
+        cardId: movedCardId,
+      }
+
+      const { players } = duelReducer(mockStackedDuelState, action)
+      const { hand, deck } = players[activePlayerId]
+
+      expect(hand).not.toContain(movedCardId)
+      expect(deck[deck.length - 1]).toBe(movedCardId)
+    })
+
+    it('should draw a card from the top of the deck when DRAW_A_CARD is dispatched', () => {
+      const { activePlayerId } = mockStackedDuelState
+      const drawnCardId = mockStackedDuelState.players[activePlayerId].deck[0]
+
+      const action: DrawACardAction = {
+        type: 'DRAW_A_CARD',
+        playerId: activePlayerId,
+      }
+
+      const { players } = duelReducer(mockStackedDuelState, action)
+      const { hand, deck } = players[activePlayerId]
+
+      expect(deck).not.toContain(drawnCardId)
+      expect(hand).toContain(drawnCardId)
     })
   })
 })

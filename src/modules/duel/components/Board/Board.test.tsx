@@ -1,3 +1,5 @@
+import userEvent from '@testing-library/user-event'
+
 import { formatString, messages } from 'src/i18n'
 import { Board } from 'src/modules/duel/components/Board/Board'
 import {
@@ -38,14 +40,6 @@ beforeEach(() => {
 })
 
 describe('Board Component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers()
-  })
-
-  afterEach(() => {
-    jest.useRealTimers()
-  })
-
   describe('UI and Stacks', () => {
     it('should show loader if user is not loaded', () => {
       preloadedUser.isUserLoaded = false
@@ -257,6 +251,8 @@ describe('Board Component', () => {
 
   describe('Duel Start Sequence', () => {
     it('should show intro screen when duel is initialized then move on to initial draw', () => {
+      jest.useFakeTimers()
+
       preloadedDuel = mockInitializeDuelMockState
 
       const { getByText, queryByText, act } = renderResult()
@@ -276,7 +272,7 @@ describe('Board Component', () => {
       ).toBeInTheDocument()
 
       act(() => {
-        jest.advanceTimersByTime(7000)
+        jest.runAllTimers()
       })
 
       expect(
@@ -300,7 +296,7 @@ describe('Board Component', () => {
       const bottomPlayerHand = players[activePlayerId].hand
 
       act(() => {
-        jest.advanceTimersByTime(2000)
+        jest.runAllTimers()
       })
 
       expect(getAllByTestId(topPlayerHandCardId)).toHaveLength(
@@ -328,7 +324,7 @@ describe('Board Component', () => {
       expect(queryByText(messages.duel.skipRedraw)).not.toBeInTheDocument()
 
       act(() => {
-        jest.advanceTimersByTime(2000)
+        jest.runAllTimers()
       })
 
       expect(getByText(messages.duel.redrawPhaseModal)).toBeInTheDocument()
@@ -342,6 +338,42 @@ describe('Board Component', () => {
 
       expect(getByText(messages.duel.redrawPhaseModal)).toBeInTheDocument()
       expect(getByText(messages.duel.skipRedraw)).toBeInTheDocument()
+    })
+
+    it('should put a card at the bottom of the deck when it is replaced during redraw', async () => {
+      jest.useRealTimers()
+
+      const user = userEvent.setup()
+      preloadedDuel.phase = 'Redrawing'
+
+      const { getAllByTestId, getByText, queryByText, waitFor } = renderResult()
+
+      const { players, activePlayerId, cards } = preloadedDuel
+      const bottomPlayerDeck = players[activePlayerId].deck
+      const bottomPlayerHand = players[activePlayerId].hand
+      const replacedCardId = bottomPlayerHand[0]
+      const replacedCardName = cards[replacedCardId].name
+      const replacedCardElement = getByText(replacedCardName)
+      const drawnCardName = cards[bottomPlayerDeck[0]].name
+
+      expect(replacedCardElement).toBeInTheDocument()
+
+      expect(getAllByTestId(bottomPlayerHandCardId)).toHaveLength(
+        bottomPlayerHand.length,
+      )
+      expect(getAllByTestId(bottomPlayerDeckCardId)).toHaveLength(
+        bottomPlayerDeck.length,
+      )
+
+      await user.click(replacedCardElement)
+
+      await waitFor(() => {
+        expect(queryByText(replacedCardName)).not.toBeInTheDocument()
+      })
+
+      await waitFor(() => {
+        expect(getByText(drawnCardName)).toBeInTheDocument()
+      })
     })
   })
 })

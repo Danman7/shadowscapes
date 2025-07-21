@@ -160,11 +160,15 @@ describe('BoardCard Component', () => {
       const cardId = players[activePlayerId].hand[0]
       const cardName = preloadedDuel.cards[cardId].name
 
-      const { getByText } = renderResult(cardId)
+      const { getByText, queryByText } = renderResult(cardId)
 
       await user.hover(getByText(cardName))
 
       expect(getByText(messages.duel.replaceCard)).toBeInTheDocument()
+
+      await user.unhover(getByText(cardName))
+
+      expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
     })
   })
 })

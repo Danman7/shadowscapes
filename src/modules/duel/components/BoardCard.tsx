@@ -89,6 +89,8 @@ export const BoardCard: React.FC<BoardCardProps> = ({
   const { helperContent, onCardClick } = useOnBoardCardClick(
     stack,
     doesCardBelongToUser,
+    cardId,
+    player.id,
   )
 
   return (

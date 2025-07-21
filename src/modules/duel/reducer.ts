@@ -18,6 +18,8 @@ export const duelReducer = (
   state: Readonly<DuelState>,
   action: DuelAction,
 ): DuelState => {
+  const { players } = state
+
   switch (action.type) {
     case 'INITIALISE_DUEL': {
       const { users } = action
@@ -70,6 +72,48 @@ export const duelReducer = (
       return {
         ...state,
         phase: 'Redrawing',
+      }
+    }
+
+    case 'PUT_CARD_AT_BOTTOM_OF_DECK': {
+      const { playerId, cardId } = action
+
+      const updatedPlayers = { ...players }
+      const player = updatedPlayers[playerId]
+
+      if (player) {
+        updatedPlayers[playerId] = {
+          ...player,
+          hand: player.hand.filter((id) => id !== cardId),
+          deck: [...player.deck, cardId],
+        }
+      }
+
+      return {
+        ...state,
+        players: updatedPlayers,
+      }
+    }
+
+    case 'DRAW_A_CARD': {
+      const { playerId } = action
+
+      const updatedPlayers = { ...players }
+      const player = updatedPlayers[playerId]
+
+      if (player) {
+        const { updatedFrom, updatedTo } = drawCards(player.deck, player.hand)
+
+        updatedPlayers[playerId] = {
+          ...player,
+          deck: updatedFrom,
+          hand: updatedTo,
+        }
+      }
+
+      return {
+        ...state,
+        players: updatedPlayers,
       }
     }
 
