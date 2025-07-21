@@ -1,3 +1,6 @@
+import userEvent from '@testing-library/user-event'
+
+import { messages } from 'src/i18n'
 import { BoardCard } from 'src/modules/duel/components/BoardCard'
 import { mockStackedDuelState } from 'src/modules/duel/mocks'
 import { DuelState } from 'src/modules/duel/types'
@@ -133,6 +136,35 @@ describe('BoardCard Component', () => {
       const { queryByText } = renderResult(cardId)
 
       expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Click', () => {
+    it('does not show click helper when card is not clickable', () => {
+      const { players, activePlayerId } = preloadedDuel
+
+      const cardId = players[activePlayerId].hand[0]
+
+      const { queryByText } = renderResult(cardId)
+
+      expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
+    })
+
+    it('shows click helper when card is clickable during redraw', async () => {
+      const user = userEvent.setup()
+
+      preloadedDuel.phase = 'Redrawing'
+
+      const { players, activePlayerId } = preloadedDuel
+
+      const cardId = players[activePlayerId].hand[0]
+      const cardName = preloadedDuel.cards[cardId].name
+
+      const { getByText } = renderResult(cardId)
+
+      await user.hover(getByText(cardName))
+
+      expect(getByText(messages.duel.replaceCard)).toBeInTheDocument()
     })
   })
 })

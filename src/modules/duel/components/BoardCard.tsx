@@ -99,6 +99,7 @@ export const BoardCard: React.FC<BoardCardProps> = ({
       {!!onCardClick && showClickHelper && (
         <CardClickHelpText>{helperContent}</CardClickHelpText>
       )}
+
       <CardContainer
         $isClickable={!!onCardClick}
         onClick={onCardClick}
