@@ -340,7 +340,7 @@ describe('Board Component', () => {
       expect(getByText(messages.duel.skipRedraw)).toBeInTheDocument()
     })
 
-    it('should put a card at the bottom of the deck when it is replaced during redraw', async () => {
+    it('should put a card at the bottom of the deck when it is replaced during redraw then draw another one', async () => {
       jest.useRealTimers()
 
       const user = userEvent.setup()
@@ -374,6 +374,34 @@ describe('Board Component', () => {
       await waitFor(() => {
         expect(getByText(drawnCardName)).toBeInTheDocument()
       })
+    })
+
+    it('should show that user is waiting for opponent to redraw on redrawing a card', async () => {
+      const user = userEvent.setup()
+      preloadedDuel.phase = 'Redrawing'
+
+      const { getByText } = renderResult()
+
+      const { players, activePlayerId, cards } = preloadedDuel
+
+      const bottomPlayerHand = players[activePlayerId].hand
+      const replacedCardElement = getByText(cards[bottomPlayerHand[0]].name)
+
+      await user.click(replacedCardElement)
+
+      const button = getByText(messages.duel.waitForOpponent)
+
+      expect(button).toBeInTheDocument()
+      expect(button).toBeDisabled()
+    })
+
+    it('should not show the button if user is not in the game', () => {
+      preloadedUser.user.id = 'user-not-in-game'
+      preloadedDuel.phase = 'Redrawing'
+
+      const { queryByText } = renderResult()
+
+      expect(queryByText(messages.duel.skipRedraw)).not.toBeInTheDocument()
     })
   })
 })

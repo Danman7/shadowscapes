@@ -10,6 +10,7 @@ import {
   DuelAction,
   DuelStartingUsers,
   InitialiseDuelAction,
+  PlayerReadyWithRedrawAction,
   ProgressToInitialDrawAction,
   ProgressToRedrawAction,
   PutCardAtBottomOfDeckAction,
@@ -123,6 +124,20 @@ describe('Duel Reducer', () => {
 
       expect(deck).not.toContain(drawnCardId)
       expect(hand).toContain(drawnCardId)
+    })
+
+    it('should indicate player has perfomed an action when PLAYER_READY is dispatched', () => {
+      const { activePlayerId, inactivePlayerId } = mockStackedDuelState
+
+      const action: PlayerReadyWithRedrawAction = {
+        type: 'PLAYER_READY_WITH_REDRAW',
+        playerId: activePlayerId,
+      }
+
+      const newState = duelReducer(mockStackedDuelState, action)
+
+      expect(newState.players[activePlayerId].hasPerformedAction).toBe(true)
+      expect(newState.players[inactivePlayerId].hasPerformedAction).toBe(false)
     })
   })
 })

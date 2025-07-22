@@ -25,5 +25,6 @@ export const en = {
     redrawPhaseModal: 'Redraw',
     skipRedraw: 'Skip Redraw',
     replaceCard: 'Replace card',
+    waitForOpponent: 'Waiting for opponent',
   },
 }

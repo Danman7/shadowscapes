@@ -32,7 +32,7 @@ export const MainDuelView: React.FC = () => {
 
   const delayInSeconds = useThemeTransitionTimeInSeconds()
   const phaseModalContent = usePhaseModalContent()
-  const { isButtonVisible, buttonContent } =
+  const { isButtonVisible, buttonContent, buttonOnClick } =
     useActionButtonContentAndVisibility()
 
   return (
@@ -53,7 +53,7 @@ export const MainDuelView: React.FC = () => {
               type: 'spring',
             }}
           >
-            <Button>{buttonContent}</Button>
+            <Button onClick={buttonOnClick}>{buttonContent}</Button>
           </ActionButtonWrapper>
         )}
       </AnimatePresence>

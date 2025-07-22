@@ -92,16 +92,20 @@ export const StyledButton = styled(motion.create('button'))`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.background};
+  background: ${({ theme, disabled }) =>
+    disabled ? theme.colors.surface : theme.colors.primary};
+  color: ${({ theme, disabled }) =>
+    disabled ? theme.colors.text : theme.colors.background};
   height: ${({ theme }) => theme.spacing * 6}px;
   gap: ${({ theme }) => theme.spacing}px;
   border-radius: ${({ theme }) => theme.spacing * 3}px;
   padding: ${({ theme }) => theme.spacing * 2}px;
   text-transform: uppercase;
-  box-shadow: ${({ theme }) => theme.boxShadow.level1};
+  box-shadow: ${({ theme, disabled }) =>
+    disabled ? 'none' : theme.boxShadow.level1};
   border: none;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `
 
 export const Crater = styled.div<{

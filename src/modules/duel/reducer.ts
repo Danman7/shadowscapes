@@ -117,6 +117,21 @@ export const duelReducer = (
       }
     }
 
+    case 'PLAYER_READY_WITH_REDRAW': {
+      const { playerId } = action
+
+      return {
+        ...state,
+        players: {
+          ...state.players,
+          [playerId]: {
+            ...state.players[playerId],
+            hasPerformedAction: true,
+          },
+        },
+      }
+    }
+
     default:
       return state
   }

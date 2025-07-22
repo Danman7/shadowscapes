@@ -3,6 +3,7 @@ import { useTheme } from 'styled-components'
 import { messages } from 'src/i18n'
 import { useDuel } from 'src/modules/duel/hooks'
 import { PlayerStack } from 'src/modules/duel/types'
+import { useUser } from 'src/modules/user/hooks'
 
 export const useOnBoardCardClick = (
   stack: PlayerStack,
@@ -14,17 +15,31 @@ export const useOnBoardCardClick = (
   let onCardClick = undefined
 
   const {
-    state: { phase },
+    state: { phase, players, activePlayerId, inactivePlayerId },
     dispatch,
   } = useDuel()
 
   const { transitionTime } = useTheme()
+
+  const {
+    state: {
+      user: { id },
+    },
+  } = useUser()
+
+  const userIsInGame = [activePlayerId, inactivePlayerId].includes(id)
+  const playerIsReady = userIsInGame && players[playerId].hasPerformedAction
 
   const onRedrawClick = () => {
     dispatch({
       type: 'PUT_CARD_AT_BOTTOM_OF_DECK',
       playerId: playerId,
       cardId: cardId,
+    })
+
+    dispatch({
+      type: 'PLAYER_READY_WITH_REDRAW',
+      playerId,
     })
 
     setTimeout(() => {
@@ -35,7 +50,12 @@ export const useOnBoardCardClick = (
     }, transitionTime * 2)
   }
 
-  if (phase === 'Redrawing' && stack === 'hand' && doesCardBelongToUser) {
+  if (
+    phase === 'Redrawing' &&
+    stack === 'hand' &&
+    doesCardBelongToUser &&
+    !playerIsReady
+  ) {
     onCardClick = onRedrawClick
     helperContent = messages.duel.replaceCard
   }

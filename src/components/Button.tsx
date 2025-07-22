@@ -6,18 +6,26 @@ import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useTheme
 
 export const Button: React.FC<{
   children?: React.ReactNode
-}> = ({ children }) => {
+  onClick?: () => void
+}> = ({ children, onClick }) => {
   const { colors } = useTheme()
   const duration = useThemeTransitionTimeInSeconds()
+  const isDisabled = !onClick
 
   return (
     <StyledButton
-      whileHover={{ scale: 1.1, boxShadow: `0 0 10px ${colors.primary}` }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={
+        !isDisabled
+          ? { scale: 1.1, boxShadow: `0 0 10px ${colors.primary}` }
+          : undefined
+      }
+      whileTap={!isDisabled ? { scale: 0.9 } : undefined}
       transition={{
         type: 'spring',
         duration,
       }}
+      onClick={onClick}
+      disabled={isDisabled}
     >
       {children}
     </StyledButton>

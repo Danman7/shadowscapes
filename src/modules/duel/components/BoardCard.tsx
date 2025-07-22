@@ -113,10 +113,12 @@ export const BoardCard: React.FC<BoardCardProps> = ({
                   `0 0 ${spacing * 2}px ${colors.active}`,
                 ],
               }
-            : undefined
+            : {
+                boxShadow: 'none',
+              }
         }
         transition={{
-          repeat: Infinity,
+          repeat: onCardClick ? Infinity : 0,
           repeatType: 'reverse',
           duration: themeTransitionTime * 2,
         }}

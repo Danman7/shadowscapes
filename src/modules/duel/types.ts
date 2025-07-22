@@ -74,6 +74,11 @@ export type DrawACardAction = {
   playerId: string
 }
 
+export type PlayerReadyWithRedrawAction = {
+  type: 'PLAYER_READY_WITH_REDRAW'
+  playerId: string
+}
+
 export type DuelAction =
   | InitialiseDuelAction
   | ProgressToInitialDrawAction
@@ -81,6 +86,7 @@ export type DuelAction =
   | ProgressToRedrawAction
   | PutCardAtBottomOfDeckAction
   | DrawACardAction
+  | PlayerReadyWithRedrawAction
 
 export type PlayerStackSetup = {
   id: string

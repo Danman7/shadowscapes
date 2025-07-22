@@ -12,6 +12,7 @@ export const CardContainer = styled(motion.create('div'))<{
   position: relative;
   cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
   border-radius: ${({ theme }) => theme.spacing}px;
+  box-shadow: none;
 `
 
 export const CardFlipper = styled(motion.div)`

@@ -1,3 +1,4 @@
+import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 import { GiFist } from 'react-icons/gi'
 
@@ -8,6 +9,7 @@ const meta: Meta<typeof Button> = {
   component: Button,
   args: {
     children: 'Skip Redraw',
+    onClick: action('button-clicked'),
   },
 }
 
@@ -30,5 +32,12 @@ export const WithIcon: Story = {
 export const IconOnly: Story = {
   args: {
     children: <GiFist />,
+  },
+}
+
+export const Disabled: Story = {
+  args: {
+    children: 'Disabled Button',
+    onClick: undefined,
   },
 }
