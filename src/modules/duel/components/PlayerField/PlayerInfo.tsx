@@ -23,7 +23,7 @@ export const PlayerInfo: React.FC<{
   const delayInSeconds = useThemeTransitionTimeInSeconds()
 
   return (
-    <PlayerInfoPanel>
+    <PlayerInfoPanel data-testid={`player-info-${player.id}`}>
       <PlayerName
         animate={{
           color: isActive ? theme.colors.active : theme.colors.text,

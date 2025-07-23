@@ -1,3 +1,4 @@
+import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { formatString, messages } from 'src/i18n'
@@ -394,7 +395,12 @@ describe('Board Component', () => {
 
       expect(button).toBeInTheDocument()
       expect(button).toBeDisabled()
-      expect(getByTestId(checkMarkIcon)).toBeInTheDocument()
+
+      const botPlayerInfo = getByTestId(`player-info-${activePlayerId}`)
+
+      expect(
+        within(botPlayerInfo).getByTestId(checkMarkIcon),
+      ).toBeInTheDocument()
     })
 
     it('should not show the button if user is not in the game', () => {
@@ -404,6 +410,23 @@ describe('Board Component', () => {
       const { queryByText } = renderResult()
 
       expect(queryByText(messages.duel.skipRedraw)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Bot', () => {
+    it('should skip redraw automatically if bot has not performed an action', () => {
+      preloadedDuel.phase = 'Redrawing'
+      preloadedDuel.players[preloadedDuel.inactivePlayerId].isBot = true
+
+      const { getByTestId } = renderResult()
+
+      const { inactivePlayerId } = preloadedDuel
+
+      const botPlayerInfo = getByTestId(`player-info-${inactivePlayerId}`)
+
+      expect(
+        within(botPlayerInfo).getByTestId(checkMarkIcon),
+      ).toBeInTheDocument()
     })
   })
 })

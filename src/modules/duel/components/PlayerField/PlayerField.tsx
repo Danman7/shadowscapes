@@ -10,6 +10,7 @@ import {
   StyledPlayerField,
 } from 'src/modules/duel/components/PlayerField/styles'
 import { useDuel } from 'src/modules/duel/hooks'
+import { useBot } from 'src/modules/duel/hooks/useBot'
 import { useThemeTransitionTimeInSeconds } from 'src/modules/duel/hooks/useThemeTransitionTimeInSeconds'
 import { useUser } from 'src/modules/user/hooks'
 
@@ -38,6 +39,8 @@ export const PlayerField: React.FC<{
   const playerInfoAnimationDelay = transitionInSeconds * (isActive ? 3 : 4)
   const playerIsActive = phase === 'Player Turn' && isActive
   const isReady = phase === 'Redrawing' && player.hasPerformedAction
+
+  useBot(playerId)
 
   return (
     <StyledPlayerField $isOnTop={isOnTop}>

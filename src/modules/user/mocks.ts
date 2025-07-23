@@ -15,10 +15,11 @@ export const mockOrderUser: User = {
   ],
 }
 
-export const mockChaosUser: User = {
+export const mockChaosBot: User = {
   id: 'opponent',
   name: 'The Trickster',
   draftDeck: ['zombie', 'zombie', 'haunt', 'haunt', 'azaranTheCruel'],
+  isBot: true,
 }
 
 export const mockLoadedUserState: UserState = {

@@ -16,9 +16,9 @@ import {
   setupPlayersAndCardsForTest,
   sortUserIdsForDuel,
 } from 'src/modules/duel/utils'
-import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
+import { mockChaosBot, mockOrderUser } from 'src/modules/user/mocks'
 
-const users: DuelStartingUsers = [mockOrderUser, mockChaosUser]
+const users: DuelStartingUsers = [mockOrderUser, mockChaosBot]
 
 describe('Duel Utils', () => {
   describe('createDuelCardFromBase', () => {

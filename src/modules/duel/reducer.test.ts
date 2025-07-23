@@ -15,7 +15,7 @@ import {
   ProgressToRedrawAction,
   PutCardAtBottomOfDeckAction,
 } from 'src/modules/duel/types'
-import { mockChaosUser, mockOrderUser } from 'src/modules/user/mocks'
+import { mockChaosBot, mockOrderUser } from 'src/modules/user/mocks'
 
 describe('Duel Reducer', () => {
   it('should return current state for unknown actions', () => {
@@ -27,7 +27,7 @@ describe('Duel Reducer', () => {
   })
 
   it('should convert users to players and set activePlayerId when INITIALISE_DUEL is dispatched', () => {
-    const users: DuelStartingUsers = [mockOrderUser, mockChaosUser]
+    const users: DuelStartingUsers = [mockOrderUser, mockChaosBot]
 
     const action: InitialiseDuelAction = {
       type: 'INITIALISE_DUEL',
@@ -40,7 +40,7 @@ describe('Duel Reducer', () => {
     )
 
     expect(Object.values(cards)).toHaveLength(
-      mockOrderUser.draftDeck.length + mockChaosUser.draftDeck.length,
+      mockOrderUser.draftDeck.length + mockChaosBot.draftDeck.length,
     )
 
     users.forEach(({ id }) => {

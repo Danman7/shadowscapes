@@ -6,6 +6,7 @@ export type User = {
   id: string
   name: string
   draftDeck: UserDeck
+  isBot?: boolean
 }
 
 export type UserState = {

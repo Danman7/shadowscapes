@@ -5,14 +5,14 @@ import {
   setupPlayersAndCardsForTest,
 } from 'src/modules/duel/utils'
 import {
-  mockChaosUser,
+  mockChaosBot,
   mockLoadedUserState,
   mockOrderUser,
 } from 'src/modules/user/mocks'
 
 const { cards, players } = convertUsersToDuelPlayersAndCards([
   mockOrderUser,
-  mockChaosUser,
+  mockChaosBot,
 ])
 
 export const mockInitializeDuelMockState: DuelState = {
@@ -20,7 +20,7 @@ export const mockInitializeDuelMockState: DuelState = {
   cards,
   players,
   activePlayerId: mockOrderUser.id,
-  inactivePlayerId: mockChaosUser.id,
+  inactivePlayerId: mockChaosBot.id,
 }
 
 export const mockUserStackSetup: PlayerStackSetup = {
@@ -33,8 +33,8 @@ export const mockUserStackSetup: PlayerStackSetup = {
 }
 
 export const mockOpponentStackSetup: PlayerStackSetup = {
-  id: mockChaosUser.id,
-  name: mockChaosUser.name,
+  id: mockChaosBot.id,
+  name: mockChaosBot.name,
   deck: ['zombie', 'cook'],
   hand: ['azaranTheCruel', 'bookOfAsh'],
   board: ['haunt', 'apparition'],
