@@ -27,7 +27,7 @@ export const PlayerField: React.FC<{
   } = useUser()
 
   const {
-    state: { players, activePlayerId },
+    state: { players, activePlayerId, phase },
   } = useDuel()
 
   const isUser = userId === playerId
@@ -36,6 +36,8 @@ export const PlayerField: React.FC<{
   const { deck, discard, board, hand } = player
 
   const playerInfoAnimationDelay = transitionInSeconds * (isActive ? 3 : 4)
+  const playerIsActive = phase === 'Player Turn' && isActive
+  const isReady = phase === 'Redrawing' && player.hasPerformedAction
 
   return (
     <StyledPlayerField $isOnTop={isOnTop}>
@@ -45,7 +47,11 @@ export const PlayerField: React.FC<{
         transition={{ delay: playerInfoAnimationDelay }}
         $isOnTop={isOnTop}
       >
-        <PlayerInfo player={player} isActive={isActive} />
+        <PlayerInfo
+          player={player}
+          isActive={playerIsActive}
+          isReady={isReady}
+        />
       </PlayerInfoFieldContainer>
 
       <DeckSection

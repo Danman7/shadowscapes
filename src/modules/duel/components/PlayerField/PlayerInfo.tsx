@@ -1,5 +1,10 @@
 import React from 'react'
-import { GiCardPlay, GiReceiveMoney, GiTwoCoins } from 'react-icons/gi'
+import {
+  GiCardPlay,
+  GiCheckMark,
+  GiReceiveMoney,
+  GiTwoCoins,
+} from 'react-icons/gi'
 import { useTheme } from 'styled-components'
 
 import {
@@ -12,7 +17,8 @@ import { DuelPlayer } from 'src/modules/duel/types'
 export const PlayerInfo: React.FC<{
   player: DuelPlayer
   isActive?: boolean
-}> = ({ player, isActive }) => {
+  isReady?: boolean
+}> = ({ player, isActive, isReady }) => {
   const theme = useTheme()
   const delayInSeconds = useThemeTransitionTimeInSeconds()
 
@@ -31,7 +37,7 @@ export const PlayerInfo: React.FC<{
           repeatType: 'reverse',
         }}
       >
-        {isActive && <GiCardPlay />} {player.name}
+        {isActive && <GiCardPlay />} {isReady && <GiCheckMark />} {player.name}
       </PlayerName>
       <div>
         {player.income ? (

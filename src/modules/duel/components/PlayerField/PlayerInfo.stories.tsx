@@ -54,3 +54,9 @@ export const ActivePlayer: Story = {
     isActive: true,
   },
 }
+
+export const RedrawReady: Story = {
+  args: {
+    isReady: true,
+  },
+}

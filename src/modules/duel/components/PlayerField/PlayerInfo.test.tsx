@@ -1,4 +1,4 @@
-import { playerTurnIcon } from 'src/jest.setup'
+import { checkMarkIcon, playerTurnIcon } from 'src/jest.setup'
 import { PlayerInfo } from 'src/modules/duel/components/PlayerField/PlayerInfo'
 import { mockInitializeDuelMockState } from 'src/modules/duel/mocks'
 import { DuelPlayer } from 'src/modules/duel/types'
@@ -30,5 +30,11 @@ describe('Player Info Component', () => {
     const { getByTestId } = render(<PlayerInfo player={player} isActive />)
 
     expect(getByTestId(playerTurnIcon)).toBeInTheDocument()
+  })
+
+  it('should show player ready icon if isReady', () => {
+    const { getByTestId } = render(<PlayerInfo player={player} isReady />)
+
+    expect(getByTestId(checkMarkIcon)).toBeInTheDocument()
   })
 })

@@ -1,6 +1,7 @@
 import userEvent from '@testing-library/user-event'
 
 import { formatString, messages } from 'src/i18n'
+import { checkMarkIcon } from 'src/jest.setup'
 import { Board } from 'src/modules/duel/components/Board/Board'
 import {
   bottomPlayerBoardCardId,
@@ -380,7 +381,7 @@ describe('Board Component', () => {
       const user = userEvent.setup()
       preloadedDuel.phase = 'Redrawing'
 
-      const { getByText } = renderResult()
+      const { getByText, getByTestId } = renderResult()
 
       const { players, activePlayerId, cards } = preloadedDuel
 
@@ -393,6 +394,7 @@ describe('Board Component', () => {
 
       expect(button).toBeInTheDocument()
       expect(button).toBeDisabled()
+      expect(getByTestId(checkMarkIcon)).toBeInTheDocument()
     })
 
     it('should not show the button if user is not in the game', () => {

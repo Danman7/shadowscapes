@@ -8,6 +8,7 @@ export const fighterIcon = 'fighter-icon'
 export const agentIcon = 'agent-icon'
 export const instantIcon = 'instant-icon'
 export const playerTurnIcon = 'player-turn-icon'
+export const checkMarkIcon = 'check-mark-icon'
 
 jest.mock('react-icons/gi', () => {
   return {
@@ -19,6 +20,7 @@ jest.mock('react-icons/gi', () => {
     GiFist: () => <div data-testid={fighterIcon} />,
     GiPowerLightning: () => <div data-testid={instantIcon} />,
     GiCardPlay: () => <div data-testid={playerTurnIcon} />,
+    GiCheckMark: () => <div data-testid={checkMarkIcon} />,
     __esModule: true,
   }
 })
