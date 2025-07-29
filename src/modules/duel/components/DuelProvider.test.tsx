@@ -22,30 +22,28 @@ const TestComponent: React.FC = () => {
   )
 }
 
-describe('DuelProvider', () => {
-  it('should provide initial state', () => {
-    const { getByText } = render(
-      <DuelProvider>
-        <TestComponent />
-      </DuelProvider>,
-    )
+it('should provide initial state', () => {
+  const { getByText } = render(
+    <DuelProvider>
+      <TestComponent />
+    </DuelProvider>,
+  )
 
-    expect(getByText(duelNotLoadedMessage)).toBeInTheDocument()
-  })
+  expect(getByText(duelNotLoadedMessage)).toBeInTheDocument()
+})
 
-  it('should initialize with preloaded state if provided', () => {
-    const preloadedState: DuelState = mockInitializeDuelMockState
+it('should initialize with preloaded state if provided', () => {
+  const preloadedState: DuelState = mockInitializeDuelMockState
 
-    const { getByText } = render(
-      <DuelProvider preloadedState={preloadedState}>
-        <TestComponent />
-      </DuelProvider>,
-    )
+  const { getByText } = render(
+    <DuelProvider preloadedState={preloadedState}>
+      <TestComponent />
+    </DuelProvider>,
+  )
 
-    const { phase, activePlayerId, inactivePlayerId } = preloadedState
+  const { phase, activePlayerId, inactivePlayerId } = preloadedState
 
-    expect(getByText(activePlayerId)).toBeInTheDocument()
-    expect(getByText(inactivePlayerId)).toBeInTheDocument()
-    expect(getByText(phase)).toBeInTheDocument()
-  })
+  expect(getByText(activePlayerId)).toBeInTheDocument()
+  expect(getByText(inactivePlayerId)).toBeInTheDocument()
+  expect(getByText(phase)).toBeInTheDocument()
 })

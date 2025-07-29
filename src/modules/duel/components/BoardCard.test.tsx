@@ -20,155 +20,153 @@ beforeEach(() => {
     })
 })
 
-describe('BoardCard Component', () => {
-  describe('Show', () => {
-    it('displays card content when it belongs to user and is in hand', () => {
-      const { players, activePlayerId, cards } = preloadedDuel
+describe('Show', () => {
+  it('displays card content when it belongs to user and is in hand', () => {
+    const { players, activePlayerId, cards } = preloadedDuel
 
-      const cardId = players[activePlayerId].hand[0]
+    const cardId = players[activePlayerId].hand[0]
 
-      const { getByText } = renderResult(cardId)
+    const { getByText } = renderResult(cardId)
 
-      expect(getByText(cards[cardId].name)).toBeInTheDocument()
-    })
-
-    it('displays card content when it belongs to user and is on board', () => {
-      const { players, activePlayerId, cards } = preloadedDuel
-
-      const cardId = players[activePlayerId].board[0]
-
-      const { getByText } = renderResult(cardId)
-
-      expect(getByText(cards[cardId].name)).toBeInTheDocument()
-    })
-
-    it('displays card content when it does not belong user but is on board', () => {
-      const { players, inactivePlayerId, cards } = preloadedDuel
-
-      const cardId = players[inactivePlayerId].board[0]
-
-      const { getByText } = renderResult(cardId)
-
-      expect(getByText(cards[cardId].name)).toBeInTheDocument()
-    })
+    expect(getByText(cards[cardId].name)).toBeInTheDocument()
   })
 
-  describe('Hide', () => {
-    it('hides card content when it belongs to user but is in deck', () => {
-      const { players, activePlayerId, cards } = preloadedDuel
+  it('displays card content when it belongs to user and is on board', () => {
+    const { players, activePlayerId, cards } = preloadedDuel
 
-      const cardId = players[activePlayerId].deck[0]
+    const cardId = players[activePlayerId].board[0]
 
-      const { queryByText } = renderResult(cardId)
+    const { getByText } = renderResult(cardId)
 
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
-
-    it('hides card content when it belongs to user but is in discard', () => {
-      const { players, activePlayerId, cards } = preloadedDuel
-
-      const cardId = players[activePlayerId].discard[0]
-
-      const { queryByText } = renderResult(cardId)
-
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
-
-    it('hides card content when it does not belong user and is in hand', () => {
-      const { players, inactivePlayerId, cards } = preloadedDuel
-
-      const cardId = players[inactivePlayerId].hand[0]
-
-      const { queryByText } = renderResult(cardId)
-
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
-
-    it('hides card content when it does not belong user and is in deck', () => {
-      const { players, inactivePlayerId, cards } = preloadedDuel
-
-      const cardId = players[inactivePlayerId].deck[0]
-
-      const { queryByText } = renderResult(cardId)
-
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
-
-    it('hides card content when it does not belong user and is in discard', () => {
-      const { players, inactivePlayerId, cards } = preloadedDuel
-
-      const cardId = players[inactivePlayerId].discard[0]
-
-      const { queryByText } = renderResult(cardId)
-
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
-
-    it('flips the card when isFaceDown changes', () => {
-      const { players, activePlayerId, cards } = preloadedDuel
-
-      const { rerender, getByText, queryByText } = renderResult(
-        players[activePlayerId].deck[0],
-      )
-
-      expect(
-        queryByText(cards[players[activePlayerId].deck[0]].name),
-      ).not.toBeInTheDocument()
-
-      rerender(<BoardCard cardId={players[activePlayerId].hand[0]} />)
-
-      expect(
-        getByText(cards[players[activePlayerId].hand[0]].name),
-      ).toBeInTheDocument()
-
-      rerender(<BoardCard cardId={players[activePlayerId].deck[0]} />)
-
-      expect(
-        queryByText(cards[players[activePlayerId].deck[0]].name),
-      ).not.toBeInTheDocument()
-    })
-
-    it("hide card content when card is on opponent's board but has hidden trait", () => {
-      const { players, inactivePlayerId, cards } = preloadedDuel
-
-      const cardId = players[inactivePlayerId].board[1]
-
-      const { queryByText } = renderResult(cardId)
-
-      expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
-    })
+    expect(getByText(cards[cardId].name)).toBeInTheDocument()
   })
 
-  describe('Click', () => {
-    it('does not show click helper when card is not clickable', () => {
-      const { players, activePlayerId } = preloadedDuel
+  it('displays card content when it does not belong user but is on board', () => {
+    const { players, inactivePlayerId, cards } = preloadedDuel
 
-      const cardId = players[activePlayerId].hand[0]
+    const cardId = players[inactivePlayerId].board[0]
 
-      const { queryByText } = renderResult(cardId)
+    const { getByText } = renderResult(cardId)
 
-      expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
-    })
+    expect(getByText(cards[cardId].name)).toBeInTheDocument()
+  })
+})
 
-    it('shows click helper when card is clickable during redraw', async () => {
-      const user = userEvent.setup()
+describe('Hide', () => {
+  it('hides card content when it belongs to user but is in deck', () => {
+    const { players, activePlayerId, cards } = preloadedDuel
 
-      preloadedDuel.phase = 'Redrawing'
+    const cardId = players[activePlayerId].deck[0]
 
-      const { players, activePlayerId } = preloadedDuel
+    const { queryByText } = renderResult(cardId)
 
-      const cardId = players[activePlayerId].hand[0]
-      const cardName = preloadedDuel.cards[cardId].name
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
 
-      const { getByText, queryByText } = renderResult(cardId)
+  it('hides card content when it belongs to user but is in discard', () => {
+    const { players, activePlayerId, cards } = preloadedDuel
 
-      await user.hover(getByText(cardName))
+    const cardId = players[activePlayerId].discard[0]
 
-      expect(getByText(messages.duel.replaceCard)).toBeInTheDocument()
+    const { queryByText } = renderResult(cardId)
 
-      await user.unhover(getByText(cardName))
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
 
-      expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
-    })
+  it('hides card content when it does not belong user and is in hand', () => {
+    const { players, inactivePlayerId, cards } = preloadedDuel
+
+    const cardId = players[inactivePlayerId].hand[0]
+
+    const { queryByText } = renderResult(cardId)
+
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
+
+  it('hides card content when it does not belong user and is in deck', () => {
+    const { players, inactivePlayerId, cards } = preloadedDuel
+
+    const cardId = players[inactivePlayerId].deck[0]
+
+    const { queryByText } = renderResult(cardId)
+
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
+
+  it('hides card content when it does not belong user and is in discard', () => {
+    const { players, inactivePlayerId, cards } = preloadedDuel
+
+    const cardId = players[inactivePlayerId].discard[0]
+
+    const { queryByText } = renderResult(cardId)
+
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
+
+  it('flips the card when isFaceDown changes', () => {
+    const { players, activePlayerId, cards } = preloadedDuel
+
+    const { rerender, getByText, queryByText } = renderResult(
+      players[activePlayerId].deck[0],
+    )
+
+    expect(
+      queryByText(cards[players[activePlayerId].deck[0]].name),
+    ).not.toBeInTheDocument()
+
+    rerender(<BoardCard cardId={players[activePlayerId].hand[0]} />)
+
+    expect(
+      getByText(cards[players[activePlayerId].hand[0]].name),
+    ).toBeInTheDocument()
+
+    rerender(<BoardCard cardId={players[activePlayerId].deck[0]} />)
+
+    expect(
+      queryByText(cards[players[activePlayerId].deck[0]].name),
+    ).not.toBeInTheDocument()
+  })
+
+  it("hide card content when card is on opponent's board but has hidden trait", () => {
+    const { players, inactivePlayerId, cards } = preloadedDuel
+
+    const cardId = players[inactivePlayerId].board[1]
+
+    const { queryByText } = renderResult(cardId)
+
+    expect(queryByText(cards[cardId].name)).not.toBeInTheDocument()
+  })
+})
+
+describe('Click', () => {
+  it('does not show click helper when card is not clickable', () => {
+    const { players, activePlayerId } = preloadedDuel
+
+    const cardId = players[activePlayerId].hand[0]
+
+    const { queryByText } = renderResult(cardId)
+
+    expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
+  })
+
+  it('shows click helper when card is clickable during redraw', async () => {
+    const user = userEvent.setup()
+
+    preloadedDuel.phase = 'Redrawing'
+
+    const { players, activePlayerId } = preloadedDuel
+
+    const cardId = players[activePlayerId].hand[0]
+    const cardName = preloadedDuel.cards[cardId].name
+
+    const { getByText, queryByText } = renderResult(cardId)
+
+    await user.hover(getByText(cardName))
+
+    expect(getByText(messages.duel.replaceCard)).toBeInTheDocument()
+
+    await user.unhover(getByText(cardName))
+
+    expect(queryByText(messages.duel.replaceCard)).not.toBeInTheDocument()
   })
 })

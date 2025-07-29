@@ -19,151 +19,147 @@ import {
 } from 'src/modules/duel/types'
 import { mockChaosBot, mockOrderUser } from 'src/modules/user/mocks'
 
-describe('Duel Reducer', () => {
-  it('should return current state for unknown actions', () => {
-    const action = { type: 'UNKNOWN_ACTION' } as unknown as DuelAction
+it('should return current state for unknown actions', () => {
+  const action = { type: 'UNKNOWN_ACTION' } as unknown as DuelAction
 
-    const newState = duelReducer(initialState, action)
+  const newState = duelReducer(initialState, action)
 
-    expect(newState).toBe(initialState)
+  expect(newState).toBe(initialState)
+})
+
+it('should convert users to players and set activePlayerId when INITIALISE_DUEL is dispatched', () => {
+  const users: DuelStartingUsers = [mockOrderUser, mockChaosBot]
+
+  const action: InitialiseDuelAction = {
+    type: 'INITIALISE_DUEL',
+    users,
+  }
+
+  const { players, cards, activePlayerId, inactivePlayerId } = duelReducer(
+    initialState,
+    action,
+  )
+
+  expect(Object.values(cards)).toHaveLength(
+    mockOrderUser.draftDeck.length + mockChaosBot.draftDeck.length,
+  )
+
+  users.forEach(({ id }) => {
+    expect(players[id]).toBeDefined()
   })
 
-  it('should convert users to players and set activePlayerId when INITIALISE_DUEL is dispatched', () => {
-    const users: DuelStartingUsers = [mockOrderUser, mockChaosBot]
+  expect(users).toContainEqual(expect.objectContaining({ id: activePlayerId }))
+  expect(users).toContainEqual(
+    expect.objectContaining({ id: inactivePlayerId }),
+  )
+})
 
-    const action: InitialiseDuelAction = {
-      type: 'INITIALISE_DUEL',
-      users,
+it('should update phase when PROGRESS_TO_INITIAL_DRAW is dispatched', () => {
+  const action: ProgressToInitialDrawAction = {
+    type: 'PROGRESS_TO_INITIAL_DRAW',
+  }
+
+  const { phase } = duelReducer(initialState, action)
+
+  expect(phase).toBe('Initial Draw')
+})
+
+describe('Duel Start Sequence', () => {
+  it('should draw initial cards for both players when DRAW_INITIAL_CARDS is dispatched', () => {
+    const action: DrawInitialCardsAction = {
+      type: 'DRAW_INITIAL_CARDS',
     }
 
-    const { players, cards, activePlayerId, inactivePlayerId } = duelReducer(
-      initialState,
-      action,
-    )
+    const { players } = duelReducer(mockInitializeDuelMockState, action)
 
-    expect(Object.values(cards)).toHaveLength(
-      mockOrderUser.draftDeck.length + mockChaosBot.draftDeck.length,
-    )
-
-    users.forEach(({ id }) => {
-      expect(players[id]).toBeDefined()
+    Object.values(players).forEach(({ hand, deck, id }) => {
+      expect(hand.length).toBe(INITIAL_CARDS_DRAWN_AMOUNT)
+      expect(deck.length).toBe(
+        mockInitializeDuelMockState.players[id].deck.length -
+          INITIAL_CARDS_DRAWN_AMOUNT,
+      )
     })
-
-    expect(users).toContainEqual(
-      expect.objectContaining({ id: activePlayerId }),
-    )
-    expect(users).toContainEqual(
-      expect.objectContaining({ id: inactivePlayerId }),
-    )
   })
 
-  it('should update phase when PROGRESS_TO_INITIAL_DRAW is dispatched', () => {
-    const action: ProgressToInitialDrawAction = {
-      type: 'PROGRESS_TO_INITIAL_DRAW',
+  it('should update phase when PROGRESS_TO_REDRAW is dispatched', () => {
+    const action: ProgressToRedrawAction = {
+      type: 'PROGRESS_TO_REDRAW',
     }
 
     const { phase } = duelReducer(initialState, action)
 
-    expect(phase).toBe('Initial Draw')
+    expect(phase).toBe('Redrawing')
   })
 
-  describe('Duel Start Sequence', () => {
-    it('should draw initial cards for both players when DRAW_INITIAL_CARDS is dispatched', () => {
-      const action: DrawInitialCardsAction = {
-        type: 'DRAW_INITIAL_CARDS',
-      }
+  it('should put a card at the end of the deck when REDRAW_CARD is dispatched', () => {
+    const { activePlayerId } = mockStackedDuelState
 
-      const { players } = duelReducer(mockInitializeDuelMockState, action)
+    const movedCardId = mockStackedDuelState.players[activePlayerId].hand[0]
 
-      Object.values(players).forEach(({ hand, deck, id }) => {
-        expect(hand.length).toBe(INITIAL_CARDS_DRAWN_AMOUNT)
-        expect(deck.length).toBe(
-          mockInitializeDuelMockState.players[id].deck.length -
-            INITIAL_CARDS_DRAWN_AMOUNT,
-        )
-      })
-    })
+    const action: RedrawCard = {
+      type: 'REDRAW_CARD',
+      playerId: activePlayerId,
+      cardId: movedCardId,
+    }
 
-    it('should update phase when PROGRESS_TO_REDRAW is dispatched', () => {
-      const action: ProgressToRedrawAction = {
-        type: 'PROGRESS_TO_REDRAW',
-      }
+    const { players, logs } = duelReducer(mockStackedDuelState, action)
+    const { hand, deck } = players[activePlayerId]
 
-      const { phase } = duelReducer(initialState, action)
+    expect(hand).not.toContain(movedCardId)
+    expect(deck[deck.length - 1]).toBe(movedCardId)
+    expect(logs).toContain(
+      formatString(messages.duel.logs.playerRedrawnCard, {
+        playerName: players[activePlayerId].name,
+      }),
+    )
+  })
 
-      expect(phase).toBe('Redrawing')
-    })
+  it('should draw a card from the top of the deck when DRAW_A_CARD is dispatched', () => {
+    const { activePlayerId } = mockStackedDuelState
+    const drawnCardId = mockStackedDuelState.players[activePlayerId].deck[0]
 
-    it('should put a card at the end of the deck when REDRAW_CARD is dispatched', () => {
-      const { activePlayerId } = mockStackedDuelState
+    const action: DrawACardAction = {
+      type: 'DRAW_A_CARD',
+      playerId: activePlayerId,
+    }
 
-      const movedCardId = mockStackedDuelState.players[activePlayerId].hand[0]
+    const { players } = duelReducer(mockStackedDuelState, action)
+    const { hand, deck } = players[activePlayerId]
 
-      const action: RedrawCard = {
-        type: 'REDRAW_CARD',
-        playerId: activePlayerId,
-        cardId: movedCardId,
-      }
+    expect(deck).not.toContain(drawnCardId)
+    expect(hand).toContain(drawnCardId)
+  })
 
-      const { players, logs } = duelReducer(mockStackedDuelState, action)
-      const { hand, deck } = players[activePlayerId]
+  it('should indicate player has perfomed an action when PLAYER_READY is dispatched', () => {
+    const { activePlayerId, inactivePlayerId } = mockStackedDuelState
 
-      expect(hand).not.toContain(movedCardId)
-      expect(deck[deck.length - 1]).toBe(movedCardId)
-      expect(logs).toContain(
-        formatString(messages.duel.logs.playerRedrawnCard, {
-          playerName: players[activePlayerId].name,
-        }),
-      )
-    })
+    const action: ReadyWithRedrawAction = {
+      type: 'READY_WITH_REDRAW',
+      playerId: activePlayerId,
+    }
 
-    it('should draw a card from the top of the deck when DRAW_A_CARD is dispatched', () => {
-      const { activePlayerId } = mockStackedDuelState
-      const drawnCardId = mockStackedDuelState.players[activePlayerId].deck[0]
+    const newState = duelReducer(mockStackedDuelState, action)
 
-      const action: DrawACardAction = {
-        type: 'DRAW_A_CARD',
-        playerId: activePlayerId,
-      }
+    expect(newState.players[activePlayerId].hasPerformedAction).toBe(true)
+    expect(newState.players[inactivePlayerId].hasPerformedAction).toBe(false)
+  })
 
-      const { players } = duelReducer(mockStackedDuelState, action)
-      const { hand, deck } = players[activePlayerId]
+  it('should skip redraw for a player when SKIP_REDRAW is dispatched', () => {
+    const { activePlayerId, inactivePlayerId } = mockStackedDuelState
 
-      expect(deck).not.toContain(drawnCardId)
-      expect(hand).toContain(drawnCardId)
-    })
+    const action: SkipRedrawAction = {
+      type: 'SKIP_REDRAW',
+      playerId: activePlayerId,
+    }
 
-    it('should indicate player has perfomed an action when PLAYER_READY is dispatched', () => {
-      const { activePlayerId, inactivePlayerId } = mockStackedDuelState
+    const { players, logs } = duelReducer(mockStackedDuelState, action)
 
-      const action: ReadyWithRedrawAction = {
-        type: 'READY_WITH_REDRAW',
-        playerId: activePlayerId,
-      }
-
-      const newState = duelReducer(mockStackedDuelState, action)
-
-      expect(newState.players[activePlayerId].hasPerformedAction).toBe(true)
-      expect(newState.players[inactivePlayerId].hasPerformedAction).toBe(false)
-    })
-
-    it('should skip redraw for a player when SKIP_REDRAW is dispatched', () => {
-      const { activePlayerId, inactivePlayerId } = mockStackedDuelState
-
-      const action: SkipRedrawAction = {
-        type: 'SKIP_REDRAW',
-        playerId: activePlayerId,
-      }
-
-      const { players, logs } = duelReducer(mockStackedDuelState, action)
-
-      expect(players[activePlayerId].hasPerformedAction).toBe(true)
-      expect(players[inactivePlayerId].hasPerformedAction).toBe(false)
-      expect(logs).toContain(
-        formatString(messages.duel.logs.playerSkippedRedraw, {
-          playerName: players[activePlayerId].name,
-        }),
-      )
-    })
+    expect(players[activePlayerId].hasPerformedAction).toBe(true)
+    expect(players[inactivePlayerId].hasPerformedAction).toBe(false)
+    expect(logs).toContain(
+      formatString(messages.duel.logs.playerSkippedRedraw, {
+        playerName: players[activePlayerId].name,
+      }),
+    )
   })
 })

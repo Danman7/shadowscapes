@@ -17,26 +17,24 @@ const TestComponent: React.FC = () => {
   return isUserLoaded ? <div>{name}</div> : <div>{userNotLoadedMessage}</div>
 }
 
-describe('UserProvider', () => {
-  it('should provide initial state', () => {
-    const { getByText } = render(
-      <UserProvider>
-        <TestComponent />
-      </UserProvider>,
-    )
+it('should provide initial state', () => {
+  const { getByText } = render(
+    <UserProvider>
+      <TestComponent />
+    </UserProvider>,
+  )
 
-    expect(getByText(userNotLoadedMessage)).toBeInTheDocument()
-  })
+  expect(getByText(userNotLoadedMessage)).toBeInTheDocument()
+})
 
-  it('should initialize with preloaded state if provided', () => {
-    const preloadedState: UserState = mockLoadedUserState
+it('should initialize with preloaded state if provided', () => {
+  const preloadedState: UserState = mockLoadedUserState
 
-    const { getByText } = render(
-      <UserProvider preloadedState={preloadedState}>
-        <TestComponent />
-      </UserProvider>,
-    )
+  const { getByText } = render(
+    <UserProvider preloadedState={preloadedState}>
+      <TestComponent />
+    </UserProvider>,
+  )
 
-    expect(getByText(mockOrderUser.name)).toBeInTheDocument()
-  })
+  expect(getByText(mockOrderUser.name)).toBeInTheDocument()
 })
