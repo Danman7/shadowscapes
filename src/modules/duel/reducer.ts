@@ -20,7 +20,7 @@ export const duelReducer = (
   state: Readonly<DuelState>,
   action: DuelAction,
 ): DuelState => {
-  const { players } = state
+  const { players, logs } = state
 
   switch (action.type) {
     case 'INITIALISE_DUEL': {
@@ -95,7 +95,7 @@ export const duelReducer = (
         ...state,
         players: updatedPlayers,
         logs: [
-          ...state.logs,
+          ...logs,
           formatString(messages.duel.logs.playerRedrawnCard, {
             playerName: players[playerId].name,
           }),
@@ -153,9 +153,22 @@ export const duelReducer = (
           },
         },
         logs: [
-          ...state.logs,
+          ...logs,
           formatString(messages.duel.logs.playerSkippedRedraw, {
             playerName: players[playerId].name,
+          }),
+        ],
+      }
+    }
+
+    case 'BEGIN_FIRST_TURN': {
+      return {
+        ...state,
+        phase: 'Player Turn',
+        logs: [
+          ...logs,
+          formatString(messages.duel.firstPlayer, {
+            playerName: players[state.activePlayerId].name,
           }),
         ],
       }

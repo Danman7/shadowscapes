@@ -85,6 +85,10 @@ export type SkipRedrawAction = {
   playerId: string
 }
 
+export type BeginFirstTurn = {
+  type: 'BEGIN_FIRST_TURN'
+}
+
 export type DuelAction =
   | InitialiseDuelAction
   | ProgressToInitialDrawAction
@@ -94,6 +98,7 @@ export type DuelAction =
   | DrawACardAction
   | ReadyWithRedrawAction
   | SkipRedrawAction
+  | BeginFirstTurn
 
 export type PlayerStackSetup = {
   id: string

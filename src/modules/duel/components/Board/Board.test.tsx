@@ -477,6 +477,38 @@ describe('Duel Start Sequence', () => {
   })
 })
 
+describe('Player Turns', () => {
+  it('should move to first player turn if both players are ready with redraw', async () => {
+    const user = userEvent.setup()
+
+    const { activePlayerId, inactivePlayerId, players } = preloadedDuel
+
+    preloadedDuel.players[activePlayerId].hasPerformedAction = true
+    preloadedDuel.players[inactivePlayerId].hasPerformedAction = true
+    preloadedDuel.phase = 'Redrawing'
+
+    const { getByText, getByTestId } = renderResult()
+
+    expect(
+      getByText(
+        formatString(messages.duel.playerTurn, {
+          playerName: players[activePlayerId].name,
+        }),
+      ),
+    ).toBeInTheDocument()
+
+    await user.click(getByTestId(logsButtonIcon))
+
+    expect(
+      getByText(
+        formatString(messages.duel.firstPlayer, {
+          playerName: players[activePlayerId].name,
+        }),
+      ),
+    )
+  })
+})
+
 describe('Bot', () => {
   it('should skip redraw automatically if bot has not performed an action', () => {
     preloadedDuel.phase = 'Redrawing'

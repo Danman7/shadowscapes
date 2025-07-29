@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { GiCardExchange } from 'react-icons/gi'
+import { GiCardExchange, GiCardPlay } from 'react-icons/gi'
 
-import { messages } from 'src/i18n'
+import { formatString, messages } from 'src/i18n'
 import { useDuel } from 'src/modules/duel/hooks'
 
 export const usePhaseModalContent = () => {
@@ -9,7 +9,7 @@ export const usePhaseModalContent = () => {
     useState<React.ReactNode>('')
 
   const {
-    state: { phase },
+    state: { phase, players, activePlayerId },
   } = useDuel()
 
   useEffect(() => {
@@ -22,9 +22,21 @@ export const usePhaseModalContent = () => {
         )
         break
 
+      case 'Player Turn':
+        setPhaseModalContent(
+          <h2>
+            <GiCardPlay />{' '}
+            {formatString(messages.duel.playerTurn, {
+              playerName: players[activePlayerId].name,
+            })}
+          </h2>,
+        )
+        break
+
       default:
         break
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase])
 
   return phaseModalContent

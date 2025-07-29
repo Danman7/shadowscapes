@@ -26,6 +26,7 @@ export const en = {
     skipRedraw: 'Skip Redraw',
     replaceCard: 'Replace card',
     waitForOpponent: 'Waiting for opponent',
+    playerTurn: "{playerName}'s turn",
     logs: {
       logsTitle: 'Duel Logs',
       playerRedrawnCard: '{playerName} has redrawn a card.',

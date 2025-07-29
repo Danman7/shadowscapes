@@ -6,6 +6,7 @@ import {
 } from 'src/modules/duel/mocks'
 import { duelReducer, initialState } from 'src/modules/duel/reducer'
 import {
+  BeginFirstTurn,
   DrawACardAction,
   DrawInitialCardsAction,
   DuelAction,
@@ -161,5 +162,21 @@ describe('Duel Start Sequence', () => {
         playerName: players[activePlayerId].name,
       }),
     )
+  })
+})
+
+describe('Player Turns', () => {
+  it('should set phase to Player Turn when BEGIN_FIRST_TURN is dispatched', () => {
+    const action: BeginFirstTurn = {
+      type: 'BEGIN_FIRST_TURN',
+    }
+
+    const { phase, activePlayerId } = duelReducer(
+      mockInitializeDuelMockState,
+      action,
+    )
+
+    expect(phase).toBe('Player Turn')
+    expect(activePlayerId).toBe(mockInitializeDuelMockState.activePlayerId)
   })
 })

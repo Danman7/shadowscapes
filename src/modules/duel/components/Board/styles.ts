@@ -84,7 +84,7 @@ export const LogsContainer = styled(motion.create(Paper))`
   left: ${({ theme }) => theme.spacing}px;
   bottom: ${({ theme }) => theme.spacing}px;
   padding: ${({ theme }) => theme.spacing}px;
-  width: ${({ theme }) => theme.spacing * 30}px;
+  width: ${({ theme }) => theme.spacing * 36}px;
   z-index: 6;
   border-left: ${({ theme }) => theme.spacing / 2}px solid
     ${({ theme }) => theme.colors.primary};
