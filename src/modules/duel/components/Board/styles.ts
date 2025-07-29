@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import styled from 'styled-components'
 
-import { FullScreenContainer } from 'src/components/styles'
+import { FullScreenContainer, Paper } from 'src/components/styles'
 
 export const CoinContainer = styled(motion.div)`
   perspective: 1000px;
@@ -69,4 +69,33 @@ export const ActionButtonWrapper = styled(motion.create('div'))`
   left: ${({ theme }) => theme.spacing * 2}px;
   bottom: ${({ theme }) => theme.spacing * 10}px;
   z-index: 5;
+`
+
+export const LogsButtonWrapper = styled(motion.create('div'))`
+  position: absolute;
+  left: ${({ theme }) => theme.spacing * 2}px;
+  bottom: ${({ theme }) => theme.spacing * 18}px;
+  z-index: 5;
+`
+
+export const LogsContainer = styled(motion.create(Paper))`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing}px;
+  left: ${({ theme }) => theme.spacing}px;
+  bottom: ${({ theme }) => theme.spacing}px;
+  padding: ${({ theme }) => theme.spacing}px;
+  width: ${({ theme }) => theme.spacing * 30}px;
+  z-index: 6;
+  border-left: ${({ theme }) => theme.spacing / 2}px solid
+    ${({ theme }) => theme.colors.primary};
+`
+
+export const LogEntry = styled.div`
+  padding: ${({ theme }) => theme.spacing / 2}px;
+`
+
+export const LogsCloseIcon = styled.div`
+  position: absolute;
+  top: -${({ theme }) => theme.spacing}px;
+  right: -${({ theme }) => theme.spacing}px;
 `

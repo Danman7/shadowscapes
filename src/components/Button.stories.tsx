@@ -8,6 +8,7 @@ const meta: Meta<typeof Button> = {
   title: 'Shared/Button',
   component: Button,
   args: {
+    variant: 'primary',
     children: 'Skip Redraw',
     onClick: action('button-clicked'),
   },
@@ -39,5 +40,12 @@ export const Disabled: Story = {
   args: {
     children: 'Disabled Button',
     onClick: undefined,
+  },
+}
+
+export const Outline: Story = {
+  args: {
+    children: 'Outline Button',
+    variant: 'outline',
   },
 }

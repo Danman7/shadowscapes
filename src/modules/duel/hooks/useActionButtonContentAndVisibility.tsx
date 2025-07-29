@@ -6,9 +6,9 @@ import { useDuel } from 'src/modules/duel/hooks'
 import { useUser } from 'src/modules/user/hooks'
 
 export const useActionButtonContentAndVisibility = () => {
-  let buttonContent: React.ReactNode = ''
-  let isButtonVisible = false
-  let buttonOnClick: (() => void) | undefined = undefined
+  let actionButtonContent: React.ReactNode = ''
+  let isActionButtonVisible = false
+  let actionButtonOnClick: (() => void) | undefined = undefined
 
   const {
     state: {
@@ -26,7 +26,7 @@ export const useActionButtonContentAndVisibility = () => {
 
   switch (phase) {
     case 'Redrawing':
-      buttonContent = playerIsReady ? (
+      actionButtonContent = playerIsReady ? (
         <>
           <MoonLoading /> {messages.duel.waitForOpponent}
         </>
@@ -35,13 +35,13 @@ export const useActionButtonContentAndVisibility = () => {
           <GiCardDiscard /> {messages.duel.skipRedraw}
         </>
       )
-      isButtonVisible = userIsInGame
+      isActionButtonVisible = userIsInGame
 
-      buttonOnClick =
+      actionButtonOnClick =
         playerIsReady || !userIsInGame
           ? undefined
           : () => {
-              dispatch({ type: 'PLAYER_READY_WITH_REDRAW', playerId: id })
+              dispatch({ type: 'SKIP_REDRAW', playerId: id })
             }
       break
 
@@ -49,5 +49,9 @@ export const useActionButtonContentAndVisibility = () => {
       break
   }
 
-  return { isButtonVisible, buttonContent, buttonOnClick }
+  return {
+    isActionButtonVisible,
+    actionButtonContent,
+    actionButtonOnClick,
+  }
 }

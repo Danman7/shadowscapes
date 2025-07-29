@@ -7,6 +7,7 @@ declare module 'styled-components' {
     card: { width: number; height: number }
     colors: {
       primary: string
+      secondary: string
       active: string
       background: string
       surface: string

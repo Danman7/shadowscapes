@@ -1,3 +1,4 @@
+import { formatString, messages } from 'src/i18n'
 import { INITIAL_CARDS_DRAWN_AMOUNT } from 'src/modules/duel/constants'
 import { DuelAction, DuelState } from 'src/modules/duel/types'
 import {
@@ -12,6 +13,7 @@ export const initialState: DuelState = {
   phase: 'Intro Screen',
   players: {},
   cards: {},
+  logs: [],
 }
 
 export const duelReducer = (
@@ -75,7 +77,7 @@ export const duelReducer = (
       }
     }
 
-    case 'PUT_CARD_AT_BOTTOM_OF_DECK': {
+    case 'REDRAW_CARD': {
       const { playerId, cardId } = action
 
       const updatedPlayers = { ...players }
@@ -92,6 +94,12 @@ export const duelReducer = (
       return {
         ...state,
         players: updatedPlayers,
+        logs: [
+          ...state.logs,
+          formatString(messages.duel.logs.playerRedrawnCard, {
+            playerName: players[playerId].name,
+          }),
+        ],
       }
     }
 
@@ -117,7 +125,7 @@ export const duelReducer = (
       }
     }
 
-    case 'PLAYER_READY_WITH_REDRAW': {
+    case 'READY_WITH_REDRAW': {
       const { playerId } = action
 
       return {
@@ -129,6 +137,27 @@ export const duelReducer = (
             hasPerformedAction: true,
           },
         },
+      }
+    }
+
+    case 'SKIP_REDRAW': {
+      const { playerId } = action
+
+      return {
+        ...state,
+        players: {
+          ...state.players,
+          [playerId]: {
+            ...state.players[playerId],
+            hasPerformedAction: true,
+          },
+        },
+        logs: [
+          ...state.logs,
+          formatString(messages.duel.logs.playerSkippedRedraw, {
+            playerName: players[playerId].name,
+          }),
+        ],
       }
     }
 

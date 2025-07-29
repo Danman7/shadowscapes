@@ -42,6 +42,7 @@ export interface DuelState extends DuelPlayersAndCards {
   phase: DuelPhase
   activePlayerId: string
   inactivePlayerId: string
+  logs: string[]
 }
 
 export type DuelStartingUsers = [User, User]
@@ -63,8 +64,8 @@ export type ProgressToRedrawAction = {
   type: 'PROGRESS_TO_REDRAW'
 }
 
-export type PutCardAtBottomOfDeckAction = {
-  type: 'PUT_CARD_AT_BOTTOM_OF_DECK'
+export type RedrawCard = {
+  type: 'REDRAW_CARD'
   playerId: string
   cardId: string
 }
@@ -74,8 +75,13 @@ export type DrawACardAction = {
   playerId: string
 }
 
-export type PlayerReadyWithRedrawAction = {
-  type: 'PLAYER_READY_WITH_REDRAW'
+export type ReadyWithRedrawAction = {
+  type: 'READY_WITH_REDRAW'
+  playerId: string
+}
+
+export type SkipRedrawAction = {
+  type: 'SKIP_REDRAW'
   playerId: string
 }
 
@@ -84,9 +90,10 @@ export type DuelAction =
   | ProgressToInitialDrawAction
   | DrawInitialCardsAction
   | ProgressToRedrawAction
-  | PutCardAtBottomOfDeckAction
+  | RedrawCard
   | DrawACardAction
-  | PlayerReadyWithRedrawAction
+  | ReadyWithRedrawAction
+  | SkipRedrawAction
 
 export type PlayerStackSetup = {
   id: string

@@ -13,7 +13,7 @@ export const useBot = (playerId: string) => {
   useEffect(() => {
     // Automatically skip redraw (for now)
     if (phase === 'Redrawing' && !hasPerformedAction && isBot) {
-      dispatch({ type: 'PLAYER_READY_WITH_REDRAW', playerId })
+      dispatch({ type: 'SKIP_REDRAW', playerId })
     }
   }, [playerId, dispatch, phase, hasPerformedAction, isBot])
 }

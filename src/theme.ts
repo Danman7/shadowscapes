@@ -6,6 +6,7 @@ export const theme: DefaultTheme = {
   card: { width: 250, height: 350 },
   colors: {
     primary: '#dc2626',
+    secondary: '#3b82f6',
     active: '#22c55e',
     text: '#27272a',
     elite: '#854d0e',

@@ -32,13 +32,13 @@ export const useOnBoardCardClick = (
 
   const onRedrawClick = () => {
     dispatch({
-      type: 'PUT_CARD_AT_BOTTOM_OF_DECK',
+      type: 'REDRAW_CARD',
       playerId: playerId,
       cardId: cardId,
     })
 
     dispatch({
-      type: 'PLAYER_READY_WITH_REDRAW',
+      type: 'READY_WITH_REDRAW',
       playerId,
     })
 

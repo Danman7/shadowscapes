@@ -2,7 +2,7 @@ import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { formatString, messages } from 'src/i18n'
-import { checkMarkIcon } from 'src/jest.setup'
+import { checkMarkIcon, crossIcon, logsButtonIcon } from 'src/jest.setup'
 import { Board } from 'src/modules/duel/components/Board/Board'
 import {
   bottomPlayerBoardCardId,
@@ -249,6 +249,36 @@ describe('Board Component', () => {
         expect(queryByText(card.name)).not.toBeInTheDocument()
       })
     })
+
+    it('should not show logs button if there are no logs', () => {
+      preloadedDuel.phase = 'Redrawing'
+
+      const { queryByTestId } = renderResult()
+
+      expect(queryByTestId(logsButtonIcon)).not.toBeInTheDocument()
+    })
+
+    it('should open and close logs if there are logs', async () => {
+      const logsMessage = 'Test log message'
+
+      const user = userEvent.setup()
+      preloadedDuel.phase = 'Redrawing'
+      preloadedDuel.logs = [logsMessage]
+
+      const { getByText, queryByText, getByTestId } = renderResult()
+
+      await user.click(getByTestId(logsButtonIcon))
+
+      expect(getByText(messages.duel.logs.logsTitle)).toBeInTheDocument()
+
+      expect(getByText(logsMessage)).toBeInTheDocument()
+
+      await user.click(getByTestId(crossIcon))
+
+      expect(queryByText(messages.duel.logs.logsTitle)).not.toBeInTheDocument()
+
+      expect(queryByText(logsMessage)).not.toBeInTheDocument()
+    })
   })
 
   describe('Duel Start Sequence', () => {
@@ -396,11 +426,48 @@ describe('Board Component', () => {
       expect(button).toBeInTheDocument()
       expect(button).toBeDisabled()
 
-      const botPlayerInfo = getByTestId(`player-info-${activePlayerId}`)
+      const bottomPlayerInfo = getByTestId(`player-info-${activePlayerId}`)
 
       expect(
-        within(botPlayerInfo).getByTestId(checkMarkIcon),
+        within(bottomPlayerInfo).getByTestId(checkMarkIcon),
       ).toBeInTheDocument()
+
+      await user.click(getByTestId(logsButtonIcon))
+
+      expect(
+        getByText(
+          formatString(messages.duel.logs.playerRedrawnCard, {
+            playerName: players[activePlayerId].name,
+          }),
+        ),
+      )
+    })
+
+    it('should allow the user to skip redraw', async () => {
+      const user = userEvent.setup()
+      preloadedDuel.phase = 'Redrawing'
+
+      const { players, activePlayerId } = preloadedDuel
+
+      const { getByText, getByTestId } = renderResult()
+
+      await user.click(getByText(messages.duel.skipRedraw))
+
+      const bottomPlayerInfo = getByTestId(`player-info-${activePlayerId}`)
+
+      expect(
+        within(bottomPlayerInfo).getByTestId(checkMarkIcon),
+      ).toBeInTheDocument()
+
+      await user.click(getByTestId(logsButtonIcon))
+
+      expect(
+        getByText(
+          formatString(messages.duel.logs.playerSkippedRedraw, {
+            playerName: players[activePlayerId].name,
+          }),
+        ),
+      )
     })
 
     it('should not show the button if user is not in the game', () => {

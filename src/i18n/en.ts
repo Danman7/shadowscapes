@@ -26,5 +26,10 @@ export const en = {
     skipRedraw: 'Skip Redraw',
     replaceCard: 'Replace card',
     waitForOpponent: 'Waiting for opponent',
+    logs: {
+      logsTitle: 'Duel Logs',
+      playerRedrawnCard: '{playerName} has redrawn a card.',
+      playerSkippedRedraw: '{playerName} has skipped redraw.',
+    },
   },
 }

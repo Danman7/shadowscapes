@@ -21,7 +21,7 @@ export const PhaseModal: React.FC<{ children: ReactNode }> = ({ children }) => {
       // Hide after 1 second
       const timer = setTimeout(() => {
         setIsVisible(false)
-      }, theme.transitionTime * 12)
+      }, theme.transitionTime * 10)
 
       return () => clearTimeout(timer)
     }

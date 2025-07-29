@@ -1,5 +1,8 @@
 import { motion } from 'motion/react'
 import styled, { keyframes } from 'styled-components'
+import type { DefaultTheme } from 'styled-components'
+
+import { ButtonVariant } from 'src/components/Button'
 
 const cycle = keyframes`
   0% {
@@ -88,24 +91,69 @@ export const FullScreenCenteredContainer = styled(
   justify-content: center;
 `
 
-export const StyledButton = styled(motion.create('button'))`
+const getButtonStyles = (variant: ButtonVariant, theme: DefaultTheme) => {
+  switch (variant) {
+    case 'primary':
+      return {
+        background: theme.colors.primary,
+        color: theme.colors.background,
+        boxShadow: theme.boxShadow.level1,
+        cursor: 'pointer',
+        opacity: 1,
+      }
+    case 'outline':
+      return {
+        background: theme.colors.surface,
+        color: theme.colors.primary,
+        boxShadow: theme.boxShadow.level1,
+        cursor: 'pointer',
+        opacity: 1,
+      }
+    case 'disabled':
+      return {
+        background: theme.colors.surface,
+        color: theme.colors.text,
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+        opacity: 0.6,
+      }
+  }
+}
+
+export const StyledButton = styled(motion.create('button'))<{
+  $variant: ButtonVariant
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme, disabled }) =>
-    disabled ? theme.colors.surface : theme.colors.primary};
-  color: ${({ theme, disabled }) =>
-    disabled ? theme.colors.text : theme.colors.background};
   height: ${({ theme }) => theme.spacing * 6}px;
   gap: ${({ theme }) => theme.spacing}px;
   border-radius: ${({ theme }) => theme.spacing * 3}px;
   padding: ${({ theme }) => theme.spacing * 2}px;
   text-transform: uppercase;
-  box-shadow: ${({ theme, disabled }) =>
-    disabled ? 'none' : theme.boxShadow.level1};
   border: none;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  transition: all ${({ theme }) => theme.transitionTime}ms ease;
+
+  ${({ $variant, theme }) => {
+    const styles = getButtonStyles($variant, theme)
+    return `
+      background: ${styles.background};
+      color: ${styles.color};
+      box-shadow: ${styles.boxShadow};
+      cursor: ${styles.cursor};
+      opacity: ${styles.opacity};
+    `
+  }}
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: ${({ theme, $variant }) =>
+      $variant !== 'disabled' ? theme.boxShadow.level2 : 'none'};
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
 `
 
 export const Crater = styled.div<{
