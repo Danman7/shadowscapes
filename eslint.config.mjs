@@ -2,7 +2,11 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 import { FlatCompat } from '@eslint/eslintrc'
+import eslint from '@eslint/js'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
 import storybook from 'eslint-plugin-storybook'
+import tseslint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,6 +28,17 @@ const eslintConfig = [
     ],
   },
   ...storybook.configs['flat/recommended'],
+  {
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+    },
+  },
+  reactPlugin.configs.flat['jsx-runtime'],
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     name: 'import/order',
     rules: {
