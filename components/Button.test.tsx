@@ -2,10 +2,9 @@ import { Button, ButtonProps } from '@/components/Button'
 import { render } from '@testing-library/react'
 
 const children = 'Click me'
-const onClick = jest.fn()
 const props: ButtonProps = {
   children,
-  onClick,
+  onClick: jest.fn(),
 }
 
 it('shows children', () => {
@@ -18,5 +17,6 @@ it('calls onClick when clicked', () => {
   const { getByRole } = render(<Button {...props} />)
 
   getByRole('button').click()
-  expect(onClick).toHaveBeenCalledTimes(1)
+
+  expect(props.onClick).toHaveBeenCalledTimes(1)
 })
