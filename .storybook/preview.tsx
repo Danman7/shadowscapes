@@ -10,9 +10,11 @@ const notoSerif = Noto_Serif({
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <body className={`${notoSerif.variable} antialiased`}>
+      <div
+        className={`${notoSerif.variable} antialiased font-serif bg-background text-foreground`}
+      >
         <Story />
-      </body>
+      </div>
     ),
   ],
 }

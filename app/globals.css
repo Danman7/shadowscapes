@@ -3,21 +3,25 @@
 :root {
   --background: var(--color-amber-50);
   --foreground: var(--color-amber-950);
+  --surface: var(--color-amber-100);
   --line: var(--color-amber-200);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-line: var(--border);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --font-serif:
+    var(--font-noto-serif), Georgia, 'Times New Roman', Times, serif;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--color-amber-950);
     --foreground: var(--color-amber-50);
   }
-}
+} */
 
 body {
   background: var(--background);
