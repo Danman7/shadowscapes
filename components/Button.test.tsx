@@ -2,8 +2,6 @@ import { render } from '@testing-library/react'
 
 import { Button, ButtonProps } from '@/components/Button'
 
-
-
 const children = 'Click me'
 const props: ButtonProps = {
   children,

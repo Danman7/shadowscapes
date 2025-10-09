@@ -1,4 +1,3 @@
-
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -47,6 +46,8 @@ const eslintConfig = [
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+      'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
+      'import/newline-after-import': ['error', { considerComments: true }],
     },
   },
 ]
