@@ -7,6 +7,17 @@
     "source.organizeImports": "never",
     "source.fixAll.eslint": "explicit"
   },
+  // Enable ESLint diagnostics for TS/TSX in the editor and support flat config
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.useFlatConfig": true,
+  // Run ESLint as you type for faster feedback
+  "eslint.run": "onType",
   "eslint.format.enable": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
