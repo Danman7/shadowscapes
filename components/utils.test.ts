@@ -2,8 +2,9 @@ import {
   getFactionBgClassName,
   getFactionTextClassName,
   getRankBorderClassName,
+  joinStringsWithComma,
 } from '@/components/utils'
-import { CardRanks, Factions } from '@/data'
+import { cardDefinitions, CardRanks, Factions } from '@/data'
 
 describe('getFactionBgClassName', () => {
   it.each([
@@ -33,5 +34,17 @@ describe('getRankBorderClassName', () => {
     [CardRanks.Elite, 'border-elite'],
   ])('gets color for %s', (faction, expected) => {
     expect(getRankBorderClassName(faction)).toBe(expected)
+  })
+})
+
+describe('joinStringsWithComma', () => {
+  it('joins categories with comma and space', () => {
+    expect(joinStringsWithComma(cardDefinitions.TempleGuard.categories)).toBe(
+      'Hammerite, Guard',
+    )
+  })
+
+  it('returns empty string for empty array', () => {
+    expect(joinStringsWithComma([])).toBe('')
   })
 })

@@ -2,10 +2,15 @@ import {
   getFactionBgClassName,
   getFactionTextClassName,
   getRankBorderClassName,
+  joinStringsWithComma,
 } from '@/components/utils'
 import { CardDefinition } from '@/types'
 
-export const Card: React.FC<CardDefinition> = ({ faction, constants }) => {
+export const Card: React.FC<CardDefinition> = ({
+  faction,
+  categories,
+  constants,
+}) => {
   const { name, rank } = constants
 
   return (
@@ -13,7 +18,10 @@ export const Card: React.FC<CardDefinition> = ({ faction, constants }) => {
       <div
         className={`m-2 rounded-md p-2 border-2 border-b-4 ${getRankBorderClassName(rank)} ${getFactionTextClassName(faction)} ${getFactionBgClassName(faction)}`}
       >
-        <h2 className="text-center">{name}</h2>
+        <h2 className="text-center text-lg">{name}</h2>
+        <div className="text-center text-xs">
+          {joinStringsWithComma(categories)}
+        </div>
       </div>
     </div>
   )

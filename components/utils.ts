@@ -33,3 +33,6 @@ export const getRankBorderClassName = (rank: CardRank): string => {
       return 'border-foreground'
   }
 }
+
+export const joinStringsWithComma = (strings: string[]): string =>
+  strings.join(', ')

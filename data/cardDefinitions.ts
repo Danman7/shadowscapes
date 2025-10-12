@@ -17,7 +17,7 @@ import {
 export const TempleGuardDefinition: DefinitionArgs<CharacterDefinition> = {
   id: CardDefinitionIds.TempleGuard,
   faction: Factions.Order,
-  categories: [CardCategories.Hammerite],
+  categories: [CardCategories.Hammerite, CardCategories.Guard],
   cost: 4,
   strength: 4,
   constants: {
