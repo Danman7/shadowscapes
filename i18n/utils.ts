@@ -1,4 +1,4 @@
-import { messages } from '@/i18n'
+import { en as messages } from '@/i18n/en'
 import type { CardDefinitionId } from '@/types'
 
 /**
@@ -31,6 +31,6 @@ export function formatString(
  * @returns {string} returns.description - The localized description of the card
  */
 export const getCardText = (id: CardDefinitionId) => {
-  const t = messages.cards[id as keyof typeof messages.cards]
+  const t = messages.definitions[id as keyof typeof messages.definitions]
   return { name: t.name, flavor: t.flavor, description: t.description }
 }
