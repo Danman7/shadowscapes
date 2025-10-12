@@ -50,4 +50,37 @@ export const cardDefinitions = {
       rank: CardRanks.Common,
     },
   }),
+
+  Haunt: character({
+    id: CardDefinitionIds.Haunt,
+    faction: Factions.Chaos,
+    categories: [CardCategories.Undead],
+    cost: 4,
+    strength: 4,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
+
+  Downwinder: character({
+    id: CardDefinitionIds.Downwinder,
+    faction: Factions.Shadow,
+    categories: [CardCategories.Thief],
+    cost: 3,
+    strength: 3,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
+
+  Cook: character({
+    id: CardDefinitionIds.Cook,
+    faction: Factions.Neutral,
+    categories: [CardCategories.Servant],
+    cost: 2,
+    strength: 1,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
 } satisfies Record<CardDefinitionId, CardDefinition>

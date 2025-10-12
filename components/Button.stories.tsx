@@ -4,7 +4,7 @@ import { fn } from 'storybook/test'
 import { Button } from '@/components/Button'
 
 const meta: Meta<typeof Button> = {
-  title: 'Shared/Button',
+  title: 'Button',
   component: Button,
   parameters: {
     layout: 'centered',
