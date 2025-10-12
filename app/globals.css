@@ -5,6 +5,10 @@
   --foreground: var(--color-amber-950);
   --surface: var(--color-amber-100);
   --line: var(--color-amber-200);
+  --elite: var(--color-amber-400);
+  --order: var(--color-red-700);
+  --chaos: var(--color-green-700);
+  --shadow: var(--color-violet-700);
 }
 
 @theme inline {
@@ -12,6 +16,11 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-line: var(--line);
+  --color-order: var(--order);
+  --color-chaos: var(--chaos);
+  --color-shadow: var(--shadow);
+  --color-elite: var(--elite);
+  --color-common: var(--common);
   --font-serif:
     var(--font-noto-serif), Georgia, 'Times New Roman', Times, serif;
 }

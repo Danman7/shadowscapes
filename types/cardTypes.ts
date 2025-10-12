@@ -2,9 +2,9 @@ import { CardCategories, CardDefinitionIds, CardRanks, Factions } from '@/data'
 
 type CardCategory = (typeof CardCategories)[keyof typeof CardCategories]
 
-type Faction = (typeof Factions)[keyof typeof Factions]
+export type Faction = (typeof Factions)[keyof typeof Factions]
 
-type CardRank = (typeof CardRanks)[keyof typeof CardRanks]
+export type CardRank = (typeof CardRanks)[keyof typeof CardRanks]
 
 export type CardDefinitionId =
   (typeof CardDefinitionIds)[keyof typeof CardDefinitionIds]
@@ -13,7 +13,7 @@ type CardDefinitionBase = {
   id: CardDefinitionId
   cost: number
   categories: CardCategory[]
-  faction: Faction | null
+  faction: Faction
   constants: {
     name: string
     description: string
