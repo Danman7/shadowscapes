@@ -6,6 +6,7 @@
   --surface: var(--color-amber-100);
   --line: var(--color-amber-200);
   --elite: var(--color-amber-500);
+  --light: var(--color-amber-800);
   --order: var(--color-red-800);
   --chaos: var(--color-green-800);
   --shadow: var(--color-violet-800);
@@ -21,6 +22,7 @@
   --color-shadow: var(--shadow);
   --color-elite: var(--elite);
   --color-common: var(--common);
+  --color-light: var(--light);
   --font-serif:
     var(--font-noto-serif), Georgia, 'Times New Roman', Times, serif;
 }

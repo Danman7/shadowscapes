@@ -53,7 +53,11 @@ it('shows multiple paragraphs description', () => {
   }
 })
 
-it.todo('shows flavor text')
+it('shows flavor text', () => {
+  const { getByText } = render(<Card {...props} />)
+
+  expect(getByText(props.constants.flavor)).toBeInTheDocument()
+})
 
 it.todo('shows cost')
 
