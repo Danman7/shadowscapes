@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Noto_Serif } from 'next/font/google'
-import './globals.css'
+import { IconContext } from 'react-icons'
+
+import '@/app/globals.css'
 
 const notoSerif = Noto_Serif({
   variable: '--font-noto-serif',
@@ -18,8 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${notoSerif.variable} antialiased`}>{children}</body>
-    </html>
+    <IconContext.Provider
+      value={{ style: { verticalAlign: 'middle', marginBottom: '2px' } }}
+    >
+      <html lang="en">
+        <body className={`${notoSerif.variable} antialiased`}>{children}</body>
+      </html>
+    </IconContext.Provider>
   )
 }

@@ -1,6 +1,8 @@
 import type { Preview } from '@storybook/nextjs'
 import { Noto_Serif } from 'next/font/google'
-import '../app/globals.css'
+import { IconContext } from 'react-icons/lib'
+
+import '@/app/globals.css'
 
 const notoSerif = Noto_Serif({
   variable: '--font-noto-serif',
@@ -10,11 +12,15 @@ const notoSerif = Noto_Serif({
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <div
-        className={`${notoSerif.variable} antialiased font-serif bg-background text-foreground`}
+      <IconContext.Provider
+        value={{ style: { verticalAlign: 'middle', marginBottom: '2px' } }}
       >
-        <Story />
-      </div>
+        <div
+          className={`${notoSerif.variable} antialiased font-serif bg-background text-foreground`}
+        >
+          <Story />
+        </div>
+      </IconContext.Provider>
     ),
   ],
 }
