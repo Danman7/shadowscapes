@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { Card } from '@/components/Card'
+import { CARD_COST_TESTID, CARD_STRENGTH_TESTID } from '@/components/testIds'
 import { joinStringsWithComma } from '@/components/utils'
 import { cardDefinitions } from '@/data'
 import { instantIcon } from '@/jest.setup'
@@ -21,9 +22,9 @@ it('shows categories', () => {
 })
 
 it('shows strength if character', () => {
-  const { getByText } = render(<Card {...props} />)
-
-  expect(getByText(props.strength)).toBeInTheDocument()
+  render(<Card {...props} />)
+  const el = screen.getByTestId(CARD_STRENGTH_TESTID)
+  expect(el).toHaveTextContent(String(props.strength))
 })
 
 it('shows instant icon if instant', () => {
@@ -59,6 +60,10 @@ it('shows flavor text', () => {
   expect(getByText(props.constants.flavor)).toBeInTheDocument()
 })
 
-it.todo('shows cost')
+it('shows cost', () => {
+  render(<Card {...props} />)
+  const el = screen.getByTestId(CARD_COST_TESTID)
+  expect(el).toHaveTextContent(String(props.cost))
+})
 
 it.todo('shows rank icon for elites')

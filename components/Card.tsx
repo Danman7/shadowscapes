@@ -1,5 +1,6 @@
-import { GiFist, GiPowerLightning } from 'react-icons/gi'
+import { GiCrownCoin, GiFist, GiPowerLightning } from 'react-icons/gi'
 
+import { CARD_COST_TESTID, CARD_STRENGTH_TESTID } from '@/components/testIds'
 import {
   getColoredBoxClassNames,
   getDescriptionParagraphs,
@@ -15,9 +16,9 @@ export const Card: React.FC<CardDefinition> = (props) => {
   const paragraphs = getDescriptionParagraphs(description)
 
   return (
-    <div className="bg-surface w-58 h-80 flex flex-col spac rounded-lg shadow-md relative p-2 border-[] box-border border-1 border-foreground/10">
+    <div className="bg-surface w-52 h-74 flex flex-col spac rounded-lg shadow-md relative p-2 border-[] box-border border-1 border-foreground/10">
       <header className={`flex-col h-13 ${boxClassNames} pb-1`}>
-        <h2 className="text-lg">{name}</h2>
+        <h2>{name}</h2>
 
         <div className="text-xs">{joinStringsWithComma(categories)}</div>
       </header>
@@ -31,14 +32,21 @@ export const Card: React.FC<CardDefinition> = (props) => {
         <p className="text-xs text-light">{flavor}</p>
       </section>
 
-      <footer className={`${boxClassNames} h-7`}>
+      <footer className={`${boxClassNames} h-7 gap-3`}>
         {isCharacter(props) ? (
-          <div className={`flex items-center`}>
+          <div
+            className="flex items-center gap-1"
+            data-testid={CARD_STRENGTH_TESTID}
+          >
             <GiFist /> {props.strength}
           </div>
         ) : (
           <GiPowerLightning />
         )}
+
+        <div className="flex items-center gap-1" data-testid={CARD_COST_TESTID}>
+          <GiCrownCoin /> {props.cost}
+        </div>
       </footer>
     </div>
   )
