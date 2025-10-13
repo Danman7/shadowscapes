@@ -1,10 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { Card } from '@/components/Card'
 import { CARD_COST_TESTID, CARD_STRENGTH_TESTID } from '@/components/testIds'
 import { joinStringsWithComma } from '@/components/utils'
 import { cardDefinitions } from '@/data'
-import { instantIcon } from '@/jest.setup'
+import { eliteIcon, instantIcon } from '@/jest.setup'
 import { CardDefinition } from '@/types'
 
 const props: CardDefinition = cardDefinitions.TempleGuard
@@ -22,9 +22,11 @@ it('shows categories', () => {
 })
 
 it('shows strength if character', () => {
-  render(<Card {...props} />)
-  const el = screen.getByTestId(CARD_STRENGTH_TESTID)
-  expect(el).toHaveTextContent(String(props.strength))
+  const { getByTestId } = render(<Card {...props} />)
+
+  expect(getByTestId(CARD_STRENGTH_TESTID)).toHaveTextContent(
+    String(props.strength),
+  )
 })
 
 it('shows instant icon if instant', () => {
@@ -61,9 +63,13 @@ it('shows flavor text', () => {
 })
 
 it('shows cost', () => {
-  render(<Card {...props} />)
-  const el = screen.getByTestId(CARD_COST_TESTID)
-  expect(el).toHaveTextContent(String(props.cost))
+  const { getByTestId } = render(<Card {...props} />)
+
+  expect(getByTestId(CARD_COST_TESTID)).toHaveTextContent(String(props.cost))
 })
 
-it.todo('shows rank icon for elites')
+it('shows rank icon for elites', () => {
+  const { getByTestId } = render(<Card {...cardDefinitions.YoraSkull} />)
+
+  expect(getByTestId(eliteIcon)).toBeInTheDocument()
+})

@@ -1,4 +1,9 @@
-import { GiCrownCoin, GiFist, GiPowerLightning } from 'react-icons/gi'
+import {
+  GiCrownCoin,
+  GiFist,
+  GiLaurels,
+  GiPowerLightning,
+} from 'react-icons/gi'
 
 import { CARD_COST_TESTID, CARD_STRENGTH_TESTID } from '@/components/testIds'
 import {
@@ -6,6 +11,7 @@ import {
   getDescriptionParagraphs,
   joinStringsWithComma,
 } from '@/components/utils'
+import { CardRanks } from '@/data'
 import { CardDefinition, isCharacter } from '@/types'
 
 export const Card: React.FC<CardDefinition> = (props) => {
@@ -33,6 +39,8 @@ export const Card: React.FC<CardDefinition> = (props) => {
       </section>
 
       <footer className={`${boxClassNames} h-7 gap-3`}>
+        {rank === CardRanks.Elite && <GiLaurels />}
+
         {isCharacter(props) ? (
           <div
             className="flex items-center gap-1"
