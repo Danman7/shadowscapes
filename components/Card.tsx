@@ -1,28 +1,36 @@
+import { GiFist, GiPowerLightning } from 'react-icons/gi'
+
 import {
-  getFactionBgClassName,
-  getFactionTextClassName,
-  getRankBorderClassName,
+  getColoredBoxClassNames,
   joinStringsWithComma,
 } from '@/components/utils'
-import { CardDefinition } from '@/types'
+import { CardDefinition, isCharacter } from '@/types'
 
-export const Card: React.FC<CardDefinition> = ({
-  faction,
-  categories,
-  constants,
-}) => {
+export const Card: React.FC<CardDefinition> = (props) => {
+  const { constants, categories, faction } = props
   const { name, rank } = constants
 
+  const boxClassNames = getColoredBoxClassNames(rank, faction)
+
   return (
-    <div className="bg-surface w-62 h-87 flex  flex-col gap-2 spac rounded-lg shadow-md">
-      <div
-        className={`m-2 rounded-md p-2 border-2 border-b-4 ${getRankBorderClassName(rank)} ${getFactionTextClassName(faction)} ${getFactionBgClassName(faction)}`}
-      >
-        <h2 className="text-center text-lg">{name}</h2>
-        <div className="text-center text-xs">
-          {joinStringsWithComma(categories)}
-        </div>
-      </div>
+    <div className="bg-surface w-62 h-87 flex  flex-col spac rounded-lg shadow-md relative p-1 border-[] box-border border-1 border-foreground/10">
+      <header className={`flex-col h-13 ${boxClassNames}`}>
+        <h2 className="text-lg">{name}</h2>
+
+        <div className="text-xs">{joinStringsWithComma(categories)}</div>
+      </header>
+
+      <section className="flex-2"></section>
+
+      <footer className={`${boxClassNames} text-lg h-8`}>
+        {isCharacter(props) ? (
+          <div className={`flex items-center`}>
+            <GiFist /> {props.strength}
+          </div>
+        ) : (
+          <GiPowerLightning />
+        )}
+      </footer>
     </div>
   )
 }

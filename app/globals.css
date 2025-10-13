@@ -5,10 +5,10 @@
   --foreground: var(--color-amber-950);
   --surface: var(--color-amber-100);
   --line: var(--color-amber-200);
-  --elite: var(--color-amber-400);
-  --order: var(--color-red-700);
-  --chaos: var(--color-green-700);
-  --shadow: var(--color-violet-700);
+  --elite: var(--color-amber-500);
+  --order: var(--color-red-800);
+  --chaos: var(--color-green-800);
+  --shadow: var(--color-violet-800);
 }
 
 @theme inline {

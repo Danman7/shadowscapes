@@ -20,6 +20,8 @@ type Story = StoryObj<typeof Card>
 
 export const Character: Story = {}
 
+export const Instant: Story = { args: { ...cardDefinitions.YoraSkull } }
+
 export const AllCardsGallery = () => (
   <div className="flex gap-4 flex-wrap">
     {Object.entries(cardDefinitions).map(([name, card]) => (

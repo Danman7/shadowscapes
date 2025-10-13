@@ -10,7 +10,7 @@ export const getFactionBgClassName = (faction: Faction): string => {
     case Factions.Shadow:
       return 'bg-shadow'
     default:
-      return ''
+      return 'bg-surface'
   }
 }
 
@@ -36,3 +36,6 @@ export const getRankBorderClassName = (rank: CardRank): string => {
 
 export const joinStringsWithComma = (strings: string[]): string =>
   strings.join(', ')
+
+export const getColoredBoxClassNames = (rank: CardRank, faction: Faction) =>
+  `rounded-md border-2 border-b-4 flex items-center justify-center ${getRankBorderClassName(rank)} ${getFactionTextClassName(faction)} ${getFactionBgClassName(faction)}`

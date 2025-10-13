@@ -11,7 +11,7 @@ describe('getFactionBgClassName', () => {
     [Factions.Order, 'bg-order'],
     [Factions.Chaos, 'bg-chaos'],
     [Factions.Shadow, 'bg-shadow'],
-    [Factions.Neutral, ''],
+    [Factions.Neutral, 'bg-surface'],
   ])('gets color for %s', (faction, expected) => {
     expect(getFactionBgClassName(faction)).toBe(expected)
   })
