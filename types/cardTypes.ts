@@ -16,7 +16,7 @@ type CardDefinitionBase = {
   faction: Faction
   constants: {
     name: string
-    description: string
+    description: string | string[]
     flavor: string
     rank: CardRank
   }

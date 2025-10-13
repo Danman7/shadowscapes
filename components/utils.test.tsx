@@ -1,4 +1,7 @@
+import { render } from '@testing-library/react'
+
 import {
+  getDescriptionParagraphs,
   getFactionBgClassName,
   getFactionTextClassName,
   getRankBorderClassName,
@@ -46,5 +49,29 @@ describe('joinStringsWithComma', () => {
 
   it('returns empty string for empty array', () => {
     expect(joinStringsWithComma([])).toBe('')
+  })
+})
+
+describe('getDescriptionParagraphs', () => {
+  it('should return JSX paragraphs for array input', () => {
+    const descriptions = ['First paragraph', 'Second paragraph']
+    const result = getDescriptionParagraphs(descriptions)
+    const { container } = render(<div>{result}</div>)
+
+    expect(container.querySelectorAll('p')).toHaveLength(2)
+    expect(container.textContent).toContain('First paragraph')
+    expect(container.textContent).toContain('Second paragraph')
+  })
+
+  it('should return string as-is for string input', () => {
+    const description = 'Single description'
+    const result = getDescriptionParagraphs(description)
+    expect(result).toBe('Single description')
+  })
+
+  it('should handle empty array', () => {
+    const result = getDescriptionParagraphs([])
+    const { container } = render(<div>{result}</div>)
+    expect(container.querySelectorAll('p')).toHaveLength(0)
   })
 })

@@ -26,7 +26,10 @@ export const en = {
       name: 'Temple Guard',
       flavor:
         'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
-      description: `On play, gain +${TEMPLE_GUARD_BOOST} strength if you control fewer cards than your opponent.`,
+      description: [
+        `+${TEMPLE_GUARD_BOOST} strength on play if you control fewer cards than your opponent.`,
+        'Retaliates when attacked.',
+      ],
     },
 
     [CardDefinitionIds.YoraSkull]: {

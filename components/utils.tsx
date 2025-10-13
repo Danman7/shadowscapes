@@ -39,3 +39,15 @@ export const joinStringsWithComma = (strings: string[]): string =>
 
 export const getColoredBoxClassNames = (rank: CardRank, faction: Faction) =>
   `rounded-md border-2 border-b-4 flex items-center justify-center ${getRankBorderClassName(rank)} ${getFactionTextClassName(faction)} ${getFactionBgClassName(faction)}`
+
+export const getDescriptionParagraphs = (
+  description: string | string[],
+): React.ReactNode => {
+  return Array.isArray(description)
+    ? description.map((para: string, index: number) => (
+        <p key={index} className="py-1">
+          {para}
+        </p>
+      ))
+    : description
+}

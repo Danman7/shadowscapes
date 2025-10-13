@@ -32,8 +32,29 @@ it('shows instant icon if instant', () => {
   expect(getByTestId(instantIcon)).toBeInTheDocument()
 })
 
-it.todo('shows effects description')
+it('shows single paragraph description', () => {
+  const props: CardDefinition = cardDefinitions.YoraSkull
+  const { getByText } = render(<Card {...props} />)
+
+  expect(props.constants.description).not.toBeInstanceOf(Array)
+
+  expect(getByText(props.constants.description as string)).toBeInTheDocument()
+})
+
+it('shows multiple paragraphs description', () => {
+  const { getByText } = render(<Card {...props} />)
+
+  expect(props.constants.description).toBeInstanceOf(Array)
+
+  if (Array.isArray(props.constants.description)) {
+    props.constants.description.forEach((paragraph) => {
+      expect(getByText(paragraph)).toBeInTheDocument()
+    })
+  }
+})
 
 it.todo('shows flavor text')
 
 it.todo('shows cost')
+
+it.todo('shows rank icon for elites')
