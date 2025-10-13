@@ -1,6 +1,6 @@
 import {
-  character,
-  instant,
+  createCharacter,
+  createInstant,
   TempleGuardDefinition,
   YoraSkullDefinition,
 } from '@/data'
@@ -43,7 +43,7 @@ describe('character', () => {
     const characterDefinition = TempleGuardDefinition
     const cardDefinitionId = characterDefinition.id
 
-    const result = character(characterDefinition)
+    const result = createCharacter(characterDefinition)
 
     checkCardDefinition(characterDefinition, result, cardDefinitionId)
   })
@@ -54,7 +54,7 @@ describe('instant', () => {
     const characterDefinition = YoraSkullDefinition
     const cardDefinitionId = characterDefinition.id
 
-    const result = instant(characterDefinition)
+    const result = createInstant(characterDefinition)
 
     checkCardDefinition(characterDefinition, result, cardDefinitionId)
   })

@@ -1,7 +1,7 @@
 import { getCardText } from '@/i18n'
 import { CharacterDefinition, DefinitionArgs, InstantDefinition } from '@/types'
 
-export const character = (
+export const createCharacter = (
   definition: DefinitionArgs<CharacterDefinition>,
 ): CharacterDefinition => ({
   ...definition,
@@ -12,7 +12,7 @@ export const character = (
   },
 })
 
-export const instant = (
+export const createInstant = (
   definition: DefinitionArgs<InstantDefinition>,
 ): InstantDefinition => ({
   ...definition,

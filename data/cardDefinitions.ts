@@ -2,9 +2,9 @@ import {
   CardCategories,
   CardDefinitionIds,
   CardRanks,
-  character,
+  createCharacter,
   Factions,
-  instant,
+  createInstant,
 } from '@/data'
 import {
   CardDefinition,
@@ -36,11 +36,11 @@ export const YoraSkullDefinition: DefinitionArgs<InstantDefinition> = {
 }
 
 export const cardDefinitions = {
-  TempleGuard: character(TempleGuardDefinition),
+  TempleGuard: createCharacter(TempleGuardDefinition),
 
-  YoraSkull: instant(YoraSkullDefinition),
+  YoraSkull: createInstant(YoraSkullDefinition),
 
-  Novice: character({
+  Novice: createCharacter({
     id: CardDefinitionIds.Novice,
     faction: Factions.Order,
     categories: [CardCategories.Hammerite],
@@ -51,7 +51,7 @@ export const cardDefinitions = {
     },
   }),
 
-  Haunt: character({
+  Haunt: createCharacter({
     id: CardDefinitionIds.Haunt,
     faction: Factions.Chaos,
     categories: [CardCategories.Undead],
@@ -62,7 +62,7 @@ export const cardDefinitions = {
     },
   }),
 
-  Downwinder: character({
+  Downwinder: createCharacter({
     id: CardDefinitionIds.Downwinder,
     faction: Factions.Shadow,
     categories: [CardCategories.Thief],
@@ -73,7 +73,7 @@ export const cardDefinitions = {
     },
   }),
 
-  Cook: character({
+  Cook: createCharacter({
     id: CardDefinitionIds.Cook,
     faction: Factions.Neutral,
     categories: [CardCategories.Servant],
