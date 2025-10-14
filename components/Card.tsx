@@ -23,7 +23,7 @@ export const Card: React.FC<CardDefinition> = (props) => {
 
   return (
     <div className="bg-surface w-52 h-74 flex flex-col spac rounded-lg shadow-md relative p-2 border-[] box-border border-1 border-foreground/10">
-      <header className={`flex-col h-13 ${boxClassNames} pb-1`}>
+      <header className={`flex-col h-12 ${boxClassNames}`}>
         <h2>{name}</h2>
 
         <div className="text-xs">{joinStringsWithComma(categories)}</div>
