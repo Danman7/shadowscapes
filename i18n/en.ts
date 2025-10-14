@@ -2,7 +2,7 @@ import {
   CardDefinitionIds,
   TEMPLE_GUARD_BOOST,
   YORA_SKULL_BOOST,
-} from '@/data/constants'
+} from '@/data/cardConstants'
 import { CardDefinitionId } from '@/types'
 
 type DefinitionText = {

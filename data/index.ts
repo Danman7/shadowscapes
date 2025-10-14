@@ -1,3 +1,3 @@
 export * from '@/data/constructors'
-export * from '@/data/constants'
+export * from '@/data/cardConstants'
 export * from '@/data/cardDefinitions'
