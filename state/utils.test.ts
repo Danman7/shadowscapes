@@ -1,5 +1,10 @@
 import { CardZones } from '@/state/duelConstants'
-import { clone, generateRandomId, getZoneKey } from '@/state/utils'
+import {
+  clone,
+  flipCoinForFirstPlayer,
+  generateRandomId,
+  getZoneKey,
+} from '@/state/utils'
 
 describe('generateRandomId', () => {
   const uuidV4Regex =
@@ -46,5 +51,21 @@ describe('clone', () => {
     expect(clone(123)).toBe(123)
     expect(clone('abc')).toBe('abc')
     expect(clone(null)).toBeNull()
+  })
+})
+
+describe('flipCoinForFirstPlayer', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('returns Player1 when Math.random() < 0.5', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.1)
+    expect(flipCoinForFirstPlayer()).toBe('Player1')
+  })
+
+  it('returns Player2 when Math.random() >= 0.5', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.5)
+    expect(flipCoinForFirstPlayer()).toBe('Player2')
   })
 })

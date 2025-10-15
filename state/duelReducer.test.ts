@@ -83,6 +83,16 @@ it('should convert users to players and reset state when START_DUEL is dispatche
   }
 })
 
+it('should update activePlayerId based on coin flip when FLIP_COIN_FOR_FIRST_PLAYER is dispatched', () => {
+  const action: DuelAction = { type: 'FLIP_COIN_FOR_FIRST_PLAYER' }
+
+  jest.spyOn(Math, 'random').mockReturnValue(0.5)
+
+  const { activePlayerId } = duelReducer(initialDuelState, action)
+
+  expect(activePlayerId).toBe('Player2')
+})
+
 it('should handle START_INITIAL_DRAW action', () => {
   const action: StartInitialDrawAction = { type: 'START_INITIAL_DRAW' }
 

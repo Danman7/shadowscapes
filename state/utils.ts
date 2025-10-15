@@ -12,3 +12,6 @@ export const getZoneKey = (playerId: DuelPlayerId, zone: CardZone): ZoneKey => {
 }
 
 export const clone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj))
+
+export const flipCoinForFirstPlayer = (): DuelPlayerId =>
+  Math.random() < 0.5 ? 'Player1' : 'Player2'

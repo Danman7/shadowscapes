@@ -31,14 +31,14 @@ export interface DuelState {
   activePlayerId: DuelPlayerId
 }
 
-export type StartInitialDrawAction = {
-  type: 'START_INITIAL_DRAW'
-}
-
 export type DuelReadyUser = {
   id: string
   name: string
   deck: CardDefinitionId[]
+}
+
+export type StartInitialDrawAction = {
+  type: 'START_INITIAL_DRAW'
 }
 
 export type StartDuelAction = {
@@ -46,6 +46,13 @@ export type StartDuelAction = {
   players: [DuelReadyUser, DuelReadyUser]
 }
 
-export type DuelAction = StartInitialDrawAction | StartDuelAction
+export type flipCoinForFirstPlayer = {
+  type: 'FLIP_COIN_FOR_FIRST_PLAYER'
+}
+
+export type DuelAction =
+  | StartInitialDrawAction
+  | StartDuelAction
+  | flipCoinForFirstPlayer
 
 export type UpdatePlayerProps = Partial<Omit<Player, 'id'>>

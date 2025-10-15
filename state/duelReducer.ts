@@ -1,5 +1,6 @@
 import { DuelBuilder } from '@/state/duelBuilder'
 import { DuelPhases } from '@/state/duelConstants'
+import { flipCoinForFirstPlayer } from '@/state/utils'
 import { DuelAction, DuelState } from '@/types'
 
 export const duelReducer = (
@@ -30,6 +31,13 @@ export const duelReducer = (
           player2.deck.map((definitionId) => ({ definitionId })),
         )
         .build()
+    }
+
+    case 'FLIP_COIN_FOR_FIRST_PLAYER': {
+      return {
+        ...state,
+        activePlayerId: flipCoinForFirstPlayer(),
+      }
     }
 
     case 'START_INITIAL_DRAW':
