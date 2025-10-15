@@ -14,10 +14,12 @@ export interface CardInstance {
   ownerId: DuelPlayerId
 }
 
-interface Player {
+export interface Player {
   id: DuelPlayerId
   name: string
   coins: number
+  userId: string
+  hasPerformedAction: boolean
 }
 
 export interface DuelState {
@@ -33,4 +35,17 @@ export type StartInitialDrawAction = {
   type: 'START_INITIAL_DRAW'
 }
 
-export type DuelAction = StartInitialDrawAction
+export type DuelReadyUser = {
+  id: string
+  name: string
+  deck: CardDefinitionId[]
+}
+
+export type StartDuelAction = {
+  type: 'START_DUEL'
+  players: [DuelReadyUser, DuelReadyUser]
+}
+
+export type DuelAction = StartInitialDrawAction | StartDuelAction
+
+export type UpdatePlayerProps = Partial<Omit<Player, 'id'>>

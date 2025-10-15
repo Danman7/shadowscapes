@@ -36,11 +36,15 @@ export const initialDuelState: DuelState = {
       id: 'Player1',
       name: '',
       coins: INITIAL_DUEL_PLAYER_COINS,
+      userId: '',
+      hasPerformedAction: false,
     },
     Player2: {
       id: 'Player2',
       name: '',
       coins: INITIAL_DUEL_PLAYER_COINS,
+      userId: '',
+      hasPerformedAction: false,
     },
   },
 }

@@ -1,5 +1,7 @@
 import {
+  BROTHER_SACHELMAN_BOOST,
   CardDefinitionIds,
+  ELEVATED_ACOLYTE_SELF_DAMAGE,
   TEMPLE_GUARD_BOOST,
   YORA_SKULL_BOOST,
 } from '@/data/cardConstants'
@@ -58,6 +60,41 @@ export const en = {
       flavor:
         "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced.",
       description: 'On play draw a card.',
+    },
+
+    [CardDefinitionIds.ElevatedAcolyte]: {
+      name: 'Elevated Acolyte',
+      flavor:
+        'He will endure a standard three-year contract of service, at the end of which he will be considered for indoctrination as an Elevated Acolyte.',
+      description: `-${ELEVATED_ACOLYTE_SELF_DAMAGE} on play if not played next to a stronger Hammerite.`,
+    },
+
+    [CardDefinitionIds.BrotherSachelman]: {
+      name: 'Brother Sachelman',
+      flavor:
+        'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
+      description: `Boost all controlled Hammerites with lower strength than this card by ${BROTHER_SACHELMAN_BOOST}.`,
+    },
+
+    [CardDefinitionIds.Zombie]: {
+      name: 'Zombie',
+      flavor:
+        "The zombie's antipathy for all living creatures is both its strength and weakness.",
+      description:
+        'On play also play all copies of this card from your discard.',
+    },
+
+    [CardDefinitionIds.Apparition]: {
+      name: 'Apparition',
+      flavor: '',
+      description: '',
+    },
+
+    [CardDefinitionIds.AzaranTheCruel]: {
+      name: 'Azaran the Cruel',
+      flavor:
+        "Be warned! The truth is hidden from the unworthy. Blacken thy heart, or face the prisoners of flesh. -- Azaran's last mortal written words",
+      description: 'On play, play an artifact from your hand or deck.',
     },
   },
 } satisfies {

@@ -83,4 +83,59 @@ export const cardDefinitions = {
       rank: CardRanks.Common,
     },
   }),
+
+  Zombie: createCharacter({
+    id: CardDefinitionIds.Zombie,
+    faction: Factions.Chaos,
+    categories: [CardCategories.Undead],
+    cost: 1,
+    strength: 1,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
+
+  Apparition: createCharacter({
+    id: CardDefinitionIds.Apparition,
+    faction: Factions.Chaos,
+    categories: [CardCategories.Undead],
+    cost: 5,
+    strength: 5,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
+
+  [CardDefinitionIds.AzaranTheCruel]: createCharacter({
+    id: CardDefinitionIds.AzaranTheCruel,
+    faction: Factions.Chaos,
+    categories: [CardCategories.Necromancer],
+    cost: 8,
+    strength: 3,
+    constants: {
+      rank: CardRanks.Elite,
+    },
+  }),
+
+  BrotherSachelman: createCharacter({
+    id: CardDefinitionIds.BrotherSachelman,
+    faction: Factions.Order,
+    categories: [CardCategories.Hammerite],
+    cost: 5,
+    strength: 3,
+    constants: {
+      rank: CardRanks.Elite,
+    },
+  }),
+
+  ElevatedAcolyte: createCharacter({
+    id: CardDefinitionIds.ElevatedAcolyte,
+    faction: Factions.Order,
+    categories: [CardCategories.Hammerite],
+    cost: 2,
+    strength: 3,
+    constants: {
+      rank: CardRanks.Common,
+    },
+  }),
 } satisfies Record<CardDefinitionId, CardDefinition>

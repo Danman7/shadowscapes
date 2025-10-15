@@ -5,6 +5,7 @@ import {
   CardZone,
   DuelPlayerId,
   DuelState,
+  UpdatePlayerProps,
   ZoneKey,
 } from '@/types'
 
@@ -25,6 +26,15 @@ export class DuelBuilder {
     }
 
     return cardInstanceId
+  }
+
+  updatePlayer(playerId: DuelPlayerId, props: UpdatePlayerProps) {
+    this.state.players[playerId] = {
+      ...this.state.players[playerId],
+      ...props,
+    }
+
+    return this
   }
 
   putCardsInZone(

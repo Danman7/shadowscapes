@@ -1,12 +1,34 @@
 import { DuelBuilder } from '@/state/duelBuilder'
 import { CardZones } from '@/state/duelConstants'
 import { getZoneKey } from '@/state/utils'
+import { UpdatePlayerProps } from '@/types'
+
+it('updates player props', () => {
+  const updatedPlayerProps: UpdatePlayerProps = {
+    name: 'Garrett',
+    coins: 5,
+    userId: 'user-123',
+    hasPerformedAction: true,
+  }
+
+  const { players } = new DuelBuilder()
+    .updatePlayer('Player1', updatedPlayerProps)
+    .build()
+
+  expect(players.Player1.id).toBe('Player1')
+  expect(players.Player1.name).toBe(updatedPlayerProps.name)
+  expect(players.Player1.coins).toBe(updatedPlayerProps.coins)
+  expect(players.Player1.userId).toBe(updatedPlayerProps.userId)
+  expect(players.Player1.hasPerformedAction).toBe(
+    updatedPlayerProps.hasPerformedAction,
+  )
+})
 
 it('create new card instances with defined ids', () => {
   const card1Id = 'c1'
   const card2Id = 'c2'
 
-  const { cards, zones, cardZone } = new DuelBuilder()
+  const { cards, zones, cardZone, activePlayerId } = new DuelBuilder()
     .putCardsInZone('Player1', CardZones.Deck, [
       { definitionId: 'TempleGuard', id: card1Id },
     ])
@@ -32,6 +54,8 @@ it('create new card instances with defined ids', () => {
 
   expect(cardZone[card1Id]).toBe(getZoneKey('Player1', CardZones.Deck))
   expect(cardZone[card2Id]).toBe(getZoneKey('Player2', CardZones.Hand))
+
+  expect(activePlayerId).toBe('Player1')
 })
 
 it('create new card instances with random ids', () => {

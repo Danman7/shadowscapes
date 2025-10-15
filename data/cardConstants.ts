@@ -5,6 +5,7 @@ export const CardCategories = {
   Thief: 'Thief',
   Artifact: 'Artifact',
   Servant: 'Servant',
+  Necromancer: 'Necromancer',
 } as const
 
 export const Factions = {
@@ -26,7 +27,14 @@ export const CardDefinitionIds = {
   Haunt: 'Haunt',
   Downwinder: 'Downwinder',
   Cook: 'Cook',
+  ElevatedAcolyte: 'ElevatedAcolyte',
+  BrotherSachelman: 'BrotherSachelman',
+  Zombie: 'Zombie',
+  Apparition: 'Apparition',
+  AzaranTheCruel: 'Azaran the Cruel',
 } as const
 
 export const TEMPLE_GUARD_BOOST = 1
 export const YORA_SKULL_BOOST = 1
+export const ELEVATED_ACOLYTE_SELF_DAMAGE = 1
+export const BROTHER_SACHELMAN_BOOST = 1
