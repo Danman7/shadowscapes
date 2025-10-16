@@ -14,7 +14,12 @@ type DefinitionText = {
 }
 
 export const en = {
-  ui: {},
+  board: {
+    duel: 'Duel',
+    vs: 'VS',
+    firstPlayer: '{playerName} plays first.',
+  },
+
   definitions: {
     [CardDefinitionIds.Novice]: {
       name: 'Novice',
@@ -98,6 +103,6 @@ export const en = {
     },
   },
 } satisfies {
-  ui: Record<string, string>
+  board: Record<string, string>
   definitions: Record<CardDefinitionId, DefinitionText>
 }

@@ -1,5 +1,5 @@
 import { CardRanks, Factions } from '@/data'
-import { CardRank, Faction } from '@/types'
+import { CardRank, DuelPlayerId, Faction } from '@/types'
 
 export const getFactionBgClassName = (faction: Faction): string => {
   switch (faction) {
@@ -51,3 +51,6 @@ export const getDescriptionParagraphs = (
       ))
     : description
 }
+
+export const getPlayerColorClassName = (playerId: DuelPlayerId): string =>
+  playerId === 'Player1' ? 'text-first-player' : 'text-second-player'

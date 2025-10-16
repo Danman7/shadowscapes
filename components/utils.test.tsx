@@ -4,10 +4,12 @@ import {
   getDescriptionParagraphs,
   getFactionBgClassName,
   getFactionTextClassName,
+  getPlayerColorClassName,
   getRankBorderClassName,
   joinStringsWithComma,
 } from '@/components/utils'
 import { cardDefinitions, CardRanks, Factions } from '@/data'
+import { DuelPlayerId } from '@/types'
 
 describe('getFactionBgClassName', () => {
   it.each([
@@ -73,5 +75,14 @@ describe('getDescriptionParagraphs', () => {
     const result = getDescriptionParagraphs([])
     const { container } = render(<div>{result}</div>)
     expect(container.querySelectorAll('p')).toHaveLength(0)
+  })
+})
+
+describe('getPlayerColorClassName', () => {
+  it.each([
+    ['Player1', 'text-first-player'],
+    ['Player2', 'text-second-player'],
+  ])('gets color for %s', (playerId, expected) => {
+    expect(getPlayerColorClassName(playerId as DuelPlayerId)).toBe(expected)
   })
 })

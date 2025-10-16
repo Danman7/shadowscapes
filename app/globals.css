@@ -10,6 +10,8 @@
   --order: var(--color-red-800);
   --chaos: var(--color-green-800);
   --shadow: var(--color-violet-800);
+  --firstPlayer: var(--color-red-500);
+  --secondPlayer: var(--color-blue-500);
 }
 
 @theme inline {
@@ -23,8 +25,74 @@
   --color-elite: var(--elite);
   --color-common: var(--common);
   --color-light: var(--light);
+  --color-first-player: var(--firstPlayer);
+  --color-second-player: var(--secondPlayer);
   --font-serif:
     var(--font-noto-serif), Georgia, 'Times New Roman', Times, serif;
+
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  --animate-fade-in-scale-up-slow: 0.5s fadeInScaleUp ease-in-out both;
+
+  --animate-fade-in-scale-up-slow-delayed: 0.5s fadeInScaleUp 0.5s ease-in-out
+    both;
+
+  --animate-fade-in-scale-up-xl-delayed: 0.5s fadeInScaleUp 1s ease-in-out both;
+
+  @keyframes fadeInScaleUp {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  --animate-slide-in-from-left-slow: 1s slideInFromLeft both;
+  --animate-slide-in-from-right-slow: 1s slideInFromRight both;
+
+  @keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInFromRight {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  --animate-ping-once: 0.5s ping 1.8s cubic-bezier(0, 0, 0.2, 1);
+
+  @keyframes ping {
+    75% {
+      transform: scale(1.5);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
 }
 
 /* @media (prefers-color-scheme: dark) {
