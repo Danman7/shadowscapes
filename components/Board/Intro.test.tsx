@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 
 import { Intro, IntroProps } from '@/components/Board/Intro'
+import { formatString, messages } from '@/i18n'
 
 const props: IntroProps = {
   firstPlayerId: 'Player1',
@@ -17,6 +18,26 @@ it('shows both player names', () => {
   expect(getByText(props.playerNames.Player2)).toBeInTheDocument()
 })
 
-it.todo('shows if first player goes first')
+it('shows if first player goes first', () => {
+  const { getByText } = render(<Intro {...props} />)
 
-it.todo('shows if second player goes first')
+  expect(
+    getByText(
+      formatString(messages.board.firstPlayer, {
+        playerName: props.playerNames[props.firstPlayerId],
+      }),
+    ),
+  ).toBeInTheDocument()
+})
+
+it('shows if second player goes first', () => {
+  const { getByText } = render(<Intro {...props} firstPlayerId="Player2" />)
+
+  expect(
+    getByText(
+      formatString(messages.board.firstPlayer, {
+        playerName: props.playerNames['Player2'],
+      }),
+    ),
+  ).toBeInTheDocument()
+})
