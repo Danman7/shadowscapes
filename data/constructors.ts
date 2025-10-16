@@ -7,7 +7,6 @@ export const createCharacter = (
   ...definition,
   kind: 'Character' as const,
   constants: {
-    rank: definition.constants.rank,
     ...getCardText(definition.id),
   },
 })
@@ -18,7 +17,6 @@ export const createInstant = (
   ...definition,
   kind: 'Instant' as const,
   constants: {
-    rank: definition.constants.rank,
     ...getCardText(definition.id),
   },
 })

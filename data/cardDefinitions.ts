@@ -20,9 +20,7 @@ export const TempleGuardDefinition: DefinitionArgs<CharacterDefinition> = {
   categories: [CardCategories.Hammerite, CardCategories.Guard],
   cost: 4,
   strength: 4,
-  constants: {
-    rank: CardRanks.Common,
-  },
+  rank: CardRanks.Common,
 }
 
 export const YoraSkullDefinition: DefinitionArgs<InstantDefinition> = {
@@ -30,9 +28,7 @@ export const YoraSkullDefinition: DefinitionArgs<InstantDefinition> = {
   faction: Factions.Order,
   categories: [CardCategories.Hammerite, CardCategories.Artifact],
   cost: 5,
-  constants: {
-    rank: CardRanks.Elite,
-  },
+  rank: CardRanks.Elite,
 }
 
 export const cardDefinitions = {
@@ -46,9 +42,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Hammerite],
     cost: 2,
     strength: 2,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   Haunt: createCharacter({
@@ -57,9 +51,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Undead],
     cost: 4,
     strength: 4,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   Downwinder: createCharacter({
@@ -68,9 +60,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Thief],
     cost: 3,
     strength: 3,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   Cook: createCharacter({
@@ -79,9 +69,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Servant],
     cost: 2,
     strength: 1,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   Zombie: createCharacter({
@@ -90,9 +78,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Undead],
     cost: 1,
     strength: 1,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   Apparition: createCharacter({
@@ -101,9 +87,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Undead],
     cost: 5,
     strength: 5,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 
   [CardDefinitionIds.AzaranTheCruel]: createCharacter({
@@ -112,9 +96,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Necromancer],
     cost: 8,
     strength: 3,
-    constants: {
-      rank: CardRanks.Elite,
-    },
+    rank: CardRanks.Elite,
   }),
 
   BrotherSachelman: createCharacter({
@@ -123,9 +105,7 @@ export const cardDefinitions = {
     categories: [CardCategories.Hammerite],
     cost: 5,
     strength: 3,
-    constants: {
-      rank: CardRanks.Elite,
-    },
+    rank: CardRanks.Elite,
   }),
 
   ElevatedAcolyte: createCharacter({
@@ -134,8 +114,6 @@ export const cardDefinitions = {
     categories: [CardCategories.Hammerite],
     cost: 2,
     strength: 3,
-    constants: {
-      rank: CardRanks.Common,
-    },
+    rank: CardRanks.Common,
   }),
 } satisfies Record<CardDefinitionId, CardDefinition>

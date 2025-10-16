@@ -30,12 +30,12 @@ const checkCardDefinition = (
   expect(result.cost).toBe(definition.cost)
   expect(result.constants).toEqual(
     expect.objectContaining({
-      rank: definition.constants.rank,
       name: messages.definitions[cardDefinitionId].name,
       flavor: messages.definitions[cardDefinitionId].flavor,
       description: messages.definitions[cardDefinitionId].description,
     }),
   )
+  expect(result.rank).toBe(definition.rank)
 }
 
 describe('character', () => {

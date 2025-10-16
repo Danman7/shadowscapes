@@ -14,11 +14,11 @@ type CardDefinitionBase = {
   cost: number
   categories: CardCategory[]
   faction: Faction
+  rank: CardRank
   constants: {
     name: string
     description: string | string[]
     flavor: string
-    rank: CardRank
   }
 }
 
@@ -37,5 +37,5 @@ export type DefinitionArgs<T extends CardDefinition> = Omit<
   T,
   'kind' | 'constants'
 > & {
-  constants: Pick<T['constants'], 'rank'>
+  // No constants required at definition time; rank is at the top level now
 }

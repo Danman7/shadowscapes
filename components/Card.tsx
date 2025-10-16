@@ -15,8 +15,8 @@ import { CardRanks } from '@/data'
 import { CardDefinition, isCharacter } from '@/types'
 
 export const Card: React.FC<CardDefinition> = (props) => {
-  const { constants, categories, faction } = props
-  const { name, rank, description, flavor } = constants
+  const { constants, categories, faction, rank } = props
+  const { name, description, flavor } = constants
 
   const boxClassNames = getColoredBoxClassNames(rank, faction)
   const paragraphs = getDescriptionParagraphs(description)
