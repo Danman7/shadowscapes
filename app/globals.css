@@ -12,6 +12,22 @@
   --shadow: var(--color-violet-800);
   --firstPlayer: var(--color-red-500);
   --secondPlayer: var(--color-blue-500);
+
+  --card-back: repeating-linear-gradient(
+    45deg,
+    var(--color-surface),
+    var(--color-surface) 10px,
+    var(--color-foreground) 10px,
+    var(--color-foreground) 20px
+  );
+
+  --card-back-small: repeating-linear-gradient(
+    45deg,
+    var(--color-surface),
+    var(--color-surface) 5px,
+    var(--color-foreground) 5px,
+    var(--color-foreground) 10px
+  );
 }
 
 @theme inline {

@@ -10,7 +10,7 @@ import {
 } from '@/data'
 
 const meta: Meta<typeof Card> = {
-  title: 'Card',
+  title: 'Cards/Card',
   component: Card,
   parameters: {
     layout: 'centered',
