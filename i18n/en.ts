@@ -14,10 +14,12 @@ type DefinitionText = {
 }
 
 export const en = {
-  board: {
+  duel: {
     duel: 'Duel',
     vs: 'VS',
     firstPlayer: '{playerName} plays first.',
+    contextError:
+      'Duel context is not available. Please ensure you are within a DuelProvider.',
   },
 
   definitions: {
@@ -103,6 +105,6 @@ export const en = {
     },
   },
 } satisfies {
-  board: Record<string, string>
+  duel: Record<string, string>
   definitions: Record<CardDefinitionId, DefinitionText>
 }

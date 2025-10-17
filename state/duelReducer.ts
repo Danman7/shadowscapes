@@ -1,6 +1,8 @@
-import { DuelBuilder } from '@/state/duelBuilder'
 import { DuelPhases } from '@/state/duelConstants'
-import { flipCoinForFirstPlayer } from '@/state/utils'
+import {
+  flipCoinForFirstPlayer,
+  setInitialPlayersFromUserDecks,
+} from '@/state/utils'
 import { DuelAction, DuelState } from '@/types'
 
 export const duelReducer = (
@@ -9,28 +11,7 @@ export const duelReducer = (
 ): DuelState => {
   switch (action.type) {
     case 'START_DUEL': {
-      const [player1, player2] = action.players
-
-      return new DuelBuilder()
-        .updatePlayer('Player1', {
-          name: player1.name,
-          userId: player1.id,
-        })
-        .updatePlayer('Player2', {
-          name: player2.name,
-          userId: player2.id,
-        })
-        .putCardsInZone(
-          'Player1',
-          'Deck',
-          player1.deck.map((definitionId) => ({ definitionId })),
-        )
-        .putCardsInZone(
-          'Player2',
-          'Deck',
-          player2.deck.map((definitionId) => ({ definitionId })),
-        )
-        .build()
+      return setInitialPlayersFromUserDecks(action.players)
     }
 
     case 'FLIP_COIN_FOR_FIRST_PLAYER': {

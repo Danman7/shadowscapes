@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
-import { Intro } from '@/components/Board/Intro'
+import { Intro } from '@/components/Duel/Intro'
 
 const meta: Meta<typeof Intro> = {
   title: 'Board/Intro',

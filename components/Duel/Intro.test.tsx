@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { Intro, IntroProps } from '@/components/Board/Intro'
+import { Intro, IntroProps } from '@/components/Duel/Intro'
 import { formatString, messages } from '@/i18n'
 
 const props: IntroProps = {
@@ -23,8 +23,8 @@ it('shows if first player goes first', () => {
 
   expect(
     getByText(
-      formatString(messages.board.firstPlayer, {
-        playerName: props.playerNames[props.firstPlayerId],
+      formatString(messages.duel.firstPlayer, {
+        playerName: props.playerNames.Player1,
       }),
     ),
   ).toBeInTheDocument()
@@ -35,8 +35,8 @@ it('shows if second player goes first', () => {
 
   expect(
     getByText(
-      formatString(messages.board.firstPlayer, {
-        playerName: props.playerNames['Player2'],
+      formatString(messages.duel.firstPlayer, {
+        playerName: props.playerNames.Player2,
       }),
     ),
   ).toBeInTheDocument()

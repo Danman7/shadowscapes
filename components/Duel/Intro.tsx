@@ -31,7 +31,7 @@ export const Intro = ({ playerNames, firstPlayerId }: IntroProps) => (
       <span
         className={`font-bold inline-block animate-ping-once ${getPlayerColorClassName(firstPlayerId)}`}
       >
-        {formatString(messages.board.firstPlayer, {
+        {formatString(messages.duel.firstPlayer, {
           playerName: playerNames[firstPlayerId],
         })}
       </span>
