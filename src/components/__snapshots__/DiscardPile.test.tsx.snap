@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DiscardPile > renders discard pile with cards 1`] = `
+<div
+  class="flex flex-col items-center gap-2"
+  data-testid="discard-pile"
+>
+  <div
+    class="text-sm font-semibold text-gray-700"
+  >
+    Discard
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="w-32 h-40 rounded-lg bg-gradient-to-b from-slate-700 to-slate-900 "
+      data-testid="card-back"
+    />
+    <div
+      class="absolute -bottom-2 -right-2 bg-gray-800 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+      data-testid="discard-count"
+    >
+      5
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DiscardPile > renders empty discard pile 1`] = `
+<div
+  class="flex flex-col items-center gap-2"
+  data-testid="discard-pile"
+>
+  <div
+    class="text-sm font-semibold text-gray-700"
+  >
+    Discard
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="text-gray-400 italic text-sm"
+      data-testid="discard-empty"
+    >
+      Empty
+    </div>
+  </div>
+</div>
+`;

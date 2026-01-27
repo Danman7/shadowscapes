@@ -1,0 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap");
+
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+html {
+  font-family: "Noto Serif", serif;
+}

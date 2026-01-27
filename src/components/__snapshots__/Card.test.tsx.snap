@@ -1,0 +1,116 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Card > renders character card with strength 1`] = `
+<div
+  class="w-32 h-40 rounded-lg border-2 border-red-500 bg-slate-100 p-3 flex flex-col gap-2 cursor-pointer hover:shadow-lg transition-shadow relative "
+  data-testid="card"
+>
+  <div
+    class="flex justify-between items-start gap-1"
+  >
+    <span
+      class="font-bold text-sm leading-tight flex-1"
+    >
+      Zombie
+    </span>
+    <span
+      class="font-bold text-xs bg-gray-300 px-1 rounded"
+    >
+      1
+    </span>
+  </div>
+  <div
+    class="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded text-center"
+  >
+    Character
+  </div>
+  <div
+    class="text-xs text-gray-700 flex-grow overflow-hidden"
+  >
+    <p
+      class="mb-1"
+    >
+      A shambling undead creature.
+    </p>
+    <p
+      class="mb-1"
+    >
+      Slow but relentless.
+    </p>
+  </div>
+  <div
+    class="text-xs italic text-gray-600 border-t pt-1"
+  >
+    On play, spawn all copies of this card from your discard pile.
+  </div>
+  <div
+    class="flex justify-between items-end"
+  >
+    <span
+      class="text-xs font-bold text-red-500"
+    >
+      CHAOS
+    </span>
+    <div
+      class="w-6 h-6 rounded-full bg-yellow-400 border-2 border-yellow-600 flex items-center justify-center text-xs font-bold"
+    >
+      2
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Card > renders instant card without strength 1`] = `
+<div
+  class="w-32 h-40 rounded-lg border-2 border-red-500 bg-slate-100 p-3 flex flex-col gap-2 cursor-pointer hover:shadow-lg transition-shadow relative "
+  data-testid="card"
+>
+  <div
+    class="flex justify-between items-start gap-1"
+  >
+    <span
+      class="font-bold text-sm leading-tight flex-1"
+    >
+      Haunt
+    </span>
+    <span
+      class="font-bold text-xs bg-gray-300 px-1 rounded"
+    >
+      3
+    </span>
+  </div>
+  <div
+    class="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded text-center"
+  >
+    Character
+  </div>
+  <div
+    class="text-xs text-gray-700 flex-grow overflow-hidden"
+  >
+    <p
+      class="mb-1"
+    >
+      Whenever a foe character enters play, attack it immediately.
+    </p>
+  </div>
+  <div
+    class="text-xs italic text-gray-600 border-t pt-1"
+  >
+    These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus
+  </div>
+  <div
+    class="flex justify-between items-end"
+  >
+    <span
+      class="text-xs font-bold text-red-500"
+    >
+      CHAOS
+    </span>
+    <div
+      class="w-6 h-6 rounded-full bg-yellow-400 border-2 border-yellow-600 flex items-center justify-center text-xs font-bold"
+    >
+      4
+    </div>
+  </div>
+</div>
+`;

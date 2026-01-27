@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Hand > renders active hand with visible cards 1`] = `
+<div
+  class="flex gap-2 flex-wrap justify-center p-4"
+  data-testid="hand"
+>
+  <div
+    class="w-32 h-40 rounded-lg border-2 border-red-500 bg-slate-100 p-3 flex flex-col gap-2 cursor-pointer hover:shadow-lg transition-shadow relative "
+    data-testid="card"
+  >
+    <div
+      class="flex justify-between items-start gap-1"
+    >
+      <span
+        class="font-bold text-sm leading-tight flex-1"
+      >
+        Zombie
+      </span>
+      <span
+        class="font-bold text-xs bg-gray-300 px-1 rounded"
+      >
+        1
+      </span>
+    </div>
+    <div
+      class="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded text-center"
+    >
+      Character
+    </div>
+    <div
+      class="text-xs text-gray-700 flex-grow overflow-hidden"
+    >
+      <p
+        class="mb-1"
+      >
+        A shambling undead creature.
+      </p>
+      <p
+        class="mb-1"
+      >
+        Slow but relentless.
+      </p>
+    </div>
+    <div
+      class="text-xs italic text-gray-600 border-t pt-1"
+    >
+      On play, spawn all copies of this card from your discard pile.
+    </div>
+    <div
+      class="flex justify-between items-end"
+    >
+      <span
+        class="text-xs font-bold text-red-500"
+      >
+        CHAOS
+      </span>
+      <div
+        class="w-6 h-6 rounded-full bg-yellow-400 border-2 border-yellow-600 flex items-center justify-center text-xs font-bold"
+      >
+        2
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-32 h-40 rounded-lg border-2 border-red-500 bg-slate-100 p-3 flex flex-col gap-2 cursor-pointer hover:shadow-lg transition-shadow relative "
+    data-testid="card"
+  >
+    <div
+      class="flex justify-between items-start gap-1"
+    >
+      <span
+        class="font-bold text-sm leading-tight flex-1"
+      >
+        Book of Ash
+      </span>
+      <span
+        class="font-bold text-xs bg-gray-300 px-1 rounded"
+      >
+        4
+      </span>
+    </div>
+    <div
+      class="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded text-center"
+    >
+      Instant
+    </div>
+    <div
+      class="text-xs text-gray-700 flex-grow overflow-hidden"
+    >
+      <p
+        class="mb-1"
+      >
+        Create and spawn a copy of Undead from your discard pile.
+      </p>
+    </div>
+    <div
+      class="text-xs italic text-gray-600 border-t pt-1"
+    >
+      I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words
+    </div>
+    <div
+      class="flex justify-between items-end"
+    >
+      <span
+        class="text-xs font-bold text-red-500"
+      >
+        CHAOS
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Hand > renders inactive hand with card backs 1`] = `
+<div
+  class="flex gap-2 flex-wrap justify-center p-4"
+  data-testid="hand"
+>
+  <div
+    class="w-32 h-40 rounded-lg bg-gradient-to-b from-slate-700 to-slate-900 "
+    data-testid="card-back"
+  />
+  <div
+    class="w-32 h-40 rounded-lg bg-gradient-to-b from-slate-700 to-slate-900 "
+    data-testid="card-back"
+  />
+</div>
+`;

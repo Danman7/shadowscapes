@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardBack > renders card back with default styling 1`] = `
+<div
+  class="w-32 h-40 rounded-lg bg-gradient-to-b from-slate-700 to-slate-900 "
+  data-testid="card-back"
+/>
+`;
