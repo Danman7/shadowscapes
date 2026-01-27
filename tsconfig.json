@@ -29,8 +29,12 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Include custom type definitions
+    "types": ["bun-types", "@testing-library/jest-dom"]
   },
 
+  "include": ["src/**/*", "src/test/matchers.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

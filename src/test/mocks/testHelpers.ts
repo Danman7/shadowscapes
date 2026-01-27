@@ -1,12 +1,12 @@
-import { vi } from 'vitest'
+import { spyOn } from 'bun:test'
 import type { Duel, Player, PlayerId, Phase } from '@/types'
 
 /**
  * Mocks Math.random to return a specific value
  * Returns the spy so it can be restored later
  */
-export function mockMathRandom(value: number): ReturnType<typeof vi.spyOn> {
-  return vi.spyOn(Math, 'random').mockReturnValue(value)
+export function mockMathRandom(value: number): ReturnType<typeof spyOn> {
+  return spyOn(Math, 'random').mockReturnValue(value)
 }
 
 /**

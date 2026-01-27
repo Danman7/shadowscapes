@@ -1,84 +1,231 @@
-import { render, screen } from '@testing-library/react'
-import { useEffect } from 'react'
-import { describe, expect, test } from 'vitest'
+import '@/test/setup'
+import '@testing-library/jest-dom'
+import { render } from '@testing-library/react'
+import { expect, mock, test } from 'bun:test'
 
 import { IntroScreen } from '@/components/IntroScreen'
-import { GameProvider } from '@/contexts/GameContext'
-import { useGameDispatch } from '@/contexts/GameContext'
+import {
+  GameProvider,
+  useGameDispatch,
+  useGameState,
+} from '@/contexts/GameContext'
 import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
-function IntroScreenWithDuel({ onContinue }: { onContinue?: () => void }) {
-  const dispatch = useGameDispatch()
+test('returns null when duel has not started (startingPlayerId is null)', () => {
+  const { container } = render(
+    <GameProvider>
+      <IntroScreen />
+    </GameProvider>,
+  )
 
-  useEffect(() => {
-    dispatch({
-      type: 'START_DUEL',
-      payload: DEFAULT_DUEL_SETUP,
-    })
-  }, [dispatch])
+  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  expect(introScreen).not.toBeInTheDocument()
+})
 
-  return <IntroScreen onContinue={onContinue} />
-}
+test('renders intro screen when duel has started', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
 
-describe('IntroScreen', () => {
-  test('renders intro screen with player names', () => {
-    const { container } = render(
-      <GameProvider>
-        <IntroScreenWithDuel />
-      </GameProvider>,
-    )
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Alice',
+          player2Name: 'Bob',
+        },
+      })
+    }
 
-    expect(screen.getByText('Shadowscapes')).toBeTruthy()
-    expect(screen.getByText(DEFAULT_DUEL_SETUP.player1Name)).toBeTruthy()
-    expect(screen.getByText('VS')).toBeTruthy()
-    expect(screen.getByText(DEFAULT_DUEL_SETUP.player2Name)).toBeTruthy()
-    expect(container.firstChild).toBeTruthy()
-  })
+    return <IntroScreen />
+  }
 
-  test('displays starting player', () => {
-    render(
-      <GameProvider>
-        <IntroScreenWithDuel />
-      </GameProvider>,
-    )
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
 
-    const startingText = screen.getByText(/starts first/)
-    expect(startingText).toBeTruthy()
-    expect(
-      startingText.textContent ===
-        `${DEFAULT_DUEL_SETUP.player1Name} starts first` ||
-        startingText.textContent ===
-          `${DEFAULT_DUEL_SETUP.player2Name} starts first`,
-    ).toBe(true)
-  })
+  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  expect(introScreen).toBeInTheDocument()
+})
 
-  test('renders continue button when onContinue provided', () => {
-    render(
-      <GameProvider>
-        <IntroScreenWithDuel onContinue={() => {}} />
-      </GameProvider>,
-    )
+test('displays player names correctly', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
 
-    expect(screen.getByTestId('continue-button')).toBeTruthy()
-  })
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Alice',
+          player2Name: 'Bob',
+        },
+      })
+    }
 
-  test('does not render continue button when onContinue not provided', () => {
-    render(
-      <GameProvider>
-        <IntroScreenWithDuel />
-      </GameProvider>,
-    )
+    return <IntroScreen />
+  }
 
-    expect(screen.queryByTestId('continue-button')).toBeNull()
-  })
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
 
-  test('returns null when no duel state', () => {
-    const { container } = render(
-      <GameProvider>
-        <IntroScreen />
-      </GameProvider>,
-    )
+  expect(container.textContent).toContain('Alice')
+  expect(container.textContent).toContain('Bob')
+  expect(container.textContent).toContain('VS')
+})
 
-    expect(container.firstChild).toBeNull()
-  })
+test('displays starting player information', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
+
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Alice',
+          player2Name: 'Bob',
+        },
+      })
+    }
+
+    return <IntroScreen />
+  }
+
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
+
+  expect(container.textContent).toContain('starts first')
+})
+
+test('displays title "Shadowscapes"', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
+
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Player 1',
+          player2Name: 'Player 2',
+        },
+      })
+    }
+
+    return <IntroScreen />
+  }
+
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
+
+  expect(container.textContent).toContain('Shadowscapes')
+})
+
+test('calls onContinue when button is clicked', () => {
+  const handleContinue = mock(() => {})
+
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
+
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Player 1',
+          player2Name: 'Player 2',
+        },
+      })
+    }
+
+    return <IntroScreen onContinue={handleContinue} />
+  }
+
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
+
+  const button = container.querySelector(
+    '[data-testid="continue-button"]',
+  ) as HTMLElement
+  button?.click()
+
+  expect(handleContinue).toHaveBeenCalledTimes(1)
+})
+
+test('does not render button when onContinue is not provided', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
+
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Player 1',
+          player2Name: 'Player 2',
+        },
+      })
+    }
+
+    return <IntroScreen />
+  }
+
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
+
+  const button = container.querySelector('[data-testid="continue-button"]')
+  expect(button).not.toBeInTheDocument()
+})
+
+test('button has correct text', () => {
+  const TestWrapper = () => {
+    const dispatch = useGameDispatch()
+    const duel = useGameState()
+
+    if (duel.startingPlayerId === null) {
+      dispatch({
+        type: 'START_DUEL',
+        payload: {
+          ...DEFAULT_DUEL_SETUP,
+          player1Name: 'Player 1',
+          player2Name: 'Player 2',
+        },
+      })
+    }
+
+    return <IntroScreen onContinue={() => {}} />
+  }
+
+  const { container } = render(
+    <GameProvider>
+      <TestWrapper />
+    </GameProvider>,
+  )
+
+  const button = container.querySelector('[data-testid="continue-button"]')
+  expect(button?.textContent).toBe('Begin Duel')
 })

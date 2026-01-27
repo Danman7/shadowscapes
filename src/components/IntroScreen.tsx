@@ -20,7 +20,7 @@ export function IntroScreen({ onContinue }: IntroScreenProps) {
 
   return (
     <div
-      className="w-full h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center"
+      className="w-full h-screen bg-linear-to-b from-slate-900 to-slate-800 flex items-center justify-center"
       data-testid="intro-screen"
     >
       <div className="text-center">

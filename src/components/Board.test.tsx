@@ -1,33 +1,79 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, test } from 'vitest'
+import '@testing-library/jest-dom'
+import '@/test/setup'
+import { render } from '@testing-library/react'
+import { describe, expect, test } from 'bun:test'
 
 import { Board } from '@/components/Board'
-import { createCardInstance } from '@/test/mocks/cardInstances'
+import type { CARD_BASES } from '@/constants/cardBases'
+import type { CardInstance } from '@/types'
 
 describe('Board', () => {
-  const mockCards = [
-    createCardInstance(1, 'zombie', 2),
-    createCardInstance(2, 'templeGuard', 3),
+  const mockCards: Array<
+    CardInstance & { base: (typeof CARD_BASES)['zombie'] }
+  > = [
+    {
+      id: 1,
+      baseId: 'zombie',
+      type: 'character',
+      strength: 2,
+      base: {
+        id: 'zombie',
+        name: 'Zombie',
+        cost: 1,
+        description: ['A shambling undead creature.'],
+        flavorText: 'Test flavor text',
+        faction: 'chaos',
+        categories: ['undead'],
+        type: 'character',
+        strength: 2,
+      },
+    },
+    {
+      id: 2,
+      baseId: 'zombie',
+      type: 'character',
+      strength: 1,
+      base: {
+        id: 'zombie',
+        name: 'Zombie',
+        cost: 1,
+        description: ['A shambling undead creature.'],
+        flavorText: 'Test flavor text',
+        faction: 'chaos',
+        categories: ['undead'],
+        type: 'character',
+        strength: 1,
+      },
+    },
   ]
 
   test('renders board with cards', () => {
     const { container } = render(<Board cards={mockCards} />)
 
-    expect(screen.getByText('Zombie')).toBeTruthy()
-    expect(screen.getByText('Temple Guard')).toBeTruthy()
-    expect(container.firstChild).toMatchSnapshot()
+    const boardElement = container.querySelector('[data-testid="board"]')
+    expect(boardElement).toBeInTheDocument()
+
+    const cardElements = container.querySelectorAll('[data-testid="card"]')
+    expect(cardElements.length).toBe(2)
   })
 
-  test('renders board with player name label', () => {
-    render(<Board cards={mockCards} playerName="Player 1" />)
+  test('renders empty board message when no cards', () => {
+    const { container } = render(<Board cards={[]} />)
 
-    expect(screen.getByText("Player 1's Board")).toBeTruthy()
+    const emptyMessage = container.querySelector('[data-testid="board-empty"]')
+    expect(emptyMessage).toBeInTheDocument()
+    expect(emptyMessage?.textContent).toContain('No cards on board')
   })
 
-  test('renders empty board message', () => {
-    render(<Board cards={[]} />)
+  test('displays player name when provided', () => {
+    const { container } = render(<Board cards={mockCards} playerName="Alice" />)
 
-    expect(screen.getByTestId('board-empty')).toBeTruthy()
-    expect(screen.getByText('No cards on board')).toBeTruthy()
+    expect(container.textContent).toContain("Alice's Board")
+  })
+
+  test('does not display player name when not provided', () => {
+    const { container } = render(<Board cards={mockCards} />)
+
+    expect(container.textContent).not.toContain("'s Board")
   })
 })

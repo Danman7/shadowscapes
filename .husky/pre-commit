@@ -5,5 +5,5 @@ set -e
 echo "Running staged lint/format checks (lint-staged)…"
 bunx lint-staged
 
-echo "Running full test suite (vitest run)…"
+echo "Running full test suite (bun test)…"
 bun run test:ci

@@ -34,10 +34,10 @@ export function createCardInstance(baseId: CardBaseId): CardInstance {
 /**
  * Shuffles an array using Fisher-Yates algorithm
  */
-export function shuffle<T>(array: T[]): T[] {
+export function shuffle<T>(array: T[], rng: () => number = Math.random): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    const j = Math.floor(rng() * (i + 1))
     const temp = shuffled[i]!
     shuffled[i] = shuffled[j]!
     shuffled[j] = temp
@@ -48,6 +48,6 @@ export function shuffle<T>(array: T[]): T[] {
 /**
  * Simulates a coin flip - returns true or false
  */
-export function coinFlip(): boolean {
-  return Math.random() < 0.5
+export function coinFlip(rng: () => number = Math.random): boolean {
+  return rng() < 0.5
 }
