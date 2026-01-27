@@ -1,50 +1,51 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Card } from "./Card";
-import { CARD_BASES } from "../constants/cardBases";
+import type { Meta, StoryObj } from '@storybook/react'
+
+import { Card } from '@/components/Card'
+import { CARD_BASES } from '@/constants/cardBases'
 
 const meta: Meta<typeof Card> = {
-  title: "Components/Card",
+  title: 'Components/Card',
   component: Card,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
-type Story = StoryObj<typeof Card>;
+export default meta
+type Story = StoryObj<typeof Card>
 
 export const Character: Story = {
   args: {
     card: {
       id: 2,
-      baseId: "templeGuard",
-      type: "character",
+      baseId: 'templeGuard',
+      type: 'character',
       strength: 3,
       base: CARD_BASES.templeGuard,
     },
   },
-};
+}
 
 export const Instant: Story = {
   args: {
     card: {
       id: 4,
-      baseId: "bookOfAsh",
-      type: "instant",
+      baseId: 'bookOfAsh',
+      type: 'instant',
       base: CARD_BASES.bookOfAsh,
     },
   },
-};
+}
 
 export const AllFactions: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
       <Card
         card={{
           id: 7,
-          baseId: "zombie",
-          type: "character",
+          baseId: 'zombie',
+          type: 'character',
           strength: 1,
           base: CARD_BASES.zombie,
         }}
@@ -52,8 +53,8 @@ export const AllFactions: Story = {
       <Card
         card={{
           id: 8,
-          baseId: "novice",
-          type: "character",
+          baseId: 'novice',
+          type: 'character',
           strength: 1,
           base: CARD_BASES.novice,
         }}
@@ -61,8 +62,8 @@ export const AllFactions: Story = {
       <Card
         card={{
           id: 9,
-          baseId: "downwinder",
-          type: "character",
+          baseId: 'downwinder',
+          type: 'character',
           strength: 2,
           base: CARD_BASES.downwinder,
         }}
@@ -70,15 +71,15 @@ export const AllFactions: Story = {
       <Card
         card={{
           id: 10,
-          baseId: "cook",
-          type: "character",
+          baseId: 'cook',
+          type: 'character',
           strength: 1,
           base: CARD_BASES.cook,
         }}
       />
     </div>
   ),
-};
+}
 
 export const AllCardsGallery: Story = {
   render: () => (
@@ -99,4 +100,4 @@ export const AllCardsGallery: Story = {
       ))}
     </div>
   ),
-};
+}

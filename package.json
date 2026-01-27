@@ -10,8 +10,13 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "lint": "bun scripts/lint.mjs",
+    "lint:fix": "prettier --write . && eslint . --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "react": "^19",
@@ -19,6 +24,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.0",
+    "@eslint/js": "^9.39.2",
     "@storybook/addon-a11y": "^10.2.0",
     "@storybook/addon-docs": "^10.2.0",
     "@storybook/addon-onboarding": "^10.2.0",
@@ -33,11 +39,31 @@
     "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.23",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^17.1.0",
     "happy-dom": "^20.3.9",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "playwright": "^1.58.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
     "storybook": "^10.2.0",
     "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0",
     "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{css,md,json,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

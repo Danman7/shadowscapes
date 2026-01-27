@@ -1,22 +1,22 @@
-import { useGameState } from "../contexts/GameContext";
+import { useGameState } from '@/contexts/GameContext'
 
 export interface IntroScreenProps {
-  onContinue?: () => void;
+  onContinue?: () => void
 }
 
 /**
  * IntroScreen component - displays duel intro with player names and starting player
  */
 export function IntroScreen({ onContinue }: IntroScreenProps) {
-  const duel = useGameState();
+  const duel = useGameState()
 
   if (duel.startingPlayerId === null) {
-    return null;
+    return null
   }
 
-  const player1 = duel.players.player1;
-  const player2 = duel.players.player2;
-  const startingPlayer = duel.players[duel.startingPlayerId];
+  const player1 = duel.players.player1
+  const player2 = duel.players.player2
+  const startingPlayer = duel.players[duel.startingPlayerId]
 
   return (
     <div
@@ -47,5 +47,5 @@ export function IntroScreen({ onContinue }: IntroScreenProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

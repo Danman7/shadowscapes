@@ -1,0 +1,18 @@
+# dependencies
+node_modules
+
+# build outputs
+dist
+storybook-static
+
+# git hooks
+.husky
+
+# coverage artifacts
+coverage
+
+# misc
+*.log
+
+# lockfiles/binaries (keep as-is)
+bun.lockb

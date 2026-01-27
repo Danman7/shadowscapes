@@ -1,12 +1,12 @@
-import { Card } from "./Card";
-import { CardBack } from "./CardBack";
-import type { CardInstance, CardBaseId } from "../types";
-import type { CARD_BASES } from "../constants/cardBases";
+import { Card } from '@/components/Card'
+import { CardBack } from '@/components/CardBack'
+import type { CARD_BASES } from '@/constants/cardBases'
+import type { CardBaseId, CardInstance } from '@/types'
 
 export interface HandProps {
-  cards: Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }>;
-  isActive: boolean;
-  onCardClick?: (cardId: number) => void;
+  cards: Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }>
+  isActive: boolean
+  onCardClick?: (cardId: number) => void
 }
 
 /**
@@ -32,5 +32,5 @@ export function Hand({ cards, isActive, onCardClick }: HandProps) {
         </div>
       )}
     </div>
-  );
+  )
 }

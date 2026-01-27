@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { CardBack } from './CardBack';
+import type { Meta, StoryObj } from '@storybook/react'
+
+import { CardBack } from '@/components/CardBack'
 
 const meta: Meta<typeof CardBack> = {
   title: 'Components/CardBack',
@@ -8,20 +9,20 @@ const meta: Meta<typeof CardBack> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof CardBack>;
+export default meta
+type Story = StoryObj<typeof CardBack>
 
 export const Default: Story = {
   args: {},
-};
+}
 
 export const WithCustomClass: Story = {
   args: {
     className: 'custom-styling',
   },
-};
+}
 
 export const Multiple: Story = {
   render: () => (
@@ -31,4 +32,4 @@ export const Multiple: Story = {
       <CardBack />
     </div>
   ),
-};
+}

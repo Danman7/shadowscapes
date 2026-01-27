@@ -1,22 +1,23 @@
-import { useEffect } from "react";
-import { GameProvider, useGameDispatch } from "./contexts/GameContext";
-import { DuelView } from "./components/DuelView";
-import { DEFAULT_DUEL_SETUP } from "./test/mocks/duelSetup";
+import { useEffect } from 'react'
+
+import { DuelView } from '@/components/DuelView'
+import { GameProvider, useGameDispatch } from '@/contexts/GameContext'
+import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
 /**
  * AppContent - initializes the duel on mount
  */
 function AppContent() {
-  const dispatch = useGameDispatch();
+  const dispatch = useGameDispatch()
 
   useEffect(() => {
     dispatch({
-      type: "START_DUEL",
+      type: 'START_DUEL',
       payload: DEFAULT_DUEL_SETUP,
-    });
-  }, [dispatch]);
+    })
+  }, [dispatch])
 
-  return <DuelView />;
+  return <DuelView />
 }
 
 /**
@@ -27,7 +28,7 @@ export function App() {
     <GameProvider>
       <AppContent />
     </GameProvider>
-  );
+  )
 }
 
-export default App;
+export default App

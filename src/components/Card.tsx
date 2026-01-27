@@ -1,41 +1,41 @@
-import type { CardInstance, CardBaseId, Faction } from "../types";
-import type { CARD_BASES } from "../constants/cardBases";
+import type { CARD_BASES } from '@/constants/cardBases'
+import type { CardBaseId, CardInstance, Faction } from '@/types'
 
 export interface CardProps {
-  card: CardInstance & { base: (typeof CARD_BASES)[CardBaseId] };
-  onClick?: () => void;
-  className?: string;
+  card: CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
+  onClick?: () => void
+  className?: string
 }
 
 const FACTION_COLORS: Record<
   Faction,
   { border: string; bg: string; text: string }
 > = {
-  chaos: { border: "border-red-500", bg: "bg-red-500", text: "text-red-500" },
+  chaos: { border: 'border-red-500', bg: 'bg-red-500', text: 'text-red-500' },
   order: {
-    border: "border-blue-500",
-    bg: "bg-blue-500",
-    text: "text-blue-500",
+    border: 'border-blue-500',
+    bg: 'bg-blue-500',
+    text: 'text-blue-500',
   },
   shadow: {
-    border: "border-purple-600",
-    bg: "bg-purple-600",
-    text: "text-purple-600",
+    border: 'border-purple-600',
+    bg: 'bg-purple-600',
+    text: 'text-purple-600',
   },
   neutral: {
-    border: "border-gray-500",
-    bg: "bg-gray-500",
-    text: "text-gray-500",
+    border: 'border-gray-500',
+    bg: 'bg-gray-500',
+    text: 'text-gray-500',
   },
-};
+}
 
 /**
  * Card component - displays a game card with its details
  * Shows character strength for character cards or instant indicator for instant cards
  */
-export function Card({ card, onClick, className = "" }: CardProps) {
-  const { base, strength, type } = card;
-  const colors = FACTION_COLORS[base.faction];
+export function Card({ card, onClick, className = '' }: CardProps) {
+  const { base, strength, type } = card
+  const colors = FACTION_COLORS[base.faction]
 
   return (
     <div
@@ -55,10 +55,10 @@ export function Card({ card, onClick, className = "" }: CardProps) {
       <div
         className={`${colors.bg} text-white text-xs font-semibold px-2 py-1 rounded text-center`}
       >
-        {type === "character" ? "Character" : "Instant"}
+        {type === 'character' ? 'Character' : 'Instant'}
       </div>
 
-      <div className="text-xs text-gray-700 flex-grow overflow-hidden">
+      <div className="text-xs text-gray-700 grow overflow-hidden">
         {base.description.map((paragraph, index) => (
           <p key={index} className="mb-1">
             {paragraph}
@@ -74,12 +74,12 @@ export function Card({ card, onClick, className = "" }: CardProps) {
         <span className={`text-xs font-bold ${colors.text}`}>
           {base.faction.toUpperCase()}
         </span>
-        {type === "character" && strength !== undefined && (
+        {type === 'character' && strength !== undefined && (
           <div className="w-6 h-6 rounded-full bg-yellow-400 border-2 border-yellow-600 flex items-center justify-center text-xs font-bold">
             {strength}
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

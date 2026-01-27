@@ -1,8 +1,8 @@
-import { CardBack } from './CardBack';
+import { CardBack } from '@/components/CardBack'
 
 export interface DiscardPileProps {
-  count: number;
-  label?: string;
+  count: number
+  label?: string
 }
 
 /**
@@ -11,24 +11,35 @@ export interface DiscardPileProps {
  */
 export function DiscardPile({ count, label = 'Discard' }: DiscardPileProps) {
   return (
-    <div className="flex flex-col items-center gap-2" data-testid="discard-pile">
-      {label && <div className="text-sm font-semibold text-gray-700">{label}</div>}
+    <div
+      className="flex flex-col items-center gap-2"
+      data-testid="discard-pile"
+    >
+      {label && (
+        <div className="text-sm font-semibold text-gray-700">{label}</div>
+      )}
 
       <div className="relative">
         {count > 0 ? (
           <>
             <CardBack />
 
-            <div className="absolute -bottom-2 -right-2 bg-gray-800 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center" data-testid="discard-count">
+            <div
+              className="absolute -bottom-2 -right-2 bg-gray-800 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+              data-testid="discard-count"
+            >
               {count}
             </div>
           </>
         ) : (
-          <div className="text-gray-400 italic text-sm" data-testid="discard-empty">
+          <div
+            className="text-gray-400 italic text-sm"
+            data-testid="discard-empty"
+          >
             Empty
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

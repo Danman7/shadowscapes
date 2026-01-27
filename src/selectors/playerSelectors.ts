@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useGameState } from "../contexts/GameContext";
+import { useMemo } from 'react'
+import { useGameState } from '@/contexts/GameContext'
 import type {
   CardBaseId,
   CardInstance,
@@ -7,35 +7,35 @@ import type {
   Player,
   PlayerId,
   Stack,
-} from "../types";
-import { CARD_BASES } from "../constants/cardBases";
-import { getPlayer } from "../game-engine/initialization";
+} from '@/types'
+import { CARD_BASES } from '@/constants/cardBases'
+import { getPlayer } from '@/game-engine/initialization'
 
 /**
  * Hook to get the current duel phase
  */
 export function useDuelPhase(): Phase {
-  const { phase } = useGameState();
+  const { phase } = useGameState()
 
-  return phase;
+  return phase
 }
 
 /**
  * Hook to get active player
  */
 export function useActivePlayer(): Player {
-  const duel = useGameState();
+  const duel = useGameState()
 
-  return getPlayer(duel, duel.activePlayerId);
+  return getPlayer(duel, duel.activePlayerId)
 }
 
 /**
  * Hook to get inactive player
  */
 export function useInactivePlayer(): Player {
-  const duel = useGameState();
+  const duel = useGameState()
 
-  return getPlayer(duel, duel.inactivePlayerId);
+  return getPlayer(duel, duel.inactivePlayerId)
 }
 
 /**
@@ -46,23 +46,23 @@ export function usePlayerCards(
   playerId: PlayerId,
   stack: Stack,
 ): Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }> {
-  const duel = useGameState();
+  const duel = useGameState()
 
   return useMemo(() => {
-    const player = getPlayer(duel, playerId);
+    const player = getPlayer(duel, playerId)
     const stackKey = `${stack}Ids` as
-      | "handIds"
-      | "boardIds"
-      | "deckIds"
-      | "discardIds";
-    const cardIds = player[stackKey];
+      | 'handIds'
+      | 'boardIds'
+      | 'deckIds'
+      | 'discardIds'
+    const cardIds = player[stackKey]
 
     return cardIds.map((id) => {
-      const instance = duel.cards[id]!;
-      const base = CARD_BASES[instance.baseId]!;
-      return { ...instance, base };
-    });
-  }, [duel, playerId, stack]);
+      const instance = duel.cards[id]!
+      const base = CARD_BASES[instance.baseId]!
+      return { ...instance, base }
+    })
+  }, [duel, playerId, stack])
 }
 
 /**
@@ -71,9 +71,9 @@ export function usePlayerCards(
 export function useActivePlayerHand(): Array<
   CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
 > {
-  const { activePlayerId } = useGameState();
+  const { activePlayerId } = useGameState()
 
-  return usePlayerCards(activePlayerId, "hand");
+  return usePlayerCards(activePlayerId, 'hand')
 }
 
 /**
@@ -82,9 +82,9 @@ export function useActivePlayerHand(): Array<
 export function useActivePlayerBoard(): Array<
   CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
 > {
-  const { activePlayerId } = useGameState();
+  const { activePlayerId } = useGameState()
 
-  return usePlayerCards(activePlayerId, "board");
+  return usePlayerCards(activePlayerId, 'board')
 }
 
 /**
@@ -93,26 +93,26 @@ export function useActivePlayerBoard(): Array<
 export function useInactivePlayerBoard(): Array<
   CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
 > {
-  const { inactivePlayerId } = useGameState();
-  return usePlayerCards(inactivePlayerId, "board");
+  const { inactivePlayerId } = useGameState()
+  return usePlayerCards(inactivePlayerId, 'board')
 }
 
 /**
  * Hook to get deck count for a player
  */
 export function usePlayerDeckCount(playerId: PlayerId): number {
-  const duel = useGameState();
-  const { deckIds } = getPlayer(duel, playerId);
+  const duel = useGameState()
+  const { deckIds } = getPlayer(duel, playerId)
 
-  return deckIds.length;
+  return deckIds.length
 }
 
 /**
  * Hook to get discard count for a player
  */
 export function usePlayerDiscardCount(playerId: PlayerId): number {
-  const duel = useGameState();
-  const { discardIds } = getPlayer(duel, playerId);
+  const duel = useGameState()
+  const { discardIds } = getPlayer(duel, playerId)
 
-  return discardIds.length;
+  return discardIds.length
 }
