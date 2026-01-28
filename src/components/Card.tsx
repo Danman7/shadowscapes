@@ -3,10 +3,11 @@ import { BsLightningFill } from 'react-icons/bs'
 import type { CARD_BASES } from '@/constants/cardBases'
 import type { CardBaseId, CardInstance, Faction } from '@/types'
 
+export type GameCard = CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
+
 export interface CardProps {
-  card: CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
+  card: GameCard
   onClick?: () => void
-  className?: string
 }
 
 const FACTION_COLORS: Record<Faction, string> = {
@@ -20,7 +21,7 @@ const FACTION_COLORS: Record<Faction, string> = {
  * Card component - displays a game card with its details.
  * Shows character strength for character cards or instant indicator for instant cards
  */
-export function Card({ card, onClick, className = '' }: CardProps) {
+export function Card({ card, onClick }: CardProps) {
   const { base, strength, type } = card
   const { name, description, flavorText, faction, cost, categories, rank } =
     base
@@ -28,7 +29,7 @@ export function Card({ card, onClick, className = '' }: CardProps) {
 
   return (
     <div
-      className={`aspect-25/35 max-w-60 w-full h-full flex flex-col rounded-lg border ${rank === 'elite' ? 'border-elite/20' : 'border-foreground/20'} bg-surface p-2 shadow-xs space-y-2 overflow-hidden ${className}`}
+      className={`card flex flex-col  ${rank === 'elite' ? 'border-elite/20' : 'border-foreground/20'} bg-surface p-2 space-y-2`}
       onClick={onClick}
       data-testid="card"
     >

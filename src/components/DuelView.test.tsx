@@ -1,4 +1,3 @@
-import '@/test/setup'
 import '@testing-library/jest-dom'
 import { fireEvent, render } from '@testing-library/react'
 import { expect, test } from 'bun:test'
@@ -26,43 +25,14 @@ test('shows intro screen when duel has not started', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  const introScreen = getByTestId('intro-screen')
   expect(introScreen).toBeInTheDocument()
-})
-
-test('renders intro screen button that starts duel', () => {
-  const TestWrapper = () => {
-    const dispatch = useGameDispatch()
-    const duel = useGameState()
-
-    // Start the duel (phase will be 'intro')
-    if (duel.startingPlayerId === null) {
-      dispatch({
-        type: 'START_DUEL',
-        payload: DEFAULT_DUEL_SETUP,
-      })
-    }
-
-    return <DuelView />
-  }
-
-  const { container } = render(
-    <GameProvider>
-      <TestWrapper />
-    </GameProvider>,
-  )
-
-  const continueButton = container.querySelector(
-    '[data-testid="continue-button"]',
-  ) as HTMLElement
-  expect(continueButton).toBeInTheDocument()
-  expect(continueButton?.textContent).toBe('Begin Duel')
 })
 
 test('shows intro screen when phase is intro', () => {
@@ -81,13 +51,13 @@ test('shows intro screen when phase is intro', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  const introScreen = getByTestId('intro-screen')
   expect(introScreen).toBeInTheDocument()
 })
 
@@ -111,14 +81,14 @@ test('renders main game view when phase is player-turn', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
   // Should show game view instead of intro screen
-  const duelView = container.querySelector('[data-testid="duel-view"]')
+  const duelView = getByTestId('duel-view')
   expect(duelView).toBeInTheDocument()
 })
 
@@ -197,15 +167,13 @@ test('renders end turn button in game view', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  const endTurnButton = container.querySelector(
-    '[data-testid="end-turn-button"]',
-  ) as HTMLElement
+  const endTurnButton = getByTestId('end-turn-button') as HTMLElement
   expect(endTurnButton).toBeInTheDocument()
   expect(endTurnButton?.textContent).toBe('End Turn')
 })
@@ -227,15 +195,13 @@ test('end turn button switches active player', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  const endTurnButton = container.querySelector(
-    '[data-testid="end-turn-button"]',
-  ) as HTMLElement
+  const endTurnButton = getByTestId('end-turn-button') as HTMLElement
 
   expect(() => endTurnButton?.click()).not.toThrow()
 })
@@ -257,19 +223,13 @@ test('renders deck and discard piles for both players', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getAllByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  const deckPiles = container.querySelectorAll('[data-testid="deck-pile"]')
-  const discardPiles = container.querySelectorAll(
-    '[data-testid="discard-pile"]',
-  )
-
-  expect(deckPiles.length).toBe(2)
-  expect(discardPiles.length).toBe(2)
+  expect(getAllByTestId('face-down-pile')).toHaveLength(4)
 })
 
 test('dispatches START_DUEL with player names from initial duel setup', () => {
@@ -287,43 +247,14 @@ test('dispatches START_DUEL with player names from initial duel setup', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
-  // After dispatch, should render intro screen with players
-  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  const introScreen = getByTestId('intro-screen')
   expect(introScreen).toBeInTheDocument()
-})
-
-test('transitions to initial-draw phase when intro button clicked', () => {
-  const TestWrapper = () => {
-    const dispatch = useGameDispatch()
-    const duel = useGameState()
-
-    if (duel.startingPlayerId === null) {
-      dispatch({
-        type: 'START_DUEL',
-        payload: DEFAULT_DUEL_SETUP,
-      })
-    } else if (duel.phase === 'intro') {
-      dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
-    }
-
-    return <DuelView />
-  }
-
-  const { container } = render(
-    <GameProvider>
-      <TestWrapper />
-    </GameProvider>,
-  )
-
-  // Should transition past intro screen and show duel view
-  const duelView = container.querySelector('[data-testid="duel-view"]')
-  expect(duelView).toBeInTheDocument()
 })
 
 test('dispatches PLAY_CARD when card in hand is clicked', () => {
@@ -343,14 +274,14 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { queryAllByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
   // Cards in hand can be clicked when active player
-  const cards = container.querySelectorAll('[data-testid="card"]')
+  const cards = queryAllByTestId('card')
   if (cards.length > 0) {
     const firstCard = cards[0] as HTMLElement
     expect(() => firstCard.click()).not.toThrow()
@@ -360,56 +291,15 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
 test('handles intro screen button click when startingPlayerId is null', () => {
   // When startingPlayerId is null, IntroScreen returns null because
   // the guard clause checks for null. This test verifies that behavior.
-  const { container } = render(
+  const { queryByTestId } = render(
     <GameProvider>
       <DuelView />
     </GameProvider>,
   )
 
   // IntroScreen should return null, so no intro-screen element
-  const introScreen = container.querySelector('[data-testid="intro-screen"]')
+  const introScreen = queryByTestId('intro-screen')
   expect(introScreen).not.toBeInTheDocument()
-})
-
-test('handles intro phase transition button click', () => {
-  const TestWrapper = () => {
-    const dispatch = useGameDispatch()
-    const duel = useGameState()
-
-    // Start the duel to get to intro phase
-    if (duel.startingPlayerId === null) {
-      dispatch({
-        type: 'START_DUEL',
-        payload: DEFAULT_DUEL_SETUP,
-      })
-    }
-
-    return <DuelView />
-  }
-
-  const { container } = render(
-    <GameProvider>
-      <TestWrapper />
-    </GameProvider>,
-  )
-
-  // Should show intro screen with button
-  const introScreen = container.querySelector('[data-testid="intro-screen"]')
-  expect(introScreen).toBeInTheDocument()
-
-  // Find and click the continue button
-  const continueButton = container.querySelector(
-    '[data-testid="continue-button"]',
-  )
-  expect(continueButton).toBeInTheDocument()
-
-  if (continueButton) {
-    fireEvent.click(continueButton)
-  }
-
-  // After clicking, should transition to main duel view
-  const duelView = container.querySelector('[data-testid="duel-view"]')
-  expect(duelView).toBeInTheDocument()
 })
 
 test('handles card click in active player hand', () => {
@@ -439,18 +329,18 @@ test('handles card click in active player hand', () => {
     return <DuelView />
   }
 
-  const { container } = render(
+  const { getByTestId, queryAllByTestId } = render(
     <GameProvider>
       <TestWrapper />
     </GameProvider>,
   )
 
   // Should be in duel view
-  const duelView = container.querySelector('[data-testid="duel-view"]')
+  const duelView = getByTestId('duel-view')
   expect(duelView).toBeInTheDocument()
 
   // Get all cards (should have at least one from the DRAW_CARD dispatch)
-  const cards = container.querySelectorAll('[data-testid="card"]')
+  const cards = queryAllByTestId('card')
 
   if (cards.length > 0) {
     // Click first card to trigger onCardClick handler
@@ -460,7 +350,7 @@ test('handles card click in active player hand', () => {
     }
 
     // Verify component still renders after click
-    const duelViewAfter = container.querySelector('[data-testid="duel-view"]')
+    const duelViewAfter = getByTestId('duel-view')
     expect(duelViewAfter).toBeInTheDocument()
   }
 })

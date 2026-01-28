@@ -8,28 +8,19 @@ const meta: Meta<typeof CardBack> = {
   parameters: {
     layout: 'centered',
   },
+  args: {
+    isSmall: false,
+  },
   tags: ['autodocs'],
 }
 
 export default meta
 type Story = StoryObj<typeof CardBack>
 
-export const Default: Story = {
-  args: {},
-}
+export const Default: Story = {}
 
-export const WithCustomClass: Story = {
+export const Small: Story = {
   args: {
-    className: 'custom-styling',
+    isSmall: true,
   },
-}
-
-export const Multiple: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: '1rem' }}>
-      <CardBack />
-      <CardBack />
-      <CardBack />
-    </div>
-  ),
 }

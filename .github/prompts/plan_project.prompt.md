@@ -23,7 +23,7 @@ Create selector hooks: Build useActivePlayerHand(), useInactivePlayerHandCount()
 
 Set up game state management: Create StateContext + DispatchContext with useReducer; initialize duel on mount (shuffle decks, coin flip, set intro phase), manage activePlayerId/inactivePlayerId switching, phase transitions.
 
-Build core components with co-located flat tests and stories: Create IntroScreen (player names, starting player display), Card (character strength/instant), CardBack (stripe pattern with snapshot test), Hand, Board, DeckPile (CardBack + count), DiscardPile (CardBack + count), DuelView (orchestrates all components).
+Build core components with co-located flat tests and stories: Create IntroScreen (player names, starting player display), Card (character strength/instant), CardBack (stripe pattern with snapshot test), Hand, Board, FaceDownPile (CardBack + count), DiscardPile (CardBack + count), DuelView (orchestrates all components).
 
 Configure Bun testing + React Testing Library: Set up .test.ts(x) pattern, coverage reporting, snapshot testing; test reducers, selectors, component rendering (opponent hand count, card visibility, intro screen display).
 

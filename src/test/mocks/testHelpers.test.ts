@@ -1,54 +1,8 @@
 import '@testing-library/jest-dom'
 import { describe, expect, test } from 'bun:test'
 
-import '@/test/setup'
-import {
-  mockMathRandom,
-  createMockPlayer,
-  createMockDuel,
-} from '@/test/mocks/testHelpers'
+import { createMockPlayer, createMockDuel } from '@/test/mocks/testHelpers'
 import type { PlayerId, Phase } from '@/types'
-
-describe('mockMathRandom', () => {
-  test('mocks Math.random to return specified value', () => {
-    const spy = mockMathRandom(0.5)
-
-    expect(Math.random()).toBe(0.5)
-
-    spy.mockRestore()
-  })
-
-  test('returns a spy object that can be restored', () => {
-    const spy = mockMathRandom(0.75)
-
-    expect(spy).toBeDefined()
-    expect(typeof spy.mockRestore).toBe('function')
-
-    spy.mockRestore()
-  })
-
-  test('works with different values', () => {
-    const spy1 = mockMathRandom(0.1)
-    expect(Math.random()).toBe(0.1)
-    spy1.mockRestore()
-
-    const spy2 = mockMathRandom(0.9)
-    expect(Math.random()).toBe(0.9)
-    spy2.mockRestore()
-  })
-
-  test('can be restored to normal behavior', () => {
-    const spy = mockMathRandom(0.5)
-    expect(Math.random()).toBe(0.5)
-
-    spy.mockRestore()
-
-    // After restore, should return a value between 0 and 1
-    const randomValue = Math.random()
-    expect(randomValue).toBeGreaterThanOrEqual(0)
-    expect(randomValue).toBeLessThan(1)
-  })
-})
 
 describe('createMockPlayer', () => {
   test('creates a player with provided id', () => {

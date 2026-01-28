@@ -1,99 +1,78 @@
-import '@/test/setup'
-import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, expect, mock, test } from 'bun:test'
 
-import { Card } from '@/components/Card'
-import { CARD_BASES } from '@/constants/cardBases'
-import { createCardInstance } from '@/game-engine/utils'
+import { Card, type GameCard } from '@/components/Card'
+import { createMockCard } from '@/test/mocks/testHelpers'
 
-const mockCharacterCard = {
-  ...createCardInstance('zombie'),
-  base: CARD_BASES.zombie,
-}
+let mockCharacterCard: GameCard
+let mockInstantCard: GameCard
 
-const mockInstantCard = {
-  ...createCardInstance('bookOfAsh'),
-  base: CARD_BASES.bookOfAsh,
-}
+beforeEach(() => {
+  mockCharacterCard = createMockCard('sachelman')
+
+  mockInstantCard = createMockCard('bookOfAsh')
+})
+
+afterEach(() => {
+  mockCharacterCard = null as unknown as GameCard
+  mockInstantCard = null as unknown as GameCard
+})
 
 test('renders character card with all details', () => {
-  const { container } = render(<Card card={mockCharacterCard} />)
+  const { getByText } = render(<Card card={mockCharacterCard} />)
 
-  expect(container.textContent).toContain(mockCharacterCard.base.name)
-  expect(container.textContent).toContain(
-    mockCharacterCard.base.cost.toString(),
-  )
-
-  expect(container.textContent).toContain(
-    mockCharacterCard.base.description[0]!,
-  )
-
-  expect(container.textContent).toContain(
-    mockCharacterCard.strength?.toString()!,
-  )
+  expect(getByText(mockCharacterCard.base.name)).toBeInTheDocument()
+  expect(getByText(mockCharacterCard.base.cost)).toBeInTheDocument()
+  expect(
+    getByText(mockCharacterCard.base.categories.join(' ')),
+  ).toBeInTheDocument()
+  expect(getByText(mockCharacterCard.strength as number)).toBeInTheDocument()
 })
 
 test('renders instant card without strength', () => {
-  const { container } = render(<Card card={mockInstantCard} />)
+  const { getByText } = render(<Card card={mockInstantCard} />)
 
-  expect(container.textContent).toContain(mockInstantCard.base.name)
-  expect(container.textContent).toContain(mockInstantCard.base.cost.toString())
-  expect(container.textContent).toContain(mockInstantCard.base.description[0]!)
+  expect(getByText(mockInstantCard.base.name)).toBeInTheDocument()
+  expect(getByText(mockInstantCard.base.cost)).toBeInTheDocument()
+  expect(getByText(mockInstantCard.base.description[0]!)).toBeInTheDocument()
 })
 
 test('calls onClick when clicked', () => {
   const handleClick = mock(() => {})
-  const { container } = render(
+  const { getByTestId } = render(
     <Card card={mockCharacterCard} onClick={handleClick} />,
   )
 
-  const cardElement = container.querySelector(
-    '[data-testid="card"]',
-  ) as HTMLElement
+  const cardElement = getByTestId('card')
   cardElement?.click()
 
   expect(handleClick).toHaveBeenCalledTimes(1)
 })
 
-test('applies custom className', () => {
-  const { container } = render(
-    <Card card={mockCharacterCard} className="custom-class" />,
-  )
+test('applies correct faction colors for order', () => {
+  const { getByTestId } = render(<Card card={mockCharacterCard} />)
+  const headerElement = getByTestId('card-header')
 
-  const cardElement = container.querySelector('[data-testid="card"]')
-  expect(cardElement?.className).toContain('custom-class')
+  expect(headerElement?.className).toContain('bg-order')
 })
 
 test('applies correct faction colors for chaos', () => {
-  const { container } = render(<Card card={mockCharacterCard} />)
-  const headerElement = container.querySelector('[data-testid="card-header"]')
+  const { getByTestId } = render(<Card card={mockInstantCard} />)
+  const headerElement = getByTestId('card-header')
 
   expect(headerElement?.className).toContain('bg-chaos')
 })
 
-test('applies bg-elite class for elite character cards', () => {
-  const { container } = render(<Card card={mockCharacterCard} />)
-  const categoriesElement = container.querySelector(
-    '[data-testid="card-header"] + div',
-  )
+test('applies correct faction colors for shadow', () => {
+  const { getByTestId } = render(<Card card={createMockCard('downwinder')} />)
+  const headerElement = getByTestId('card-header')
 
-  if (mockCharacterCard.base.rank === 'elite') {
-    expect(categoriesElement?.className).toContain('bg-elite')
-  } else {
-    expect(categoriesElement?.className).toContain('bg-foreground-dim')
-  }
+  expect(headerElement?.className).toContain('bg-shadow')
 })
 
-test('applies correct rank styling for elite instant cards', () => {
-  const { container } = render(<Card card={mockInstantCard} />)
-  const categoriesElement = container.querySelector(
-    '[data-testid="card-header"] + div',
-  )
+test('applies bg-elite class for elite cards', () => {
+  const { getByText } = render(<Card card={mockInstantCard} />)
+  const categoriesElement = getByText(mockInstantCard.base.categories.join(' '))
 
-  if (mockInstantCard.base.rank === 'elite') {
-    expect(categoriesElement?.className).toContain('bg-elite')
-  } else {
-    expect(categoriesElement?.className).toContain('bg-foreground-dim')
-  }
+  expect(categoriesElement?.className).toContain('bg-elite')
 })

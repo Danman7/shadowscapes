@@ -1,6 +1,5 @@
 import { Board } from '@/components/Board'
-import { DeckPile } from '@/components/DeckPile'
-import { DiscardPile } from '@/components/DiscardPile'
+import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { IntroScreen } from '@/components/IntroScreen'
 import { useGameDispatch, useGameState } from '@/contexts/GameContext'
@@ -15,7 +14,6 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
-import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
 /**
  * DuelView component - main game view that orchestrates all game components
@@ -41,32 +39,11 @@ export function DuelView() {
   const inactiveHand = usePlayerCards(inactivePlayer.id, 'hand')
 
   if (duel.startingPlayerId === null) {
-    return (
-      <IntroScreen
-        onContinue={() => {
-          dispatch({
-            type: 'START_DUEL',
-            payload: {
-              ...DEFAULT_DUEL_SETUP,
-              player1Name:
-                duel.players.player1.name || DEFAULT_DUEL_SETUP.player1Name,
-              player2Name:
-                duel.players.player2.name || DEFAULT_DUEL_SETUP.player2Name,
-            },
-          })
-        }}
-      />
-    )
+    return <IntroScreen />
   }
 
   if (phase === 'intro') {
-    return (
-      <IntroScreen
-        onContinue={() => {
-          dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
-        }}
-      />
-    )
+    return <IntroScreen />
   }
 
   return (
@@ -79,8 +56,8 @@ export function DuelView() {
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-xl font-bold">{inactivePlayer.name}</h3>
           <div className="flex gap-4">
-            <DeckPile count={inactiveDeckCount} label="Deck" />
-            <DiscardPile count={inactiveDiscardCount} label="Discard" />
+            <FaceDownPile count={inactiveDeckCount} label="Deck" />
+            <FaceDownPile count={inactiveDiscardCount} label="Discard" />
           </div>
         </div>
 
@@ -107,8 +84,8 @@ export function DuelView() {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold">{activePlayer.name}</h3>
           <div className="flex gap-4">
-            <DeckPile count={activeDeckCount} label="Deck" />
-            <DiscardPile count={activeDiscardCount} label="Discard" />
+            <FaceDownPile count={activeDeckCount} label="Deck" />
+            <FaceDownPile count={activeDiscardCount} label="Discard" />
           </div>
         </div>
 

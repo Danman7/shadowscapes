@@ -1,13 +1,9 @@
 import { useGameState } from '@/contexts/GameContext'
 
-export interface IntroScreenProps {
-  onContinue?: () => void
-}
-
 /**
  * IntroScreen component - displays duel intro with player names and starting player
  */
-export function IntroScreen({ onContinue }: IntroScreenProps) {
+export function IntroScreen() {
   const duel = useGameState()
 
   if (duel.startingPlayerId === null) {
@@ -24,7 +20,7 @@ export function IntroScreen({ onContinue }: IntroScreenProps) {
       data-testid="intro-screen"
     >
       <div className="text-center">
-        <h1 className="text-5xl font-bold text-white mb-8">Shadowscapes</h1>
+        <h1 className="text-5xl font-bold text-white mb-8">Duel</h1>
 
         <div className="flex items-center justify-center gap-8 mb-8">
           <span className="text-2xl font-bold text-white">{player1.name}</span>
@@ -35,16 +31,6 @@ export function IntroScreen({ onContinue }: IntroScreenProps) {
         <div className="text-xl text-yellow-400 font-semibold mb-8">
           {startingPlayer.name} starts first
         </div>
-
-        {onContinue && (
-          <button
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
-            onClick={onContinue}
-            data-testid="continue-button"
-          >
-            Begin Duel
-          </button>
-        )}
       </div>
     </div>
   )

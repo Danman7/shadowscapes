@@ -1,4 +1,3 @@
-import '@/test/setup'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { describe, expect, test } from 'bun:test'
@@ -24,13 +23,13 @@ describe('useDuelPhase', () => {
       return <div data-testid="phase">{phase}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="phase"]')
+    const element = getByTestId('phase')
     expect(element?.textContent).toBeDefined()
   })
 })
@@ -42,13 +41,13 @@ describe('useActivePlayer', () => {
       return <div data-testid="player-id">{activePlayer.id}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="player-id"]')
+    const element = getByTestId('player-id')
     expect(element?.textContent).toBe('player1')
   })
 })
@@ -60,13 +59,13 @@ describe('useInactivePlayer', () => {
       return <div data-testid="player-id">{inactivePlayer.id}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="player-id"]')
+    const element = getByTestId('player-id')
     expect(element?.textContent).toBe('player2')
   })
 })
@@ -78,13 +77,13 @@ describe('usePlayerCards', () => {
       return <div data-testid="card-count">{cards.length}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="card-count"]')
+    const element = getByTestId('card-count')
     expect(element?.textContent).toBe('0')
   })
 
@@ -104,13 +103,13 @@ describe('useActivePlayerHand', () => {
       return <div data-testid="hand-count">{hand.length}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="hand-count"]')
+    const element = getByTestId('hand-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -123,13 +122,13 @@ describe('useActivePlayerBoard', () => {
       return <div data-testid="board-count">{board.length}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="board-count"]')
+    const element = getByTestId('board-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -142,13 +141,13 @@ describe('useInactivePlayerBoard', () => {
       return <div data-testid="board-count">{board.length}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="board-count"]')
+    const element = getByTestId('board-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -161,13 +160,13 @@ describe('usePlayerDeckCount', () => {
       return <div data-testid="deck-count">{deckCount}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="deck-count"]')
+    const element = getByTestId('deck-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -178,13 +177,13 @@ describe('usePlayerDeckCount', () => {
       return <div data-testid="deck-count">{deckCount}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="deck-count"]')
+    const element = getByTestId('deck-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -197,13 +196,13 @@ describe('usePlayerDiscardCount', () => {
       return <div data-testid="discard-count">{discardCount}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="discard-count"]')
+    const element = getByTestId('discard-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -214,13 +213,13 @@ describe('usePlayerDiscardCount', () => {
       return <div data-testid="discard-count">{discardCount}</div>
     }
 
-    const { container } = render(
+    const { getByTestId } = render(
       <GameProvider>
         <TestComponent />
       </GameProvider>,
     )
 
-    const element = container.querySelector('[data-testid="discard-count"]')
+    const element = getByTestId('discard-count')
     const count = parseInt(element?.textContent || '0')
     expect(count).toBeGreaterThanOrEqual(0)
   })

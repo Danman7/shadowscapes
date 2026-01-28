@@ -73,3 +73,9 @@
     font-family: 'Noto Serif', serif;
   }
 }
+
+@layer components {
+  .card {
+    @apply aspect-25/35 max-w-60 w-full h-full rounded-lg border shadow-xs;
+  }
+}

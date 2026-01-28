@@ -1,4 +1,3 @@
-import '@/test/setup'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { expect, test } from 'bun:test'
@@ -21,19 +20,19 @@ const mockCards: Array<CardInstance & { base: (typeof CARD_BASES)['zombie'] }> =
   ]
 
 test('renders board with cards', () => {
-  const { container } = render(<Board cards={mockCards} />)
+  const { getByTestId, getAllByTestId } = render(<Board cards={mockCards} />)
 
-  const boardElement = container.querySelector('[data-testid="board"]')
+  const boardElement = getByTestId('board')
   expect(boardElement).toBeInTheDocument()
 
-  const cardElements = container.querySelectorAll('[data-testid="card"]')
+  const cardElements = getAllByTestId('card')
   expect(cardElements.length).toBe(2)
 })
 
 test('renders empty board message when no cards', () => {
-  const { container } = render(<Board cards={[]} />)
+  const { getByTestId } = render(<Board cards={[]} />)
 
-  const emptyMessage = container.querySelector('[data-testid="board-empty"]')
+  const emptyMessage = getByTestId('board-empty')
   expect(emptyMessage).toBeInTheDocument()
   expect(emptyMessage?.textContent).toContain('No cards on board')
 })

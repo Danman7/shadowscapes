@@ -1,10 +1,8 @@
-import { Card } from '@/components/Card'
+import { Card, type GameCard } from '@/components/Card'
 import { CardBack } from '@/components/CardBack'
-import type { CARD_BASES } from '@/constants/cardBases'
-import type { CardBaseId, CardInstance } from '@/types'
 
 export interface HandProps {
-  cards: Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }>
+  cards: GameCard[]
   isActive: boolean
   onCardClick?: (cardId: number) => void
 }

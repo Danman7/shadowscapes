@@ -1,12 +1,22 @@
-import { spyOn } from 'bun:test'
-import type { Duel, Player, PlayerId, Phase } from '@/types'
+import type {
+  CardBaseId,
+  Duel,
+  GameCard,
+  Phase,
+  Player,
+  PlayerId,
+} from '@/types'
+import { CARD_BASES } from '@/constants/cardBases'
+import { createCardInstance } from '@/game-engine/utils'
 
 /**
- * Mocks Math.random to return a specific value
- * Returns the spy so it can be restored later
+ * Creates a mock GameCard with card instance and base populated
  */
-export function mockMathRandom(value: number): ReturnType<typeof spyOn> {
-  return spyOn(Math, 'random').mockReturnValue(value)
+export function createMockCard<T extends CardBaseId>(baseId: T): GameCard {
+  return {
+    ...createCardInstance(baseId),
+    base: CARD_BASES[baseId],
+  }
 }
 
 /**
