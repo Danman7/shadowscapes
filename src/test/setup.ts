@@ -1,25 +1,44 @@
 // DOM setup for component tests
+// This file must be imported by any test that uses rendering (render, renderHook, etc)
+
 import { cleanup } from '@testing-library/react'
 import { afterEach } from 'bun:test'
 import { JSDOM } from 'jsdom'
 
-// Create JSDOM instance once
+// Set up a basic DOM environment for component tests
+// This MUST happen before any imports of @testing-library or React
 const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
   url: 'http://localhost',
-  pretendToBeVisual: true,
 })
 
-// Set globals
-;(globalThis as any).window = dom.window
-;(globalThis as any).document = dom.window.document
-;(globalThis as any).navigator = dom.window.navigator
-;(globalThis as any).HTMLElement = dom.window.HTMLElement
-;(globalThis as any).HTMLDocument = dom.window.HTMLDocument
-;(globalThis as any).DOMException = dom.window.DOMException
-;(globalThis as any).URL = dom.window.URL
-;(globalThis as any).customElements = dom.window.customElements
+const win = dom.window as any
 
-// Clean up between tests to avoid leaking DOM state
+// Set all required globals
+Object.defineProperty(global, 'document', {
+  value: win.document,
+  writable: true,
+  configurable: true,
+})
+
+Object.defineProperty(global, 'window', {
+  value: win,
+  writable: true,
+  configurable: true,
+})
+
+Object.defineProperty(global, 'navigator', {
+  value: win.navigator,
+  writable: true,
+  configurable: true,
+})
+
+global.HTMLElement = win.HTMLElement
+global.HTMLDocument = win.HTMLDocument
+global.DOMException = win.DOMException
+global.URL = win.URL
+global.customElements = win.customElements
+
+// Clean up between tests
 afterEach(() => {
   cleanup()
 })
