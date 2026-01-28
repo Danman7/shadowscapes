@@ -1,3 +1,5 @@
+import { BsLightningFill } from 'react-icons/bs'
+
 import type { CARD_BASES } from '@/constants/cardBases'
 import type { CardBaseId, CardInstance, Faction } from '@/types'
 
@@ -7,78 +9,68 @@ export interface CardProps {
   className?: string
 }
 
-const FACTION_COLORS: Record<
-  Faction,
-  { border: string; bg: string; text: string }
-> = {
-  chaos: { border: 'border-red-500', bg: 'bg-red-500', text: 'text-red-500' },
-  order: {
-    border: 'border-blue-500',
-    bg: 'bg-blue-500',
-    text: 'text-blue-500',
-  },
-  shadow: {
-    border: 'border-purple-600',
-    bg: 'bg-purple-600',
-    text: 'text-purple-600',
-  },
-  neutral: {
-    border: 'border-gray-500',
-    bg: 'bg-gray-500',
-    text: 'text-gray-500',
-  },
+const FACTION_COLORS: Record<Faction, string> = {
+  chaos: 'bg-chaos',
+  order: 'bg-order',
+  shadow: 'bg-shadow',
+  neutral: 'bg-foreground-dim',
 }
 
 /**
- * Card component - displays a game card with its details
+ * Card component - displays a game card with its details.
  * Shows character strength for character cards or instant indicator for instant cards
  */
 export function Card({ card, onClick, className = '' }: CardProps) {
   const { base, strength, type } = card
-  const colors = FACTION_COLORS[base.faction]
+  const { name, description, flavorText, faction, cost, categories, rank } =
+    base
+  const factionColor = FACTION_COLORS[faction]
 
   return (
     <div
-      className={`w-32 h-40 rounded-lg border-2 ${colors.border} bg-slate-100 p-3 flex flex-col gap-2 cursor-pointer hover:shadow-lg transition-shadow relative ${className}`}
+      className={`aspect-25/35 max-w-60 w-full h-full flex flex-col rounded-lg border ${rank === 'elite' ? 'border-elite/20' : 'border-foreground/20'} bg-surface p-2 shadow-xs space-y-2 overflow-hidden ${className}`}
       onClick={onClick}
       data-testid="card"
     >
-      <div className="flex justify-between items-start gap-1">
-        <span className="font-bold text-sm leading-tight flex-1">
-          {base.name}
-        </span>
-        <span className="font-bold text-xs bg-gray-300 px-1 rounded">
-          {base.cost}
-        </span>
+      <div className="font-semibold text-surface rounded overflow-hidden">
+        <div
+          className={`flex justify-between items-center p-2 ${factionColor}`}
+          data-testid="card-header"
+        >
+          <div>{name}</div>
+
+          {type === 'character' && strength !== undefined ? (
+            <div>{strength}</div>
+          ) : (
+            <BsLightningFill />
+          )}
+        </div>
+
+        <div
+          className={`text-sm text-center text-surface ${rank === 'elite' ? 'bg-elite' : 'bg-foreground-dim'}`}
+        >
+          {categories.join(' ')}
+        </div>
       </div>
 
-      <div
-        className={`${colors.bg} text-white text-xs font-semibold px-2 py-1 rounded text-center`}
-      >
-        {type === 'character' ? 'Character' : 'Instant'}
-      </div>
+      <div className="flex flex-col justify-around grow">
+        <div className="overflow-hidden">
+          {description.map((paragraph, index) => (
+            <p key={index} className="mb-1">
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
-      <div className="text-xs text-gray-700 grow overflow-hidden">
-        {base.description.map((paragraph, index) => (
-          <p key={index} className="mb-1">
-            {paragraph}
-          </p>
-        ))}
-      </div>
-
-      <div className="text-xs italic text-gray-600 border-t pt-1">
-        {base.flavorText}
+        <div className="text-sm text-foreground-dim font-light italic">
+          {flavorText}
+        </div>
       </div>
 
       <div className="flex justify-between items-end">
-        <span className={`text-xs font-bold ${colors.text}`}>
-          {base.faction.toUpperCase()}
-        </span>
-        {type === 'character' && strength !== undefined && (
-          <div className="w-6 h-6 rounded-full bg-yellow-400 border-2 border-yellow-600 flex items-center justify-center text-xs font-bold">
-            {strength}
-          </div>
-        )}
+        <div className="w-5 h-5 rounded-full bg-yellow-300 border border-elite flex items-center justify-center">
+          {cost}
+        </div>
       </div>
     </div>
   )

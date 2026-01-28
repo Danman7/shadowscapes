@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { Card } from '@/components/Card'
 import { CARD_BASES } from '@/constants/cardBases'
+import { getCardStrength } from '@/game-engine/utils'
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',
@@ -91,7 +92,7 @@ export const AllCardsGallery: Story = {
               id: index + 1,
               baseId: id as keyof typeof CARD_BASES,
               type: base.type,
-              strength: base.strength,
+              strength: getCardStrength(base),
               base,
             }}
           />

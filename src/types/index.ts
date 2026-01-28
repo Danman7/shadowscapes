@@ -2,12 +2,13 @@
 export type Faction = 'chaos' | 'order' | 'shadow' | 'neutral'
 export type CardType = 'character' | 'instant'
 export type CardCategory =
-  | 'undead'
-  | 'hammerite'
-  | 'guard'
-  | 'servant'
-  | 'artifact'
-  | 'thief'
+  | 'Undead'
+  | 'Hammerite'
+  | 'Guard'
+  | 'Servant'
+  | 'Artifact'
+  | 'Thief'
+  | 'Necromancer'
 
 export type CardBaseId =
   | 'zombie'
@@ -20,7 +21,9 @@ export type CardBaseId =
   | 'bookOfAsh'
   | 'downwinder'
 
-export interface CardBase {
+export type Rank = 'common' | 'elite'
+
+interface CardBaseCommon {
   id: CardBaseId
   name: string
   cost: number
@@ -28,9 +31,19 @@ export interface CardBase {
   flavorText: string
   faction: Faction
   categories: CardCategory[]
-  type: CardType
-  strength?: number
+  rank: Rank
 }
+
+export interface CardBaseCharacter extends CardBaseCommon {
+  type: 'character'
+  strength: number
+}
+
+export interface CardBaseInstant extends CardBaseCommon {
+  type: 'instant'
+}
+
+export type CardBase = CardBaseCharacter | CardBaseInstant
 
 export interface CardInstance {
   id: number

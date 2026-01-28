@@ -1,4 +1,4 @@
-import type { CardBaseId, CardInstance } from '@/types'
+import type { CardBase, CardBaseId, CardInstance } from '@/types'
 import { CARD_BASES } from '@/constants/cardBases'
 
 let instanceIdCounter = 0
@@ -18,6 +18,13 @@ export function generateInstanceId(): number {
 }
 
 /**
+ * Gets the strength from a card base (returns undefined for instant cards)
+ */
+export function getCardStrength(base: CardBase): number | undefined {
+  return base.type === 'character' ? base.strength : undefined
+}
+
+/**
  * Creates a card instance from a base ID
  */
 export function createCardInstance(baseId: CardBaseId): CardInstance {
@@ -27,7 +34,7 @@ export function createCardInstance(baseId: CardBaseId): CardInstance {
     id: generateInstanceId(),
     baseId,
     type: base.type,
-    strength: base.strength,
+    strength: getCardStrength(base),
   }
 }
 

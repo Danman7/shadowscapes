@@ -5,12 +5,15 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'zombie',
     name: 'Zombie',
     cost: 1,
-    description: ['A shambling undead creature.', 'Slow but relentless.'],
-    flavorText:
+    description: [
       'On play, spawn all copies of this card from your discard pile.',
+    ],
+    flavorText:
+      "The zombie's antipathy for all living creatures is both it's strength and weakness. -- excerpt from the Journals of Morgan, declared anathema by the Smith-in-Exile.",
     faction: 'chaos',
-    categories: ['undead'],
+    categories: ['Undead'],
     type: 'character',
+    rank: 'common',
     strength: 1,
   },
   haunt: {
@@ -23,8 +26,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
     faction: 'chaos',
-    categories: ['undead', 'hammerite'],
+    categories: ['Undead', 'Hammerite'],
     type: 'character',
+    rank: 'common',
     strength: 3,
   },
   cook: {
@@ -35,8 +39,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
     faction: 'neutral',
-    categories: ['servant'],
+    categories: ['Servant'],
     type: 'character',
+    rank: 'common',
     strength: 1,
   },
   novice: {
@@ -49,8 +54,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
     faction: 'order',
-    categories: ['hammerite'],
+    categories: ['Hammerite'],
     type: 'character',
+    rank: 'common',
     strength: 1,
   },
   templeGuard: {
@@ -64,8 +70,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     faction: 'order',
-    categories: ['hammerite', 'guard'],
+    categories: ['Hammerite', 'Guard'],
     type: 'character',
+    rank: 'common',
     strength: 3,
   },
   sachelman: {
@@ -76,8 +83,10 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
     faction: 'order',
-    categories: ['hammerite'],
+    categories: ['Hammerite'],
     type: 'character',
+    rank: 'elite',
+    strength: 3,
   },
   yoraSkull: {
     id: 'yoraSkull',
@@ -89,8 +98,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     ],
     flavorText: 'Yora was a builder of vision and devout keeper of the faith.',
     faction: 'order',
-    categories: ['artifact'],
+    categories: ['Hammerite', 'Artifact'],
     type: 'instant',
+    rank: 'elite',
   },
   bookOfAsh: {
     id: 'bookOfAsh',
@@ -100,8 +110,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
     faction: 'chaos',
-    categories: ['artifact'],
+    categories: ['Necromancer', 'Artifact'],
     type: 'instant',
+    rank: 'elite',
   },
   downwinder: {
     id: 'downwinder',
@@ -112,7 +123,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       "We chose our profession in defiance of the greed of the monarchy. We will not live for the sake of taxes to fatten the noble's pockets.",
     faction: 'shadow',
-    categories: ['thief'],
+    categories: ['Thief'],
     type: 'character',
+    rank: 'common',
   },
 }

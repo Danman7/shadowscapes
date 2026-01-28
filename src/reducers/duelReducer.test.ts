@@ -4,11 +4,9 @@ import { createMockDuel, createMockPlayer } from '@/test/mocks/testHelpers'
 import type { Duel, CardInstance } from '@/types'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
 
-describe('initial state', () => {
-  test('has placeholder duel with intro phase', () => {
-    expect(initialDuelState.phase).toBe('intro')
-    expect(initialDuelState.startingPlayerId).toBeNull()
-  })
+test('initial state has placeholder duel with intro phase', () => {
+  expect(initialDuelState.phase).toBe('intro')
+  expect(initialDuelState.startingPlayerId).toBeNull()
 })
 
 describe('START_DUEL action', () => {
