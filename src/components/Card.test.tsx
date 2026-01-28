@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { afterEach, beforeEach, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { Card, type GameCard } from '@/components/Card'
 import { createMockCard } from '@/test/mocks/testHelpers'
@@ -38,7 +38,7 @@ test('renders instant card without strength', () => {
 })
 
 test('calls onClick when clicked', () => {
-  const handleClick = mock(() => {})
+  const handleClick = vi.fn()
   const { getByTestId } = render(
     <Card card={mockCharacterCard} onClick={handleClick} />,
   )

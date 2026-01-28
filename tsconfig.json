@@ -32,7 +32,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Include custom type definitions
-    "types": ["bun-types", "@testing-library/jest-dom"]
+    "types": ["@testing-library/jest-dom"]
   },
 
   "include": ["src/**/*", "src/test/matchers.d.ts"],

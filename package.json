@@ -7,8 +7,8 @@
     "dev": "bun --hot src/index.ts",
     "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
     "start": "NODE_ENV=production bun src/index.ts",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
+    "test": "vitest run",
+    "test:coverage": "vitest --coverage run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "storybook": "storybook dev -p 6006",
     "lint": "bun scripts/lint.mjs",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@happy-dom/global-registrator": "^20.4.0",
     "@storybook/react-vite": "^10.2.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
@@ -29,6 +30,7 @@
     "@types/jsdom": "^27.0.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
+    "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.23",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
@@ -36,6 +38,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^17.2.0",
+    "happy-dom": "^20.4.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
@@ -44,7 +47,8 @@
     "storybook": "^10.2.1",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.54.0"
+    "typescript-eslint": "^8.54.0",
+    "vitest": "^4.0.18"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs,cjs}": [

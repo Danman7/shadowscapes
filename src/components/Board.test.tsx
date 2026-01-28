@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { expect, test } from 'bun:test'
+import { expect, test } from 'vitest'
 
 import { Board } from '@/components/Board'
 import { CARD_BASES } from '@/constants/cardBases'

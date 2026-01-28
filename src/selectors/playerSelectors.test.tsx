@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 
 import { GameProvider } from '@/contexts/GameContext'
 import { createCardInstance } from '@/game-engine/utils'

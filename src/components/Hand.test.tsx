@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { afterEach, beforeEach, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import type { GameCard } from '@/components/Card'
 import { Hand } from '@/components/Hand'
@@ -51,7 +51,7 @@ test('renders empty hand message when no cards', () => {
 })
 
 test('calls onCardClick when card is clicked in active hand', () => {
-  const handleCardClick = mock(() => {})
+  const handleCardClick = vi.fn()
   const { getAllByTestId } = render(
     <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
   )
@@ -64,7 +64,7 @@ test('calls onCardClick when card is clicked in active hand', () => {
 })
 
 test('does not render clickable cards in inactive hand', () => {
-  const handleCardClick = mock(() => {})
+  const handleCardClick = vi.fn()
   const { queryAllByTestId } = render(
     <Hand cards={mockCards} isActive={false} onCardClick={handleCardClick} />,
   )

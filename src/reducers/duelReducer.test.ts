@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach } from 'bun:test'
+import { describe, expect, test, beforeEach } from 'vitest'
 import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
 import { createMockDuel, createMockPlayer } from '@/test/mocks/testHelpers'
 import type { Duel, CardInstance } from '@/types'

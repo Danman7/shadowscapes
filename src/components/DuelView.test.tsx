@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render } from '@testing-library/react'
-import { expect, test } from 'bun:test'
+import { expect, test } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
 import {

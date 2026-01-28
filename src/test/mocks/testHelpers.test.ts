@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'vitest'
 
 import { createMockPlayer, createMockDuel } from '@/test/mocks/testHelpers'
 import type { PlayerId, Phase } from '@/types'

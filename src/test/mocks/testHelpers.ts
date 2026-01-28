@@ -1,13 +1,7 @@
-import type {
-  CardBaseId,
-  Duel,
-  GameCard,
-  Phase,
-  Player,
-  PlayerId,
-} from '@/types'
+import type { CardBaseId, Duel, Phase, Player, PlayerId } from '@/types'
 import { CARD_BASES } from '@/constants/cardBases'
 import { createCardInstance } from '@/game-engine/utils'
+import type { GameCard } from '@/components/Card'
 
 /**
  * Creates a mock GameCard with card instance and base populated

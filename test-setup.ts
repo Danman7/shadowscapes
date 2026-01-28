@@ -1,22 +1,9 @@
-/// <reference lib="dom" />
+import { afterEach, expect } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import * as matchers from '@testing-library/jest-dom/matchers'
 
-import '@testing-library/jest-dom'
-import { afterEach } from 'bun:test'
-import { JSDOM } from 'jsdom'
-
-const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
-  url: 'http://localhost',
-  pretendToBeVisual: true,
-})
-
-global.document = dom.window.document
-global.window = dom.window as unknown as Window & typeof globalThis
-global.navigator = dom.window.navigator
-global.HTMLElement = dom.window.HTMLElement
-global.Element = dom.window.Element
+expect.extend(matchers)
 
 afterEach(() => {
-  if (global.document?.body) {
-    global.document.body.innerHTML = ''
-  }
+  cleanup()
 })

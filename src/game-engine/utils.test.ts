@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach } from 'bun:test'
+import { describe, expect, test, beforeEach } from 'vitest'
 import {
   resetInstanceIdCounter,
   generateInstanceId,
@@ -7,7 +7,7 @@ import {
   coinFlip,
 } from '@/game-engine/utils'
 
-describe.serial('resetInstanceIdCounter and generateInstanceId', () => {
+describe('resetInstanceIdCounter and generateInstanceId', () => {
   beforeEach(() => {
     resetInstanceIdCounter()
   })
@@ -28,7 +28,7 @@ describe.serial('resetInstanceIdCounter and generateInstanceId', () => {
   })
 })
 
-describe.serial('createCardInstance', () => {
+describe('createCardInstance', () => {
   beforeEach(() => {
     resetInstanceIdCounter()
   })
@@ -60,7 +60,7 @@ describe.serial('createCardInstance', () => {
   })
 })
 
-describe.serial('shuffle', () => {
+describe('shuffle', () => {
   test('returns shuffled array with same length', () => {
     const original = [1, 2, 3, 4, 5]
     const shuffled = shuffle(original, () => 0.5)
@@ -91,7 +91,7 @@ describe.serial('shuffle', () => {
   })
 })
 
-describe.serial('coinFlip', () => {
+describe('coinFlip', () => {
   test('returns false when random >= 0.5', () => {
     expect(coinFlip(() => 0.5)).toBe(false)
   })
