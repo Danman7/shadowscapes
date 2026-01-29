@@ -2,18 +2,11 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
-import {
-  GameProvider,
-  useGameDispatch,
-  useGameState,
-} from '@/contexts/GameContext'
+import { useGameDispatch, useGameState } from '@/contexts/GameContext'
+import { renderGameContext } from '@/test/mocks/testHelpers'
 
 test('renders children', () => {
-  const { container } = render(
-    <GameProvider>
-      <div>Test Child</div>
-    </GameProvider>,
-  )
+  const { container } = renderGameContext(<div>Test Child</div>)
   expect(container.textContent).toContain('Test Child')
 })
 
@@ -23,11 +16,7 @@ test('useGameState provides game state', () => {
     return <div>Phase: {state.phase}</div>
   }
 
-  const { container } = render(
-    <GameProvider>
-      <TestComponent />
-    </GameProvider>,
-  )
+  const { container } = renderGameContext(<TestComponent />)
 
   expect(container.textContent).toContain('Phase:')
 })
@@ -40,11 +29,7 @@ test('useGameDispatch provides dispatch function', () => {
     )
   }
 
-  const { container } = render(
-    <GameProvider>
-      <TestComponent />
-    </GameProvider>,
-  )
+  const { container } = renderGameContext(<TestComponent />)
 
   expect(container.textContent).toContain('Has dispatch: yes')
 })
@@ -69,4 +54,17 @@ test('useGameDispatch throws error when used outside GameProvider', () => {
   expect(() => {
     render(<TestComponent />)
   }).toThrow('useGameDispatch must be used within GameProvider')
+})
+
+test('GameProvider supports preloaded state overrides', () => {
+  function TestComponent() {
+    const state = useGameState()
+    return <div>Phase: {state.phase}</div>
+  }
+
+  const { container } = renderGameContext(<TestComponent />, {
+    preloadedState: { phase: 'player-turn' },
+  })
+
+  expect(container.textContent).toContain('Phase: player-turn')
 })

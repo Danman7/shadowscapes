@@ -1,9 +1,6 @@
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
 import { describe, expect, test } from 'vitest'
 
-import { GameProvider } from '@/contexts/GameContext'
-import { createCardInstance } from '@/game-engine/utils'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -15,6 +12,34 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
+import { PRELOADED_DUEL_SETUP } from '@/test/mocks/duelSetup'
+import { renderGameContext } from '@/test/mocks/testHelpers'
+import type { Duel } from '@/types'
+
+const preloadedState: Duel = {
+  ...PRELOADED_DUEL_SETUP,
+  activePlayerId: 'player1',
+  inactivePlayerId: 'player2',
+  phase: 'player-turn',
+  startingPlayerId: 'player1',
+  players: {
+    ...PRELOADED_DUEL_SETUP.players,
+    player1: {
+      ...PRELOADED_DUEL_SETUP.players.player1,
+      deckIds: [2],
+      handIds: [1],
+      boardIds: [5],
+      discardIds: [],
+    },
+    player2: {
+      ...PRELOADED_DUEL_SETUP.players.player2,
+      deckIds: [4],
+      handIds: [],
+      boardIds: [],
+      discardIds: [3],
+    },
+  },
+}
 
 describe('useDuelPhase', () => {
   test('returns current phase from game state', () => {
@@ -23,14 +48,12 @@ describe('useDuelPhase', () => {
       return <div data-testid="phase">{phase}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('phase')
-    expect(element?.textContent).toBeDefined()
+    expect(element?.textContent).toBe(preloadedState.phase)
   })
 })
 
@@ -41,14 +64,12 @@ describe('useActivePlayer', () => {
       return <div data-testid="player-id">{activePlayer.id}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('player-id')
-    expect(element?.textContent).toBe('player1')
+    expect(element?.textContent).toBe(preloadedState.activePlayerId)
   })
 })
 
@@ -59,14 +80,12 @@ describe('useInactivePlayer', () => {
       return <div data-testid="player-id">{inactivePlayer.id}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('player-id')
-    expect(element?.textContent).toBe('player2')
+    expect(element?.textContent).toBe(preloadedState.inactivePlayerId)
   })
 })
 
@@ -77,22 +96,23 @@ describe('usePlayerCards', () => {
       return <div data-testid="card-count">{cards.length}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const emptyHandState: Partial<Duel> = {
+      ...preloadedState,
+      players: {
+        ...preloadedState.players,
+        player1: {
+          ...preloadedState.players.player1,
+          handIds: [],
+        },
+      },
+    }
+
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState: emptyHandState,
+    })
 
     const element = getByTestId('card-count')
     expect(element?.textContent).toBe('0')
-  })
-
-  test('returns cards with base data for a player stack', () => {
-    const card1 = createCardInstance('zombie')
-    const card2 = createCardInstance('haunt')
-
-    expect(card1.baseId).toBe('zombie')
-    expect(card2.baseId).toBe('haunt')
   })
 })
 
@@ -103,15 +123,12 @@ describe('useActivePlayerHand', () => {
       return <div data-testid="hand-count">{hand.length}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('hand-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('1')
   })
 })
 
@@ -122,15 +139,12 @@ describe('useActivePlayerBoard', () => {
       return <div data-testid="board-count">{board.length}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('board-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('1')
   })
 })
 
@@ -141,15 +155,12 @@ describe('useInactivePlayerBoard', () => {
       return <div data-testid="board-count">{board.length}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('board-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('0')
   })
 })
 
@@ -160,15 +171,12 @@ describe('usePlayerDeckCount', () => {
       return <div data-testid="deck-count">{deckCount}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('deck-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('1')
   })
 
   test('returns deck count for inactive player', () => {
@@ -177,15 +185,12 @@ describe('usePlayerDeckCount', () => {
       return <div data-testid="deck-count">{deckCount}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('deck-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('1')
   })
 })
 
@@ -196,15 +201,12 @@ describe('usePlayerDiscardCount', () => {
       return <div data-testid="discard-count">{discardCount}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('discard-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('0')
   })
 
   test('returns discard count for inactive player', () => {
@@ -213,14 +215,11 @@ describe('usePlayerDiscardCount', () => {
       return <div data-testid="discard-count">{discardCount}</div>
     }
 
-    const { getByTestId } = render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>,
-    )
+    const { getByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
 
     const element = getByTestId('discard-count')
-    const count = parseInt(element?.textContent || '0')
-    expect(count).toBeGreaterThanOrEqual(0)
+    expect(element?.textContent).toBe('1')
   })
 })

@@ -1,7 +1,11 @@
+import { createElement, type ReactElement, type ReactNode } from 'react'
+import { render, type RenderOptions } from '@testing-library/react'
+
 import type { CardBaseId, Duel, Phase, Player, PlayerId } from '@/types'
 import { CARD_BASES } from '@/constants/cardBases'
 import { createCardInstance } from '@/game-engine/utils'
 import type { GameCard } from '@/components/Card'
+import { GameProvider } from '@/contexts/GameContext'
 
 /**
  * Creates a mock GameCard with card instance and base populated
@@ -48,4 +52,23 @@ export function createMockDuel(overrides: Partial<Duel> = {}): Duel {
     startingPlayerId: null,
     ...overrides,
   }
+}
+
+interface RenderGameContextOptions extends Omit<RenderOptions, 'wrapper'> {
+  preloadedState?: Partial<Duel>
+}
+
+/**
+ * Custom render that wraps components in GameProvider
+ * and allows preloaded duel state overrides.
+ */
+export function renderGameContext(
+  ui: ReactElement,
+  { preloadedState, ...renderOptions }: RenderGameContextOptions = {},
+) {
+  function Wrapper({ children }: { children: ReactNode }) {
+    return createElement(GameProvider, { preloadedState, children })
+  }
+
+  return render(ui, { wrapper: Wrapper, ...renderOptions })
 }

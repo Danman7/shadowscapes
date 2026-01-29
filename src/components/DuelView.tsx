@@ -1,8 +1,7 @@
 import { Board } from '@/components/Board'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
-import { IntroScreen } from '@/components/IntroScreen'
-import { useGameDispatch, useGameState } from '@/contexts/GameContext'
+import { useGameDispatch } from '@/contexts/GameContext'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -21,7 +20,6 @@ import {
  * Active player always displayed at bottom, inactive player at top
  */
 export function DuelView() {
-  const duel = useGameState()
   const dispatch = useGameDispatch()
   const phase = useDuelPhase()
   const activePlayer = useActivePlayer()
@@ -37,14 +35,6 @@ export function DuelView() {
   const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
 
   const inactiveHand = usePlayerCards(inactivePlayer.id, 'hand')
-
-  if (duel.startingPlayerId === null) {
-    return <IntroScreen />
-  }
-
-  if (phase === 'intro') {
-    return <IntroScreen />
-  }
 
   return (
     <div

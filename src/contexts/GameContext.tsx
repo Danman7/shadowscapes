@@ -15,13 +15,18 @@ const GameDispatchContext = createContext<Dispatch<DuelAction> | null>(null)
 
 interface GameProviderProps {
   children: ReactNode
+  preloadedState?: Partial<Duel>
 }
 
 /**
  * GameProvider component that wraps the app and provides game state and dispatch
  */
-export function GameProvider({ children }: GameProviderProps) {
-  const [gameState, dispatch] = useReducer(duelReducer, initialDuelState)
+export function GameProvider({ children, preloadedState }: GameProviderProps) {
+  const [gameState, dispatch] = useReducer(
+    duelReducer,
+    preloadedState,
+    (overrides) => ({ ...initialDuelState, ...overrides }),
+  )
 
   const stateValue = useMemo(() => gameState, [gameState])
 
