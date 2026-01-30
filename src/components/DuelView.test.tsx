@@ -1,10 +1,15 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/react'
-import { expect, test } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
+import * as GameContext from '@/contexts/GameContext'
 import { PRELOADED_DUEL_SETUP as preloadedState } from '@/test/mocks/duelSetup'
 import { renderGameContext } from '@/test/mocks/testHelpers'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 test('renders main game view when phase is player-turn', () => {
   const { getByTestId } = renderGameContext(<DuelView />, {
@@ -54,16 +59,40 @@ test('renders deck and discard piles for both players', () => {
 })
 
 test('dispatches PLAY_CARD when card in hand is clicked', () => {
-  const { queryAllByTestId } = renderGameContext(<DuelView />, {
-    preloadedState,
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  const activePlayerId = preloadedState.activePlayerId
+  const activePlayer = preloadedState.players[activePlayerId]
+  const cardInstanceId = activePlayer.deckIds[0]
+
+  const preloadedStateWithHand = {
+    ...preloadedState,
+    players: {
+      ...preloadedState.players,
+      [activePlayerId]: {
+        ...activePlayer,
+        handIds: cardInstanceId !== undefined ? [cardInstanceId] : [],
+      },
+    },
+  }
+
+  const { getAllByTestId } = renderGameContext(<DuelView />, {
+    preloadedState: preloadedStateWithHand,
   })
 
-  // Cards in hand can be clicked when active player
-  const cards = queryAllByTestId('card')
-  if (cards.length > 0) {
-    const firstCard = cards[0] as HTMLElement
-    expect(() => firstCard.click()).not.toThrow()
+  expect(cardInstanceId).not.toBeUndefined()
+  if (cardInstanceId === undefined) {
+    return
   }
+
+  const cards = getAllByTestId('card')
+  fireEvent.click(cards[0] as HTMLElement)
+
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'PLAY_CARD',
+    payload: { playerId: activePlayerId, cardInstanceId },
+  })
 })
 
 test('handles intro screen button click when startingPlayerId is null', () => {
