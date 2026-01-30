@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { fireEvent } from '@testing-library/react'
+import { act, fireEvent } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
@@ -47,7 +47,11 @@ test('end turn button switches active player', () => {
 
   const endTurnButton = getByTestId('end-turn-button') as HTMLElement
 
-  expect(() => endTurnButton?.click()).not.toThrow()
+  expect(() => {
+    act(() => {
+      endTurnButton?.click()
+    })
+  }).not.toThrow()
 })
 
 test('renders deck and discard piles for both players', () => {
