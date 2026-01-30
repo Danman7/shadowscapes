@@ -42,14 +42,6 @@ test('renders inactive hand with card backs', () => {
   expect(getAllByTestId('card-back')).toHaveLength(2)
 })
 
-test('renders empty hand message when no cards', () => {
-  const { getByTestId } = render(<Hand cards={[]} isActive={true} />)
-
-  const emptyMessage = getByTestId('hand-empty')
-  expect(emptyMessage).toBeInTheDocument()
-  expect(emptyMessage?.textContent).toContain('Empty Hand')
-})
-
 test('calls onCardClick when card is clicked in active hand', () => {
   const handleCardClick = vi.fn()
   const { getAllByTestId } = render(

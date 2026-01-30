@@ -7,6 +7,7 @@ export type GameCard = CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
 
 export interface CardProps {
   card: GameCard
+  isOnBoard?: boolean
   onClick?: () => void
 }
 
@@ -14,14 +15,14 @@ const FACTION_COLORS: Record<Faction, string> = {
   chaos: 'bg-chaos',
   order: 'bg-order',
   shadow: 'bg-shadow',
-  neutral: 'bg-foreground-dim',
+  neutral: 'bg-foreground-fixed',
 }
 
 /**
  * Card component - displays a game card with its details.
  * Shows character strength for character cards or instant indicator for instant cards
  */
-export function Card({ card, onClick }: CardProps) {
+export function Card({ card, isOnBoard, onClick }: CardProps) {
   const { base, strength, type } = card
   const { name, description, flavorText, faction, cost, categories, rank } =
     base
@@ -29,11 +30,11 @@ export function Card({ card, onClick }: CardProps) {
 
   return (
     <div
-      className={`card flex flex-col  ${rank === 'elite' ? 'border-elite/20' : 'border-foreground/20'} bg-surface p-2 space-y-2`}
+      className={`card flex flex-col  ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} bg-surface p-2 space-y-2`}
       onClick={onClick}
       data-testid="card"
     >
-      <div className="font-semibold text-surface rounded overflow-hidden">
+      <div className="font-semibold text-background-fixed rounded overflow-hidden">
         <div
           className={`flex justify-between items-center p-2 ${factionColor}`}
           data-testid="card-header"
@@ -48,31 +49,37 @@ export function Card({ card, onClick }: CardProps) {
         </div>
 
         <div
-          className={`text-sm text-center text-surface ${rank === 'elite' ? 'bg-elite' : 'bg-foreground-dim'}`}
+          className={`text-sm text-center text-background-fixed ${rank === 'elite' ? 'bg-primary' : 'bg-foreground-fixed'}`}
         >
           {categories.join(' ')}
         </div>
       </div>
 
-      <div className="flex flex-col justify-around grow">
-        <div className="overflow-hidden">
-          {description.map((paragraph, index) => (
-            <p key={index} className="mb-1">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+      {!isOnBoard && (
+        <>
+          <div className="flex flex-col justify-around grow overflow-y-auto">
+            <div>
+              {description.map((paragraph, index) => (
+                <p key={index} className="mb-1">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
 
-        <div className="text-sm text-foreground-dim font-light italic">
-          {flavorText}
-        </div>
-      </div>
+            <hr className="border-foreground/10" />
 
-      <div className="flex justify-between items-end">
-        <div className="w-5 h-5 rounded-full bg-yellow-300 border border-elite flex items-center justify-center">
-          {cost}
-        </div>
-      </div>
+            <div className="text-sm text- font-light italic">{flavorText}</div>
+          </div>
+
+          <hr className="border-foreground/10" />
+
+          <div className="flex justify-between items-end">
+            <div className="w-5 h-5 rounded-full bg-yellow-300 border border-elite flex items-center justify-center">
+              {cost}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

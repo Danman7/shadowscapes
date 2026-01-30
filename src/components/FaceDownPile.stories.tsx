@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { FaceDownPile } from '@/components/FaceDownPile'
 
 const meta: Meta<typeof FaceDownPile> = {
-  title: 'Components/FaceDownPile',
+  title: 'Duel/FaceDownPile',
   component: FaceDownPile,
   parameters: {
     layout: 'centered',
@@ -11,6 +11,7 @@ const meta: Meta<typeof FaceDownPile> = {
   args: {
     label: 'Deck',
     count: 10,
+    flipped: false,
   },
   tags: ['autodocs'],
 }
@@ -19,6 +20,12 @@ export default meta
 type Story = StoryObj<typeof FaceDownPile>
 
 export const Default: Story = {}
+
+export const Flipped: Story = {
+  args: {
+    flipped: true,
+  },
+}
 
 export const EmptyDeck: Story = {
   args: {

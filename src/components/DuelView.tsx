@@ -1,4 +1,5 @@
 import { Board } from '@/components/Board'
+import { Button } from '@/components/Button'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { useGameDispatch } from '@/contexts/GameContext'
@@ -38,47 +39,56 @@ export function DuelView() {
 
   return (
     <div
-      className="w-full h-screen bg-linear-to-b from-slate-100 to-slate-200 flex flex-col"
+      className="grid h-screen gap-4
+        grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)]
+        grid-rows-[auto_auto_auto_auto_auto] *:border"
       data-testid="duel-view"
     >
-      {/* Inactive Player Section (Top) */}
-      <div className="flex-1 border-b-2 border-gray-400 p-4 flex flex-col">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold">{inactivePlayer.name}</h3>
-          <div className="flex gap-4">
-            <FaceDownPile count={inactiveDeckCount} label="Deck" />
-            <FaceDownPile count={inactiveDiscardCount} label="Discard" />
-          </div>
+      {/* Row 1: inactive discard / hand / deck */}
+      <section className="col-1 row-1">
+        <FaceDownPile flipped count={inactiveDiscardCount} label="Discard" />
+      </section>
+
+      <section className="col-2 row-1 relative">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 px-2 bg-background/30 backdrop-blur-sm rounded shadow-sm">
+          {inactivePlayer.name}
         </div>
 
         <Hand cards={inactiveHand} isActive={false} />
+      </section>
 
-        <Board cards={inactiveBoard} playerName={inactivePlayer.name} />
-      </div>
+      <section className="col-3 row-1">
+        <FaceDownPile flipped count={inactiveDeckCount} label="Deck" />
+      </section>
 
-      {/* Game Info */}
-      <div className="bg-slate-400 border-t-2 border-b-2 border-gray-400 p-4 flex justify-between items-center">
+      {/* Row 2: inactive board full width */}
+      <section className="col-[1/4] row-2">
+        <Board cards={inactiveBoard} />
+      </section>
+
+      {/* Row 3: center bar */}
+      <section className="col-[1/4] row-3 flex justify-between place-items-center">
         <div className="text-lg font-semibold">Phase: {phase}</div>
 
-        <button
-          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition-colors"
+        <Button
           onClick={() => dispatch({ type: 'SWITCH_TURN' })}
           data-testid="end-turn-button"
         >
           End Turn
-        </button>
-      </div>
+        </Button>
+      </section>
 
-      {/* Active Player Section (Bottom) */}
-      <div className="flex-1 p-4 flex flex-col-reverse">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">{activePlayer.name}</h3>
-          <div className="flex gap-4">
-            <FaceDownPile count={activeDeckCount} label="Deck" />
-            <FaceDownPile count={activeDiscardCount} label="Discard" />
-          </div>
-        </div>
+      {/* Row 4: active board full width */}
+      <section className="col-[1/4] row-4">
+        <Board cards={activeBoard} />
+      </section>
 
+      {/* Row 5: active discard / hand / deck */}
+      <section className="col-1 row-5">
+        <FaceDownPile count={activeDiscardCount} label="Discard" />
+      </section>
+
+      <section className="col-2 row-5 relative">
         <Hand
           cards={activeHand}
           isActive={true}
@@ -90,8 +100,14 @@ export function DuelView() {
           }}
         />
 
-        <Board cards={activeBoard} playerName={activePlayer.name} />
-      </div>
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 px-2 bg-background/30 backdrop-blur-sm rounded shadow-sm">
+          {activePlayer.name}
+        </div>
+      </section>
+
+      <section className="col-3 row-5">
+        <FaceDownPile count={activeDeckCount} label="Deck" />
+      </section>
     </div>
   )
 }

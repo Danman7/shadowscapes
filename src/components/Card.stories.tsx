@@ -5,12 +5,15 @@ import { CARD_BASES } from '@/constants/cardBases'
 import { getCardStrength } from '@/game-engine/utils'
 
 const meta: Meta<typeof Card> = {
-  title: 'Components/Card',
+  title: 'Common/Card',
   component: Card,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  args: {
+    isOnBoard: false,
+  },
 }
 
 export default meta
@@ -18,6 +21,19 @@ type Story = StoryObj<typeof Card>
 
 export const Character: Story = {
   args: {
+    card: {
+      id: 2,
+      baseId: 'templeGuard',
+      type: 'character',
+      strength: 3,
+      base: CARD_BASES.templeGuard,
+    },
+  },
+}
+
+export const OnBoard: Story = {
+  args: {
+    isOnBoard: true,
     card: {
       id: 2,
       baseId: 'templeGuard',
@@ -86,7 +102,7 @@ export const AllCardsGallery: Story = {
   render: () => (
     <div className="flex gap-4 flex-wrap">
       {Object.entries(CARD_BASES).map(([id, base], index) => (
-        <div key={id} className="flex flex-col items-center gap-2">
+        <div key={id} className="flex flex-col gap-2">
           <Card
             card={{
               id: index + 1,

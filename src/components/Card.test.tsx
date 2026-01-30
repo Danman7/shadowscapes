@@ -74,5 +74,5 @@ test('applies bg-elite class for elite cards', () => {
   const { getByText } = render(<Card card={mockInstantCard} />)
   const categoriesElement = getByText(mockInstantCard.base.categories.join(' '))
 
-  expect(categoriesElement?.className).toContain('bg-elite')
+  expect(categoriesElement?.className).toContain('bg-primary')
 })

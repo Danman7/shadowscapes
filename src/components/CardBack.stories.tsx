@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { CardBack } from '@/components/CardBack'
 
 const meta: Meta<typeof CardBack> = {
-  title: 'Components/CardBack',
+  title: 'Common/CardBack',
   component: CardBack,
   parameters: {
     layout: 'centered',

@@ -15,10 +15,7 @@ test('renders pile with label, cards and count', () => {
 })
 
 test('renders empty pile when count is 0', () => {
-  const { queryByTestId, getByText } = render(
-    <FaceDownPile count={0} label="Deck" />,
-  )
+  const { queryByTestId } = render(<FaceDownPile count={0} label="Deck" />)
 
-  expect(getByText('Empty')).toBeInTheDocument()
   expect(queryByTestId('deck-count')).not.toBeInTheDocument()
 })

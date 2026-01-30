@@ -13,7 +13,7 @@ export interface HandProps {
  */
 export function Hand({ cards, isActive, onCardClick }: HandProps) {
   return (
-    <div className="flex gap-2 flex-wrap justify-center p-4" data-testid="hand">
+    <div className="flex gap-2 flex-wrap justify-center" data-testid="hand">
       {isActive
         ? cards.map((card) => (
             <Card
@@ -23,12 +23,6 @@ export function Hand({ cards, isActive, onCardClick }: HandProps) {
             />
           ))
         : cards.map((_, index) => <CardBack key={index} />)}
-
-      {cards.length === 0 && (
-        <div className="text-gray-400 italic" data-testid="hand-empty">
-          Empty Hand
-        </div>
-      )}
     </div>
   )
 }

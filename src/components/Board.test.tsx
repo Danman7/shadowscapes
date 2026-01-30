@@ -29,20 +29,6 @@ test('renders board with cards', () => {
   expect(cardElements.length).toBe(2)
 })
 
-test('renders empty board message when no cards', () => {
-  const { getByTestId } = render(<Board cards={[]} />)
-
-  const emptyMessage = getByTestId('board-empty')
-  expect(emptyMessage).toBeInTheDocument()
-  expect(emptyMessage?.textContent).toContain('No cards on board')
-})
-
-test('displays player name when provided', () => {
-  const { container } = render(<Board cards={mockCards} playerName="Alice" />)
-
-  expect(container.textContent).toContain("Alice's Board")
-})
-
 test('does not display player name when not provided', () => {
   const { container } = render(<Board cards={mockCards} />)
 

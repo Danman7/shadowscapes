@@ -4,7 +4,7 @@ import { Hand } from '@/components/Hand'
 import { createCardInstance } from '@/test/mocks/cardInstances'
 
 const meta: Meta<typeof Hand> = {
-  title: 'Components/Hand',
+  title: 'Duel/Hand',
   component: Hand,
   parameters: {
     layout: 'centered',

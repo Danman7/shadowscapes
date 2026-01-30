@@ -6,7 +6,7 @@ export default {
       colors: {
         background: 'var(--color-background)',
         foreground: 'var(--color-foreground)',
-        'foreground-dim': 'var(--color-foreground-dim)',
+        '': 'var(--color-)',
         surface: 'var(--color-surface)',
         'surface-dim': 'var(--color-surface-dim)',
         'order-surface': 'var(--color-order-surface)',
