@@ -1,7 +1,4 @@
 {
-  "terminal.integrated.env.osx": {
-    "PATH": "/Users/danailatanasov/.bun/bin:${env:PATH}"
-  },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {

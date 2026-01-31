@@ -13,8 +13,8 @@ export interface DuelSetupMock {
 }
 
 export const DEFAULT_DUEL_SETUP: DuelSetupMock = {
-  player1Name: 'Garrett',
-  player2Name: 'Constantine',
+  player1Name: 'Constantine',
+  player2Name: 'Garrett',
   player1Deck: PLAYER_1_DECK,
   player2Deck: PLAYER_2_DECK,
 }

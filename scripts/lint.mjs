@@ -7,7 +7,6 @@ function run(command, args) {
 
 let failed = false
 
-// Run both checks even if the first fails.
 console.log('Running Prettier (check)…')
 const prettierStatus = run('prettier', ['--check', '.'])
 if (prettierStatus !== 0) failed = true
