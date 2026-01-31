@@ -55,6 +55,16 @@ export function Card({ card, isOnBoard, onClick }: CardProps) {
         </div>
       </div>
 
+      {isOnBoard && (
+        <div className="text-sm">
+          {description.map((paragraph, index) => (
+            <p key={index} className="mb-1">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      )}
+
       {!isOnBoard && (
         <>
           <div className="flex flex-col justify-around grow overflow-y-auto">

@@ -64,7 +64,7 @@ export function DuelView() {
       </section>
 
       {/* Row 2: inactive board full width */}
-      <section className="col-[1/4] row-2">
+      <section className="col-[1/4] row-2 justify-center items-end flex">
         <div className="flex gap-2 justify-center" data-testid="board">
           {inactiveBoard.map((card) => (
             <Card isOnBoard key={card.id} card={card} />

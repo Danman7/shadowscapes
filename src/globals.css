@@ -91,7 +91,7 @@
   }
 
   .card {
-    @apply aspect-25/35 max-w-60 w-full h-full rounded-lg border shadow-xs;
+    @apply aspect-25/35 max-w-60 w-full h-full rounded-lg border shadow-sm;
   }
 
   .name-tag {
@@ -99,7 +99,7 @@
   }
 
   .hand-card {
-    @apply absolute transition-transform duration-200 ease-out drop-shadow-sm;
+    @apply absolute transition-transform duration-200 ease-out;
     transform: translateX(var(--card-x, 0px)) translateY(var(--card-y, 0px))
       rotate(var(--card-rotate, 0deg));
     transform-origin: center 85%;
@@ -112,7 +112,7 @@
   .hand-card.is-active:hover {
     transform: translateX(var(--card-x, 0px))
       translateY(calc(var(--card-y, 0px) - 210px));
-    @apply z-40 drop-shadow-lg;
+    @apply z-40 shadow-lg;
   }
 
   .hand-card.is-inactive {
