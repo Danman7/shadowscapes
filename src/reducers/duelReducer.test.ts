@@ -3,6 +3,7 @@ import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
 import { createMockDuel, createMockPlayer } from '@/test/mocks/testHelpers'
 import type { Duel, CardInstance } from '@/types'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
+import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 
 test('initial state has placeholder duel with intro phase', () => {
   expect(initialDuelState.phase).toBe('intro')
@@ -248,6 +249,45 @@ describe('DRAW_CARD action', () => {
       // When drawnCardId is undefined, state is returned unchanged
       expect(result).toEqual(stateWithUndefined)
     })
+  })
+})
+
+describe('INITIAL_DRAW action', () => {
+  test('draws starting hands for both players and advances to redraw', () => {
+    const cards: Record<number, CardInstance> = {}
+    const player1Deck = [1, 2, 3, 4, 5, 6]
+    const player2Deck = [7, 8, 9, 10, 11, 12]
+
+    ;[...player1Deck, ...player2Deck].forEach((id) => {
+      cards[id] = { id, baseId: 'zombie', type: 'character', strength: 1 }
+    })
+
+    const state = createMockDuel({
+      phase: 'initial-draw',
+      cards,
+      players: {
+        player1: createMockPlayer('player1', {
+          deckIds: player1Deck,
+          handIds: [],
+        }),
+        player2: createMockPlayer('player2', {
+          deckIds: player2Deck,
+          handIds: [],
+        }),
+      },
+    })
+
+    const result = duelReducer(state, { type: 'INITIAL_DRAW' })
+
+    expect(result.players.player1.handIds).toHaveLength(INITIAL_CARDS_TO_DRAW)
+    expect(result.players.player2.handIds).toHaveLength(INITIAL_CARDS_TO_DRAW)
+    expect(result.players.player1.deckIds.length).toBe(
+      player1Deck.length - INITIAL_CARDS_TO_DRAW,
+    )
+    expect(result.players.player2.deckIds.length).toBe(
+      player2Deck.length - INITIAL_CARDS_TO_DRAW,
+    )
+    expect(result.phase).toBe('redraw')
   })
 })
 

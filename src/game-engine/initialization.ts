@@ -130,3 +130,23 @@ export function updatePlayer(
     },
   }
 }
+
+export const drawTopCard = (
+  duel: Readonly<Duel>,
+  playerId: 'player1' | 'player2',
+): Readonly<Duel> => {
+  const player = getPlayer(duel, playerId)
+
+  if (player.deckIds.length === 0) {
+    return duel
+  }
+
+  const [drawnCardId, ...remainingDeckIds] = player.deckIds
+
+  if (drawnCardId == null) return duel
+
+  return updatePlayer(duel, playerId, {
+    deckIds: remainingDeckIds,
+    handIds: [...player.handIds, drawnCardId],
+  })
+}

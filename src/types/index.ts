@@ -87,6 +87,7 @@ export type DuelAction =
       }
     }
   | { type: 'TRANSITION_PHASE'; payload: Phase }
+  | { type: 'INITIAL_DRAW' }
   | {
       type: 'PLAY_CARD'
       payload: { playerId: PlayerId; cardInstanceId: number }

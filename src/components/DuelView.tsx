@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { ActivePing } from '@/components/ActivePing'
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
@@ -17,6 +19,67 @@ import {
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
 
+function PhaseInfo() {
+  const phase = useDuelPhase()
+
+  if (phase === 'intro') {
+    return null
+  }
+
+  if (phase === 'initial-draw') {
+    return (
+      <div data-testid="phase-info" className="text-lg font-semibold">
+        Draw cards
+      </div>
+    )
+  }
+
+  if (phase === 'redraw') {
+    return (
+      <div data-testid="phase-info" className="text-lg font-semibold">
+        Redraw phase
+      </div>
+    )
+  }
+
+  return (
+    <div data-testid="phase-info" className="text-lg font-semibold">
+      Phase: {phase}
+    </div>
+  )
+}
+
+function PhaseButton() {
+  const phase = useDuelPhase()
+  const dispatch = useGameDispatch()
+
+  if (phase === 'intro' || phase === 'initial-draw') {
+    return null
+  }
+
+  if (phase === 'redraw') {
+    return (
+      <Button
+        onClick={() =>
+          dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
+        }
+        data-testid="phase-button"
+      >
+        Skip redraw
+      </Button>
+    )
+  }
+
+  return (
+    <Button
+      onClick={() => dispatch({ type: 'SWITCH_TURN' })}
+      data-testid="phase-button"
+    >
+      End Turn
+    </Button>
+  )
+}
+
 /**
  * DuelView component - main game view that orchestrates all game components
  * Renders different views based on game phase
@@ -27,6 +90,18 @@ export function DuelView() {
   const phase = useDuelPhase()
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
+
+  useEffect(() => {
+    if (phase === 'intro') {
+      dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
+    }
+  }, [dispatch, phase])
+
+  useEffect(() => {
+    if (phase === 'initial-draw') {
+      dispatch({ type: 'INITIAL_DRAW' })
+    }
+  }, [dispatch, phase])
 
   const activeHand = useActivePlayerHand()
   const activeBoard = useActivePlayerBoard()
@@ -43,7 +118,7 @@ export function DuelView() {
     <div
       className="grid h-screen gap-4
         grid-cols-[120px_minmax(0,2fr)_120px]
-        grid-rows-[140px_1fr_50px_1fr_140px] *:border overflow-hidden"
+        grid-rows-[140px_1fr_50px_1fr_140px] overflow-hidden"
       data-testid="duel-view"
     >
       {/* Row 1: inactive discard / hand / deck */}
@@ -73,15 +148,10 @@ export function DuelView() {
       </section>
 
       {/* Row 3: center bar */}
-      <section className="col-[1/4] w-full row-3 flex justify-between place-items-center">
-        <div className="text-lg font-semibold">Phase: {phase}</div>
+      <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
+        <PhaseInfo />
 
-        <Button
-          onClick={() => dispatch({ type: 'SWITCH_TURN' })}
-          data-testid="end-turn-button"
-        >
-          End Turn
-        </Button>
+        <PhaseButton />
       </section>
 
       {/* Row 4: active board full width */}

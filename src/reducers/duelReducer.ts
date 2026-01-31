@@ -1,7 +1,9 @@
 import type { Duel, DuelAction } from '@/types'
+import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 import {
   createDuel,
   createInitialDuel,
+  drawTopCard,
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
@@ -48,23 +50,20 @@ export function duelReducer(
 
     case 'DRAW_CARD': {
       const { playerId } = action.payload
-      const player = getPlayer(state, playerId)
+      return drawTopCard(state, playerId)
+    }
 
-      if (player.deckIds.length === 0) {
-        return state
+    case 'INITIAL_DRAW': {
+      let stateClone = structuredClone(state)
+
+      for (let i = 0; i < INITIAL_CARDS_TO_DRAW; i += 1) {
+        stateClone = drawTopCard(stateClone, 'player1')
+        stateClone = drawTopCard(stateClone, 'player2')
       }
 
-      const [drawnCardId, ...remainingDeckIds] = player.deckIds
-
-      if (drawnCardId) {
-        const newHandIds = [...player.handIds, drawnCardId]
-
-        return updatePlayer(state, playerId, {
-          deckIds: remainingDeckIds,
-          handIds: newHandIds,
-        })
-      } else {
-        return state
+      return {
+        ...stateClone,
+        phase: 'redraw',
       }
     }
 

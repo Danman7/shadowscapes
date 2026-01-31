@@ -17,7 +17,7 @@ export default meta
 
 type Story = StoryObj<typeof DuelView>
 
-export const InitialDecks: Story = {
+export const RedrawPhase: Story = {
   render: () => (
     <GameProvider preloadedState={PRELOADED_DUEL_SETUP}>
       <DuelView />
