@@ -93,4 +93,29 @@
   .card {
     @apply aspect-25/35 max-w-60 w-full h-full rounded-lg border shadow-xs;
   }
+
+  .name-tag {
+    @apply bg-background/50 backdrop-blur-sm rounded shadow-sm text-xl flex place-items-center gap-2 z-50;
+  }
+
+  .hand-card {
+    @apply absolute transition-transform duration-200 ease-out drop-shadow-sm;
+    transform: translateX(var(--card-x, 0px)) translateY(var(--card-y, 0px))
+      rotate(var(--card-rotate, 0deg));
+    transform-origin: center 85%;
+  }
+
+  .hand-card.is-active {
+    @apply cursor-pointer;
+  }
+
+  .hand-card.is-active:hover {
+    transform: translateX(var(--card-x, 0px))
+      translateY(calc(var(--card-y, 0px) - 210px));
+    @apply z-40 drop-shadow-lg;
+  }
+
+  .hand-card.is-inactive {
+    @apply pointer-events-none;
+  }
 }

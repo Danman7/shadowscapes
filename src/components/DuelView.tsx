@@ -1,5 +1,7 @@
+import { ActivePing } from '@/components/ActivePing'
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { useGameDispatch } from '@/contexts/GameContext'
@@ -40,8 +42,8 @@ export function DuelView() {
   return (
     <div
       className="grid h-screen gap-4
-        grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)]
-        grid-rows-[auto_auto_auto_auto_auto] *:border"
+        grid-cols-[120px_minmax(0,2fr)_120px]
+        grid-rows-[140px_1fr_50px_1fr_140px] *:border overflow-hidden"
       data-testid="duel-view"
     >
       {/* Row 1: inactive discard / hand / deck */}
@@ -50,11 +52,11 @@ export function DuelView() {
       </section>
 
       <section className="col-2 row-1 relative">
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 px-2 bg-background/30 backdrop-blur-sm rounded shadow-sm">
+        <div className="name-tag absolute top-2 left-1/2 transform -translate-x-1/2 px-2 ">
           {inactivePlayer.name}
         </div>
 
-        <Hand cards={inactiveHand} isActive={false} />
+        <Hand cards={inactiveHand} isActive={false} isOnTop />
       </section>
 
       <section className="col-3 row-1">
@@ -63,11 +65,15 @@ export function DuelView() {
 
       {/* Row 2: inactive board full width */}
       <section className="col-[1/4] row-2">
-        <Board cards={inactiveBoard} />
+        <div className="flex gap-2 justify-center" data-testid="board">
+          {inactiveBoard.map((card) => (
+            <Card isOnBoard key={card.id} card={card} />
+          ))}
+        </div>
       </section>
 
       {/* Row 3: center bar */}
-      <section className="col-[1/4] row-3 flex justify-between place-items-center">
+      <section className="col-[1/4] w-full row-3 flex justify-between place-items-center">
         <div className="text-lg font-semibold">Phase: {phase}</div>
 
         <Button
@@ -100,7 +106,8 @@ export function DuelView() {
           }}
         />
 
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 px-2 bg-background/30 backdrop-blur-sm rounded shadow-sm">
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 px-2 name-tag">
+          <ActivePing />
           {activePlayer.name}
         </div>
       </section>
