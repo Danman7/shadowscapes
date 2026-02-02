@@ -1,9 +1,11 @@
 import { describe, expect, test, beforeEach } from 'vitest'
 import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
-import { createMockPlayer } from '@/test/mocks/testHelpers'
 import type { Duel, CardInstance } from '@/types'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
-import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
+import {
+  INITIAL_CARDS_TO_DRAW,
+  PLACEHOLDER_PLAYER,
+} from '@/constants/duelParams'
 import { createDuel } from '@/game-engine/initialization'
 import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
@@ -28,8 +30,8 @@ describe('START_DUEL action', () => {
 
     expect(player1.name).toBe('Alice')
     expect(player2.name).toBe('Bob')
-    expect(player1.deckIds.length).toBeGreaterThan(0)
-    expect(player2.deckIds.length).toBeGreaterThan(0)
+    expect(player1.deck.length).toBeGreaterThan(0)
+    expect(player2.deck.length).toBeGreaterThan(0)
   })
 
   test('sets starting player and active/inactive players', () => {
@@ -146,14 +148,18 @@ describe('DRAW_CARD action', () => {
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2, 3: card3 },
       players: {
-        player1: createMockPlayer('player1', {
-          deckIds: [1, 2],
-          handIds: [],
-        }),
-        player2: createMockPlayer('player2', {
-          deckIds: [3],
-          handIds: [],
-        }),
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          deck: [1, 2],
+          hand: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          deck: [3],
+          hand: [],
+        },
       },
     })
   })
@@ -166,8 +172,8 @@ describe('DRAW_CARD action', () => {
       payload: { playerId: 'player1' },
     })
 
-    expect(player1.deckIds).toEqual([2])
-    expect(player1.handIds).toEqual([1])
+    expect(player1.deck).toEqual([2])
+    expect(player1.hand).toEqual([1])
   })
 
   test('draws multiple cards sequentially', () => {
@@ -182,8 +188,8 @@ describe('DRAW_CARD action', () => {
       payload: { playerId: 'player1' },
     })
 
-    expect(player1.deckIds).toEqual([])
-    expect(player1.handIds).toEqual([1, 2])
+    expect(player1.deck).toEqual([])
+    expect(player1.hand).toEqual([1, 2])
   })
 
   test('does not modify other player', () => {
@@ -194,16 +200,24 @@ describe('DRAW_CARD action', () => {
       payload: { playerId: 'player1' },
     })
 
-    expect(player2.deckIds).toEqual([3])
-    expect(player2.handIds).toEqual([])
+    expect(player2.deck).toEqual([3])
+    expect(player2.hand).toEqual([])
   })
 
   describe('empty deck handling', () => {
     test('returns unchanged state when deck is empty', () => {
       const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
-          player1: createMockPlayer('player1', { deckIds: [], handIds: [] }),
-          player2: createMockPlayer('player2'),
+          player1: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player1',
+            deck: [],
+            hand: [],
+          },
+          player2: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player2',
+          },
         },
       })
 
@@ -218,8 +232,15 @@ describe('DRAW_CARD action', () => {
     test('handles drawing from empty deck without errors', () => {
       const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
-          player1: createMockPlayer('player1', { deckIds: [] }),
-          player2: createMockPlayer('player2'),
+          player1: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player1',
+            deck: [],
+          },
+          player2: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player2',
+          },
         },
       })
 
@@ -234,11 +255,16 @@ describe('DRAW_CARD action', () => {
     test('handles undefined card in deck array', () => {
       const stateWithUndefined = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
-          player1: createMockPlayer('player1', {
-            deckIds: [undefined as any],
-            handIds: [],
-          }),
-          player2: createMockPlayer('player2'),
+          player1: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player1',
+            deck: [undefined as any],
+            hand: [],
+          },
+          player2: {
+            ...PLACEHOLDER_PLAYER,
+            id: 'player2',
+          },
         },
       })
 
@@ -266,25 +292,29 @@ describe('INITIAL_DRAW action', () => {
       phase: 'initial-draw',
       cards,
       players: {
-        player1: createMockPlayer('player1', {
-          deckIds: player1Deck,
-          handIds: [],
-        }),
-        player2: createMockPlayer('player2', {
-          deckIds: player2Deck,
-          handIds: [],
-        }),
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          deck: player1Deck,
+          hand: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          deck: player2Deck,
+          hand: [],
+        },
       },
     })
 
     const result = duelReducer(state, { type: 'INITIAL_DRAW' })
 
-    expect(result.players.player1.handIds).toHaveLength(INITIAL_CARDS_TO_DRAW)
-    expect(result.players.player2.handIds).toHaveLength(INITIAL_CARDS_TO_DRAW)
-    expect(result.players.player1.deckIds.length).toBe(
+    expect(result.players.player1.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
+    expect(result.players.player2.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
+    expect(result.players.player1.deck.length).toBe(
       player1Deck.length - INITIAL_CARDS_TO_DRAW,
     )
-    expect(result.players.player2.deckIds.length).toBe(
+    expect(result.players.player2.deck.length).toBe(
       player2Deck.length - INITIAL_CARDS_TO_DRAW,
     )
     expect(result.phase).toBe('redraw')
@@ -310,12 +340,17 @@ describe('PLAY_CARD action', () => {
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: characterCard, 2: instantCard },
       players: {
-        player1: createMockPlayer('player1', {
-          handIds: [1, 2],
-          boardIds: [],
-          discardIds: [],
-        }),
-        player2: createMockPlayer('player2'),
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          hand: [1, 2],
+          board: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+        },
       },
     })
   })
@@ -329,9 +364,9 @@ describe('PLAY_CARD action', () => {
         payload: { playerId: 'player1', cardInstanceId: 1 },
       })
 
-      expect(player1.handIds).toEqual([2])
-      expect(player1.boardIds).toEqual([1])
-      expect(player1.discardIds).toEqual([])
+      expect(player1.hand).toEqual([2])
+      expect(player1.board).toEqual([1])
+      expect(player1.discard).toEqual([])
     })
 
     test('character card stays on board', () => {
@@ -342,7 +377,7 @@ describe('PLAY_CARD action', () => {
         payload: { playerId: 'player1', cardInstanceId: 1 },
       })
 
-      expect(player1.boardIds).toContain(1)
+      expect(player1.board).toContain(1)
     })
   })
 
@@ -355,9 +390,9 @@ describe('PLAY_CARD action', () => {
         payload: { playerId: 'player1', cardInstanceId: 2 },
       })
 
-      expect(player1.handIds).toEqual([1])
-      expect(player1.boardIds).toEqual([])
-      expect(player1.discardIds).toEqual([2])
+      expect(player1.hand).toEqual([1])
+      expect(player1.board).toEqual([])
+      expect(player1.discard).toEqual([2])
     })
 
     test('instant card does not go to board', () => {
@@ -368,7 +403,7 @@ describe('PLAY_CARD action', () => {
         payload: { playerId: 'player1', cardInstanceId: 2 },
       })
 
-      expect(player1.boardIds).not.toContain(2)
+      expect(player1.board).not.toContain(2)
     })
   })
 
@@ -388,7 +423,7 @@ describe('PLAY_CARD action', () => {
         payload: { playerId: 'player1', cardInstanceId: 999 },
       })
 
-      expect(result.players.player1.handIds).toEqual([1, 2])
+      expect(result.players.player1.hand).toEqual([1, 2])
     })
   })
 
@@ -400,8 +435,8 @@ describe('PLAY_CARD action', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(player2.handIds).toEqual([])
-    expect(player2.boardIds).toEqual([])
+    expect(player2.hand).toEqual([])
+    expect(player2.board).toEqual([])
   })
 })
 
@@ -425,11 +460,16 @@ describe('DISCARD_CARD action', () => {
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2 },
       players: {
-        player1: createMockPlayer('player1', {
-          handIds: [1, 2],
-          discardIds: [],
-        }),
-        player2: createMockPlayer('player2'),
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          hand: [1, 2],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+        },
       },
     })
   })
@@ -442,8 +482,8 @@ describe('DISCARD_CARD action', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(player1.handIds).toEqual([2])
-    expect(player1.discardIds).toEqual([1])
+    expect(player1.hand).toEqual([2])
+    expect(player1.discard).toEqual([1])
   })
 
   test('discards multiple cards sequentially', () => {
@@ -458,8 +498,8 @@ describe('DISCARD_CARD action', () => {
       payload: { playerId: 'player1', cardInstanceId: 2 },
     })
 
-    expect(player1.handIds).toEqual([])
-    expect(player1.discardIds).toEqual([1, 2])
+    expect(player1.hand).toEqual([])
+    expect(player1.discard).toEqual([1, 2])
   })
 
   test('does not modify other player', () => {
@@ -470,8 +510,8 @@ describe('DISCARD_CARD action', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(player2.handIds).toEqual([])
-    expect(player2.discardIds).toEqual([])
+    expect(player2.hand).toEqual([])
+    expect(player2.discard).toEqual([])
   })
 })
 

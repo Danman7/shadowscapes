@@ -88,19 +88,19 @@ export function duelReducer(
         return state
       }
 
-      const newHandIds = player.handIds.filter(
+      const newhand = player.hand.filter(
         (id): id is number => id !== cardInstanceId,
       )
 
       if (card.type === 'instant') {
         return updatePlayer(state, playerId, {
-          handIds: newHandIds,
-          discardIds: [...player.discardIds, cardInstanceId],
+          hand: newhand,
+          discard: [...player.discard, cardInstanceId],
         })
       } else {
         return updatePlayer(state, playerId, {
-          handIds: newHandIds,
-          boardIds: [...player.boardIds, cardInstanceId],
+          hand: newhand,
+          board: [...player.board, cardInstanceId],
         })
       }
     }
@@ -109,13 +109,13 @@ export function duelReducer(
       const { playerId, cardInstanceId } = action.payload
       const player = getPlayer(state, playerId)
 
-      const newHandIds = player.handIds.filter(
+      const newhand = player.hand.filter(
         (id): id is number => id !== cardInstanceId,
       )
 
       return updatePlayer(state, playerId, {
-        handIds: newHandIds,
-        discardIds: [...player.discardIds, cardInstanceId],
+        hand: newhand,
+        discard: [...player.discard, cardInstanceId],
       })
     }
 

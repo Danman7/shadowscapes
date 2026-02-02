@@ -58,10 +58,10 @@ export interface Player {
   id: PlayerId
   name: string
   coins: number
-  deckIds: number[]
-  handIds: number[]
-  boardIds: number[]
-  discardIds: number[]
+  deck: number[]
+  hand: number[]
+  board: number[]
+  discard: number[]
 }
 
 export type Phase = 'intro' | 'initial-draw' | 'redraw' | 'player-turn'

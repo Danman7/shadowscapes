@@ -13,8 +13,8 @@ export const FACTION_COLORS: Record<Faction, string> = {
 export const PLACEHOLDER_PLAYER: Omit<Player, 'id'> = {
   name: '',
   coins: INITIAL_PLAYER_COINS,
-  deckIds: [],
-  handIds: [],
-  boardIds: [],
-  discardIds: [],
+  deck: [],
+  hand: [],
+  board: [],
+  discard: [],
 }

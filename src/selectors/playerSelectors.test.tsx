@@ -13,7 +13,7 @@ import {
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
 import { PRELOADED_DUEL_SETUP } from '@/test/mocks/duelSetup'
-import { renderGameContext } from '@/test/mocks/testHelpers'
+import { renderGameContext } from '@/test/renderGameContext'
 import type { Duel } from '@/types'
 
 const preloadedState: Duel = {
@@ -26,17 +26,17 @@ const preloadedState: Duel = {
     ...PRELOADED_DUEL_SETUP.players,
     player1: {
       ...PRELOADED_DUEL_SETUP.players.player1,
-      deckIds: [2],
-      handIds: [1],
-      boardIds: [5],
-      discardIds: [],
+      deck: [2],
+      hand: [1],
+      board: [5],
+      discard: [],
     },
     player2: {
       ...PRELOADED_DUEL_SETUP.players.player2,
-      deckIds: [4],
-      handIds: [],
-      boardIds: [],
-      discardIds: [3],
+      deck: [4],
+      hand: [],
+      board: [],
+      discard: [3],
     },
   },
 }
@@ -102,7 +102,7 @@ describe('usePlayerCards', () => {
         ...preloadedState.players,
         player1: {
           ...preloadedState.players.player1,
-          handIds: [],
+          hand: [],
         },
       },
     }

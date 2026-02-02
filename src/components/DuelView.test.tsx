@@ -8,7 +8,7 @@ import {
   MIXED_STACKS_DUEL,
   PRELOADED_DUEL_SETUP as preloadedState,
 } from '@/test/mocks/duelSetup'
-import { renderGameContext } from '@/test/mocks/testHelpers'
+import { renderGameContext } from '@/test/renderGameContext'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -46,7 +46,7 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
 
   const activePlayerId = preloadedState.activePlayerId
   const activePlayer = preloadedState.players[activePlayerId]
-  const cardInstanceId = activePlayer.deckIds[0]
+  const cardInstanceId = activePlayer.deck[0]
 
   const preloadedStateWithHand = {
     ...preloadedState,
@@ -54,7 +54,7 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
       ...preloadedState.players,
       [activePlayerId]: {
         ...activePlayer,
-        handIds: cardInstanceId !== undefined ? [cardInstanceId] : [],
+        hand: cardInstanceId !== undefined ? [cardInstanceId] : [],
       },
     },
   }

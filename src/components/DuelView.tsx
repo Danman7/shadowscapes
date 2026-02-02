@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 
 import { ActivePing } from '@/components/ActivePing'
 import { Board } from '@/components/Board'
@@ -18,64 +18,51 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
+import type { Phase } from '@/types'
 
-function PhaseInfo() {
-  const phase = useDuelPhase()
+const PhaseInfo: React.FC<{ phase: Phase }> = ({ phase }) => {
+  let phaseInfoText: ReactNode = null
 
-  if (phase === 'intro') {
-    return null
-  }
+  switch (phase) {
+    case 'redraw':
+      phaseInfoText = 'Redraw phase'
+      break
 
-  if (phase === 'initial-draw') {
-    return (
-      <div data-testid="phase-info" className="text-lg font-semibold">
-        Draw cards
-      </div>
-    )
-  }
-
-  if (phase === 'redraw') {
-    return (
-      <div data-testid="phase-info" className="text-lg font-semibold">
-        Redraw phase
-      </div>
-    )
+    default:
+      phaseInfoText = 'Draw cards'
+      break
   }
 
   return (
     <div data-testid="phase-info" className="text-lg font-semibold">
-      Phase: {phase}
+      {phaseInfoText}
     </div>
   )
 }
 
-function PhaseButton() {
-  const phase = useDuelPhase()
+const PhaseButton: React.FC<{ phase: Phase }> = ({ phase }) => {
   const dispatch = useGameDispatch()
 
-  if (phase === 'intro' || phase === 'initial-draw') {
-    return null
-  }
+  let phaseButtonLabel: ReactNode = null
+  let phaseButtonOnClick: (() => void) | null = null
 
-  if (phase === 'redraw') {
-    return (
-      <Button
-        onClick={() =>
-          dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
-        }
-        data-testid="phase-button"
-      >
-        Skip redraw
-      </Button>
-    )
+  switch (phase) {
+    case 'redraw':
+      phaseButtonLabel = 'Skip redraw'
+      phaseButtonOnClick = () =>
+        dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
+
+      break
+
+    default:
+      phaseButtonLabel = 'End Turn'
+      phaseButtonOnClick = () => dispatch({ type: 'SWITCH_TURN' })
+      break
   }
 
   return (
-    <Button
-      onClick={() => dispatch({ type: 'SWITCH_TURN' })}
-      data-testid="phase-button"
-    >
-      End Turn
+    <Button onClick={phaseButtonOnClick} data-testid="phase-button">
+      {phaseButtonLabel}
     </Button>
   )
 }
@@ -149,9 +136,9 @@ export function DuelView() {
 
       {/* Row 3: center bar */}
       <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
-        <PhaseInfo />
+        <PhaseInfo phase={phase} />
 
-        <PhaseButton />
+        <PhaseButton phase={phase} />
       </section>
 
       {/* Row 4: active board full width */}

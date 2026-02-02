@@ -1,9 +1,8 @@
 import { Card } from '@/components/Card'
-import type { CARD_BASES } from '@/constants/cardBases'
-import type { CardBaseId, CardInstance } from '@/types'
+import type { CardInstance } from '@/types'
 
 export interface BoardProps {
-  cards: Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }>
+  cards: CardInstance[]
 }
 
 /**

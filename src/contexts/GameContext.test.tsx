@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
 import { useGameDispatch, useGameState } from '@/contexts/GameContext'
-import { renderGameContext } from '@/test/mocks/testHelpers'
+import { renderGameContext } from '@/test/renderGameContext'
 
 test('renders children', () => {
   const { container } = renderGameContext(<div>Test Child</div>)

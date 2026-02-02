@@ -1,118 +1,43 @@
-import { useMemo } from 'react'
 import { useGameState } from '@/contexts/GameContext'
-import type {
-  CardBaseId,
-  CardInstance,
-  Phase,
-  Player,
-  PlayerId,
-  Stack,
-} from '@/types'
-import { CARD_BASES } from '@/constants/cardBases'
-import { getPlayer } from '@/game-engine/initialization'
+import type { CardInstance, Phase, Player, PlayerId, Stack } from '@/types'
+import { useMemo } from 'react'
 
-/**
- * Hook to get the current duel phase
- */
-export function useDuelPhase(): Phase {
-  const { phase } = useGameState()
+export const useDuelPhase = (): Phase => useGameState().phase
 
-  return phase
-}
+export const usePlayer = (playerId: PlayerId): Player =>
+  useGameState().players[playerId]
 
-/**
- * Hook to get active player
- */
-export function useActivePlayer(): Player {
-  const duel = useGameState()
+export const useActivePlayer = (): Player =>
+  usePlayer(useGameState().activePlayerId)
 
-  return getPlayer(duel, duel.activePlayerId)
-}
+export const useInactivePlayer = (): Player =>
+  usePlayer(useGameState().inactivePlayerId)
 
-/**
- * Hook to get inactive player
- */
-export function useInactivePlayer(): Player {
-  const duel = useGameState()
-
-  return getPlayer(duel, duel.inactivePlayerId)
-}
-
-/**
- * Hook to get cards for a specific player's stack (hand, board, deck, discard)
- * Returns full card data (instance + base)
- */
-export function usePlayerCards(
+export const usePlayerCards = (
   playerId: PlayerId,
   stack: Stack,
-): Array<CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }> {
-  const duel = useGameState()
+): CardInstance[] => {
+  const { cards } = useGameState()
 
   return useMemo(() => {
-    const player = getPlayer(duel, playerId)
-    const stackKey = `${stack}Ids` as
-      | 'handIds'
-      | 'boardIds'
-      | 'deckIds'
-      | 'discardIds'
-    const cardIds = player[stackKey]
+    const player = usePlayer(playerId)
+    const cardIds = player[stack]
 
-    return cardIds.map((id) => {
-      const instance = duel.cards[id]!
-      const base = CARD_BASES[instance.baseId]!
-      return { ...instance, base }
-    })
-  }, [duel, playerId, stack])
+    return cardIds.map((id) => cards[id]!)
+  }, [playerId, stack])
 }
 
-/**
- * Hook to get active player's hand cards
- */
-export function useActivePlayerHand(): Array<
-  CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
-> {
-  const { activePlayerId } = useGameState()
+export const useActivePlayerHand = (): CardInstance[] =>
+  usePlayerCards(useGameState().activePlayerId, 'hand')
 
-  return usePlayerCards(activePlayerId, 'hand')
-}
+export const useActivePlayerBoard = (): CardInstance[] =>
+  usePlayerCards(useGameState().activePlayerId, 'board')
 
-/**
- * Hook to get active player's board cards
- */
-export function useActivePlayerBoard(): Array<
-  CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
-> {
-  const { activePlayerId } = useGameState()
+export const useInactivePlayerBoard = (): CardInstance[] =>
+  usePlayerCards(useGameState().inactivePlayerId, 'board')
 
-  return usePlayerCards(activePlayerId, 'board')
-}
+export const usePlayerDeckCount = (playerId: PlayerId): number =>
+  usePlayer(playerId).deck.length
 
-/**
- * Hook to get inactive player's board cards
- */
-export function useInactivePlayerBoard(): Array<
-  CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
-> {
-  const { inactivePlayerId } = useGameState()
-  return usePlayerCards(inactivePlayerId, 'board')
-}
-
-/**
- * Hook to get deck count for a player
- */
-export function usePlayerDeckCount(playerId: PlayerId): number {
-  const duel = useGameState()
-  const { deckIds } = getPlayer(duel, playerId)
-
-  return deckIds.length
-}
-
-/**
- * Hook to get discard count for a player
- */
-export function usePlayerDiscardCount(playerId: PlayerId): number {
-  const duel = useGameState()
-  const { discardIds } = getPlayer(duel, playerId)
-
-  return discardIds.length
-}
+export const usePlayerDiscardCount = (playerId: PlayerId): number =>
+  usePlayer(playerId).discard.length

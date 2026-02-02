@@ -9,6 +9,7 @@ export const DEFAULT_DUEL_SETUP: CreateDuelParams = {
 }
 
 export const PRELOADED_DUEL_SETUP = createDuel(DEFAULT_DUEL_SETUP)
+
 export const MIXED_STACKS_DUEL = createDuel(DEFAULT_DUEL_SETUP, {
   phase: 'player-turn',
   startingPlayerId: 'player1',
@@ -16,16 +17,16 @@ export const MIXED_STACKS_DUEL = createDuel(DEFAULT_DUEL_SETUP, {
   inactivePlayerId: 'player2',
   stackOverrides: {
     player1: {
-      hand: PLAYER_1_DECK.slice(0, 2),
-      board: PLAYER_1_DECK.slice(2, 4),
-      discard: PLAYER_1_DECK.slice(4, 6),
-      deck: PLAYER_1_DECK.slice(6),
+      hand: ['zombie', 'zombie'],
+      board: ['zombie', 'haunt'],
+      discard: ['haunt', 'cook'],
+      deck: 'bookOfAsh',
     },
     player2: {
-      hand: PLAYER_2_DECK.slice(0, 2),
-      board: PLAYER_2_DECK.slice(2, 4),
-      discard: PLAYER_2_DECK.slice(4, 6),
-      deck: PLAYER_2_DECK.slice(6),
+      hand: ['novice', 'novice'],
+      board: ['templeGuard', 'templeGuard'],
+      discard: ['sachelman', 'yoraSkull'],
+      deck: 'cook',
     },
   },
 })
