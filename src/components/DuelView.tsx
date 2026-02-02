@@ -3,7 +3,6 @@ import { type ReactNode, useEffect } from 'react'
 import { ActivePing } from '@/components/ActivePing'
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { useGameDispatch } from '@/contexts/GameContext'
@@ -14,7 +13,7 @@ import {
   useDuelPhase,
   useInactivePlayer,
   useInactivePlayerBoard,
-  usePlayerCards,
+  useInactivePlayerHand,
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
@@ -91,6 +90,7 @@ export function DuelView() {
   }, [dispatch, phase])
 
   const activeHand = useActivePlayerHand()
+  const inactiveHand = useInactivePlayerHand()
   const activeBoard = useActivePlayerBoard()
   const inactiveBoard = useInactivePlayerBoard()
 
@@ -98,8 +98,6 @@ export function DuelView() {
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
   const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
   const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
-
-  const inactiveHand = usePlayerCards(inactivePlayer.id, 'hand')
 
   return (
     <div
@@ -127,11 +125,7 @@ export function DuelView() {
 
       {/* Row 2: inactive board full width */}
       <section className="col-[1/4] row-2 justify-center items-end flex">
-        <div className="flex gap-2 justify-center" data-testid="board">
-          {inactiveBoard.map((card) => (
-            <Card isOnBoard key={card.id} card={card} />
-          ))}
-        </div>
+        <Board cards={inactiveBoard} />
       </section>
 
       {/* Row 3: center bar */}

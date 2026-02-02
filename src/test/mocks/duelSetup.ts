@@ -17,14 +17,14 @@ export const MIXED_STACKS_DUEL = createDuel(DEFAULT_DUEL_SETUP, {
   inactivePlayerId: 'player2',
   stackOverrides: {
     player1: {
-      hand: ['zombie', 'zombie'],
+      hand: ['zombie', 'haunt'],
       board: ['zombie', 'haunt'],
       discard: ['haunt', 'cook'],
       deck: 'bookOfAsh',
     },
     player2: {
-      hand: ['novice', 'novice'],
-      board: ['templeGuard', 'templeGuard'],
+      hand: ['novice', 'templeGuard'],
+      board: ['novice', 'templeGuard'],
       discard: ['sachelman', 'yoraSkull'],
       deck: 'cook',
     },

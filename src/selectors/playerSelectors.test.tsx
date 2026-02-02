@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom'
 import { describe, expect, test } from 'vitest'
 
+import { Board } from '@/components/Board'
+import { Hand } from '@/components/Hand'
+import { CARD_BASES } from '@/constants/cardBases'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -8,218 +11,173 @@ import {
   useDuelPhase,
   useInactivePlayer,
   useInactivePlayerBoard,
-  usePlayerCards,
+  useInactivePlayerHand,
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
-import { PRELOADED_DUEL_SETUP } from '@/test/mocks/duelSetup'
+import { MIXED_STACKS_DUEL as preloadedState } from '@/test/mocks/duelSetup'
 import { renderGameContext } from '@/test/renderGameContext'
-import type { Duel } from '@/types'
-
-const preloadedState: Duel = {
-  ...PRELOADED_DUEL_SETUP,
-  activePlayerId: 'player1',
-  inactivePlayerId: 'player2',
-  phase: 'player-turn',
-  startingPlayerId: 'player1',
-  players: {
-    ...PRELOADED_DUEL_SETUP.players,
-    player1: {
-      ...PRELOADED_DUEL_SETUP.players.player1,
-      deck: [2],
-      hand: [1],
-      board: [5],
-      discard: [],
-    },
-    player2: {
-      ...PRELOADED_DUEL_SETUP.players.player2,
-      deck: [4],
-      hand: [],
-      board: [],
-      discard: [3],
-    },
-  },
-}
 
 describe('useDuelPhase', () => {
   test('returns current phase from game state', () => {
-    const TestComponent = () => {
-      const phase = useDuelPhase()
-      return <div data-testid="phase">{phase}</div>
-    }
+    const TestComponent = () => useDuelPhase()
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('phase')
-    expect(element?.textContent).toBe(preloadedState.phase)
+    expect(getByText(preloadedState.phase)).toBeInTheDocument()
   })
 })
 
 describe('useActivePlayer', () => {
   test('returns active player from game state', () => {
     const TestComponent = () => {
-      const activePlayer = useActivePlayer()
-      return <div data-testid="player-id">{activePlayer.id}</div>
+      const { id, name } = useActivePlayer()
+      return (
+        <>
+          <div>{id}</div>
+
+          <div>{name}</div>
+        </>
+      )
     }
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('player-id')
-    expect(element?.textContent).toBe(preloadedState.activePlayerId)
+    expect(getByText(preloadedState.activePlayerId)).toBeInTheDocument()
+    expect(
+      getByText(preloadedState.players[preloadedState.activePlayerId].name),
+    ).toBeInTheDocument()
   })
 })
 
 describe('useInactivePlayer', () => {
-  test('returns inactive player from game state', () => {
+  test('returns active player from game state', () => {
     const TestComponent = () => {
-      const inactivePlayer = useInactivePlayer()
-      return <div data-testid="player-id">{inactivePlayer.id}</div>
+      const { id, name } = useInactivePlayer()
+      return (
+        <>
+          <div>{id}</div>
+
+          <div>{name}</div>
+        </>
+      )
     }
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('player-id')
-    expect(element?.textContent).toBe(preloadedState.inactivePlayerId)
-  })
-})
-
-describe('usePlayerCards', () => {
-  test('returns empty array when player has no cards in stack', () => {
-    const TestComponent = () => {
-      const cards = usePlayerCards('player1', 'hand')
-      return <div data-testid="card-count">{cards.length}</div>
-    }
-
-    const emptyHandState: Partial<Duel> = {
-      ...preloadedState,
-      players: {
-        ...preloadedState.players,
-        player1: {
-          ...preloadedState.players.player1,
-          hand: [],
-        },
-      },
-    }
-
-    const { getByTestId } = renderGameContext(<TestComponent />, {
-      preloadedState: emptyHandState,
-    })
-
-    const element = getByTestId('card-count')
-    expect(element?.textContent).toBe('0')
+    expect(getByText(preloadedState.inactivePlayerId)).toBeInTheDocument()
+    expect(
+      getByText(preloadedState.players[preloadedState.inactivePlayerId].name),
+    ).toBeInTheDocument()
   })
 })
 
 describe('useActivePlayerHand', () => {
   test('returns active player hand cards', () => {
-    const TestComponent = () => {
-      const hand = useActivePlayerHand()
-      return <div data-testid="hand-count">{hand.length}</div>
-    }
+    const TestComponent = () => <Hand cards={useActivePlayerHand()} isActive />
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getAllByTestId, getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('hand-count')
-    expect(element?.textContent).toBe('1')
+    const stateHand = preloadedState.players[preloadedState.activePlayerId].hand
+
+    expect(getAllByTestId('card')).toHaveLength(stateHand.length)
+
+    stateHand.forEach((cardId) => {
+      expect(
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+      ).toBeInTheDocument()
+    })
+  })
+})
+
+describe('useInactivePlayerHand', () => {
+  test('returns active player hand cards', () => {
+    const TestComponent = () => <Hand cards={useInactivePlayerHand()} />
+
+    const { getAllByTestId } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
+
+    const stateHand =
+      preloadedState.players[preloadedState.inactivePlayerId].hand
+
+    expect(getAllByTestId('card-back')).toHaveLength(stateHand.length)
   })
 })
 
 describe('useActivePlayerBoard', () => {
   test('returns active player board cards', () => {
-    const TestComponent = () => {
-      const board = useActivePlayerBoard()
-      return <div data-testid="board-count">{board.length}</div>
-    }
+    const TestComponent = () => <Board cards={useActivePlayerBoard()} />
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getAllByTestId, getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('board-count')
-    expect(element?.textContent).toBe('1')
+    const stateHand =
+      preloadedState.players[preloadedState.activePlayerId].board
+
+    expect(getAllByTestId('card')).toHaveLength(stateHand.length)
+
+    stateHand.forEach((cardId) => {
+      expect(
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+      ).toBeInTheDocument()
+    })
   })
 })
 
 describe('useInactivePlayerBoard', () => {
-  test('returns inactive player board cards', () => {
-    const TestComponent = () => {
-      const board = useInactivePlayerBoard()
-      return <div data-testid="board-count">{board.length}</div>
-    }
+  test('returns active player board cards', () => {
+    const TestComponent = () => <Board cards={useInactivePlayerBoard()} />
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getAllByTestId, getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('board-count')
-    expect(element?.textContent).toBe('0')
+    const stateHand =
+      preloadedState.players[preloadedState.inactivePlayerId].board
+
+    expect(getAllByTestId('card')).toHaveLength(stateHand.length)
+
+    stateHand.forEach((cardId) => {
+      expect(
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+      ).toBeInTheDocument()
+    })
   })
 })
 
 describe('usePlayerDeckCount', () => {
   test('returns deck card count for player', () => {
-    const TestComponent = () => {
-      const deckCount = usePlayerDeckCount('player1')
-      return <div data-testid="deck-count">{deckCount}</div>
-    }
+    const TestComponent = () => usePlayerDeckCount('player1')
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('deck-count')
-    expect(element?.textContent).toBe('1')
-  })
-
-  test('returns deck count for inactive player', () => {
-    const TestComponent = () => {
-      const deckCount = usePlayerDeckCount('player2')
-      return <div data-testid="deck-count">{deckCount}</div>
-    }
-
-    const { getByTestId } = renderGameContext(<TestComponent />, {
-      preloadedState,
-    })
-
-    const element = getByTestId('deck-count')
-    expect(element?.textContent).toBe('1')
+    expect(getByText(preloadedState.players['player1'].deck.length.toString()))
+      .toBeInTheDocument
   })
 })
 
 describe('usePlayerDiscardCount', () => {
   test('returns discard card count for player', () => {
-    const TestComponent = () => {
-      const discardCount = usePlayerDiscardCount('player1')
-      return <div data-testid="discard-count">{discardCount}</div>
-    }
+    const TestComponent = () => usePlayerDiscardCount('player1')
 
-    const { getByTestId } = renderGameContext(<TestComponent />, {
+    const { getByText } = renderGameContext(<TestComponent />, {
       preloadedState,
     })
 
-    const element = getByTestId('discard-count')
-    expect(element?.textContent).toBe('0')
-  })
-
-  test('returns discard count for inactive player', () => {
-    const TestComponent = () => {
-      const discardCount = usePlayerDiscardCount('player2')
-      return <div data-testid="discard-count">{discardCount}</div>
-    }
-
-    const { getByTestId } = renderGameContext(<TestComponent />, {
-      preloadedState,
-    })
-
-    const element = getByTestId('discard-count')
-    expect(element?.textContent).toBe('1')
+    expect(
+      getByText(preloadedState.players['player1'].discard.length.toString()),
+    ).toBeInTheDocument
   })
 })

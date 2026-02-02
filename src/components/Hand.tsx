@@ -6,7 +6,7 @@ import type { CardInstance } from '@/types'
 
 export interface HandProps {
   cards: CardInstance[]
-  isActive: boolean
+  isActive?: boolean
   isOnTop?: boolean
   onCardClick?: (cardId: number) => void
 }

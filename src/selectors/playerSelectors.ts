@@ -13,10 +13,7 @@ export const useActivePlayer = (): Player =>
 export const useInactivePlayer = (): Player =>
   usePlayer(useGameState().inactivePlayerId)
 
-export const usePlayerCards = (
-  playerId: PlayerId,
-  stack: Stack,
-): CardInstance[] => {
+const usePlayerCards = (playerId: PlayerId, stack: Stack): CardInstance[] => {
   const { cards } = useGameState()
   const player = usePlayer(playerId)
 
@@ -31,6 +28,9 @@ export const useActivePlayerHand = (): CardInstance[] =>
 
 export const useActivePlayerBoard = (): CardInstance[] =>
   usePlayerCards(useGameState().activePlayerId, 'board')
+
+export const useInactivePlayerHand = (): CardInstance[] =>
+  usePlayerCards(useGameState().inactivePlayerId, 'hand')
 
 export const useInactivePlayerBoard = (): CardInstance[] =>
   usePlayerCards(useGameState().inactivePlayerId, 'board')
