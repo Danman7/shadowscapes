@@ -3,9 +3,11 @@ import { fireEvent } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
+import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 import * as GameContext from '@/contexts/GameContext'
 import {
   MIXED_STACKS_DUEL,
+  PRELOADED_DUEL_SETUP,
   PRELOADED_DUEL_SETUP as preloadedState,
 } from '@/test/mocks/duelSetup'
 import { renderGameContext } from '@/test/renderGameContext'
@@ -108,4 +110,33 @@ test('handles card click in active player hand', () => {
     const duelViewAfter = getByTestId('duel-view')
     expect(duelViewAfter).toBeInTheDocument()
   }
+})
+
+test('transitions from intro to initial-draw to redraw phase', async () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  renderGameContext(<DuelView />, {
+    preloadedState: {
+      ...PRELOADED_DUEL_SETUP,
+      phase: 'intro',
+    },
+  })
+
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'TRANSITION_PHASE',
+    payload: 'initial-draw',
+  })
+})
+
+test('triggers INITIAL_DRAW action when phase is initial-draw', () => {
+  const { container } = renderGameContext(<DuelView />, {
+    preloadedState: {
+      ...PRELOADED_DUEL_SETUP,
+      phase: 'initial-draw',
+    },
+  })
+
+  const cards = container.querySelectorAll('[data-testid="card"]')
+  expect(cards.length).toBe(INITIAL_CARDS_TO_DRAW)
 })

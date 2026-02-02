@@ -18,13 +18,12 @@ export const usePlayerCards = (
   stack: Stack,
 ): CardInstance[] => {
   const { cards } = useGameState()
+  const player = usePlayer(playerId)
 
   return useMemo(() => {
-    const player = usePlayer(playerId)
     const cardIds = player[stack]
-
     return cardIds.map((id) => cards[id]!)
-  }, [playerId, stack])
+  }, [cards, player, stack])
 }
 
 export const useActivePlayerHand = (): CardInstance[] =>
