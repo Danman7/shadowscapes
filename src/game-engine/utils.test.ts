@@ -66,7 +66,7 @@ describe('shuffle', () => {
     const shuffled = shuffle(original, () => 0.5)
 
     expect(shuffled).toHaveLength(original.length)
-    expect(original).toEqual([1, 2, 3, 4, 5]) // Original unchanged
+    expect(original).toEqual([1, 2, 3, 4, 5])
   })
 
   test('returns array with same elements', () => {

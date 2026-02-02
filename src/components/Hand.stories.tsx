@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { Hand } from '@/components/Hand'
-import { createCardInstance } from '@/test/mocks/cardInstances'
+import { createCardInstance } from '@/game-engine/utils'
 
 const meta: Meta<typeof Hand> = {
   title: 'Duel/Hand',
@@ -16,9 +16,9 @@ export default meta
 type Story = StoryObj<typeof Hand>
 
 const sampleCards = [
-  createCardInstance(1, 'zombie', 2),
-  createCardInstance(2, 'templeGuard', 3),
-  createCardInstance(3, 'bookOfAsh'),
+  createCardInstance('zombie'),
+  createCardInstance('templeGuard'),
+  createCardInstance('downwinder'),
 ]
 
 export const ActiveHand: Story = {

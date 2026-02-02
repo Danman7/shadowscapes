@@ -36,11 +36,3 @@ The dev server prints the URL on startup (usually `http://localhost:3000`).
 
 - Import alias: `@/` maps to `src/` (configured in `tsconfig.json` and Vitest config).
 - Client-exposed env vars should be prefixed with `BUN_PUBLIC_` (used by the build script).
-
-## API (dev)
-
-The Bun server includes a small sample API:
-
-- `GET /api/hello`
-- `PUT /api/hello`
-- `GET /api/hello/:name`

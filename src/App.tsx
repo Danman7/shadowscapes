@@ -4,10 +4,7 @@ import { DuelView } from '@/components/DuelView'
 import { GameProvider, useGameDispatch } from '@/contexts/GameContext'
 import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
-/**
- * AppContent - initializes the duel on mount
- */
-function AppContent() {
+const AppContent: React.FC = () => {
   const dispatch = useGameDispatch()
 
   useEffect(() => {
@@ -20,15 +17,10 @@ function AppContent() {
   return <DuelView />
 }
 
-/**
- * App - main application component
- */
-export function App() {
-  return (
-    <GameProvider>
-      <AppContent />
-    </GameProvider>
-  )
-}
+export const App: React.FC = () => (
+  <GameProvider>
+    <AppContent />
+  </GameProvider>
+)
 
 export default App

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { Card } from '@/components/Card'
 import { CARD_BASES } from '@/constants/cardBases'
-import { getCardStrength } from '@/game-engine/utils'
+import { createCardInstance } from '@/game-engine/utils'
 
 const meta: Meta<typeof Card> = {
   title: 'Common/Card',
@@ -21,79 +21,30 @@ type Story = StoryObj<typeof Card>
 
 export const Character: Story = {
   args: {
-    card: {
-      id: 2,
-      baseId: 'templeGuard',
-      type: 'character',
-      strength: 3,
-      base: CARD_BASES.templeGuard,
-    },
+    card: createCardInstance('templeGuard'),
   },
 }
 
 export const OnBoard: Story = {
   args: {
     isOnBoard: true,
-    card: {
-      id: 2,
-      baseId: 'templeGuard',
-      type: 'character',
-      strength: 3,
-      base: CARD_BASES.templeGuard,
-    },
+    card: createCardInstance('templeGuard'),
   },
 }
 
 export const Instant: Story = {
   args: {
-    card: {
-      id: 4,
-      baseId: 'bookOfAsh',
-      type: 'instant',
-      base: CARD_BASES.bookOfAsh,
-    },
+    card: createCardInstance('bookOfAsh'),
   },
 }
 
 export const AllFactions: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-      <Card
-        card={{
-          id: 7,
-          baseId: 'zombie',
-          type: 'character',
-          strength: 1,
-          base: CARD_BASES.zombie,
-        }}
-      />
-      <Card
-        card={{
-          id: 8,
-          baseId: 'novice',
-          type: 'character',
-          strength: 1,
-          base: CARD_BASES.novice,
-        }}
-      />
-      <Card
-        card={{
-          id: 9,
-          baseId: 'downwinder',
-          type: 'character',
-          strength: 2,
-          base: CARD_BASES.downwinder,
-        }}
-      />
-      <Card
-        card={{
-          id: 10,
-          baseId: 'cook',
-          type: 'character',
-          strength: 1,
-          base: CARD_BASES.cook,
-        }}
-      />
+      <Card card={createCardInstance('zombie')} />
+      <Card card={createCardInstance('novice')} />
+      <Card card={createCardInstance('downwinder')} />
+      <Card card={createCardInstance('cook')} />
     </div>
   ),
 }
@@ -101,17 +52,9 @@ export const AllFactions: Story = {
 export const AllCardsGallery: Story = {
   render: () => (
     <div className="flex gap-4 flex-wrap">
-      {Object.entries(CARD_BASES).map(([id, base], index) => (
+      {Object.entries(CARD_BASES).map(([id, base]) => (
         <div key={id} className="flex flex-col gap-2">
-          <Card
-            card={{
-              id: index + 1,
-              baseId: id as keyof typeof CARD_BASES,
-              type: base.type,
-              strength: getCardStrength(base),
-              base,
-            }}
-          />
+          <Card card={createCardInstance(id as keyof typeof CARD_BASES)} />
           <div className="text-center text-sm font-semibold">{base.name}</div>
         </div>
       ))}

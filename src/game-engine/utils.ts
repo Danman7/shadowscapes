@@ -25,16 +25,21 @@ export function getCardStrength(base: CardBase): number | undefined {
 }
 
 /**
- * Creates a card instance from a base ID
+ * Creates a duel-ready card instance from a base ID.
  */
-export function createCardInstance(baseId: CardBaseId): CardInstance {
+export const createCardInstance = (
+  baseId: CardBaseId,
+  id?: number,
+  strength?: number,
+): CardInstance & { base: (typeof CARD_BASES)[typeof baseId] } => {
   const base = CARD_BASES[baseId]
 
   return {
-    id: generateInstanceId(),
+    id: id ?? generateInstanceId(),
     baseId,
     type: base.type,
-    strength: getCardStrength(base),
+    strength: strength ?? getCardStrength(base),
+    base,
   }
 }
 

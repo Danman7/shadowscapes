@@ -1,10 +1,11 @@
 import type { CSSProperties } from 'react'
 
-import { Card, type GameCard } from '@/components/Card'
+import { Card } from '@/components/Card'
 import { CardBack } from '@/components/CardBack'
+import type { CardInstance } from '@/types'
 
 export interface HandProps {
-  cards: GameCard[]
+  cards: CardInstance[]
   isActive: boolean
   isOnTop?: boolean
   onCardClick?: (cardId: number) => void

@@ -2,14 +2,14 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import type { GameCard } from '@/components/Card'
 import { Hand } from '@/components/Hand'
-import { createMockCard } from '@/test/mocks/testHelpers'
+import { createCardInstance } from '@/game-engine/utils'
+import type { CardInstance } from '@/types'
 
-let mockCards: GameCard[]
+let mockCards: CardInstance[]
 
 beforeEach(() => {
-  mockCards = [createMockCard('zombie'), createMockCard('zombie')]
+  mockCards = [createCardInstance('zombie'), createCardInstance('zombie')]
 })
 
 afterEach(() => {

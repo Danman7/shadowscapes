@@ -1,8 +1,10 @@
 import type { Duel, DuelAction } from '@/types'
-import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
+import {
+  INITIAL_CARDS_TO_DRAW,
+  PLACEHOLDER_PLAYER,
+} from '@/constants/duelParams'
 import {
   createDuel,
-  createInitialDuel,
   drawTopCard,
   getPlayer,
   updatePlayer,
@@ -11,7 +13,17 @@ import {
 /**
  * Initial duel state (placeholder duel, not yet started)
  */
-export const initialDuelState: Readonly<Duel> = createInitialDuel()
+export const initialDuelState: Readonly<Duel> = {
+  cards: {},
+  players: {
+    player1: { ...PLACEHOLDER_PLAYER, id: 'player1' },
+    player2: { ...PLACEHOLDER_PLAYER, id: 'player2' },
+  },
+  activePlayerId: 'player1',
+  inactivePlayerId: 'player2',
+  phase: 'intro',
+  startingPlayerId: null,
+}
 
 /**
  * Game reducer that manages all duel state transitions

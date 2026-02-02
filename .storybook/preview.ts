@@ -11,19 +11,20 @@ const preview: Preview = {
     },
 
     backgrounds: {
-      default: 'light',
+      default: 'background',
       values: [
         {
-          name: 'light',
+          name: 'background',
           value: 'var(--color-background)',
+        },
+        {
+          name: 'surface',
+          value: 'var(--color-surface)',
         },
       ],
     },
 
     a11y: {
-      // 'todo' - show a11y violations in the test UI only
-      // 'error' - fail CI on a11y violations
-      // 'off' - skip a11y checks entirely
       test: 'todo',
     },
   },

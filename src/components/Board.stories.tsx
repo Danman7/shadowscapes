@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { Board } from '@/components/Board'
-import { createCardInstance } from '@/test/mocks/cardInstances'
+import { createCardInstance } from '@/game-engine/utils'
 
 const meta: Meta<typeof Board> = {
   title: 'Duel/Board',
@@ -11,9 +11,9 @@ const meta: Meta<typeof Board> = {
   },
   args: {
     cards: [
-      createCardInstance(1, 'zombie', 2),
-      createCardInstance(2, 'templeGuard', 3),
-      createCardInstance(3, 'downwinder', 2),
+      createCardInstance('zombie'),
+      createCardInstance('templeGuard'),
+      createCardInstance('downwinder'),
     ],
   },
 }

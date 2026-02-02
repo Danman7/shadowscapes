@@ -1,4 +1,3 @@
-// Card-related types
 export type Faction = 'chaos' | 'order' | 'shadow' | 'neutral'
 export type CardType = 'character' | 'instant'
 export type CardCategory =
@@ -21,7 +20,7 @@ export type CardBaseId =
   | 'bookOfAsh'
   | 'downwinder'
 
-export type Rank = 'common' | 'elite'
+export type CardRank = 'common' | 'elite'
 
 interface CardBaseCommon {
   id: CardBaseId
@@ -31,7 +30,7 @@ interface CardBaseCommon {
   flavorText: string
   faction: Faction
   categories: CardCategory[]
-  rank: Rank
+  rank: CardRank
 }
 
 export interface CardBaseCharacter extends CardBaseCommon {

@@ -1,9 +1,11 @@
 import { describe, expect, test, beforeEach } from 'vitest'
 import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
-import { createMockDuel, createMockPlayer } from '@/test/mocks/testHelpers'
+import { createMockPlayer } from '@/test/mocks/testHelpers'
 import type { Duel, CardInstance } from '@/types'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
 import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
+import { createDuel } from '@/game-engine/initialization'
+import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
 
 test('initial state has placeholder duel with intro phase', () => {
   expect(initialDuelState.phase).toBe('intro')
@@ -67,7 +69,7 @@ describe('START_DUEL action', () => {
 
 describe('TRANSITION_PHASE action', () => {
   test('updates phase to initial-draw', () => {
-    const state = createMockDuel({ phase: 'intro' })
+    const state = createDuel(DEFAULT_DUEL_SETUP, { phase: 'intro' })
     const { phase } = duelReducer(state, {
       type: 'TRANSITION_PHASE',
       payload: 'initial-draw',
@@ -77,7 +79,7 @@ describe('TRANSITION_PHASE action', () => {
   })
 
   test('updates phase to player-turn', () => {
-    const state = createMockDuel({ phase: 'redraw' })
+    const state = createDuel(DEFAULT_DUEL_SETUP, { phase: 'redraw' })
     const { phase } = duelReducer(state, {
       type: 'TRANSITION_PHASE',
       payload: 'player-turn',
@@ -89,7 +91,7 @@ describe('TRANSITION_PHASE action', () => {
 
 describe('SWITCH_TURN action', () => {
   test('switches active and inactive players', () => {
-    const state = createMockDuel({
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
       activePlayerId: 'player1',
       inactivePlayerId: 'player2',
     })
@@ -103,7 +105,7 @@ describe('SWITCH_TURN action', () => {
   })
 
   test('switches back when called twice', () => {
-    const state = createMockDuel({
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
       activePlayerId: 'player1',
       inactivePlayerId: 'player2',
     })
@@ -141,7 +143,7 @@ describe('DRAW_CARD action', () => {
       strength: 2,
     }
 
-    state = createMockDuel({
+    state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2, 3: card3 },
       players: {
         player1: createMockPlayer('player1', {
@@ -198,7 +200,7 @@ describe('DRAW_CARD action', () => {
 
   describe('empty deck handling', () => {
     test('returns unchanged state when deck is empty', () => {
-      const emptyDeckState = createMockDuel({
+      const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
           player1: createMockPlayer('player1', { deckIds: [], handIds: [] }),
           player2: createMockPlayer('player2'),
@@ -214,7 +216,7 @@ describe('DRAW_CARD action', () => {
     })
 
     test('handles drawing from empty deck without errors', () => {
-      const emptyDeckState = createMockDuel({
+      const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
           player1: createMockPlayer('player1', { deckIds: [] }),
           player2: createMockPlayer('player2'),
@@ -230,8 +232,7 @@ describe('DRAW_CARD action', () => {
     })
 
     test('handles undefined card in deck array', () => {
-      // Edge case: deck has undefined value (shouldn't happen in practice)
-      const stateWithUndefined = createMockDuel({
+      const stateWithUndefined = createDuel(DEFAULT_DUEL_SETUP, {
         players: {
           player1: createMockPlayer('player1', {
             deckIds: [undefined as any],
@@ -246,7 +247,6 @@ describe('DRAW_CARD action', () => {
         payload: { playerId: 'player1' },
       })
 
-      // When drawnCardId is undefined, state is returned unchanged
       expect(result).toEqual(stateWithUndefined)
     })
   })
@@ -262,7 +262,7 @@ describe('INITIAL_DRAW action', () => {
       cards[id] = { id, baseId: 'zombie', type: 'character', strength: 1 }
     })
 
-    const state = createMockDuel({
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'initial-draw',
       cards,
       players: {
@@ -307,7 +307,7 @@ describe('PLAY_CARD action', () => {
       type: 'instant',
     }
 
-    state = createMockDuel({
+    state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: characterCard, 2: instantCard },
       players: {
         player1: createMockPlayer('player1', {
@@ -422,7 +422,7 @@ describe('DISCARD_CARD action', () => {
       strength: 2,
     }
 
-    state = createMockDuel({
+    state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2 },
       players: {
         player1: createMockPlayer('player1', {
@@ -477,7 +477,7 @@ describe('DISCARD_CARD action', () => {
 
 describe('unknown action', () => {
   test('returns unchanged state for unknown action type', () => {
-    const state = createMockDuel()
+    const state = createDuel(DEFAULT_DUEL_SETUP)
     const result = duelReducer(state, { type: 'UNKNOWN' } as any)
 
     expect(result).toEqual(state)

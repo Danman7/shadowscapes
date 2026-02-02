@@ -1,21 +1,13 @@
 import { BsLightningFill } from 'react-icons/bs'
 
-import type { CARD_BASES } from '@/constants/cardBases'
-import type { CardBaseId, CardInstance, Faction } from '@/types'
-
-export type GameCard = CardInstance & { base: (typeof CARD_BASES)[CardBaseId] }
+import { CARD_BASES } from '@/constants/cardBases'
+import { FACTION_COLORS } from '@/constants/duelParams'
+import type { CardInstance } from '@/types'
 
 export interface CardProps {
-  card: GameCard
+  card: CardInstance
   isOnBoard?: boolean
   onClick?: () => void
-}
-
-const FACTION_COLORS: Record<Faction, string> = {
-  chaos: 'bg-chaos',
-  order: 'bg-order',
-  shadow: 'bg-shadow',
-  neutral: 'bg-foreground-fixed',
 }
 
 /**
@@ -23,7 +15,8 @@ const FACTION_COLORS: Record<Faction, string> = {
  * Shows character strength for character cards or instant indicator for instant cards
  */
 export function Card({ card, isOnBoard, onClick }: CardProps) {
-  const { base, strength, type } = card
+  const { strength, type, baseId } = card
+  const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, cost, categories, rank } =
     base
   const factionColor = FACTION_COLORS[faction]
