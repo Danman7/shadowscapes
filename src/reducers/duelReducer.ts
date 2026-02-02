@@ -10,9 +10,6 @@ import {
   updatePlayer,
 } from '@/game-engine/initialization'
 
-/**
- * Initial duel state (placeholder duel, not yet started)
- */
 export const initialDuelState: Readonly<Duel> = {
   cards: {},
   players: {
@@ -25,9 +22,6 @@ export const initialDuelState: Readonly<Duel> = {
   startingPlayerId: null,
 }
 
-/**
- * Game reducer that manages all duel state transitions
- */
 export function duelReducer(
   state: Readonly<Duel>,
   action: DuelAction,

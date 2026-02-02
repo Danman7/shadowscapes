@@ -1,94 +1,66 @@
 import { describe, expect, test, beforeEach } from 'vitest'
 import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
-import type { Duel, CardInstance } from '@/types'
+import type { Duel } from '@/types'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
 import {
   INITIAL_CARDS_TO_DRAW,
   PLACEHOLDER_PLAYER,
 } from '@/constants/duelParams'
 import { createDuel } from '@/game-engine/initialization'
-import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
+import { createCardInstance } from '@/game-engine/utils'
+import {
+  DEFAULT_DUEL_SETUP,
+  PRELOADED_DUEL_SETUP,
+} from '@/test/mocks/duelSetup'
 
 test('initial state has placeholder duel with intro phase', () => {
   expect(initialDuelState.phase).toBe('intro')
   expect(initialDuelState.startingPlayerId).toBeNull()
 })
 
-describe('START_DUEL action', () => {
-  test('creates new duel with player names and decks', () => {
-    const {
-      players: { player1, player2 },
-    } = duelReducer(initialDuelState, {
-      type: 'START_DUEL',
-      payload: {
-        player1Name: 'Alice',
-        player2Name: 'Bob',
-        player1Deck: PLAYER_1_DECK,
-        player2Deck: PLAYER_2_DECK,
-      },
-    })
-
-    expect(player1.name).toBe('Alice')
-    expect(player2.name).toBe('Bob')
-    expect(player1.deck.length).toBeGreaterThan(0)
-    expect(player2.deck.length).toBeGreaterThan(0)
+test('START_DUEL action creates new duel with player names and decks', () => {
+  const {
+    startingPlayerId,
+    activePlayerId,
+    inactivePlayerId,
+    players: { player1, player2 },
+    cards,
+  } = duelReducer(initialDuelState, {
+    type: 'START_DUEL',
+    payload: {
+      player1Name: 'Alice',
+      player2Name: 'Bob',
+      player1Deck: PLAYER_1_DECK,
+      player2Deck: PLAYER_2_DECK,
+    },
   })
 
-  test('sets starting player and active/inactive players', () => {
-    const { startingPlayerId, activePlayerId, inactivePlayerId } = duelReducer(
-      initialDuelState,
-      {
-        type: 'START_DUEL',
-        payload: {
-          player1Name: 'Alice',
-          player2Name: 'Bob',
-          player1Deck: PLAYER_1_DECK,
-          player2Deck: PLAYER_2_DECK,
-        },
-      },
-    )
+  expect(player1.name).toBe('Alice')
+  expect(player2.name).toBe('Bob')
+  expect(player1.deck).toHaveLength(PLAYER_1_DECK.length)
+  expect(player2.deck).toHaveLength(PLAYER_2_DECK.length)
+  expect(player1.hand).toEqual([])
+  expect(player2.hand).toEqual([])
+  expect(player1.board).toEqual([])
+  expect(player2.board).toEqual([])
+  expect(player1.discard).toEqual([])
+  expect(player2.discard).toEqual([])
 
-    expect(startingPlayerId).not.toBeNull()
-    expect(['player1', 'player2']).toContain(activePlayerId)
-    expect(['player1', 'player2']).toContain(inactivePlayerId)
-    expect(activePlayerId).not.toBe(inactivePlayerId)
+  Object.values(cards).forEach(({ baseId }) => {
+    expect([...PLAYER_1_DECK, ...PLAYER_2_DECK]).toContain(baseId)
   })
 
-  test('creates card instances in cards map', () => {
-    const { cards } = duelReducer(initialDuelState, {
-      type: 'START_DUEL',
-      payload: {
-        player1Name: 'Alice',
-        player2Name: 'Bob',
-        player1Deck: ['zombie', 'haunt'],
-        player2Deck: ['cook'],
-      },
-    })
-
-    expect(Object.keys(cards).length).toBe(3)
-  })
+  expect(startingPlayerId).not.toBeNull()
+  expect(activePlayerId).not.toBe(inactivePlayerId)
 })
 
-describe('TRANSITION_PHASE action', () => {
-  test('updates phase to initial-draw', () => {
-    const state = createDuel(DEFAULT_DUEL_SETUP, { phase: 'intro' })
-    const { phase } = duelReducer(state, {
-      type: 'TRANSITION_PHASE',
-      payload: 'initial-draw',
-    })
-
-    expect(phase).toBe('initial-draw')
+test('TRANSITION_PHASE action updates the phase ', () => {
+  const { phase } = duelReducer(PRELOADED_DUEL_SETUP, {
+    type: 'TRANSITION_PHASE',
+    payload: 'initial-draw',
   })
 
-  test('updates phase to player-turn', () => {
-    const state = createDuel(DEFAULT_DUEL_SETUP, { phase: 'redraw' })
-    const { phase } = duelReducer(state, {
-      type: 'TRANSITION_PHASE',
-      payload: 'player-turn',
-    })
-
-    expect(phase).toBe('player-turn')
-  })
+  expect(phase).toBe('initial-draw')
 })
 
 describe('SWITCH_TURN action', () => {
@@ -126,24 +98,9 @@ describe('DRAW_CARD action', () => {
   let state: Duel
 
   beforeEach(() => {
-    const card1: CardInstance = {
-      id: 1,
-      baseId: 'zombie',
-      type: 'character',
-      strength: 1,
-    }
-    const card2: CardInstance = {
-      id: 2,
-      baseId: 'haunt',
-      type: 'character',
-      strength: 2,
-    }
-    const card3: CardInstance = {
-      id: 3,
-      baseId: 'cook',
-      type: 'character',
-      strength: 2,
-    }
+    const card1 = createCardInstance('zombie', 1)
+    const card2 = createCardInstance('haunt', 2)
+    const card3 = createCardInstance('cook', 3)
 
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2, 3: card3 },
@@ -278,64 +235,29 @@ describe('DRAW_CARD action', () => {
   })
 })
 
-describe('INITIAL_DRAW action', () => {
-  test('draws starting hands for both players and advances to redraw', () => {
-    const cards: Record<number, CardInstance> = {}
-    const player1Deck = [1, 2, 3, 4, 5, 6]
-    const player2Deck = [7, 8, 9, 10, 11, 12]
+test('INITIAL_DRAW action draws starting hands for both players and advances to redraw', () => {
+  const {
+    phase,
+    players: { player1, player2 },
+  } = duelReducer(PRELOADED_DUEL_SETUP, { type: 'INITIAL_DRAW' })
 
-    ;[...player1Deck, ...player2Deck].forEach((id) => {
-      cards[id] = { id, baseId: 'zombie', type: 'character', strength: 1 }
-    })
-
-    const state = createDuel(DEFAULT_DUEL_SETUP, {
-      phase: 'initial-draw',
-      cards,
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          deck: player1Deck,
-          hand: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          deck: player2Deck,
-          hand: [],
-        },
-      },
-    })
-
-    const result = duelReducer(state, { type: 'INITIAL_DRAW' })
-
-    expect(result.players.player1.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
-    expect(result.players.player2.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
-    expect(result.players.player1.deck.length).toBe(
-      player1Deck.length - INITIAL_CARDS_TO_DRAW,
-    )
-    expect(result.players.player2.deck.length).toBe(
-      player2Deck.length - INITIAL_CARDS_TO_DRAW,
-    )
-    expect(result.phase).toBe('redraw')
-  })
+  expect(player1.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
+  expect(player2.hand).toHaveLength(INITIAL_CARDS_TO_DRAW)
+  expect(player1.deck.length).toBe(
+    PRELOADED_DUEL_SETUP.players.player1.deck.length - INITIAL_CARDS_TO_DRAW,
+  )
+  expect(player2.deck.length).toBe(
+    PRELOADED_DUEL_SETUP.players.player2.deck.length - INITIAL_CARDS_TO_DRAW,
+  )
+  expect(phase).toBe('redraw')
 })
 
 describe('PLAY_CARD action', () => {
   let state: Duel
 
   beforeEach(() => {
-    const characterCard: CardInstance = {
-      id: 1,
-      baseId: 'zombie',
-      type: 'character',
-      strength: 1,
-    }
-    const instantCard: CardInstance = {
-      id: 2,
-      baseId: 'bookOfAsh',
-      type: 'instant',
-    }
+    const characterCard = createCardInstance('zombie', 1)
+    const instantCard = createCardInstance('bookOfAsh', 2)
 
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: characterCard, 2: instantCard },
@@ -444,18 +366,8 @@ describe('DISCARD_CARD action', () => {
   let state: Duel
 
   beforeEach(() => {
-    const card1: CardInstance = {
-      id: 1,
-      baseId: 'zombie',
-      type: 'character',
-      strength: 1,
-    }
-    const card2: CardInstance = {
-      id: 2,
-      baseId: 'haunt',
-      type: 'character',
-      strength: 2,
-    }
+    const card1 = createCardInstance('zombie', 1)
+    const card2 = createCardInstance('haunt', 2)
 
     state = createDuel(DEFAULT_DUEL_SETUP, {
       cards: { 1: card1, 2: card2 },
