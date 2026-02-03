@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { PlayerBadge } from '@/components/PlayerBadge'
+import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
 
 const meta: Meta<typeof PlayerBadge> = {
   title: 'Duel/PlayerBadge',
@@ -9,7 +10,11 @@ const meta: Meta<typeof PlayerBadge> = {
     layout: 'centered',
   },
   args: {
-    children: 'Player Name',
+    player: {
+      ...PLACEHOLDER_PLAYER,
+      name: 'Player 1',
+      id: 'player1',
+    },
     isActive: false,
   },
 }
