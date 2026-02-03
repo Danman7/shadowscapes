@@ -66,6 +66,7 @@ Game logic lives in [src/game-engine/](src/game-engine/) as pure functions, sepa
 - **Destructuring**: Prefer destructuring where applicable
 - **Control flow**: Prefer single-line `if () return` for early returns/guards
 - **Testing**: Use RTL destructured selectors like `const {getByText} = render(...)` instead of `container.querySelector()`
+- **Comments**: Avoid code comments—write self-documenting code with clear naming and structure instead
 
 ### Styling
 

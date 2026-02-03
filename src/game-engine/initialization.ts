@@ -21,7 +21,8 @@ export interface CreateDuelParams {
   player2Deck: CardBaseId[]
 }
 
-export interface CreateDuelOverrides extends Partial<Duel> {
+export interface CreateDuelOverrides extends Partial<Omit<Duel, 'players'>> {
+  players?: Partial<Record<PlayerId, Partial<Player>>>
   stackOverrides?: Partial<
     Record<PlayerId, Partial<Record<Stack, CardBaseId[]>>>
   >

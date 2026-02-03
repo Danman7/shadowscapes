@@ -1,17 +1,14 @@
-import { describe, expect, test, beforeEach } from 'vitest'
-import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
-import type { Duel } from '@/types'
+import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
-import {
-  INITIAL_CARDS_TO_DRAW,
-  PLACEHOLDER_PLAYER,
-} from '@/constants/duelParams'
 import { createDuel } from '@/game-engine/initialization'
 import { createCardInstance } from '@/game-engine/utils'
+import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
 import {
   DEFAULT_DUEL_SETUP,
   PRELOADED_DUEL_SETUP,
 } from '@/test/mocks/duelSetup'
+import type { Duel } from '@/types'
+import { beforeEach, describe, expect, test } from 'vitest'
 
 test('initial state has placeholder duel with intro phase', () => {
   expect(initialDuelState.phase).toBe('intro')
@@ -106,14 +103,10 @@ describe('DRAW_CARD action', () => {
       cards: { 1: card1, 2: card2, 3: card3 },
       players: {
         player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
           deck: [1, 2],
           hand: [],
         },
         player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
           deck: [3],
           hand: [],
         },
@@ -164,16 +157,10 @@ describe('DRAW_CARD action', () => {
   describe('empty deck handling', () => {
     test('returns unchanged state when deck is empty', () => {
       const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
-        players: {
+        stackOverrides: {
           player1: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player1',
             deck: [],
             hand: [],
-          },
-          player2: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player2',
           },
         },
       })
@@ -188,15 +175,9 @@ describe('DRAW_CARD action', () => {
 
     test('handles drawing from empty deck without errors', () => {
       const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
-        players: {
+        stackOverrides: {
           player1: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player1',
             deck: [],
-          },
-          player2: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player2',
           },
         },
       })
@@ -211,26 +192,31 @@ describe('DRAW_CARD action', () => {
 
     test('handles undefined card in deck array', () => {
       const stateWithUndefined = createDuel(DEFAULT_DUEL_SETUP, {
-        players: {
+        stackOverrides: {
           player1: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player1',
-            deck: [undefined as any],
+            deck: [],
             hand: [],
-          },
-          player2: {
-            ...PLACEHOLDER_PLAYER,
-            id: 'player2',
           },
         },
       })
 
-      const result = duelReducer(stateWithUndefined, {
+      const manuallyBrokenState = {
+        ...stateWithUndefined,
+        players: {
+          ...stateWithUndefined.players,
+          player1: {
+            ...stateWithUndefined.players.player1,
+            deck: [undefined as any],
+          },
+        },
+      }
+
+      const result = duelReducer(manuallyBrokenState, {
         type: 'DRAW_CARD',
         payload: { playerId: 'player1' },
       })
 
-      expect(result).toEqual(stateWithUndefined)
+      expect(result).toEqual(manuallyBrokenState)
     })
   })
 })
@@ -263,15 +249,9 @@ describe('PLAY_CARD action', () => {
       cards: { 1: characterCard, 2: instantCard },
       players: {
         player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
           hand: [1, 2],
           board: [],
           discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
         },
       },
     })
@@ -373,14 +353,8 @@ describe('DISCARD_CARD action', () => {
       cards: { 1: card1, 2: card2 },
       players: {
         player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
           hand: [1, 2],
           discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
         },
       },
     })
@@ -424,6 +398,89 @@ describe('DISCARD_CARD action', () => {
 
     expect(player2.hand).toEqual([])
     expect(player2.discard).toEqual([])
+  })
+})
+
+describe('REDRAW_CARD action', () => {
+  let state: Duel
+
+  beforeEach(() => {
+    const card1 = createCardInstance('zombie', 1)
+    const card2 = createCardInstance('haunt', 2)
+    const card3 = createCardInstance('cook', 3)
+
+    state = createDuel(DEFAULT_DUEL_SETUP, {
+      cards: { 1: card1, 2: card2, 3: card3 },
+      players: {
+        player1: {
+          hand: [1, 2],
+          deck: [3],
+          discard: [],
+        },
+      },
+    })
+  })
+
+  test('puts card at bottom of deck and draws from top', () => {
+    const {
+      players: { player1 },
+    } = duelReducer(state, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(player1.hand).toEqual([2, 3])
+    expect(player1.deck).toEqual([1])
+  })
+
+  test('handles redraw when deck is empty after adding card', () => {
+    const emptyDeckState = createDuel(DEFAULT_DUEL_SETUP, {
+      cards: { 1: createCardInstance('zombie', 1) },
+      players: {
+        player1: {
+          hand: [1],
+          deck: [],
+        },
+      },
+    })
+
+    const {
+      players: { player1 },
+    } = duelReducer(emptyDeckState, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(player1.hand).toEqual([1])
+    expect(player1.deck).toEqual([])
+  })
+
+  test('handles multiple redraws sequentially', () => {
+    const result1 = duelReducer(state, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+    const {
+      players: { player1 },
+    } = duelReducer(result1, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 2 },
+    })
+
+    expect(player1.hand).toEqual([3, 1])
+    expect(player1.deck).toEqual([2])
+  })
+
+  test('does not modify other player', () => {
+    const {
+      players: { player2 },
+    } = duelReducer(state, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(player2.hand).toEqual(state.players.player2.hand)
+    expect(player2.deck).toEqual(state.players.player2.deck)
   })
 })
 

@@ -48,3 +48,25 @@ export const SingleCard: Story = {
     isActive: true,
   },
 }
+
+export const WithSelectiveClickable: Story = {
+  args: {
+    cards: sampleCards,
+    isActive: true,
+    onCardClick: (cardId) => {
+      // Only first two cards are clickable
+      if (cardId === sampleCards[0]?.id || cardId === sampleCards[1]?.id) {
+        return () => console.log(`Clicked card ${cardId}`)
+      }
+      return undefined
+    },
+  },
+}
+
+export const AllClickable: Story = {
+  args: {
+    cards: sampleCards,
+    isActive: true,
+    onCardClick: (cardId) => () => console.log(`Clicked card ${cardId}`),
+  },
+}

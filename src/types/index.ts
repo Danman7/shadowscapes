@@ -102,3 +102,7 @@ export type DuelAction =
       type: 'DISCARD_CARD'
       payload: { playerId: PlayerId; cardInstanceId: number }
     }
+  | {
+      type: 'REDRAW_CARD'
+      payload: { playerId: PlayerId; cardInstanceId: number }
+    }

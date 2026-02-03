@@ -8,7 +8,7 @@ export const Hand: React.FC<{
   cards: CardInstance[]
   isActive?: boolean
   isOnTop?: boolean
-  onCardClick?: (cardId: number) => void
+  onCardClick?: (cardId: number) => (() => void) | undefined
 }> = ({ cards, isActive, isOnTop, onCardClick }) => {
   const cardCount = cards.length
   const totalSpread = cardCount > 1 ? Math.min(50, (cardCount - 1) * 12) : 0
@@ -33,14 +33,17 @@ export const Hand: React.FC<{
           '--card-rotate': `${rotation}deg`,
         }
 
+        const clickHandler = onCardClick?.(card.id)
+        const isClickable = clickHandler !== undefined
+
         return (
           <div
             key={card.id}
-            className={`hand-card ${isActive ? 'is-active' : 'is-inactive'}`}
+            className={`hand-card ${isActive ? 'is-active' : 'is-inactive'} ${isClickable ? 'is-clickable' : ''}`}
             style={style}
           >
             {isActive ? (
-              <Card card={card} onClick={() => onCardClick?.(card.id)} />
+              <Card card={card} onClick={clickHandler} />
             ) : (
               <CardBack />
             )}

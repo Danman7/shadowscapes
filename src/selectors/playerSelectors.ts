@@ -40,3 +40,5 @@ export const usePlayerDeckCount = (playerId: PlayerId): number =>
 
 export const usePlayerDiscardCount = (playerId: PlayerId): number =>
   usePlayer(playerId).discard.length
+
+export const useActivePlayerCoins = (): number => useActivePlayer().coins

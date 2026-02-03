@@ -18,6 +18,9 @@
     --background: var(--color-neutral-950);
     --foreground: var(--color-neutral-50);
     --surface: var(--color-neutral-800);
+    --order: var(--color-red-400);
+    --shadow: var(--color-indigo-400);
+    --chaos: var(--color-emerald-400);
   }
 }
 
@@ -104,6 +107,10 @@
 
   .hand-card.is-active {
     @apply cursor-pointer;
+  }
+
+  .hand-card.is-clickable {
+    filter: drop-shadow(0 0 8px var(--color-primary));
   }
 
   .hand-card.is-active:hover {

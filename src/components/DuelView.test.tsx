@@ -62,6 +62,7 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
 
   const preloadedStateWithHand = {
     ...preloadedState,
+    phase: 'player-turn' as const,
     players: {
       ...preloadedState.players,
       [activePlayerId]: {
@@ -115,4 +116,140 @@ test('triggers INITIAL_DRAW action when phase is initial-draw', () => {
 
   const cards = container.querySelectorAll('[data-testid="card"]')
   expect(cards.length).toBe(INITIAL_CARDS_TO_DRAW)
+})
+
+test('dispatches REDRAW_CARD when card is clicked in redraw phase', () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  const activePlayerId = preloadedState.activePlayerId
+  const activePlayer = preloadedState.players[activePlayerId]
+  const cardInstanceId = activePlayer.deck[0]
+
+  if (cardInstanceId === undefined) {
+    throw new Error(
+      'Expected a cardInstanceId to exist in the active player deck',
+    )
+  }
+
+  const preloadedStateWithRedraw = {
+    ...preloadedState,
+    phase: 'redraw' as const,
+    players: {
+      ...preloadedState.players,
+      [activePlayerId]: {
+        ...activePlayer,
+        hand: [cardInstanceId],
+        deck: [2, 3],
+      },
+    },
+  }
+
+  const { getAllByTestId } = renderGameContext(<DuelView />, {
+    preloadedState: preloadedStateWithRedraw,
+  })
+
+  const cards = getAllByTestId('card')
+  fireEvent.click(cards[0] as HTMLElement)
+
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'REDRAW_CARD',
+    payload: {
+      playerId: activePlayerId,
+      cardInstanceId,
+    },
+  })
+})
+
+test('only allows clicking affordable cards during player-turn', () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  const activePlayerId = preloadedState.activePlayerId
+  const activePlayer = preloadedState.players[activePlayerId]
+
+  // Create a state where player1 has 2 coins and hand with cards costing 1 and 3
+  const preloadedStateWithBudget = {
+    ...preloadedState,
+    phase: 'player-turn' as const,
+    cards: {
+      1: { id: 1, baseId: 'zombie' as const }, // cost 1
+      2: { id: 2, baseId: 'haunt' as const }, // cost 3
+    },
+    players: {
+      ...preloadedState.players,
+      [activePlayerId]: {
+        ...activePlayer,
+        coins: 2,
+        hand: [1, 2],
+        board: [],
+      },
+    },
+  }
+
+  const { getAllByTestId, container } = renderGameContext(<DuelView />, {
+    preloadedState: preloadedStateWithBudget,
+  })
+
+  const handCards = container.querySelectorAll('.hand-card')
+  expect(handCards[0]).toHaveClass('is-clickable') // zombie costs 1, affordable
+  expect(handCards[1]).not.toHaveClass('is-clickable') // haunt costs 3, too expensive
+
+  const cards = getAllByTestId('card')
+  fireEvent.click(cards[0] as HTMLElement)
+
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'PLAY_CARD',
+    payload: {
+      playerId: activePlayerId,
+      cardInstanceId: 1,
+    },
+  })
+
+  // Clicking the expensive card should not dispatch
+  dispatchSpy.mockClear()
+  fireEvent.click(cards[1] as HTMLElement)
+  expect(dispatchSpy).not.toHaveBeenCalled()
+})
+
+test('does not allow clicking cards during initial-draw phase', () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  const activePlayerId = preloadedState.activePlayerId
+  const activePlayer = preloadedState.players[activePlayerId]
+  const cardInstanceId = activePlayer.deck[0]
+
+  if (cardInstanceId === undefined) {
+    throw new Error(
+      'Expected a cardInstanceId to exist in the active player deck',
+    )
+  }
+
+  const preloadedStateWithInitialDraw = {
+    ...preloadedState,
+    phase: 'initial-draw' as const,
+    players: {
+      ...preloadedState.players,
+      [activePlayerId]: {
+        ...activePlayer,
+        hand: [cardInstanceId],
+      },
+    },
+  }
+
+  const { getAllByTestId } = renderGameContext(<DuelView />, {
+    preloadedState: preloadedStateWithInitialDraw,
+  })
+
+  const cards = getAllByTestId('card')
+  fireEvent.click(cards[0] as HTMLElement)
+
+  // Should not dispatch PLAY_CARD or REDRAW_CARD
+  expect(dispatchSpy).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: 'PLAY_CARD' }),
+  )
+  expect(dispatchSpy).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: 'REDRAW_CARD' }),
+  )
 })

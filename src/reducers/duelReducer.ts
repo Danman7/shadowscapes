@@ -114,6 +114,23 @@ export function duelReducer(
       })
     }
 
+    case 'REDRAW_CARD': {
+      const { playerId, cardInstanceId } = action.payload
+      const player = getPlayer(state, playerId)
+
+      const newhand = player.hand.filter(
+        (id): id is number => id !== cardInstanceId,
+      )
+      const newdeck = [...player.deck, cardInstanceId]
+
+      const stateWithCardAtBottom = updatePlayer(state, playerId, {
+        hand: newhand,
+        deck: newdeck,
+      })
+
+      return drawTopCard(stateWithCardAtBottom, playerId)
+    }
+
     default:
       return state
   }

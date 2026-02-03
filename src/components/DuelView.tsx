@@ -5,10 +5,12 @@ import { Button } from '@/components/Button'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { PlayerBadge } from '@/components/PlayerBadge'
+import { CARD_BASES } from '@/constants/cardBases'
 import { useGameDispatch } from '@/contexts/GameContext'
 import {
   useActivePlayer,
   useActivePlayerBoard,
+  useActivePlayerCoins,
   useActivePlayerHand,
   useDuelPhase,
   useInactivePlayer,
@@ -71,6 +73,7 @@ export const DuelView: React.FC = () => {
   const phase = useDuelPhase()
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
+  const activePlayerCoins = useActivePlayerCoins()
 
   useEffect(() => {
     if (phase === 'intro')
@@ -90,6 +93,34 @@ export const DuelView: React.FC = () => {
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
   const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
   const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
+
+  const getOnCardClick = (cardId: number): (() => void) | undefined => {
+    if (phase === 'redraw') {
+      return () => {
+        dispatch({
+          type: 'REDRAW_CARD',
+          payload: { playerId: activePlayer.id, cardInstanceId: cardId },
+        })
+      }
+    }
+
+    if (phase === 'player-turn') {
+      const cardInstance = activeHand.find((c) => c.id === cardId)
+      if (!cardInstance) return undefined
+
+      const cardBase = CARD_BASES[cardInstance.baseId]
+      if (cardBase.cost > activePlayerCoins) return undefined
+
+      return () => {
+        dispatch({
+          type: 'PLAY_CARD',
+          payload: { playerId: activePlayer.id, cardInstanceId: cardId },
+        })
+      }
+    }
+
+    return undefined
+  }
 
   return (
     <div
@@ -136,16 +167,7 @@ export const DuelView: React.FC = () => {
       </section>
 
       <section className="col-2 row-5 relative">
-        <Hand
-          cards={activeHand}
-          isActive={true}
-          onCardClick={(cardId) => {
-            dispatch({
-              type: 'PLAY_CARD',
-              payload: { playerId: activePlayer.id, cardInstanceId: cardId },
-            })
-          }}
-        />
+        <Hand cards={activeHand} isActive={true} onCardClick={getOnCardClick} />
 
         <PlayerBadge player={activePlayer} isActive />
       </section>

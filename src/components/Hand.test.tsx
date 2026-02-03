@@ -43,7 +43,8 @@ test('renders inactive hand with card backs', () => {
 })
 
 test('calls onCardClick when card is clicked in active hand', () => {
-  const handleCardClick = vi.fn()
+  const clickHandler = vi.fn()
+  const handleCardClick = vi.fn(() => clickHandler)
   const { getAllByTestId } = render(
     <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
   )
@@ -51,16 +52,54 @@ test('calls onCardClick when card is clicked in active hand', () => {
   const firstCard = getAllByTestId('card')[0] as HTMLElement
   firstCard?.click()
 
-  expect(handleCardClick).toHaveBeenCalledTimes(1)
+  // handleCardClick is called once per card during render
   expect(handleCardClick).toHaveBeenCalledWith(mockCards[0]?.id)
+  // The actual click handler should be called once
+  expect(clickHandler).toHaveBeenCalledTimes(1)
 })
 
 test('does not render clickable cards in inactive hand', () => {
-  const handleCardClick = vi.fn()
+  const handleCardClick = vi.fn(() => vi.fn())
   const { queryAllByTestId } = render(
     <Hand cards={mockCards} onCardClick={handleCardClick} />,
   )
 
   const cardElements = queryAllByTestId('card')
   expect(cardElements.length).toBe(0)
+})
+
+test('applies is-clickable class when onCardClick returns a function', () => {
+  const handleCardClick = vi.fn((cardId: number) => {
+    if (cardId === mockCards[0]?.id) return vi.fn()
+    return undefined
+  })
+
+  const { container } = render(
+    <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
+  )
+
+  const handCards = container.querySelectorAll('.hand-card')
+  expect(handCards[0]).toHaveClass('is-clickable')
+  expect(handCards[1]).not.toHaveClass('is-clickable')
+})
+
+test('does not apply is-clickable class when onCardClick returns undefined', () => {
+  const handleCardClick = vi.fn(() => undefined)
+  const { container } = render(
+    <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
+  )
+
+  const handCards = container.querySelectorAll('.hand-card')
+  handCards.forEach((card) => {
+    expect(card).not.toHaveClass('is-clickable')
+  })
+})
+
+test('does not apply is-clickable class when no onCardClick provided', () => {
+  const { container } = render(<Hand cards={mockCards} isActive={true} />)
+
+  const handCards = container.querySelectorAll('.hand-card')
+  handCards.forEach((card) => {
+    expect(card).not.toHaveClass('is-clickable')
+  })
 })
