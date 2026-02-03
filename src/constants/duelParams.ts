@@ -7,7 +7,7 @@ export const FACTION_COLORS: Record<Faction, string> = {
   chaos: 'bg-chaos',
   order: 'bg-order',
   shadow: 'bg-shadow',
-  neutral: 'bg-foreground-fixed',
+  neutral: 'bg-foreground',
 }
 
 export const PLACEHOLDER_PLAYER: Omit<Player, 'id'> = {

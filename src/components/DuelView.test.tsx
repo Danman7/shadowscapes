@@ -3,6 +3,7 @@ import { fireEvent } from '@testing-library/react'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
+import { CARD_BASES } from '@/constants/cardBases'
 import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 import * as GameContext from '@/contexts/GameContext'
 import {
@@ -43,9 +44,6 @@ test('renders deck and discard piles for both players', () => {
 })
 
 test('dispatches PLAY_CARD when card in hand is clicked', () => {
-  const dispatchSpy = vi.fn()
-  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
-
   const activePlayerId = preloadedState.activePlayerId
   const activePlayer = preloadedState.players[activePlayerId]
   const cardInstanceId = activePlayer.deck[0]
@@ -57,6 +55,7 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
       [activePlayerId]: {
         ...activePlayer,
         hand: cardInstanceId !== undefined ? [cardInstanceId] : [],
+        board: [],
       },
     },
   }
@@ -66,50 +65,33 @@ test('dispatches PLAY_CARD when card in hand is clicked', () => {
   })
 
   expect(cardInstanceId).not.toBeUndefined()
-  if (cardInstanceId === undefined) {
-    return
-  }
+
+  const board = getAllByTestId('board')[1]
+  const initialBoardCards = board?.querySelectorAll('[data-testid="card"]')
+  expect(initialBoardCards).toHaveLength(0)
 
   const cards = getAllByTestId('card')
   fireEvent.click(cards[0] as HTMLElement)
 
-  expect(dispatchSpy).toHaveBeenCalledWith({
-    type: 'PLAY_CARD',
-    payload: { playerId: activePlayerId, cardInstanceId },
-  })
-})
-
-test('handles intro screen button click when startingPlayerId is null', () => {
-  const { queryByTestId } = renderGameContext(<DuelView />, {
-    preloadedState: {
-      ...preloadedState,
-      startingPlayerId: null,
-    },
-  })
-
-  const introScreen = queryByTestId('intro-screen')
-  expect(introScreen).not.toBeInTheDocument()
-})
-
-test('handles card click in active player hand', () => {
-  const { getByTestId, queryAllByTestId } = renderGameContext(<DuelView />, {
-    preloadedState,
-  })
-
-  const duelView = getByTestId('duel-view')
-  expect(duelView).toBeInTheDocument()
-
-  const cards = queryAllByTestId('card')
-
-  if (cards.length > 0) {
-    const firstCard = cards[0]
-    if (firstCard) {
-      fireEvent.click(firstCard)
-    }
-
-    const duelViewAfter = getByTestId('duel-view')
-    expect(duelViewAfter).toBeInTheDocument()
+  if (cardInstanceId === undefined) {
+    throw new Error(
+      'Expected a cardInstanceId to exist in the active player deck',
+    )
   }
+
+  const cardInstance = preloadedStateWithHand.cards[cardInstanceId]
+  if (!cardInstance) {
+    throw new Error(`Missing card instance for id: ${cardInstanceId}`)
+  }
+
+  const cardBase = CARD_BASES[cardInstance.baseId]
+
+  const updatedBoard = getAllByTestId('board')[1]
+  const boardCardsAfterPlay = updatedBoard?.querySelectorAll(
+    '[data-testid="card"]',
+  )
+  expect(boardCardsAfterPlay).toHaveLength(1)
+  expect(updatedBoard?.textContent).toContain(cardBase.name)
 })
 
 test('transitions from intro to initial-draw to redraw phase', async () => {

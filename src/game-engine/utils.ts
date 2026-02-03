@@ -1,65 +1,46 @@
-import type { CardBase, CardBaseId, CardInstance } from '@/types'
+import type { CardBase, CardBaseId, CardInstance, PlayerId } from '@/types'
 import { CARD_BASES } from '@/constants/cardBases'
 
 let instanceIdCounter = 0
 
-/**
- * Resets the instance ID counter (useful for testing)
- */
-export function resetInstanceIdCounter(): void {
+export const resetInstanceIdCounter = (): void => {
   instanceIdCounter = 0
 }
 
-/**
- * Generates the next unique instance ID
- */
-export function generateInstanceId(): number {
-  return instanceIdCounter++
-}
+export const generateInstanceId = (): number => instanceIdCounter++
 
-/**
- * Gets the strength from a card base (returns undefined for instant cards)
- */
-export function getCardStrength(base: CardBase): number | undefined {
+export const getCardStrength = (base: CardBase): number | undefined => {
   return base.type === 'character' ? base.strength : undefined
 }
 
-/**
- * Creates a duel-ready card instance from a base ID.
- */
 export const createCardInstance = (
   baseId: CardBaseId,
   id?: number,
   strength?: number,
-): CardInstance & { base: (typeof CARD_BASES)[typeof baseId] } => {
-  const base = CARD_BASES[baseId]
+  counter?: number,
+): CardInstance => ({
+  id: id ?? generateInstanceId(),
+  baseId,
+  strength: strength ?? getCardStrength(CARD_BASES[baseId]),
+  counter: counter ?? CARD_BASES[baseId].counter,
+})
 
-  return {
-    id: id ?? generateInstanceId(),
-    baseId,
-    type: base.type,
-    strength: strength ?? getCardStrength(base),
-    base,
-  }
-}
-
-/**
- * Shuffles an array using Fisher-Yates algorithm
- */
-export function shuffle<T>(array: T[], rng: () => number = Math.random): T[] {
+export const shuffle = <T>(
+  array: T[],
+  rng: () => number = Math.random,
+): T[] => {
   const shuffled = [...array]
+
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1))
     const temp = shuffled[i]!
     shuffled[i] = shuffled[j]!
     shuffled[j] = temp
   }
+
   return shuffled
 }
 
-/**
- * Simulates a coin flip - returns true or false
- */
-export function coinFlip(rng: () => number = Math.random): boolean {
-  return rng() < 0.5
-}
+export const coinFlipForPlayerStart = (
+  rng: () => number = Math.random,
+): PlayerId => (rng() < 0.5 ? 'player1' : 'player2')

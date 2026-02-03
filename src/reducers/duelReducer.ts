@@ -9,6 +9,7 @@ import {
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
+import { CARD_BASES } from '@/constants/cardBases'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},
@@ -78,15 +79,15 @@ export function duelReducer(
       const player = getPlayer(state, playerId)
       const card = state.cards[cardInstanceId]
 
-      if (!card) {
-        return state
-      }
+      if (!card) return state
 
       const newhand = player.hand.filter(
         (id): id is number => id !== cardInstanceId,
       )
 
-      if (card.type === 'instant') {
+      const { type } = CARD_BASES[card.baseId]
+
+      if (type === 'instant') {
         return updatePlayer(state, playerId, {
           hand: newhand,
           discard: [...player.discard, cardInstanceId],

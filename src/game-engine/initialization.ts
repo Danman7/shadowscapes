@@ -1,5 +1,6 @@
+import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
 import {
-  coinFlip,
+  coinFlipForPlayerStart,
   createCardInstance,
   resetInstanceIdCounter,
   shuffle,
@@ -22,32 +23,23 @@ export interface CreateDuelParams {
 
 export interface CreateDuelOverrides extends Partial<Duel> {
   stackOverrides?: Partial<
-    Record<PlayerId, Partial<Record<Stack, CardBaseId | CardBaseId[]>>>
+    Record<PlayerId, Partial<Record<Stack, CardBaseId[]>>>
   >
 }
 
-function getNextCardId(duel: Duel): number {
+const getNextCardId = (duel: Duel): number => {
   const ids = Object.keys(duel.cards).map((id) => Number(id))
-  if (ids.length === 0) {
-    return 1
-  }
+  if (ids.length === 0) return 1
 
   return Math.max(...ids) + 1
 }
 
-function buildStackIds(
-  baseIds: CardBaseId | CardBaseId[] | undefined,
-  startId: number,
-) {
-  if (!baseIds) {
-    return { ids: undefined, cards: [], nextId: startId }
-  }
+const buildStackIds = (baseIds: CardBaseId[] | undefined, startId: number) => {
+  if (!baseIds) return { ids: undefined, cards: [], nextId: startId }
 
-  const idsArray = Array.isArray(baseIds) ? baseIds : [baseIds]
   let idCounter = startId
-  const cards = idsArray.map((baseId) =>
-    createCardInstance(baseId, idCounter++),
-  )
+  const cards = baseIds.map((baseId) => createCardInstance(baseId, idCounter++))
+
   return {
     ids: cards.map((card) => card.id),
     cards,
@@ -55,13 +47,11 @@ function buildStackIds(
   }
 }
 
-function applyStackOverrides(
+const applyStackOverrides = (
   duel: Duel,
   stackOverrides: CreateDuelOverrides['stackOverrides'],
-): Duel {
-  if (!stackOverrides) {
-    return duel
-  }
+): Duel => {
+  if (!stackOverrides) return duel
 
   let nextId = getNextCardId(duel)
   const newCards: Duel['cards'] = { ...duel.cards }
@@ -110,10 +100,10 @@ function applyStackOverrides(
   }
 }
 
-export function createDuel(
+export const createDuel = (
   { player1Name, player2Name, player1Deck, player2Deck }: CreateDuelParams,
   overrides: CreateDuelOverrides = {},
-): Duel {
+): Duel => {
   resetInstanceIdCounter()
 
   const shuffledDeck1 = shuffle(player1Deck)
@@ -134,29 +124,23 @@ export function createDuel(
   })
 
   const player1: Player = {
+    ...PLACEHOLDER_PLAYER,
     id: 'player1',
     name: player1Name,
-    coins: 0,
     deck: player1deck,
-    hand: [],
-    board: [],
-    discard: [],
   }
 
   const player2: Player = {
+    ...PLACEHOLDER_PLAYER,
     id: 'player2',
     name: player2Name,
-    coins: 0,
     deck: player2deck,
-    hand: [],
-    board: [],
-    discard: [],
   }
 
-  const player1Starts = coinFlip()
-  const startingPlayerId = player1Starts ? 'player1' : 'player2'
+  const startingPlayerId = coinFlipForPlayerStart()
   const activePlayerId = startingPlayerId
-  const inactivePlayerId = player1Starts ? 'player2' : 'player1'
+  const inactivePlayerId =
+    startingPlayerId === 'player1' ? 'player2' : 'player1'
 
   let duel: Duel = {
     cards: allCards,
@@ -190,22 +174,17 @@ export function createDuel(
 export const getPlayer = (duel: Duel, playerId: PlayerId): Player =>
   duel.players[playerId]
 
-/**
- * Updates a player in the duel
- */
-export function updatePlayer(
+export const updatePlayer = (
   duel: Duel,
   playerId: PlayerId,
   updates: Partial<Player>,
-): Duel {
-  return {
-    ...duel,
-    players: {
-      ...duel.players,
-      [playerId]: { ...duel.players[playerId], ...updates },
-    },
-  }
-}
+): Duel => ({
+  ...duel,
+  players: {
+    ...duel.players,
+    [playerId]: { ...duel.players[playerId], ...updates },
+  },
+})
 
 export const drawTopCard = (
   duel: Readonly<Duel>,
@@ -213,16 +192,14 @@ export const drawTopCard = (
 ): Readonly<Duel> => {
   const player = getPlayer(duel, playerId)
 
-  if (player.deck.length === 0) {
-    return duel
-  }
+  if (player.deck.length === 0) return duel
 
-  const [drawnCardId, ...remainingdeck] = player.deck
+  const [drawnCardId, ...remainingDeck] = player.deck
 
   if (drawnCardId == null) return duel
 
   return updatePlayer(duel, playerId, {
-    deck: remainingdeck,
+    deck: remainingDeck,
     hand: [...player.hand, drawnCardId],
   })
 }

@@ -1,10 +1,10 @@
 import { type ReactNode, useEffect } from 'react'
 
-import { ActivePing } from '@/components/ActivePing'
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
+import { PlayerBadge } from '@/components/PlayerBadge'
 import { useGameDispatch } from '@/contexts/GameContext'
 import {
   useActivePlayer,
@@ -66,27 +66,19 @@ const PhaseButton: React.FC<{ phase: Phase }> = ({ phase }) => {
   )
 }
 
-/**
- * DuelView component - main game view that orchestrates all game components
- * Renders different views based on game phase
- * Active player always displayed at bottom, inactive player at top
- */
-export function DuelView() {
+export const DuelView: React.FC = () => {
   const dispatch = useGameDispatch()
   const phase = useDuelPhase()
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
 
   useEffect(() => {
-    if (phase === 'intro') {
+    if (phase === 'intro')
       dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
-    }
   }, [dispatch, phase])
 
   useEffect(() => {
-    if (phase === 'initial-draw') {
-      dispatch({ type: 'INITIAL_DRAW' })
-    }
+    if (phase === 'initial-draw') dispatch({ type: 'INITIAL_DRAW' })
   }, [dispatch, phase])
 
   const activeHand = useActivePlayerHand()
@@ -112,9 +104,7 @@ export function DuelView() {
       </section>
 
       <section className="col-2 row-1 relative">
-        <div className="name-tag absolute top-2 left-1/2 transform -translate-x-1/2 px-2 ">
-          {inactivePlayer.name}
-        </div>
+        <PlayerBadge>{inactivePlayer.name}</PlayerBadge>
 
         <Hand cards={inactiveHand} isActive={false} isOnTop />
       </section>
@@ -157,10 +147,7 @@ export function DuelView() {
           }}
         />
 
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 px-2 name-tag">
-          <ActivePing />
-          {activePlayer.name}
-        </div>
+        <PlayerBadge isActive>{activePlayer.name}</PlayerBadge>
       </section>
 
       <section className="col-3 row-5">

@@ -13,15 +13,10 @@ import type { Duel, DuelAction } from '@/types'
 const GameStateContext = createContext<Duel | undefined>(undefined)
 const GameDispatchContext = createContext<Dispatch<DuelAction> | null>(null)
 
-interface GameProviderProps {
+export const GameProvider: React.FC<{
   children: ReactNode
   preloadedState?: Partial<Duel>
-}
-
-/**
- * GameProvider component that wraps the app and provides game state and dispatch
- */
-export function GameProvider({ children, preloadedState }: GameProviderProps) {
+}> = ({ children, preloadedState }) => {
   const [gameState, dispatch] = useReducer(
     duelReducer,
     preloadedState,
@@ -39,30 +34,20 @@ export function GameProvider({ children, preloadedState }: GameProviderProps) {
   )
 }
 
-/**
- * Hook to access game state
- * Throws error if used outside GameProvider
- */
-export function useGameState(): Duel {
+export const useGameState = (): Duel => {
   const context = useContext(GameStateContext)
 
-  if (context === undefined) {
+  if (context === undefined)
     throw new Error('useGameState must be used within GameProvider')
-  }
 
   return context
 }
 
-/**
- * Hook to access game dispatch function
- * Throws error if used outside GameProvider
- */
-export function useGameDispatch(): Dispatch<DuelAction> {
+export const useGameDispatch = (): Dispatch<DuelAction> => {
   const context = useContext(GameDispatchContext)
 
-  if (context === null || context === undefined) {
+  if (context === null || context === undefined)
     throw new Error('useGameDispatch must be used within GameProvider')
-  }
 
   return context
 }

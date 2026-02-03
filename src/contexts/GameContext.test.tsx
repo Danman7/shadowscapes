@@ -6,8 +6,8 @@ import { useGameDispatch, useGameState } from '@/contexts/GameContext'
 import { renderGameContext } from '@/test/renderGameContext'
 
 test('renders children', () => {
-  const { container } = renderGameContext(<div>Test Child</div>)
-  expect(container.textContent).toContain('Test Child')
+  const { getByText } = renderGameContext(<div>Test Child</div>)
+  expect(getByText('Test Child')).toBeInTheDocument()
 })
 
 test('useGameState provides game state', () => {
@@ -16,9 +16,9 @@ test('useGameState provides game state', () => {
     return <div>Phase: {state.phase}</div>
   }
 
-  const { container } = renderGameContext(<TestComponent />)
+  const { getByText } = renderGameContext(<TestComponent />)
 
-  expect(container.textContent).toContain('Phase:')
+  expect(getByText(/Phase:/)).toBeInTheDocument()
 })
 
 test('useGameDispatch provides dispatch function', () => {
@@ -29,9 +29,9 @@ test('useGameDispatch provides dispatch function', () => {
     )
   }
 
-  const { container } = renderGameContext(<TestComponent />)
+  const { getByText } = renderGameContext(<TestComponent />)
 
-  expect(container.textContent).toContain('Has dispatch: yes')
+  expect(getByText('Has dispatch: yes')).toBeInTheDocument()
 })
 
 test('useGameState throws error when used outside GameProvider', () => {
@@ -62,9 +62,9 @@ test('GameProvider supports preloaded state overrides', () => {
     return <div>Phase: {state.phase}</div>
   }
 
-  const { container } = renderGameContext(<TestComponent />, {
+  const { getByText } = renderGameContext(<TestComponent />, {
     preloadedState: { phase: 'player-turn' },
   })
 
-  expect(container.textContent).toContain('Phase: player-turn')
+  expect(getByText('Phase: player-turn')).toBeInTheDocument()
 })

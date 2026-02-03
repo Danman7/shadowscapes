@@ -19,14 +19,14 @@ export const MIXED_STACKS_DUEL = createDuel(DEFAULT_DUEL_SETUP, {
     player1: {
       hand: ['zombie', 'haunt'],
       board: ['zombie', 'haunt'],
-      discard: ['haunt', 'cook'],
-      deck: 'bookOfAsh',
+      discard: ['cook'],
+      deck: ['bookOfAsh', 'burrick'],
     },
     player2: {
       hand: ['novice', 'templeGuard'],
       board: ['novice', 'templeGuard'],
-      discard: ['sachelman', 'yoraSkull'],
-      deck: 'cook',
+      discard: ['sachelman', 'yoraSkull', 'highPriestMarkander'],
+      deck: ['cook'],
     },
   },
 })

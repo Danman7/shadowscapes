@@ -23,21 +23,35 @@ afterEach(() => {
 
 test('renders character card with all details', () => {
   const { getByText } = render(<Card card={mockCharacterCard} />)
-  const { name, cost, categories } = CARD_BASES[mockCharacterCard.baseId]
+  const { name, cost, categories, description, flavorText } =
+    CARD_BASES[mockCharacterCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(cost)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()
   expect(getByText(mockCharacterCard.strength as number)).toBeInTheDocument()
+  expect(getByText(description[0]!)).toBeInTheDocument()
+  expect(getByText(flavorText!)).toBeInTheDocument()
 })
 
 test('renders instant card without strength', () => {
   const { getByText } = render(<Card card={mockInstantCard} />)
-  const { name, cost, description } = CARD_BASES[mockInstantCard.baseId]
+  const { name, cost, description, flavorText, categories } =
+    CARD_BASES[mockInstantCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(cost)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
+  expect(getByText(flavorText!)).toBeInTheDocument()
+  expect(getByText(categories.join(' '))).toBeInTheDocument()
+})
+
+test('renders card with counter', () => {
+  const { getByText } = render(
+    <Card card={createCardInstance('highPriestMarkander')} />,
+  )
+
+  expect(getByText(CARD_BASES.highPriestMarkander.counter!)).toBeInTheDocument()
 })
 
 test('calls onClick when clicked', () => {

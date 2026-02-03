@@ -3,11 +3,9 @@
 @import 'tailwindcss';
 
 :root {
-  --primary: var(--color-amber-500);
+  --primary: var(--color-amber-600);
   --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-950);
-  --background-fixed: var(--color-neutral-50);
-  --foreground-fixed: var(--color-neutral-950);
   --surface: var(--color-neutral-100);
   --order: var(--color-red-800);
   --shadow: var(--color-indigo-800);
@@ -16,6 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --primary: var(--color-amber-400);
     --background: var(--color-neutral-950);
     --foreground: var(--color-neutral-50);
     --surface: var(--color-neutral-800);
@@ -26,8 +25,6 @@
   --color-primary: var(--primary);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-background-fixed: var(--background-fixed);
-  --color-foreground-fixed: var(--foreground-fixed);
   --color-surface: var(--surface);
   --color-elite: var(--elite);
   --color-order: var(--order);

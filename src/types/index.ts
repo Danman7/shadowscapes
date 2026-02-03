@@ -8,6 +8,8 @@ export type CardCategory =
   | 'Artifact'
   | 'Thief'
   | 'Necromancer'
+  | 'Priest'
+  | 'Beast'
 
 export type CardBaseId =
   | 'zombie'
@@ -19,6 +21,8 @@ export type CardBaseId =
   | 'yoraSkull'
   | 'bookOfAsh'
   | 'downwinder'
+  | 'highPriestMarkander'
+  | 'burrick'
 
 export type CardRank = 'common' | 'elite'
 
@@ -31,6 +35,7 @@ interface CardBaseCommon {
   faction: Faction
   categories: CardCategory[]
   rank: CardRank
+  counter?: number
 }
 
 export interface CardBaseCharacter extends CardBaseCommon {
@@ -47,8 +52,8 @@ export type CardBase = CardBaseCharacter | CardBaseInstant
 export interface CardInstance {
   id: number
   baseId: CardBaseId
-  type: CardType
   strength?: number
+  counter?: number
 }
 
 export type PlayerId = 'player1' | 'player2'

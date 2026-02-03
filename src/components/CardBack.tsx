@@ -1,12 +1,8 @@
-export interface CardBackProps {
-  isSmall?: boolean
-}
+import type React from 'react'
 
-/**
- * CardBack component - displays a card back with diagonal stripe pattern
- * Used for opponent's hand and face-down piles (deck, discard)
- */
-export function CardBack({ isSmall = false }: CardBackProps) {
+export const CardBack: React.FC<{
+  isSmall?: boolean
+}> = ({ isSmall = false }) => {
   return (
     <div
       className={`card ${isSmall ? 'w-20' : 'w-60'} border-`}

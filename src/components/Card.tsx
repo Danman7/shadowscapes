@@ -1,24 +1,27 @@
 import { BsLightningFill } from 'react-icons/bs'
+import { IoHourglassOutline } from 'react-icons/io5'
 
 import { CARD_BASES } from '@/constants/cardBases'
 import { FACTION_COLORS } from '@/constants/duelParams'
 import type { CardInstance } from '@/types'
 
-export interface CardProps {
+export const Card: React.FC<{
   card: CardInstance
   isOnBoard?: boolean
   onClick?: () => void
-}
-
-/**
- * Card component - displays a game card with its details.
- * Shows character strength for character cards or instant indicator for instant cards
- */
-export function Card({ card, isOnBoard, onClick }: CardProps) {
-  const { strength, type, baseId } = card
+}> = ({ card, isOnBoard, onClick }) => {
+  const { strength, baseId, counter } = card
   const base = CARD_BASES[baseId]
-  const { name, description, flavorText, faction, cost, categories, rank } =
-    base
+  const {
+    name,
+    description,
+    flavorText,
+    faction,
+    cost,
+    categories,
+    rank,
+    type,
+  } = base
   const factionColor = FACTION_COLORS[faction]
 
   return (
@@ -27,7 +30,7 @@ export function Card({ card, isOnBoard, onClick }: CardProps) {
       onClick={onClick}
       data-testid="card"
     >
-      <div className="font-semibold text-background-fixed rounded overflow-hidden">
+      <div className="font-semibold text-background rounded overflow-hidden">
         <div
           className={`flex justify-between items-center p-2 ${factionColor}`}
           data-testid="card-header"
@@ -42,7 +45,7 @@ export function Card({ card, isOnBoard, onClick }: CardProps) {
         </div>
 
         <div
-          className={`text-sm text-center text-background-fixed ${rank === 'elite' ? 'bg-primary' : 'bg-foreground-fixed'}`}
+          className={`text-sm text-center text-background ${rank === 'elite' ? 'bg-primary' : 'bg-foreground'}`}
         >
           {categories.join(' ')}
         </div>
@@ -71,15 +74,21 @@ export function Card({ card, isOnBoard, onClick }: CardProps) {
 
             <hr className="border-foreground/10" />
 
-            <div className="text-sm text- font-light italic">{flavorText}</div>
+            <div className="text-sm font-light italic">{flavorText}</div>
           </div>
 
           <hr className="border-foreground/10" />
 
           <div className="flex justify-between items-end">
-            <div className="w-5 h-5 rounded-full bg-yellow-300 border border-elite flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-primary text-background border-2 border-foreground/20 flex items-center justify-center shadow-xs">
               {cost}
             </div>
+
+            {counter !== undefined && (
+              <div className="flex items-center space-x-1">
+                <IoHourglassOutline /> {counter}
+              </div>
+            )}
           </div>
         </>
       )}

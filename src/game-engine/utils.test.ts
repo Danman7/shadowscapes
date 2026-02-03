@@ -4,7 +4,7 @@ import {
   generateInstanceId,
   createCardInstance,
   shuffle,
-  coinFlip,
+  coinFlipForPlayerStart,
 } from '@/game-engine/utils'
 
 describe('resetInstanceIdCounter and generateInstanceId', () => {
@@ -38,7 +38,6 @@ describe('createCardInstance', () => {
 
     expect(instance.id).toBe(0)
     expect(instance.baseId).toBe('zombie')
-    expect(instance.type).toBe('character')
     expect(instance.strength).toBe(1)
   })
 
@@ -47,7 +46,6 @@ describe('createCardInstance', () => {
 
     expect(instance.id).toBe(0)
     expect(instance.baseId).toBe('bookOfAsh')
-    expect(instance.type).toBe('instant')
     expect(instance.strength).toBeUndefined()
   })
 
@@ -91,12 +89,16 @@ describe('shuffle', () => {
   })
 })
 
-describe('coinFlip', () => {
-  test('returns false when random >= 0.5', () => {
-    expect(coinFlip(() => 0.5)).toBe(false)
+describe('coinFlipForPlayerStart', () => {
+  test('returns player1 when random < 0.5', () => {
+    expect(coinFlipForPlayerStart(() => 0.4)).toBe('player1')
   })
 
-  test('returns false when random equals 0.9', () => {
-    expect(coinFlip(() => 0.9)).toBe(false)
+  test('returns player2 when random >= 0.5', () => {
+    expect(coinFlipForPlayerStart(() => 0.5)).toBe('player2')
+  })
+
+  test('returns player2 when random equals 0.9', () => {
+    expect(coinFlipForPlayerStart(() => 0.9)).toBe('player2')
   })
 })

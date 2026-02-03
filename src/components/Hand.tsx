@@ -4,18 +4,12 @@ import { Card } from '@/components/Card'
 import { CardBack } from '@/components/CardBack'
 import type { CardInstance } from '@/types'
 
-export interface HandProps {
+export const Hand: React.FC<{
   cards: CardInstance[]
   isActive?: boolean
   isOnTop?: boolean
   onCardClick?: (cardId: number) => void
-}
-
-/**
- * Hand component - displays a player's hand
- * Shows actual cards for active player, card backs for inactive player
- */
-export function Hand({ cards, isActive, isOnTop, onCardClick }: HandProps) {
+}> = ({ cards, isActive, isOnTop, onCardClick }) => {
   const cardCount = cards.length
   const totalSpread = cardCount > 1 ? Math.min(50, (cardCount - 1) * 12) : 0
   const angleStep = cardCount > 1 ? totalSpread / (cardCount - 1) : 0
