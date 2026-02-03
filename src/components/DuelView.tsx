@@ -104,9 +104,9 @@ export const DuelView: React.FC = () => {
       </section>
 
       <section className="col-2 row-1 relative">
-        <PlayerBadge>{inactivePlayer.name}</PlayerBadge>
+        <PlayerBadge player={inactivePlayer} />
 
-        <Hand cards={inactiveHand} isActive={false} isOnTop />
+        <Hand cards={inactiveHand} isOnTop />
       </section>
 
       <section className="col-3 row-1">
@@ -147,7 +147,7 @@ export const DuelView: React.FC = () => {
           }}
         />
 
-        <PlayerBadge isActive>{activePlayer.name}</PlayerBadge>
+        <PlayerBadge player={activePlayer} isActive />
       </section>
 
       <section className="col-3 row-5">

@@ -4,7 +4,10 @@ import { afterEach, expect, test, vi } from 'vitest'
 
 import { DuelView } from '@/components/DuelView'
 import { CARD_BASES } from '@/constants/cardBases'
-import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
+import {
+  INITIAL_CARDS_TO_DRAW,
+  INITIAL_PLAYER_COINS,
+} from '@/constants/duelParams'
 import * as GameContext from '@/contexts/GameContext'
 import {
   MIXED_STACKS_DUEL,
@@ -26,13 +29,14 @@ test('renders main game view when phase is player-turn', () => {
   expect(duelView).toBeInTheDocument()
 })
 
-test('displays player names in game view', () => {
-  const { container } = renderGameContext(<DuelView />, {
+test('displays player info in game view', () => {
+  const { getByText, getAllByText } = renderGameContext(<DuelView />, {
     preloadedState,
   })
 
-  expect(container.textContent).toContain(preloadedState.players.player1.name)
-  expect(container.textContent).toContain(preloadedState.players.player2.name)
+  expect(getByText(preloadedState.players.player1.name)).toBeInTheDocument()
+  expect(getByText(preloadedState.players.player2.name)).toBeInTheDocument()
+  expect(getAllByText(INITIAL_PLAYER_COINS)).toHaveLength(2)
 })
 
 test('renders deck and discard piles for both players', () => {

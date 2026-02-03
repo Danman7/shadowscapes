@@ -31,7 +31,7 @@ test('renders active hand with cards', () => {
 
 test('renders inactive hand with card backs', () => {
   const { getByTestId, getAllByTestId, getByText } = render(
-    <Hand cards={mockCards} isActive={false} />,
+    <Hand cards={mockCards} />,
   )
 
   const handElement = getByTestId('hand')
@@ -58,7 +58,7 @@ test('calls onCardClick when card is clicked in active hand', () => {
 test('does not render clickable cards in inactive hand', () => {
   const handleCardClick = vi.fn()
   const { queryAllByTestId } = render(
-    <Hand cards={mockCards} isActive={false} onCardClick={handleCardClick} />,
+    <Hand cards={mockCards} onCardClick={handleCardClick} />,
   )
 
   const cardElements = queryAllByTestId('card')

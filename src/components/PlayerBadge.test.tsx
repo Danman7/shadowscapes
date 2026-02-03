@@ -2,17 +2,23 @@ import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
 import { PlayerBadge } from '@/components/PlayerBadge'
+import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
+import type { Player } from '@/types'
 
-test('renders children content', () => {
-  const { getByText } = render(<PlayerBadge>Player Name</PlayerBadge>)
+const player: Player = {
+  ...PLACEHOLDER_PLAYER,
+  id: 'player1',
+  name: 'Player Name',
+}
 
-  expect(getByText('Player Name')).toBeInTheDocument()
+test('renders player info', () => {
+  const { getByText } = render(<PlayerBadge player={player} />)
+
+  expect(getByText(player.name)).toBeInTheDocument()
 })
 
 test('renders without active indicator when isActive is false', () => {
-  const { container } = render(
-    <PlayerBadge isActive={false}>Player Name</PlayerBadge>,
-  )
+  const { container } = render(<PlayerBadge player={player} />)
 
   const badge = container.querySelector('.name-tag')
   expect(badge).toBeInTheDocument()
@@ -25,9 +31,7 @@ test('renders without active indicator when isActive is false', () => {
 })
 
 test('renders with active indicator when isActive is true', () => {
-  const { container } = render(
-    <PlayerBadge isActive={true}>Player Name</PlayerBadge>,
-  )
+  const { container } = render(<PlayerBadge player={player} isActive />)
 
   const badge = container.querySelector('.name-tag')
   expect(badge).toBeInTheDocument()

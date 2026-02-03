@@ -1,4 +1,5 @@
 import { BsLightningFill } from 'react-icons/bs'
+import { GiCrownCoin } from 'react-icons/gi'
 import { IoHourglassOutline } from 'react-icons/io5'
 
 import { CARD_BASES } from '@/constants/cardBases'
@@ -80,12 +81,12 @@ export const Card: React.FC<{
           <hr className="border-foreground/10" />
 
           <div className="flex justify-between items-end">
-            <div className="w-5 h-5 rounded-full bg-primary text-background border-2 border-foreground/20 flex items-center justify-center shadow-xs">
-              {cost}
+            <div className="flex items-center gap-1 text-primary">
+              <GiCrownCoin /> {cost}
             </div>
 
             {counter !== undefined && (
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center gap-1">
                 <IoHourglassOutline /> {counter}
               </div>
             )}

@@ -1,11 +1,13 @@
-import type { ReactNode } from 'react'
+import { GiCrownCoin } from 'react-icons/gi'
+
+import type { Player } from '@/types'
 
 export const PlayerBadge: React.FC<{
-  children: ReactNode
+  player: Player
   isActive?: boolean
-}> = ({ children, isActive }) => (
+}> = ({ player, isActive }) => (
   <div
-    className={`absolute  left-1/2 transform -translate-x-1/2 px-2 name-tag border ${isActive ? 'border-primary bottom-2' : 'top-2'}`}
+    className={`absolute flex items-center gap-2 left-1/2 transform -translate-x-1/2 px-2 name-tag border ${isActive ? 'border-primary bottom-2' : 'top-2'}`}
   >
     {isActive && (
       <span className="relative flex size-3">
@@ -14,6 +16,10 @@ export const PlayerBadge: React.FC<{
       </span>
     )}
 
-    {children}
+    <div>{player.name}</div>
+
+    <div className="text-primary flex items-center gap-1">
+      <GiCrownCoin /> {player.coins}
+    </div>
   </div>
 )
