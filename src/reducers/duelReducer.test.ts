@@ -431,6 +431,7 @@ describe('REDRAW_CARD action', () => {
 
     expect(player1.hand).toEqual([2, 3])
     expect(player1.deck).toEqual([1])
+    expect(player1.playerReady).toBe(true)
   })
 
   test('handles redraw when deck is empty after adding card', () => {
@@ -453,6 +454,7 @@ describe('REDRAW_CARD action', () => {
 
     expect(player1.hand).toEqual([1])
     expect(player1.deck).toEqual([])
+    expect(player1.playerReady).toBe(true)
   })
 
   test('handles multiple redraws sequentially', () => {
@@ -469,6 +471,7 @@ describe('REDRAW_CARD action', () => {
 
     expect(player1.hand).toEqual([3, 1])
     expect(player1.deck).toEqual([2])
+    expect(player1.playerReady).toBe(true)
   })
 
   test('does not modify other player', () => {
@@ -482,6 +485,28 @@ describe('REDRAW_CARD action', () => {
     expect(player2.hand).toEqual(state.players.player2.hand)
     expect(player2.deck).toEqual(state.players.player2.deck)
   })
+
+  test('sets playerReady to true after redraw', () => {
+    const {
+      players: { player1 },
+    } = duelReducer(state, {
+      type: 'REDRAW_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(player1.playerReady).toBe(true)
+  })
+})
+
+test('PLAYER_READY action updates the player ', () => {
+  const {
+    players: { player1 },
+  } = duelReducer(PRELOADED_DUEL_SETUP, {
+    type: 'PLAYER_READY',
+    payload: { playerId: 'player1' },
+  })
+
+  expect(player1.playerReady).toBe(true)
 })
 
 describe('unknown action', () => {

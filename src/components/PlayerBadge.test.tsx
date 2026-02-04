@@ -15,6 +15,15 @@ test('renders player info', () => {
   const { getByText } = render(<PlayerBadge player={player} />)
 
   expect(getByText(player.name)).toBeInTheDocument()
+  expect(getByText(player.coins)).toBeInTheDocument()
+})
+
+test('renders player is ready', () => {
+  const { getByText } = render(
+    <PlayerBadge player={{ ...player, playerReady: true }} />,
+  )
+
+  expect(getByText('Ready')).toBeInTheDocument()
 })
 
 test('renders without active indicator when isActive is false', () => {

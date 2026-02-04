@@ -63,6 +63,7 @@ export interface Player {
   id: PlayerId
   name: string
   coins: number
+  playerReady: boolean
   deck: number[]
   hand: number[]
   board: number[]
@@ -106,3 +107,4 @@ export type DuelAction =
       type: 'REDRAW_CARD'
       payload: { playerId: PlayerId; cardInstanceId: number }
     }
+  | { type: 'PLAYER_READY'; payload: { playerId: PlayerId } }

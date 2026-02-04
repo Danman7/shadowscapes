@@ -126,9 +126,18 @@ export function duelReducer(
       const stateWithCardAtBottom = updatePlayer(state, playerId, {
         hand: newhand,
         deck: newdeck,
+        playerReady: true,
       })
 
       return drawTopCard(stateWithCardAtBottom, playerId)
+    }
+
+    case 'PLAYER_READY': {
+      const { playerId } = action.payload
+
+      return updatePlayer(state, playerId, {
+        playerReady: true,
+      })
     }
 
     default:

@@ -96,6 +96,8 @@ export const DuelView: React.FC = () => {
 
   const getOnCardClick = (cardId: number): (() => void) | undefined => {
     if (phase === 'redraw') {
+      if (activePlayer.playerReady) return undefined
+
       return () => {
         dispatch({
           type: 'REDRAW_CARD',

@@ -115,7 +115,7 @@
 
   .hand-card.is-active:hover {
     transform: translateX(var(--card-x, 0px))
-      translateY(calc(var(--card-y, 0px) - 210px));
+      translateY(calc(var(--card-y, 0px) - 220px));
     @apply z-40 shadow-lg;
   }
 
