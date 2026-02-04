@@ -44,6 +44,16 @@ export function duelReducer(
       return {
         ...state,
         phase: action.payload,
+        players: {
+          player1: {
+            ...state.players.player1,
+            playerReady: false,
+          },
+          player2: {
+            ...state.players.player2,
+            playerReady: false,
+          },
+        },
       }
     }
 

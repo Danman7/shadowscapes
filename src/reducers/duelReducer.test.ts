@@ -51,13 +51,27 @@ test('START_DUEL action creates new duel with player names and decks', () => {
   expect(activePlayerId).not.toBe(inactivePlayerId)
 })
 
-test('TRANSITION_PHASE action updates the phase ', () => {
-  const { phase } = duelReducer(PRELOADED_DUEL_SETUP, {
-    type: 'TRANSITION_PHASE',
-    payload: 'initial-draw',
-  })
+test('TRANSITION_PHASE action updates the phase and resets playerReady flags', () => {
+  const {
+    phase,
+    players: { player1, player2 },
+  } = duelReducer(
+    {
+      ...PRELOADED_DUEL_SETUP,
+      players: {
+        player1: { ...PRELOADED_DUEL_SETUP.players.player1, playerReady: true },
+        player2: { ...PRELOADED_DUEL_SETUP.players.player2, playerReady: true },
+      },
+    },
+    {
+      type: 'TRANSITION_PHASE',
+      payload: 'initial-draw',
+    },
+  )
 
   expect(phase).toBe('initial-draw')
+  expect(player1.playerReady).toBe(false)
+  expect(player2.playerReady).toBe(false)
 })
 
 describe('SWITCH_TURN action', () => {

@@ -144,6 +144,9 @@ test('sets inactive player as ready during redraw phase', () => {
 })
 
 test('dispatches REDRAW_CARD when card is clicked in redraw phase', () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
   const activePlayerId = preloadedState.activePlayerId
   const activePlayer = preloadedState.players[activePlayerId]
   const cardInstanceId = activePlayer.deck[0]
@@ -157,36 +160,30 @@ test('dispatches REDRAW_CARD when card is clicked in redraw phase', () => {
   const preloadedStateWithRedraw = {
     ...preloadedState,
     phase: 'redraw' as const,
-    cards: {
-      1: { id: 1, baseId: 'zombie' as const },
-      2: { id: 2, baseId: 'haunt' as const },
-      3: { id: 3, baseId: 'cook' as const },
-    },
     players: {
       ...preloadedState.players,
       [activePlayerId]: {
         ...activePlayer,
-        hand: [1],
+        hand: [cardInstanceId],
         deck: [2, 3],
-        playerReady: false,
       },
     },
   }
 
-  const { getByTestId, getAllByTestId, container } = renderGameContext(
-    <DuelView />,
-    {
-      preloadedState: preloadedStateWithRedraw,
-    },
-  )
+  const { getAllByTestId } = renderGameContext(<DuelView />, {
+    preloadedState: preloadedStateWithRedraw,
+  })
 
   const cards = getAllByTestId('card')
-  const handCards = container.querySelectorAll('.hand-card')
-  expect(handCards[0]).toHaveClass('is-clickable')
-
   fireEvent.click(cards[0] as HTMLElement)
 
-  expect(getByTestId('active-player-badge')).toHaveTextContent('Ready')
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'REDRAW_CARD',
+    payload: {
+      playerId: activePlayerId,
+      cardInstanceId,
+    },
+  })
 })
 
 test('only allows clicking affordable cards during player-turn', () => {
@@ -240,7 +237,7 @@ test('only allows clicking affordable cards during player-turn', () => {
 })
 
 test('transitions to active player turn after both players are ready in redraw phase', () => {
-  const { getByText } = renderGameContext(<DuelView />, {
+  const { getByText, queryByText } = renderGameContext(<DuelView />, {
     preloadedState: {
       ...PRELOADED_DUEL_SETUP,
       phase: 'redraw',
@@ -258,4 +255,5 @@ test('transitions to active player turn after both players are ready in redraw p
   })
 
   expect(getByText('Player Turn')).toBeInTheDocument()
+  expect(queryByText('Ready')).not.toBeInTheDocument()
 })
