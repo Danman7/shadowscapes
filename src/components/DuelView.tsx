@@ -19,18 +19,26 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
-import type { Phase } from '@/types'
+import type { Phase, Player } from '@/types'
 
 const PhaseInfo: React.FC<{ phase: Phase }> = ({ phase }) => {
   let phaseInfoText: ReactNode = null
 
   switch (phase) {
+    case 'initial-draw':
+      phaseInfoText = 'Draw cards'
+      break
+
     case 'redraw':
       phaseInfoText = 'Redraw phase'
       break
 
+    case 'player-turn':
+      phaseInfoText = 'Player Turn'
+      break
+
     default:
-      phaseInfoText = 'Draw cards'
+      phaseInfoText = ''
       break
   }
 
@@ -41,23 +49,39 @@ const PhaseInfo: React.FC<{ phase: Phase }> = ({ phase }) => {
   )
 }
 
-const PhaseButton: React.FC<{ phase: Phase }> = ({ phase }) => {
+const PhaseButton: React.FC<{ phase: Phase; activePlayer: Player }> = ({
+  phase,
+  activePlayer,
+}) => {
   const dispatch = useGameDispatch()
+  const { playerReady } = activePlayer
 
   let phaseButtonLabel: ReactNode = null
-  let phaseButtonOnClick: (() => void) | null = null
+  let phaseButtonOnClick: (() => void) | undefined = undefined
 
   switch (phase) {
     case 'redraw':
-      phaseButtonLabel = 'Skip redraw'
-      phaseButtonOnClick = () =>
-        dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
+      phaseButtonLabel = !playerReady
+        ? 'Skip redraw'
+        : 'Waiting for opponent...'
 
+      phaseButtonOnClick = !playerReady
+        ? () =>
+            dispatch({
+              type: 'PLAYER_READY',
+              payload: { playerId: activePlayer.id },
+            })
+        : undefined
+      break
+
+    case 'player-turn':
+      phaseButtonLabel = 'End Turn'
+      phaseButtonOnClick = () => dispatch({ type: 'SWITCH_TURN' })
       break
 
     default:
-      phaseButtonLabel = 'End Turn'
-      phaseButtonOnClick = () => dispatch({ type: 'SWITCH_TURN' })
+      phaseButtonLabel = ''
+      phaseButtonOnClick = undefined
       break
   }
 
@@ -79,6 +103,25 @@ export const DuelView: React.FC = () => {
     if (phase === 'intro')
       dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
   }, [dispatch, phase])
+
+  useEffect(() => {
+    if (phase === 'redraw') {
+      dispatch({
+        type: 'PLAYER_READY',
+        payload: { playerId: inactivePlayer.id },
+      })
+
+      if (activePlayer.playerReady && inactivePlayer.playerReady) {
+        dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
+      }
+    }
+  }, [
+    dispatch,
+    phase,
+    inactivePlayer.id,
+    activePlayer.playerReady,
+    inactivePlayer.playerReady,
+  ])
 
   useEffect(() => {
     if (phase === 'initial-draw') dispatch({ type: 'INITIAL_DRAW' })
@@ -155,7 +198,7 @@ export const DuelView: React.FC = () => {
       <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
         <PhaseInfo phase={phase} />
 
-        <PhaseButton phase={phase} />
+        <PhaseButton phase={phase} activePlayer={activePlayer} />
       </section>
 
       {/* Row 4: active board full width */}

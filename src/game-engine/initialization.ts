@@ -26,6 +26,7 @@ export interface CreateDuelOverrides extends Partial<Omit<Duel, 'players'>> {
   stackOverrides?: Partial<
     Record<PlayerId, Partial<Record<Stack, CardBaseId[]>>>
   >
+  rng?: () => number
 }
 
 const getNextCardId = (duel: Duel): number => {
@@ -137,7 +138,7 @@ export const createDuel = (
     name: player2Name,
     deck: player2deck,
   }
-
+  overrides.rng
   const startingPlayerId = coinFlipForPlayerStart()
   const activePlayerId = startingPlayerId
   const inactivePlayerId =

@@ -8,7 +8,9 @@ import {
   INITIAL_PLAYER_COINS,
 } from '@/constants/duelParams'
 import * as GameContext from '@/contexts/GameContext'
+import { createDuel } from '@/game-engine/initialization'
 import {
+  DEFAULT_DUEL_SETUP,
   MIXED_STACKS_DUEL,
   PRELOADED_DUEL_SETUP,
   PRELOADED_DUEL_SETUP as preloadedState,
@@ -118,6 +120,29 @@ test('triggers INITIAL_DRAW action when phase is initial-draw', () => {
   expect(cards.length).toBe(INITIAL_CARDS_TO_DRAW)
 })
 
+test('sets inactive player as ready during redraw phase', () => {
+  const dispatchSpy = vi.fn()
+  vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+  const deterministicSetup = {
+    ...DEFAULT_DUEL_SETUP,
+  }
+  const duelState = {
+    ...PRELOADED_DUEL_SETUP,
+    ...createDuel(deterministicSetup, { rng: () => 0.6 }),
+    phase: 'redraw' as const,
+  }
+
+  renderGameContext(<DuelView />, {
+    preloadedState: duelState,
+  })
+
+  expect(dispatchSpy).toHaveBeenCalledWith({
+    type: 'PLAYER_READY',
+    payload: { playerId: duelState.inactivePlayerId },
+  })
+})
+
 test('dispatches REDRAW_CARD when card is clicked in redraw phase', () => {
   const activePlayerId = preloadedState.activePlayerId
   const activePlayer = preloadedState.players[activePlayerId]
@@ -212,4 +237,25 @@ test('only allows clicking affordable cards during player-turn', () => {
   dispatchSpy.mockClear()
   fireEvent.click(cards[1] as HTMLElement)
   expect(dispatchSpy).not.toHaveBeenCalled()
+})
+
+test('transitions to active player turn after both players are ready in redraw phase', () => {
+  const { getByText } = renderGameContext(<DuelView />, {
+    preloadedState: {
+      ...PRELOADED_DUEL_SETUP,
+      phase: 'redraw',
+      players: {
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          playerReady: true,
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          playerReady: true,
+        },
+      },
+    },
+  })
+
+  expect(getByText('Player Turn')).toBeInTheDocument()
 })

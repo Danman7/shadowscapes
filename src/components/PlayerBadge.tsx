@@ -18,17 +18,17 @@ export const PlayerBadge: React.FC<{
       </span>
     )}
 
-    {player.playerReady && (
-      <div className="text-chaos flex items-center gap-1">
-        <FaCheck />
-        Ready
-      </div>
-    )}
-
     <div>{player.name}</div>
 
     <div className="text-primary flex items-center gap-1">
       <GiCrownCoin /> {player.coins}
     </div>
+
+    {player.playerReady && (
+      <div className="text-chaos text-sm flex items-center gap-1">
+        <FaCheck />
+        Ready
+      </div>
+    )}
   </div>
 )
