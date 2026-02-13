@@ -106,16 +106,23 @@ export function duelReducer(
 
       const { type } = CARD_BASES[baseId]
 
+      let newState: Duel
+
       if (type === 'instant') {
-        return updatePlayer(state, playerId, {
+        newState = updatePlayer(state, playerId, {
           ...updatedPlayer,
           discard: [...player.discard, cardInstanceId],
         })
       } else {
-        return updatePlayer(state, playerId, {
+        newState = updatePlayer(state, playerId, {
           ...updatedPlayer,
           board: [...player.board, cardInstanceId],
         })
+      }
+
+      return {
+        ...newState,
+        phase: 'turn-end',
       }
     }
 

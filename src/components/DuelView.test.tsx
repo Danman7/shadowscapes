@@ -174,9 +174,6 @@ describe('Initial sequence', () => {
 
 describe('Player turns', () => {
   test('dispatches PLAY_CARD when card in hand is clicked during player turn', () => {
-    const dispatchSpy = vi.fn()
-    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
-
     const activePlayerId = preloadedState.activePlayerId
     const activePlayer = preloadedState.players[activePlayerId]
     const cardInstanceId = activePlayer.deck[0]
@@ -200,20 +197,20 @@ describe('Player turns', () => {
       },
     }
 
-    const { getAllByTestId } = renderGameContext(<DuelView />, {
-      preloadedState: preloadedStateWithHand,
-    })
+    const { getAllByTestId, getByText, queryByText } = renderGameContext(
+      <DuelView />,
+      {
+        preloadedState: preloadedStateWithHand,
+      },
+    )
+
+    expect(getByText('End Turn')).toBeInTheDocument()
 
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'PLAY_CARD',
-      payload: {
-        playerId: activePlayerId,
-        cardInstanceId,
-      },
-    })
+    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(queryByText('End Turn')).not.toBeInTheDocument()
   })
 
   test('only allows clicking affordable cards during player-turn', () => {

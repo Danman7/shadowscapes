@@ -36,6 +36,7 @@ const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
       break
 
     case 'player-turn':
+    case 'turn-end':
       phaseInfoText = `${activePlayerName}'s Turn`
       break
 
@@ -88,9 +89,11 @@ const PhaseButton: React.FC<{ phase: Phase; activePlayer: Player }> = ({
   }
 
   return (
-    <Button onClick={phaseButtonOnClick} data-testid="phase-button">
-      {phaseButtonLabel}
-    </Button>
+    phaseButtonLabel && (
+      <Button onClick={phaseButtonOnClick} data-testid="phase-button">
+        {phaseButtonLabel}
+      </Button>
+    )
   )
 }
 

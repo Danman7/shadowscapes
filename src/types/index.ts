@@ -71,7 +71,12 @@ export interface Player {
   discard: number[]
 }
 
-export type Phase = 'intro' | 'initial-draw' | 'redraw' | 'player-turn'
+export type Phase =
+  | 'intro'
+  | 'initial-draw'
+  | 'redraw'
+  | 'player-turn'
+  | 'turn-end'
 
 export interface Duel {
   cards: Record<number, CardInstance>

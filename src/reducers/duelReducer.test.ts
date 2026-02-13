@@ -271,58 +271,38 @@ describe('PLAY_CARD action', () => {
     })
   })
 
-  describe('character cards', () => {
-    test('moves character card from hand to board', () => {
-      const {
-        players: { player1 },
-        cards,
-      } = duelReducer(state, {
-        type: 'PLAY_CARD',
-        payload: { playerId: 'player1', cardInstanceId: 1 },
-      })
-
-      expect(player1.hand).toEqual([2])
-      expect(player1.board).toEqual([1])
-      expect(player1.discard).toEqual([])
-      expect(player1.coins).toBe(state.players.player1.coins - cards[1]!.cost)
+  test('moves character card from hand to board', () => {
+    const {
+      players: { player1 },
+      cards,
+      phase,
+    } = duelReducer(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    test('character card stays on board', () => {
-      const {
-        players: { player1 },
-      } = duelReducer(state, {
-        type: 'PLAY_CARD',
-        payload: { playerId: 'player1', cardInstanceId: 1 },
-      })
-
-      expect(player1.board).toContain(1)
-    })
+    expect(player1.hand).toEqual([2])
+    expect(player1.board).toEqual([1])
+    expect(player1.discard).toEqual([])
+    expect(player1.coins).toBe(state.players.player1.coins - cards[1]!.cost)
+    expect(phase).toBe('turn-end')
   })
 
-  describe('instant cards', () => {
-    test('moves instant card from hand to discard', () => {
-      const {
-        players: { player1 },
-      } = duelReducer(state, {
-        type: 'PLAY_CARD',
-        payload: { playerId: 'player1', cardInstanceId: 2 },
-      })
-
-      expect(player1.hand).toEqual([1])
-      expect(player1.board).toEqual([])
-      expect(player1.discard).toEqual([2])
+  test('moves instant card from hand to discard', () => {
+    const {
+      players: { player1 },
+      cards,
+      phase,
+    } = duelReducer(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 2 },
     })
 
-    test('instant card does not go to board', () => {
-      const {
-        players: { player1 },
-      } = duelReducer(state, {
-        type: 'PLAY_CARD',
-        payload: { playerId: 'player1', cardInstanceId: 2 },
-      })
-
-      expect(player1.board).not.toContain(2)
-    })
+    expect(player1.hand).toEqual([1])
+    expect(player1.board).toEqual([])
+    expect(player1.discard).toEqual([2])
+    expect(player1.coins).toBe(state.players.player1.coins - cards[2]!.cost)
+    expect(phase).toBe('turn-end')
   })
 
   describe('missing card handling', () => {
