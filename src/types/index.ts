@@ -114,3 +114,4 @@ export type DuelAction =
       payload: { playerId: PlayerId; cardInstanceId: number }
     }
   | { type: 'PLAYER_READY'; payload: { playerId: PlayerId } }
+  | { type: 'EXECUTE_ATTACKS' }

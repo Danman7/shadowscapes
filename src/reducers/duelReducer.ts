@@ -62,6 +62,7 @@ export function duelReducer(
         ...state,
         activePlayerId: state.inactivePlayerId,
         inactivePlayerId: state.activePlayerId,
+        phase: 'player-turn',
       }
     }
 
@@ -164,6 +165,25 @@ export function duelReducer(
       return updatePlayer(state, playerId, {
         playerReady: true,
       })
+    }
+
+    case 'EXECUTE_ATTACKS': {
+      const activePlayer = getPlayer(state, state.activePlayerId)
+      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
+
+      const attackCount = activePlayer.board.length
+      const newInactiveCoins = Math.max(0, inactivePlayer.coins - attackCount)
+
+      const stateAfterAttacks = updatePlayer(state, state.inactivePlayerId, {
+        coins: newInactiveCoins,
+      })
+
+      return {
+        ...stateAfterAttacks,
+        activePlayerId: stateAfterAttacks.inactivePlayerId,
+        inactivePlayerId: stateAfterAttacks.activePlayerId,
+        phase: 'player-turn',
+      }
     }
 
     default:

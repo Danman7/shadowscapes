@@ -137,6 +137,18 @@ export const DuelView: React.FC = () => {
   const activeBoard = useActivePlayerBoard()
   const inactiveBoard = useInactivePlayerBoard()
 
+  useEffect(() => {
+    if (phase === 'turn-end') {
+      if (activeBoard.length === 0) {
+        dispatch({ type: 'SWITCH_TURN' })
+      } else if (inactiveBoard.length === 0) {
+        dispatch({ type: 'EXECUTE_ATTACKS' })
+      } else {
+        dispatch({ type: 'SWITCH_TURN' })
+      }
+    }
+  }, [dispatch, phase, activeBoard.length, inactiveBoard.length])
+
   const activeDeckCount = usePlayerDeckCount(activePlayer.id)
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
   const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)

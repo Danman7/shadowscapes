@@ -209,8 +209,11 @@ describe('Player turns', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
-    expect(queryByText('End Turn')).not.toBeInTheDocument()
+    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    expect(getByText(`${inactivePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(queryByText('End Turn')).toBeInTheDocument()
   })
 
   test('only allows clicking affordable cards during player-turn', () => {
@@ -260,5 +263,107 @@ describe('Player turns', () => {
     dispatchSpy.mockClear()
     fireEvent.click(cards[1] as HTMLElement)
     expect(dispatchSpy).not.toHaveBeenCalled()
+  })
+})
+
+describe('Turn end phase', () => {
+  test('dispatches SWITCH_TURN when active player has no cards on board', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.activePlayerId
+    const activePlayer = preloadedState.players[activePlayerId]
+
+    const preloadedStateWithEmptyBoard = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          board: [],
+        },
+      },
+    }
+
+    renderGameContext(<DuelView />, {
+      preloadedState: preloadedStateWithEmptyBoard,
+    })
+
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+  })
+
+  test('dispatches EXECUTE_ATTACKS when active has board cards and inactive has none', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.activePlayerId
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const preloadedStateWithAttack = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          board: [1, 2],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          board: [],
+        },
+      },
+    }
+
+    renderGameContext(<DuelView />, {
+      preloadedState: preloadedStateWithAttack,
+    })
+
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'EXECUTE_ATTACKS' })
+  })
+
+  test('does not dispatch when both players have cards on board', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.activePlayerId
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const preloadedStateWithBothBoards = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+        3: createCardInstance('cook', 3),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          board: [1, 2],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          board: [3],
+        },
+      },
+    }
+
+    renderGameContext(<DuelView />, {
+      preloadedState: preloadedStateWithBothBoards,
+    })
+
+    expect(dispatchSpy).not.toHaveBeenCalledWith({ type: 'EXECUTE_ATTACKS' })
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
   })
 })
