@@ -23,12 +23,12 @@ afterEach(() => {
 
 test('renders character card with all details', () => {
   const { getByText } = render(<Card card={mockCharacterCard} />)
-  const { name, cost, categories, description, flavorText } =
+  const { name, categories, description, flavorText } =
     CARD_BASES[mockCharacterCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
-  expect(getByText(cost)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()
+  expect(getByText(mockCharacterCard.cost)).toBeInTheDocument()
   expect(getByText(mockCharacterCard.strength as number)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
   expect(getByText(flavorText!)).toBeInTheDocument()
@@ -36,11 +36,11 @@ test('renders character card with all details', () => {
 
 test('renders instant card without strength', () => {
   const { getByText } = render(<Card card={mockInstantCard} />)
-  const { name, cost, description, flavorText, categories } =
+  const { name, description, flavorText, categories } =
     CARD_BASES[mockInstantCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
-  expect(getByText(cost)).toBeInTheDocument()
+  expect(getByText(mockInstantCard.cost)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
   expect(getByText(flavorText!)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()

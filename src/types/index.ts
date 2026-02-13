@@ -52,6 +52,7 @@ export type CardBase = CardBaseCharacter | CardBaseInstant
 export interface CardInstance {
   id: number
   baseId: CardBaseId
+  cost: number
   strength?: number
   counter?: number
 }

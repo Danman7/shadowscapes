@@ -275,6 +275,7 @@ describe('PLAY_CARD action', () => {
     test('moves character card from hand to board', () => {
       const {
         players: { player1 },
+        cards,
       } = duelReducer(state, {
         type: 'PLAY_CARD',
         payload: { playerId: 'player1', cardInstanceId: 1 },
@@ -283,6 +284,7 @@ describe('PLAY_CARD action', () => {
       expect(player1.hand).toEqual([2])
       expect(player1.board).toEqual([1])
       expect(player1.discard).toEqual([])
+      expect(player1.coins).toBe(state.players.player1.coins - cards[1]!.cost)
     })
 
     test('character card stays on board', () => {

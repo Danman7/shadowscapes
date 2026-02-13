@@ -91,20 +91,29 @@ export function duelReducer(
 
       if (!card) return state
 
+      const { baseId, cost } = card
+
       const newhand = player.hand.filter(
         (id): id is number => id !== cardInstanceId,
       )
 
-      const { type } = CARD_BASES[card.baseId]
+      const newPlayerCoins = player.coins - cost
+
+      const updatedPlayer = {
+        hand: newhand,
+        coins: newPlayerCoins,
+      }
+
+      const { type } = CARD_BASES[baseId]
 
       if (type === 'instant') {
         return updatePlayer(state, playerId, {
-          hand: newhand,
+          ...updatedPlayer,
           discard: [...player.discard, cardInstanceId],
         })
       } else {
         return updatePlayer(state, playerId, {
-          hand: newhand,
+          ...updatedPlayer,
           board: [...player.board, cardInstanceId],
         })
       }

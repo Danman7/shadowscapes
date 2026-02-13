@@ -5,7 +5,6 @@ import { Button } from '@/components/Button'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { PlayerBadge } from '@/components/PlayerBadge'
-import { CARD_BASES } from '@/constants/cardBases'
 import { useGameDispatch } from '@/contexts/GameContext'
 import {
   useActivePlayer,
@@ -156,8 +155,7 @@ export const DuelView: React.FC = () => {
       const cardInstance = activeHand.find((c) => c.id === cardId)
       if (!cardInstance) return undefined
 
-      const cardBase = CARD_BASES[cardInstance.baseId]
-      if (cardBase.cost > activePlayerCoins) return undefined
+      if (cardInstance.cost > activePlayerCoins) return undefined
 
       return () => {
         dispatch({

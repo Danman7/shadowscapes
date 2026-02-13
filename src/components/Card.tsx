@@ -11,18 +11,10 @@ export const Card: React.FC<{
   isOnBoard?: boolean
   onClick?: () => void
 }> = ({ card, isOnBoard, onClick }) => {
-  const { strength, baseId, counter } = card
+  const { strength, baseId, counter, cost } = card
   const base = CARD_BASES[baseId]
-  const {
-    name,
-    description,
-    flavorText,
-    faction,
-    cost,
-    categories,
-    rank,
-    type,
-  } = base
+  const { name, description, flavorText, faction, categories, rank, type } =
+    base
   const factionColor = FACTION_COLORS[faction]
 
   return (
