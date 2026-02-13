@@ -55,6 +55,7 @@ export interface CardInstance {
   cost: number
   strength?: number
   counter?: number
+  didAct?: boolean
 }
 
 export type PlayerId = 'player1' | 'player2'
@@ -115,3 +116,16 @@ export type DuelAction =
     }
   | { type: 'PLAYER_READY'; payload: { playerId: PlayerId } }
   | { type: 'EXECUTE_ATTACKS' }
+  | {
+      type: 'ATTACK_CARD'
+      payload: {
+        attackerId: number
+        defenderId: number
+      }
+    }
+  | {
+      type: 'ATTACK_PLAYER'
+      payload: {
+        attackerId: number
+      }
+    }

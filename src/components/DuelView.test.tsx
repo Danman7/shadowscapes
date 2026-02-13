@@ -293,7 +293,7 @@ describe('Turn end phase', () => {
     expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
   })
 
-  test('dispatches EXECUTE_ATTACKS when active has board cards and inactive has none', () => {
+  test('dispatches ATTACK_PLAYER when active has board cards and inactive has none', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
@@ -326,10 +326,50 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithAttack,
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'EXECUTE_ATTACKS' })
+    expect(dispatchSpy).toHaveBeenCalledWith({
+      type: 'ATTACK_PLAYER',
+      payload: { attackerId: 1 },
+    })
   })
 
-  test('does not dispatch when both players have cards on board', () => {
+  test('dispatches SWITCH_TURN when both players have cards but all acted', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.activePlayerId
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const preloadedStateWithBothBoards = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      cards: {
+        1: { ...createCardInstance('zombie', 1), didAct: true },
+        2: { ...createCardInstance('haunt', 2), didAct: true },
+        3: createCardInstance('cook', 3),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          board: [1, 2],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          board: [3],
+        },
+      },
+    }
+
+    renderGameContext(<DuelView />, {
+      preloadedState: preloadedStateWithBothBoards,
+    })
+
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+  })
+
+  test('does not auto-switch when cards have not acted yet', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
@@ -363,7 +403,6 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithBothBoards,
     })
 
-    expect(dispatchSpy).not.toHaveBeenCalledWith({ type: 'EXECUTE_ATTACKS' })
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).not.toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
   })
 })

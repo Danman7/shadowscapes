@@ -605,6 +605,184 @@ describe('EXECUTE_ATTACKS', () => {
   })
 })
 
+describe('ATTACK_CARD', () => {
+  test('damages defender and marks attacker as acted', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          board: [1],
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          board: [2],
+        },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[1]!.didAct).toBe(true)
+    expect(result.cards[2]!.strength).toBe(2)
+  })
+
+  test('destroys defender when damage exceeds strength', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          board: [1],
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          board: [2],
+          discard: [],
+        },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.players.player2.board).not.toContain(2)
+    expect(result.players.player2.discard).toContain(2)
+  })
+
+  test('defender retaliates and can destroy attacker', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          board: [1],
+          discard: [],
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          board: [2],
+        },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
+    expect(result.cards[2]!.strength).toBe(2)
+  })
+})
+
+describe('ATTACK_PLAYER', () => {
+  test('reduces inactive player coins and marks attacker as acted', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+      },
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          board: [1],
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          coins: 5,
+          board: [],
+        },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_PLAYER',
+      payload: { attackerId: 1 },
+    })
+
+    expect(result.cards[1]!.didAct).toBe(true)
+    expect(result.players.player2.coins).toBe(4)
+  })
+
+  test('does not reduce coins below zero', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+      },
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: {
+          ...PRELOADED_DUEL_SETUP.players.player1,
+          board: [1],
+        },
+        player2: {
+          ...PRELOADED_DUEL_SETUP.players.player2,
+          coins: 0,
+          board: [],
+        },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_PLAYER',
+      payload: { attackerId: 1 },
+    })
+
+    expect(result.players.player2.coins).toBe(0)
+  })
+})
+
+describe('SWITCH_TURN', () => {
+  test('resets didAct flags on all cards', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: { ...createCardInstance('zombie', 1), didAct: true },
+        2: { ...createCardInstance('haunt', 2), didAct: true },
+      },
+    }
+
+    const result = duelReducer(state, { type: 'SWITCH_TURN' })
+
+    expect(result.cards[1]!.didAct).toBe(false)
+    expect(result.cards[2]!.didAct).toBe(false)
+  })
+})
+
 describe('unknown action', () => {
   test('returns unchanged state for unknown action type', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP)

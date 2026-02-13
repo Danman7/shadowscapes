@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
@@ -18,7 +18,7 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
-import type { Phase, Player } from '@/types'
+import type { CardInstance, Phase, Player } from '@/types'
 
 const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
   phase,
@@ -52,10 +52,12 @@ const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
   )
 }
 
-const PhaseButton: React.FC<{ phase: Phase; activePlayer: Player }> = ({
-  phase,
-  activePlayer,
-}) => {
+const PhaseButton: React.FC<{
+  phase: Phase
+  activePlayer: Player
+  activeBoard: CardInstance[]
+  onTurnEnd: () => void
+}> = ({ phase, activePlayer, activeBoard, onTurnEnd }) => {
   const dispatch = useGameDispatch()
   const { playerReady } = activePlayer
 
@@ -79,7 +81,21 @@ const PhaseButton: React.FC<{ phase: Phase; activePlayer: Player }> = ({
 
     case 'player-turn':
       phaseButtonLabel = 'End Turn'
-      phaseButtonOnClick = () => dispatch({ type: 'SWITCH_TURN' })
+      phaseButtonOnClick = () => {
+        if (activeBoard.length > 0) {
+          dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
+        } else {
+          dispatch({ type: 'SWITCH_TURN' })
+        }
+      }
+      break
+
+    case 'turn-end':
+      phaseButtonLabel = 'End Turn'
+      phaseButtonOnClick = () => {
+        onTurnEnd()
+        dispatch({ type: 'SWITCH_TURN' })
+      }
       break
 
     default:
@@ -103,6 +119,10 @@ export const DuelView: React.FC = () => {
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
   const activePlayerCoins = useActivePlayerCoins()
+
+  const [selectedAttackerId, setSelectedAttackerId] = useState<number | null>(
+    null,
+  )
 
   useEffect(() => {
     if (phase === 'intro')
@@ -139,15 +159,27 @@ export const DuelView: React.FC = () => {
 
   useEffect(() => {
     if (phase === 'turn-end') {
+      const allActiveCardsActed = activeBoard.every((card) => card.didAct)
+
       if (activeBoard.length === 0) {
         dispatch({ type: 'SWITCH_TURN' })
       } else if (inactiveBoard.length === 0) {
-        dispatch({ type: 'EXECUTE_ATTACKS' })
-      } else {
+        if (allActiveCardsActed) {
+          dispatch({ type: 'SWITCH_TURN' })
+        } else {
+          const nextAttacker = activeBoard.find((card) => !card.didAct)
+          if (nextAttacker) {
+            dispatch({
+              type: 'ATTACK_PLAYER',
+              payload: { attackerId: nextAttacker.id },
+            })
+          }
+        }
+      } else if (allActiveCardsActed) {
         dispatch({ type: 'SWITCH_TURN' })
       }
     }
-  }, [dispatch, phase, activeBoard.length, inactiveBoard.length])
+  }, [dispatch, phase, activeBoard, inactiveBoard.length])
 
   const activeDeckCount = usePlayerDeckCount(activePlayer.id)
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
@@ -183,6 +215,41 @@ export const DuelView: React.FC = () => {
     return undefined
   }
 
+  const getOnBoardCardClick = (
+    cardId: number,
+    isActiveBoard: boolean,
+  ): (() => void) | undefined => {
+    if (phase !== 'turn-end') return undefined
+
+    if (isActiveBoard) {
+      const cardInstance = activeBoard.find((c) => c.id === cardId)
+      if (!cardInstance || cardInstance.didAct) return undefined
+
+      return () => {
+        setSelectedAttackerId(cardId)
+      }
+    } else {
+      if (selectedAttackerId === null) return undefined
+
+      const selectedCard = activeBoard.find((c) => c.id === selectedAttackerId)
+      if (!selectedCard || selectedCard.didAct) return undefined
+
+      const cardInstance = inactiveBoard.find((c) => c.id === cardId)
+      if (!cardInstance) return undefined
+
+      return () => {
+        dispatch({
+          type: 'ATTACK_CARD',
+          payload: {
+            attackerId: selectedAttackerId,
+            defenderId: cardId,
+          },
+        })
+        setSelectedAttackerId(null)
+      }
+    }
+  }
+
   return (
     <div
       className="grid h-screen gap-4
@@ -207,19 +274,30 @@ export const DuelView: React.FC = () => {
 
       {/* Row 2: inactive board full width */}
       <section className="col-[1/4] row-2 justify-center items-end flex">
-        <Board cards={inactiveBoard} />
+        <Board
+          cards={inactiveBoard}
+          onCardClick={(cardId) => getOnBoardCardClick(cardId, false)}
+        />
       </section>
 
       {/* Row 3: center bar */}
       <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
         <PhaseInfo phase={phase} activePlayerName={activePlayer.name} />
 
-        <PhaseButton phase={phase} activePlayer={activePlayer} />
+        <PhaseButton
+          phase={phase}
+          activePlayer={activePlayer}
+          activeBoard={activeBoard}
+          onTurnEnd={() => setSelectedAttackerId(null)}
+        />
       </section>
 
       {/* Row 4: active board full width */}
       <section className="col-[1/4] row-4">
-        <Board cards={activeBoard} />
+        <Board
+          cards={activeBoard}
+          onCardClick={(cardId) => getOnBoardCardClick(cardId, true)}
+        />
       </section>
 
       {/* Row 5: active discard / hand / deck */}

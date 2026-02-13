@@ -24,6 +24,7 @@ export const createCardInstance = (
   cost: CARD_BASES[baseId].cost,
   strength: strength ?? getCardStrength(CARD_BASES[baseId]),
   counter: counter ?? CARD_BASES[baseId].counter,
+  didAct: false,
 })
 
 export const shuffle = <T>(

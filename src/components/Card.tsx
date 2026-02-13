@@ -10,7 +10,8 @@ export const Card: React.FC<{
   card: CardInstance
   isOnBoard?: boolean
   onClick?: () => void
-}> = ({ card, isOnBoard, onClick }) => {
+  isClickable?: boolean
+}> = ({ card, isOnBoard, onClick, isClickable }) => {
   const { strength, baseId, counter, cost } = card
   const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, categories, rank, type } =
@@ -19,7 +20,12 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col  ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} bg-surface p-2 space-y-2`}
+      className={`card flex flex-col  ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} bg-surface p-2 space-y-2`}
+      style={
+        isClickable
+          ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
+          : undefined
+      }
       onClick={onClick}
       data-testid="card"
     >

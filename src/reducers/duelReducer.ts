@@ -1,4 +1,4 @@
-import type { Duel, DuelAction } from '@/types'
+import type { CardInstance, Duel, DuelAction } from '@/types'
 import {
   INITIAL_CARDS_TO_DRAW,
   PLACEHOLDER_PLAYER,
@@ -58,8 +58,18 @@ export function duelReducer(
     }
 
     case 'SWITCH_TURN': {
+      const resetCards: Record<number, CardInstance> = {}
+
+      for (const [id, card] of Object.entries(state.cards)) {
+        resetCards[Number(id)] = {
+          ...card,
+          didAct: false,
+        }
+      }
+
       return {
         ...state,
+        cards: resetCards,
         activePlayerId: state.inactivePlayerId,
         inactivePlayerId: state.activePlayerId,
         phase: 'player-turn',
@@ -183,6 +193,95 @@ export function duelReducer(
         activePlayerId: stateAfterAttacks.inactivePlayerId,
         inactivePlayerId: stateAfterAttacks.activePlayerId,
         phase: 'player-turn',
+      }
+    }
+
+    case 'ATTACK_CARD': {
+      const { attackerId, defenderId } = action.payload
+      const attacker = state.cards[attackerId]
+      const defender = state.cards[defenderId]
+
+      if (!attacker || !defender) return state
+      if (attacker.strength === undefined || defender.strength === undefined)
+        return state
+
+      const activePlayer = getPlayer(state, state.activePlayerId)
+      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
+
+      let newState = { ...state }
+      const newCards = { ...state.cards }
+
+      newCards[attackerId] = {
+        ...attacker,
+        didAct: true,
+      }
+
+      const defenderNewStrength = defender.strength - attacker.strength
+
+      if (defenderNewStrength <= 0) {
+        newCards[defenderId] = {
+          ...defender,
+          strength: 0,
+        }
+
+        newState = updatePlayer(newState, state.inactivePlayerId, {
+          board: inactivePlayer.board.filter((id) => id !== defenderId),
+          discard: [...inactivePlayer.discard, defenderId],
+        })
+      } else {
+        newCards[defenderId] = {
+          ...defender,
+          strength: defenderNewStrength,
+        }
+
+        const attackerNewStrength = attacker.strength - defenderNewStrength
+
+        if (attackerNewStrength <= 0) {
+          newCards[attackerId] = {
+            ...newCards[attackerId]!,
+            strength: 0,
+          }
+
+          newState = updatePlayer(newState, state.activePlayerId, {
+            board: activePlayer.board.filter((id) => id !== attackerId),
+            discard: [...activePlayer.discard, attackerId],
+          })
+        } else {
+          newCards[attackerId] = {
+            ...newCards[attackerId]!,
+            strength: attackerNewStrength,
+          }
+        }
+      }
+
+      return {
+        ...newState,
+        cards: newCards,
+      }
+    }
+
+    case 'ATTACK_PLAYER': {
+      const { attackerId } = action.payload
+      const attacker = state.cards[attackerId]
+
+      if (!attacker) return state
+
+      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
+      const newInactiveCoins = Math.max(0, inactivePlayer.coins - 1)
+
+      const newCards = {
+        ...state.cards,
+        [attackerId]: {
+          ...attacker,
+          didAct: true,
+        },
+      }
+
+      return {
+        ...updatePlayer(state, state.inactivePlayerId, {
+          coins: newInactiveCoins,
+        }),
+        cards: newCards,
       }
     }
 
