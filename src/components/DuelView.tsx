@@ -21,7 +21,10 @@ import {
 } from '@/selectors/playerSelectors'
 import type { Phase, Player } from '@/types'
 
-const PhaseInfo: React.FC<{ phase: Phase }> = ({ phase }) => {
+const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
+  phase,
+  activePlayerName,
+}) => {
   let phaseInfoText: ReactNode = null
 
   switch (phase) {
@@ -34,7 +37,7 @@ const PhaseInfo: React.FC<{ phase: Phase }> = ({ phase }) => {
       break
 
     case 'player-turn':
-      phaseInfoText = 'Player Turn'
+      phaseInfoText = `${activePlayerName}'s Turn`
       break
 
     default:
@@ -196,7 +199,7 @@ export const DuelView: React.FC = () => {
 
       {/* Row 3: center bar */}
       <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
-        <PhaseInfo phase={phase} />
+        <PhaseInfo phase={phase} activePlayerName={activePlayer.name} />
 
         <PhaseButton phase={phase} activePlayer={activePlayer} />
       </section>

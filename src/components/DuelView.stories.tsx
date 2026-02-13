@@ -25,7 +25,7 @@ export const RedrawPhase: Story = {
   ),
 }
 
-export const MixedStacks: Story = {
+export const PlayerTurnPhase: Story = {
   render: () => (
     <GameProvider preloadedState={MIXED_STACKS_DUEL}>
       <DuelView />

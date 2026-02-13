@@ -254,6 +254,10 @@ test('transitions to active player turn after both players are ready in redraw p
     },
   })
 
-  expect(getByText('Player Turn')).toBeInTheDocument()
+  const { activePlayerId, players } = PRELOADED_DUEL_SETUP
+
+  expect(
+    getByText(`${players[activePlayerId].name}'s Turn`),
+  ).toBeInTheDocument()
   expect(queryByText('Ready')).not.toBeInTheDocument()
 })
