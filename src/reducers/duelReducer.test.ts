@@ -553,106 +553,6 @@ test('PLAYER_READY action updates the player ', () => {
   expect(player1.playerReady).toBe(true)
 })
 
-describe('EXECUTE_ATTACKS', () => {
-  test('reduces inactive player coins by number of active player board cards', () => {
-    const state: Duel = {
-      ...PRELOADED_DUEL_SETUP,
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
-      players: {
-        ...PRELOADED_DUEL_SETUP.players,
-        player1: {
-          ...PRELOADED_DUEL_SETUP.players.player1,
-          board: [1, 2, 3],
-        },
-        player2: {
-          ...PRELOADED_DUEL_SETUP.players.player2,
-          coins: 10,
-          board: [],
-        },
-      },
-    }
-
-    const result = duelReducer(state, { type: 'EXECUTE_ATTACKS' })
-
-    expect(result.players.player2.coins).toBe(7)
-  })
-
-  test('switches turn after executing attacks', () => {
-    const state: Duel = {
-      ...PRELOADED_DUEL_SETUP,
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
-      players: {
-        ...PRELOADED_DUEL_SETUP.players,
-        player1: {
-          ...PRELOADED_DUEL_SETUP.players.player1,
-          board: [1, 2, 3],
-        },
-        player2: {
-          ...PRELOADED_DUEL_SETUP.players.player2,
-          coins: 10,
-          board: [],
-        },
-      },
-    }
-
-    const result = duelReducer(state, { type: 'EXECUTE_ATTACKS' })
-
-    expect(result.activePlayerId).toBe('player2')
-    expect(result.inactivePlayerId).toBe('player1')
-  })
-
-  test('does not reduce coins below zero', () => {
-    const state: Duel = {
-      ...PRELOADED_DUEL_SETUP,
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
-      players: {
-        ...PRELOADED_DUEL_SETUP.players,
-        player1: {
-          ...PRELOADED_DUEL_SETUP.players.player1,
-          board: [1, 2, 3, 4, 5],
-        },
-        player2: {
-          ...PRELOADED_DUEL_SETUP.players.player2,
-          coins: 2,
-          board: [],
-        },
-      },
-    }
-
-    const result = duelReducer(state, { type: 'EXECUTE_ATTACKS' })
-
-    expect(result.players.player2.coins).toBe(0)
-  })
-
-  test('does not affect active player coins', () => {
-    const state: Duel = {
-      ...PRELOADED_DUEL_SETUP,
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
-      players: {
-        ...PRELOADED_DUEL_SETUP.players,
-        player1: {
-          ...PRELOADED_DUEL_SETUP.players.player1,
-          coins: 5,
-          board: [1, 2],
-        },
-        player2: {
-          ...PRELOADED_DUEL_SETUP.players.player2,
-          coins: 10,
-          board: [],
-        },
-      },
-    }
-
-    const result = duelReducer(state, { type: 'EXECUTE_ATTACKS' })
-
-    expect(result.players.player1.coins).toBe(5)
-  })
-})
-
 describe('ATTACK_CARD', () => {
   test('damages defender and marks attacker as acted', () => {
     const state: Duel = {
@@ -717,7 +617,7 @@ describe('ATTACK_CARD', () => {
     expect(result.players.player2.discard).toContain(2)
   })
 
-  test('defender retaliates and can destroy attacker', () => {
+  test('attacker does not take retaliation damage automatically', () => {
     const state: Duel = {
       ...PRELOADED_DUEL_SETUP,
       cards: {
@@ -745,8 +645,9 @@ describe('ATTACK_CARD', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.players.player1.board).not.toContain(1)
-    expect(result.players.player1.discard).toContain(1)
+    expect(result.players.player1.board).toContain(1)
+    expect(result.players.player1.discard).not.toContain(1)
+    expect(result.cards[1]!.strength).toBe(1)
     expect(result.cards[2]!.strength).toBe(2)
   })
 })

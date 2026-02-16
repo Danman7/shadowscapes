@@ -7,7 +7,10 @@ import {
   useReducer,
 } from 'react'
 
-import { duelReducer, initialDuelState } from '@/reducers/duelReducer'
+import {
+  duelReducerWithEffects,
+  initialDuelState,
+} from '@/reducers/duelReducer'
 import type { Duel, DuelAction } from '@/types'
 
 const GameStateContext = createContext<Duel | undefined>(undefined)
@@ -18,7 +21,7 @@ export const GameProvider: React.FC<{
   preloadedState?: Partial<Duel>
 }> = ({ children, preloadedState }) => {
   const [gameState, dispatch] = useReducer(
-    duelReducer,
+    duelReducerWithEffects,
     preloadedState,
     (overrides) => ({ ...initialDuelState, ...overrides }),
   )

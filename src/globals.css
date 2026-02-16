@@ -107,17 +107,17 @@
 
     10% {
       opacity: 1;
-      transform: translate(20px, -20px);
+      transform: translate(20px, -5px);
     }
 
     90% {
       opacity: 1;
-      transform: translate(60px, -20px);
+      transform: translate(60px, -5px);
     }
 
     100% {
       opacity: 0;
-      transform: translate(70px, -20px);
+      transform: translate(70px, -5px);
     }
   }
 }

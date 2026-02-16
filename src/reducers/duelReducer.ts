@@ -9,6 +9,7 @@ import {
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
+import { applyCardEffects } from '@/game-engine/cardEffects'
 import { CARD_BASES } from '@/constants/cardBases'
 
 export const initialDuelState: Readonly<Duel> = {
@@ -185,25 +186,6 @@ export function duelReducer(
       })
     }
 
-    case 'EXECUTE_ATTACKS': {
-      const activePlayer = getPlayer(state, state.activePlayerId)
-      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
-
-      const attackCount = activePlayer.board.length
-      const newInactiveCoins = Math.max(0, inactivePlayer.coins - attackCount)
-
-      const stateAfterAttacks = updatePlayer(state, state.inactivePlayerId, {
-        coins: newInactiveCoins,
-      })
-
-      return {
-        ...stateAfterAttacks,
-        activePlayerId: stateAfterAttacks.inactivePlayerId,
-        inactivePlayerId: stateAfterAttacks.activePlayerId,
-        phase: 'player-turn',
-      }
-    }
-
     case 'ATTACK_CARD': {
       const { attackerId, defenderId } = action.payload
       const attacker = state.cards[attackerId]
@@ -213,7 +195,6 @@ export function duelReducer(
       if (attacker.strength === undefined || defender.strength === undefined)
         return state
 
-      const activePlayer = getPlayer(state, state.activePlayerId)
       const inactivePlayer = getPlayer(state, state.inactivePlayerId)
 
       let newState = { ...state }
@@ -240,25 +221,6 @@ export function duelReducer(
         newCards[defenderId] = {
           ...defender,
           strength: defenderNewStrength,
-        }
-
-        const attackerNewStrength = attacker.strength - defenderNewStrength
-
-        if (attackerNewStrength <= 0) {
-          newCards[attackerId] = {
-            ...newCards[attackerId]!,
-            strength: 0,
-          }
-
-          newState = updatePlayer(newState, state.activePlayerId, {
-            board: activePlayer.board.filter((id) => id !== attackerId),
-            discard: [...activePlayer.discard, attackerId],
-          })
-        } else {
-          newCards[attackerId] = {
-            ...newCards[attackerId]!,
-            strength: attackerNewStrength,
-          }
         }
       }
 
@@ -296,4 +258,13 @@ export function duelReducer(
     default:
       return state
   }
+}
+
+export function duelReducerWithEffects(
+  state: Readonly<Duel>,
+  action: DuelAction,
+): Readonly<Duel> {
+  const newState = duelReducer(state, action)
+
+  return applyCardEffects(newState, action)
 }

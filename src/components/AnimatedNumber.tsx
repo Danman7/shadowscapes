@@ -55,7 +55,7 @@ export const AnimatedNumber: React.FC<{
   return (
     <span className="relative inline-flex items-center justify-center">
       {floatingDelta !== null && (
-        <span className="absolute pointer-events-none whitespace-nowrap animate-float-number text-shadow-2xs text-shadow-black">
+        <span className="absolute pointer-events-none whitespace-nowrap animate-float-number text-shadow-3xs text-foreground! font-extrabold text-shadow-background">
           {floatingDelta}
         </span>
       )}
