@@ -74,6 +74,32 @@ test('TRANSITION_PHASE action updates the phase and resets playerReady flags', (
   expect(player2.playerReady).toBe(false)
 })
 
+test('TRANSITION_PHASE redraw to player-turn draws one card for active player', () => {
+  const state = createDuel(DEFAULT_DUEL_SETUP, {
+    phase: 'redraw',
+    activePlayerId: 'player1',
+    inactivePlayerId: 'player2',
+    stackOverrides: {
+      player1: {
+        hand: ['zombie'],
+        deck: ['haunt', 'cook'],
+      },
+    },
+  })
+
+  const {
+    phase,
+    players: { player1 },
+  } = duelReducer(state, {
+    type: 'TRANSITION_PHASE',
+    payload: 'player-turn',
+  })
+
+  expect(phase).toBe('player-turn')
+  expect(player1.hand).toHaveLength(2)
+  expect(player1.deck).toHaveLength(1)
+})
+
 describe('SWITCH_TURN action', () => {
   test('switches active and inactive players', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
@@ -102,6 +128,28 @@ describe('SWITCH_TURN action', () => {
 
     expect(activePlayerId).toBe('player1')
     expect(inactivePlayerId).toBe('player2')
+  })
+
+  test('draws one card for the new active player', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      stackOverrides: {
+        player2: {
+          hand: ['cook'],
+          deck: ['haunt', 'zombie'],
+        },
+      },
+    })
+
+    const {
+      players: { player2 },
+    } = duelReducer(state, {
+      type: 'SWITCH_TURN',
+    })
+
+    expect(player2.hand).toHaveLength(2)
+    expect(player2.deck).toHaveLength(1)
   })
 })
 

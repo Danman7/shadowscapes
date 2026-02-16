@@ -41,7 +41,7 @@ export function duelReducer(
     }
 
     case 'TRANSITION_PHASE': {
-      return {
+      const transitionedState: Duel = {
         ...state,
         phase: action.payload,
         players: {
@@ -55,6 +55,12 @@ export function duelReducer(
           },
         },
       }
+
+      if (state.phase === 'redraw' && action.payload === 'player-turn') {
+        return drawTopCard(transitionedState, state.activePlayerId)
+      }
+
+      return transitionedState
     }
 
     case 'SWITCH_TURN': {
@@ -67,13 +73,15 @@ export function duelReducer(
         }
       }
 
-      return {
+      const switchedState: Duel = {
         ...state,
         cards: resetCards,
         activePlayerId: state.inactivePlayerId,
         inactivePlayerId: state.activePlayerId,
         phase: 'player-turn',
       }
+
+      return drawTopCard(switchedState, switchedState.activePlayerId)
     }
 
     case 'DRAW_CARD': {

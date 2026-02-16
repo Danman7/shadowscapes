@@ -2,6 +2,7 @@ import { BsLightningFill } from 'react-icons/bs'
 import { GiCrownCoin } from 'react-icons/gi'
 import { IoHourglassOutline } from 'react-icons/io5'
 
+import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { CARD_BASES } from '@/constants/cardBases'
 import { FACTION_COLORS } from '@/constants/duelParams'
 import type { CardInstance } from '@/types'
@@ -53,7 +54,7 @@ export const Card: React.FC<{
           <div>{name}</div>
 
           {type === 'character' && strength !== undefined ? (
-            <div>{strength}</div>
+            <AnimatedNumber value={strength} />
           ) : (
             <BsLightningFill />
           )}
