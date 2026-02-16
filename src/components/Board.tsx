@@ -3,8 +3,10 @@ import type { CardInstance } from '@/types'
 
 export const Board: React.FC<{
   cards: CardInstance[]
+  isTopBoard?: boolean
+  attackingCardId?: number | null
   onCardClick?: (cardId: number) => (() => void) | undefined
-}> = ({ cards, onCardClick }) => (
+}> = ({ cards, isTopBoard, attackingCardId, onCardClick }) => (
   <div className="flex gap-2 justify-center" data-testid="board">
     {cards.map((card) => {
       const clickHandler = onCardClick?.(card.id)
@@ -15,6 +17,8 @@ export const Board: React.FC<{
           card={card}
           onClick={clickHandler}
           isClickable={clickHandler !== undefined}
+          isAttacking={attackingCardId === card.id}
+          attackDirection={isTopBoard ? 'down' : 'up'}
         />
       )
     })}

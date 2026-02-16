@@ -75,6 +75,30 @@
 
   --animate-float-number: float-number 2s ease-out both;
 
+  @keyframes attack-up {
+    0% {
+      transform: translateY(0);
+    }
+    45% {
+      transform: translateY(-14px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes attack-down {
+    0% {
+      transform: translateY(0);
+    }
+    45% {
+      transform: translateY(14px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
   @keyframes float-number {
     0% {
       opacity: 0;
@@ -145,5 +169,13 @@
 
   .hand-card.is-inactive {
     @apply pointer-events-none;
+  }
+
+  .card-attack-up {
+    animation: attack-up 0.35s ease-out;
+  }
+
+  .card-attack-down {
+    animation: attack-down 0.35s ease-out;
   }
 }

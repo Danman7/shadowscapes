@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
@@ -19,6 +19,8 @@ import {
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
 import type { CardInstance, Phase, Player } from '@/types'
+
+const ATTACK_ANIMATION_MS = 350
 
 const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
   phase,
@@ -123,6 +125,21 @@ export const DuelView: React.FC = () => {
   const [selectedAttackerId, setSelectedAttackerId] = useState<number | null>(
     null,
   )
+  const [attackingCardId, setAttackingCardId] = useState<number | null>(null)
+  const attackAnimationTimeoutRef = useRef<number | null>(null)
+
+  const triggerAttackAnimation = (attackerId: number): void => {
+    setAttackingCardId(attackerId)
+
+    if (attackAnimationTimeoutRef.current !== null) {
+      window.clearTimeout(attackAnimationTimeoutRef.current)
+    }
+
+    attackAnimationTimeoutRef.current = window.setTimeout(() => {
+      setAttackingCardId(null)
+      attackAnimationTimeoutRef.current = null
+    }, ATTACK_ANIMATION_MS)
+  }
 
   useEffect(() => {
     if (phase === 'intro')
@@ -158,6 +175,13 @@ export const DuelView: React.FC = () => {
   const inactiveBoard = useInactivePlayerBoard()
 
   useEffect(() => {
+    return () => {
+      if (attackAnimationTimeoutRef.current !== null)
+        window.clearTimeout(attackAnimationTimeoutRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
     if (phase === 'turn-end') {
       const allActiveCardsActed = activeBoard.every((card) => card.didAct)
 
@@ -166,14 +190,6 @@ export const DuelView: React.FC = () => {
       } else if (inactiveBoard.length === 0) {
         if (allActiveCardsActed) {
           dispatch({ type: 'SWITCH_TURN' })
-        } else {
-          const nextAttacker = activeBoard.find((card) => !card.didAct)
-          if (nextAttacker) {
-            dispatch({
-              type: 'ATTACK_PLAYER',
-              payload: { attackerId: nextAttacker.id },
-            })
-          }
         }
       } else if (allActiveCardsActed) {
         dispatch({ type: 'SWITCH_TURN' })
@@ -225,6 +241,16 @@ export const DuelView: React.FC = () => {
       const cardInstance = activeBoard.find((c) => c.id === cardId)
       if (!cardInstance || cardInstance.didAct) return undefined
 
+      if (inactiveBoard.length === 0) {
+        return () => {
+          triggerAttackAnimation(cardId)
+          dispatch({
+            type: 'ATTACK_PLAYER',
+            payload: { attackerId: cardId },
+          })
+        }
+      }
+
       return () => {
         setSelectedAttackerId(cardId)
       }
@@ -238,6 +264,7 @@ export const DuelView: React.FC = () => {
       if (!cardInstance) return undefined
 
       return () => {
+        triggerAttackAnimation(selectedAttackerId)
         dispatch({
           type: 'ATTACK_CARD',
           payload: {
@@ -276,6 +303,8 @@ export const DuelView: React.FC = () => {
       <section className="col-[1/4] row-2 justify-center items-end flex">
         <Board
           cards={inactiveBoard}
+          isTopBoard
+          attackingCardId={attackingCardId}
           onCardClick={(cardId) => getOnBoardCardClick(cardId, false)}
         />
       </section>
@@ -296,6 +325,7 @@ export const DuelView: React.FC = () => {
       <section className="col-[1/4] row-4">
         <Board
           cards={activeBoard}
+          attackingCardId={attackingCardId}
           onCardClick={(cardId) => getOnBoardCardClick(cardId, true)}
         />
       </section>

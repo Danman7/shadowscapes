@@ -11,16 +11,32 @@ export const Card: React.FC<{
   isOnBoard?: boolean
   onClick?: () => void
   isClickable?: boolean
-}> = ({ card, isOnBoard, onClick, isClickable }) => {
+  isAttacking?: boolean
+  attackDirection?: 'up' | 'down'
+}> = ({
+  card,
+  isOnBoard,
+  onClick,
+  isClickable,
+  isAttacking,
+  attackDirection,
+}) => {
   const { strength, baseId, counter, cost } = card
   const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, categories, rank, type } =
     base
   const factionColor = FACTION_COLORS[faction]
 
+  const attackClassName =
+    isAttacking && attackDirection === 'down'
+      ? 'card-attack-down'
+      : isAttacking
+        ? 'card-attack-up'
+        : ''
+
   return (
     <div
-      className={`card flex flex-col  ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} bg-surface p-2 space-y-2`}
+      className={`card flex flex-col ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} bg-surface p-2 space-y-2`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
