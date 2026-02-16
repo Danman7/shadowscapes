@@ -1,6 +1,7 @@
 import { FaCheck } from 'react-icons/fa'
 import { GiCrownCoin } from 'react-icons/gi'
 
+import { AnimatedNumber } from '@/components/AnimatedNumber'
 import type { Player } from '@/types'
 
 export const PlayerBadge: React.FC<{
@@ -21,7 +22,7 @@ export const PlayerBadge: React.FC<{
     <div>{player.name}</div>
 
     <div className="text-primary flex items-center gap-1">
-      <GiCrownCoin /> {player.coins}
+      <GiCrownCoin /> <AnimatedNumber value={player.coins} />
     </div>
 
     {player.playerReady && (

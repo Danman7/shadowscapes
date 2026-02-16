@@ -72,6 +72,30 @@
       transform: translateX(0);
     }
   }
+
+  --animate-float-number: float-number 2s ease-out both;
+
+  @keyframes float-number {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+
+    10% {
+      opacity: 1;
+      transform: translate(20px, -20px);
+    }
+
+    90% {
+      opacity: 1;
+      transform: translate(60px, -20px);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(70px, -20px);
+    }
+  }
 }
 
 @layer base {
