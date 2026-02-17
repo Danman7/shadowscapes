@@ -502,7 +502,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[1]!.strength).toBe(2)
   })
 
   test('does not damage summoned cards from zombie effect', () => {
@@ -695,8 +695,9 @@ describe('Burrick attack effect', () => {
     expect(result.players.player2.discard).toContain(2)
     expect(result.players.player2.board).not.toContain(4)
     expect(result.players.player2.discard).toContain(4)
-    expect(result.cards[1]!.strength).toBe(1)
-    expect(result.players.player1.board).toContain(1)
+    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
   })
 
   test('damages only left adjacent card when defender is rightmost', () => {
@@ -885,7 +886,7 @@ describe('Burrick attack effect', () => {
     expect(result.cards[4]!.strength).toBe(1)
     expect(result.players.player2.board).toContain(2)
     expect(result.players.player2.board).toContain(4)
-    expect(result.cards[1]!.strength).toBe(2)
+    expect(result.cards[1]!.strength).toBe(1)
   })
 })
 
@@ -979,5 +980,409 @@ describe("Mystic's Soul effect", () => {
     })
 
     expect(result.cards[2]!.counter).toBeUndefined()
+  })
+})
+
+describe('Temple Guard effect', () => {
+  test('gets +1 strength on play when opponent has more board cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('zombie', 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2, 3],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    const baseStrength = CARD_BASES.templeGuard.strength
+    expect(result.cards[1]!.strength).toBe(baseStrength + 1)
+  })
+
+  test('does not get +1 when boards are equal', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[1]!.strength).toBe(CARD_BASES.templeGuard.strength)
+  })
+
+  test('retaliates when attacked and survives', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 2),
+        2: createCardInstance('templeGuard', 2, 3),
+      },
+      players: {
+        player1: {
+          hand: [],
+          board: [1],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.players.player1.board).toContain(1)
+    expect(result.players.player2.board).toContain(2)
+  })
+
+  test('retaliation kills the attacker when templeGuard has enough strength', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 1),
+        2: createCardInstance('templeGuard', 2, 3),
+      },
+      players: {
+        player1: {
+          hand: [],
+          board: [1],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(2)
+    expect(result.players.player2.board).toContain(2)
+    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
+  })
+
+  test('does not retaliate when templeGuard is killed (0 strength)', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 5),
+        2: createCardInstance('templeGuard', 2, 3),
+      },
+      players: {
+        player1: {
+          hand: [],
+          board: [1],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(0)
+    expect(result.players.player2.board).not.toContain(2)
+    expect(result.players.player2.discard).toContain(2)
+    expect(result.cards[1]!.strength).toBe(5)
+    expect(result.players.player1.board).toContain(1)
+  })
+})
+
+describe("Yora's Skull effect", () => {
+  test('gives +1 to all allied Hammerites on board', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('yoraSkull', 1),
+        2: createCardInstance('templeGuard', 2, 3),
+        3: createCardInstance('novice', 3, 1),
+        4: createCardInstance('zombie', 4, 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2, 3, 4],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(4)
+    expect(result.cards[3]!.strength).toBe(2)
+    expect(result.cards[4]!.strength).toBe(2)
+    expect(result.players.player1.discard).toContain(1)
+    expect(result.players.player1.board).not.toContain(1)
+  })
+
+  test('does not boost opponent Hammerites', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('yoraSkull', 1),
+        2: createCardInstance('templeGuard', 2, 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(3)
+  })
+
+  test('does nothing when no Hammerites on board', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('yoraSkull', 1),
+        2: createCardInstance('zombie', 2, 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(2)
+  })
+})
+
+describe('High Priest Markander effect', () => {
+  test('decrements counter when a Hammerite is played', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 3),
+      },
+      players: {
+        player1: {
+          hand: [1, 2],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(2)
+  })
+
+  test('summons Markander from hand when counter reaches 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('novice', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 1),
+      },
+      players: {
+        player1: {
+          hand: [1, 2],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(0)
+    expect(result.players.player1.board).toContain(2)
+    expect(result.players.player1.hand).not.toContain(2)
+  })
+
+  test('summons Markander from deck when counter reaches 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('sachelman', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 1),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(0)
+    expect(result.players.player1.board).toContain(2)
+    expect(result.players.player1.deck).not.toContain(2)
+  })
+
+  test('does not decrement counter for non-Hammerite cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(3)
+  })
+
+  test('does not affect opponent Markander', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          hand: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(2)
   })
 })

@@ -47,11 +47,13 @@ test('renders instant card without strength', () => {
 })
 
 test('renders card with counter', () => {
-  const { getByText } = render(
+  const { getAllByText } = render(
     <Card card={createCardInstance('highPriestMarkander')} />,
   )
 
-  expect(getByText(CARD_BASES.highPriestMarkander.counter!)).toBeInTheDocument()
+  expect(
+    getAllByText(CARD_BASES.highPriestMarkander.counter!).length,
+  ).toBeGreaterThan(1)
 })
 
 test('calls onClick when clicked', () => {

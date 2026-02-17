@@ -91,10 +91,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'yoraSkull',
     name: "Saint Yora's Skull",
     cost: 3,
-    description: [
-      '+1 to all Hammerites you control.',
-      'If your deck contains only Order cards, +1 to all Hammerites in your hand and deck.',
-    ],
+    description: ['+1 to all Hammerites you control.'],
     flavorText: 'Yora was a builder of vision and devout keeper of the faith.',
     faction: 'order',
     categories: ['Hammerite', 'Artifact'],
@@ -143,7 +140,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite', 'Priest'],
     faction: 'order',
     rank: 'elite',
-    counter: 10,
+    counter: 5,
   },
   burrick: {
     id: 'burrick',
