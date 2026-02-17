@@ -599,6 +599,67 @@ describe('Haunt reactive effect', () => {
 
     expect(result.players.player1.discard).toContain(1)
   })
+
+  test('reduces haunt counter by 1 when reacting', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(0)
+  })
+
+  test('does not react when counter is 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('haunt', 2, undefined, 0),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[1]!.strength).toBe(3)
+    expect(result.players.player1.board).toContain(1)
+  })
 })
 
 describe('Burrick attack effect', () => {
@@ -761,5 +822,162 @@ describe('Burrick attack effect', () => {
     expect(result.cards[4]!.strength).toBe(1)
     expect(result.players.player2.board).toContain(2)
     expect(result.players.player2.board).toContain(4)
+  })
+
+  test('reduces counter by 1 when splashing', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('templeGuard', 3),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2, 3],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 3 },
+    })
+
+    expect(result.cards[1]!.counter).toBe(0)
+  })
+
+  test('attacks as regular card when counter is 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1, undefined, 0),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('templeGuard', 3),
+        4: createCardInstance('zombie', 4),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2, 3, 4],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 3 },
+    })
+
+    expect(result.cards[3]!.strength).toBe(1)
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[4]!.strength).toBe(1)
+    expect(result.players.player2.board).toContain(2)
+    expect(result.players.player2.board).toContain(4)
+    expect(result.cards[1]!.strength).toBe(2)
+  })
+})
+
+describe("Mystic's Soul effect", () => {
+  test('adds +1 counter to all allied board cards that have counter', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('mysticsSoul', 1),
+        2: createCardInstance('haunt', 2),
+        3: createCardInstance('burrick', 3),
+        4: createCardInstance('zombie', 4),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2, 3, 4],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(2)
+    expect(result.cards[3]!.counter).toBe(2)
+    expect(result.cards[4]!.counter).toBeUndefined()
+    expect(result.players.player1.discard).toContain(1)
+  })
+
+  test('does not affect opponent board cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('mysticsSoul', 1),
+        2: createCardInstance('haunt', 2),
+        3: createCardInstance('haunt', 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [3],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(2)
+    expect(result.cards[3]!.counter).toBe(1)
+  })
+
+  test('does nothing when no board cards have counter', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('mysticsSoul', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [2],
+          deck: [],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBeUndefined()
   })
 })

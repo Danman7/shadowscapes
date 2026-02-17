@@ -6,7 +6,7 @@ export const PLAYER_1_DECK: CardBaseId[] = [
   'haunt',
   'haunt',
   'cook',
-  'bookOfAsh',
+  'mysticsSoul',
   'burrick',
 ]
 

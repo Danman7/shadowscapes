@@ -68,13 +68,25 @@ export const Card: React.FC<{
       </div>
 
       {isOnBoard && (
-        <div className="text-sm">
-          {description.map((paragraph, index) => (
-            <p key={index} className="mb-1">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <>
+          <div className="text-sm">
+            {description.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+
+          <div className="flex justify-between items-end text-sm">
+            <div className="flex items-center gap-1 text-primary">
+              <GiCrownCoin /> {cost}
+            </div>
+
+            {counter !== undefined && (
+              <div className="flex items-center gap-1">
+                <IoHourglassOutline /> {counter}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {!isOnBoard && (

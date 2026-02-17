@@ -23,6 +23,7 @@ export type CardBaseId =
   | 'downwinder'
   | 'highPriestMarkander'
   | 'burrick'
+  | 'mysticsSoul'
 
 export type CardRank = 'common' | 'elite'
 

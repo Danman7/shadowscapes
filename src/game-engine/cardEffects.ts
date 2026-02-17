@@ -124,11 +124,29 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
   return { ...state, cards: newCards }
 }
 
+const mysticsSoulEffect: CardEffect = (state, playerId) => {
+  const player = getPlayer(state, playerId)
+  const newCards = { ...state.cards }
+
+  for (const id of player.board) {
+    const card = newCards[id]
+    if (!card || card.counter === undefined) continue
+
+    newCards[id] = {
+      ...card,
+      counter: card.counter + 1,
+    }
+  }
+
+  return { ...state, cards: newCards }
+}
+
 const onPlayEffects: Partial<Record<CardBaseId, CardEffect>> = {
   cook: cookEffect,
   zombie: zombieEffect,
   novice: noviceEffect,
   sachelman: sachelmanEffect,
+  mysticsSoul: mysticsSoulEffect,
 }
 
 const applyHauntReactiveEffect = (
@@ -139,18 +157,30 @@ const applyHauntReactiveEffect = (
   const opponentId: PlayerId = playerId === 'player1' ? 'player2' : 'player1'
   const opponent = getPlayer(state, opponentId)
 
-  const hauntCount = opponent.board.filter((id) => {
+  const hauntsWithCounter = opponent.board.filter((id) => {
     const card = state.cards[id]
-    return card?.baseId === 'haunt'
-  }).length
+    return card?.baseId === 'haunt' && (card.counter ?? 0) > 0
+  })
 
-  if (hauntCount === 0) return state
+  if (hauntsWithCounter.length === 0) return state
 
   const playedCard = state.cards[cardInstanceId]
   if (!playedCard || playedCard.strength === undefined) return state
 
-  const newStrength = playedCard.strength - hauntCount
   const newCards = { ...state.cards }
+
+  for (const hauntId of hauntsWithCounter) {
+    const hauntCard = newCards[hauntId]
+    if (!hauntCard) continue
+
+    newCards[hauntId] = {
+      ...hauntCard,
+      counter: Math.max(0, (hauntCard.counter ?? 0) - 1),
+    }
+  }
+
+  const damage = hauntsWithCounter.length
+  const newStrength = playedCard.strength - damage
 
   if (newStrength <= 0) {
     newCards[cardInstanceId] = { ...playedCard, strength: 0 }
@@ -178,6 +208,7 @@ const applyBurrickAttackEffect = (
   const attacker = state.cards[attackerId]
   if (!attacker || attacker.baseId !== 'burrick') return state
   if (attacker.strength === undefined) return state
+  if ((attacker.counter ?? 0) <= 0) return state
 
   const inactiveBoard = getPlayer(prevState, prevState.inactivePlayerId).board
   const defenderIndex = inactiveBoard.indexOf(defenderId)
@@ -217,10 +248,16 @@ const applyBurrickAttackEffect = (
     }
   }
 
+  const currentAttacker = newCards[attackerId]!
   const burrickStrength = attackStrength - 1
+  const newCounter = Math.max(0, (currentAttacker.counter ?? 0) - 1)
 
   if (burrickStrength <= 0) {
-    newCards[attackerId] = { ...newCards[attackerId]!, strength: 0 }
+    newCards[attackerId] = {
+      ...currentAttacker,
+      strength: 0,
+      counter: newCounter,
+    }
     const activePlayer = getPlayer(result, state.activePlayerId)
     result = updatePlayer(result, state.activePlayerId, {
       board: activePlayer.board.filter((id) => id !== attackerId),
@@ -228,8 +265,9 @@ const applyBurrickAttackEffect = (
     })
   } else {
     newCards[attackerId] = {
-      ...newCards[attackerId]!,
+      ...currentAttacker,
       strength: burrickStrength,
+      counter: newCounter,
     }
   }
 

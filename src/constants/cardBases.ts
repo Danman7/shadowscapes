@@ -28,6 +28,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'character',
     rank: 'common',
     strength: 3,
+    counter: 1,
   },
   cook: {
     id: 'cook',
@@ -158,5 +159,18 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Beast'],
     faction: 'chaos',
     rank: 'common',
+    counter: 1,
+  },
+  mysticsSoul: {
+    id: 'mysticsSoul',
+    name: "Mystic's Soul",
+    cost: 5,
+    type: 'instant',
+    description: ['+1 counter for all alied characters on board.'],
+    flavorText:
+      "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the Mystic's Soul. -- Note found next to Adolpho's corpse",
+    rank: 'elite',
+    categories: ['Necromancer', 'Artifact'],
+    faction: 'chaos',
   },
 }
