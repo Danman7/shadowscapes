@@ -82,7 +82,7 @@ const PhaseButton: React.FC<{
       break
 
     case 'player-turn':
-      phaseButtonLabel = 'End Turn'
+      phaseButtonLabel = 'Pass'
       phaseButtonOnClick = () => {
         if (activeBoard.length > 0) {
           dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })

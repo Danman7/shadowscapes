@@ -20,7 +20,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'haunt',
     name: 'Haunt',
     cost: 3,
-    description: ['Whenever an enemy enters play, attack it immediately.'],
+    description: ['Whenever your opponent plays a character, damage it by 1.'],
     flavorText:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
     faction: 'chaos',
@@ -150,7 +150,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     cost: 2,
     strength: 2,
     type: 'character',
-    description: ['On play, attacks 3 neighbouring targets.'],
+    description: [
+      'On attacking a character, also damage all adjacent characters and take 1 damage.',
+    ],
     flavorText:
       'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
     categories: ['Beast'],

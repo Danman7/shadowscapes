@@ -3,7 +3,6 @@ import type { CardBaseId } from '@/types'
 export const PLAYER_1_DECK: CardBaseId[] = [
   'zombie',
   'zombie',
-  'zombie',
   'haunt',
   'haunt',
   'cook',

@@ -46,7 +46,7 @@ export const Card: React.FC<{
       onClick={onClick}
       data-testid="card"
     >
-      <div className="font-semibold text-background rounded overflow-hidden">
+      <div className="font-semibold text-background rounded">
         <div
           className={`flex justify-between items-center p-2 ${factionColor}`}
           data-testid="card-header"

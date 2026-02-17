@@ -266,5 +266,5 @@ export function duelReducerWithEffects(
 ): Readonly<Duel> {
   const newState = duelReducer(state, action)
 
-  return applyCardEffects(newState, action)
+  return applyCardEffects(newState, action, state)
 }

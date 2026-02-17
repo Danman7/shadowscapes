@@ -293,7 +293,7 @@ describe('Card effects middleware', () => {
       activePlayerId: 'player1',
       inactivePlayerId: 'player2',
       cards: {
-        1: createCardInstance('zombie', 1),
+        1: createCardInstance('downwinder', 1),
       },
       players: {
         player1: {
@@ -312,5 +312,454 @@ describe('Card effects middleware', () => {
 
     expect(result.players.player1.board).toEqual([1])
     expect(result.phase).toBe('turn-end')
+  })
+})
+
+describe('Zombie effect', () => {
+  test('summons all zombies from discard to board on play', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('zombie', 3),
+        4: createCardInstance('haunt', 4),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [2, 3, 4],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.players.player1.board).toContain(1)
+    expect(result.players.player1.board).toContain(2)
+    expect(result.players.player1.board).toContain(3)
+    expect(result.players.player1.discard).toEqual([4])
+  })
+
+  test('resets strength of summoned zombies to base value', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('zombie', 2, 0),
+        3: createCardInstance('zombie', 3, 0),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [2, 3],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    const baseStrength = (CARD_BASES.zombie as { strength: number }).strength
+
+    expect(result.cards[2]!.strength).toBe(baseStrength)
+    expect(result.cards[3]!.strength).toBe(baseStrength)
+    expect(result.players.player1.board).toContain(2)
+    expect(result.players.player1.board).toContain(3)
+  })
+
+  test('does nothing when no zombies in discard', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.players.player1.board).toEqual([1])
+    expect(result.players.player1.discard).toEqual([2])
+  })
+})
+
+describe('Haunt reactive effect', () => {
+  test('deals 1 damage per haunt to the played card', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[1]!.strength).toBe(2)
+    expect(result.players.player1.board).toContain(1)
+  })
+
+  test('kills the played card when haunt damage exceeds its strength', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
+    expect(result.cards[1]!.strength).toBe(0)
+  })
+
+  test('multiple haunts deal cumulative damage', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('haunt', 2),
+        3: createCardInstance('haunt', 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2, 3],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[1]!.strength).toBe(1)
+  })
+
+  test('does not damage summoned cards from zombie effect', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('haunt', 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [2],
+        },
+        player2: {
+          board: [3],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.players.player1.board).toContain(2)
+  })
+
+  test('does not damage summoned cards from novice effect', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('novice', 1),
+        2: createCardInstance('novice', 2),
+        3: createCardInstance('templeGuard', 3),
+        4: createCardInstance('haunt', 4),
+      },
+      players: {
+        player1: {
+          hand: [1, 2],
+          board: [3],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [4],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.players.player1.board).toContain(2)
+  })
+
+  test('does not react to instant cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('bookOfAsh', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.players.player1.discard).toContain(1)
+  })
+})
+
+describe('Burrick attack effect', () => {
+  test('damages adjacent cards and loses 1 strength', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('templeGuard', 3),
+        4: createCardInstance('zombie', 4),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2, 3, 4],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 3 },
+    })
+
+    expect(result.cards[3]!.strength).toBe(1)
+    expect(result.players.player2.board).not.toContain(2)
+    expect(result.players.player2.discard).toContain(2)
+    expect(result.players.player2.board).not.toContain(4)
+    expect(result.players.player2.discard).toContain(4)
+    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.players.player1.board).toContain(1)
+  })
+
+  test('damages only left adjacent card when defender is rightmost', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1),
+        2: createCardInstance('templeGuard', 2),
+        3: createCardInstance('zombie', 3),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2, 3],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 3 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.players.player2.board).toContain(2)
+    expect(result.cards[1]!.strength).toBe(1)
+  })
+
+  test('no splash when defender is the only card', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.players.player2.board).not.toContain(2)
+    expect(result.players.player2.discard).toContain(2)
+    expect(result.cards[1]!.strength).toBe(1)
+  })
+
+  test('burrick dies if losing 1 strength brings it to 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1, 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: {
+          board: [1],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
+  })
+
+  test('non-burrick attacks do not trigger splash damage', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('haunt', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('zombie', 3),
+        4: createCardInstance('zombie', 4),
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+        player2: {
+          board: [2, 3, 4],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 3 },
+    })
+
+    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[4]!.strength).toBe(1)
+    expect(result.players.player2.board).toContain(2)
+    expect(result.players.player2.board).toContain(4)
   })
 })
