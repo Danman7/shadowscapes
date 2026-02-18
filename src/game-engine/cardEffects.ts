@@ -130,11 +130,11 @@ const mysticsSoulEffect: CardEffect = (state, playerId) => {
 
   for (const id of player.board) {
     const card = newCards[id]
-    if (!card || card.counter === undefined) continue
+    if (!card || card.charges === undefined) continue
 
     newCards[id] = {
       ...card,
-      counter: card.counter + 1,
+      charges: card.charges + 1,
     }
   }
 
@@ -195,29 +195,29 @@ const applyHauntReactiveEffect = (
   const opponentId: PlayerId = playerId === 'player1' ? 'player2' : 'player1'
   const opponent = getPlayer(state, opponentId)
 
-  const hauntsWithCounter = opponent.board.filter((id) => {
+  const hauntsWithCharges = opponent.board.filter((id) => {
     const card = state.cards[id]
-    return card?.baseId === 'haunt' && (card.counter ?? 0) > 0
+    return card?.baseId === 'haunt' && (card.charges ?? 0) > 0
   })
 
-  if (hauntsWithCounter.length === 0) return state
+  if (hauntsWithCharges.length === 0) return state
 
   const playedCard = state.cards[cardInstanceId]
   if (!playedCard || playedCard.strength === undefined) return state
 
   const newCards = { ...state.cards }
 
-  for (const hauntId of hauntsWithCounter) {
+  for (const hauntId of hauntsWithCharges) {
     const hauntCard = newCards[hauntId]
     if (!hauntCard) continue
 
     newCards[hauntId] = {
       ...hauntCard,
-      counter: Math.max(0, (hauntCard.counter ?? 0) - 1),
+      charges: Math.max(0, (hauntCard.charges ?? 0) - 1),
     }
   }
 
-  const damage = hauntsWithCounter.length
+  const damage = hauntsWithCharges.length
   const newStrength = playedCard.strength - damage
 
   if (newStrength <= 0) {
@@ -246,7 +246,7 @@ const applyBurrickAttackEffect = (
   const attacker = state.cards[attackerId]
   if (!attacker || attacker.baseId !== 'burrick') return state
   if (attacker.strength === undefined) return state
-  if ((attacker.counter ?? 0) <= 0) return state
+  if ((attacker.charges ?? 0) <= 0) return state
 
   const inactiveBoard = getPlayer(prevState, prevState.inactivePlayerId).board
   const defenderIndex = inactiveBoard.indexOf(defenderId)
@@ -288,13 +288,13 @@ const applyBurrickAttackEffect = (
 
   const currentAttacker = newCards[attackerId]!
   const burrickStrength = attackStrength - 1
-  const newCounter = Math.max(0, (currentAttacker.counter ?? 0) - 1)
+  const newCharges = Math.max(0, (currentAttacker.charges ?? 0) - 1)
 
   if (burrickStrength <= 0) {
     newCards[attackerId] = {
       ...currentAttacker,
       strength: 0,
-      counter: newCounter,
+      charges: newCharges,
     }
     const activePlayer = getPlayer(result, state.activePlayerId)
     result = updatePlayer(result, state.activePlayerId, {
@@ -305,7 +305,7 @@ const applyBurrickAttackEffect = (
     newCards[attackerId] = {
       ...currentAttacker,
       strength: burrickStrength,
-      counter: newCounter,
+      charges: newCharges,
     }
   }
 
@@ -369,10 +369,10 @@ const applyMarkanderReactiveEffect = (
     const card = newCards[id]
     if (!card) continue
 
-    const newCounter = Math.max(0, (card.counter ?? 0) - 1)
-    newCards[id] = { ...card, counter: newCounter }
+    const newCharges = Math.max(0, (card.charges ?? 0) - 1)
+    newCards[id] = { ...card, charges: newCharges }
 
-    if (newCounter <= 0) {
+    if (newCharges <= 0) {
       idsToSummon.push(id)
     }
   }

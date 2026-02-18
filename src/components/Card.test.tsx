@@ -46,13 +46,13 @@ test('renders instant card without strength', () => {
   expect(getByText(categories.join(' '))).toBeInTheDocument()
 })
 
-test('renders card with counter', () => {
+test('renders card with charges', () => {
   const { getAllByText } = render(
     <Card card={createCardInstance('highPriestMarkander')} />,
   )
 
   expect(
-    getAllByText(CARD_BASES.highPriestMarkander.counter!).length,
+    getAllByText(CARD_BASES.highPriestMarkander.charges!).length,
   ).toBeGreaterThan(1)
 })
 

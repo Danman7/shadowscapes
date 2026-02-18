@@ -36,7 +36,7 @@ interface CardBaseCommon {
   faction: Faction
   categories: CardCategory[]
   rank: CardRank
-  counter?: number
+  charges?: number
 }
 
 export interface CardBaseCharacter extends CardBaseCommon {
@@ -55,7 +55,7 @@ export interface CardInstance {
   baseId: CardBaseId
   cost: number
   strength?: number
-  counter?: number
+  charges?: number
   didAct?: boolean
 }
 

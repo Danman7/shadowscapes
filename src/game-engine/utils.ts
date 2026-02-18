@@ -17,13 +17,13 @@ export const createCardInstance = (
   baseId: CardBaseId,
   id?: number,
   strength?: number,
-  counter?: number,
+  charges?: number,
 ): CardInstance => ({
   id: id ?? generateInstanceId(),
   baseId,
   cost: CARD_BASES[baseId].cost,
   strength: strength ?? getCardStrength(CARD_BASES[baseId]),
-  counter: counter ?? CARD_BASES[baseId].counter,
+  charges: charges ?? CARD_BASES[baseId].charges,
   didAct: false,
 })
 

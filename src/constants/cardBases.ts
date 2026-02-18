@@ -1,6 +1,7 @@
 import type { CardBase, CardBaseId } from '@/types'
 
 export const CARD_BASES: Record<CardBaseId, CardBase> = {
+  // Chaos --------------------------------------- /
   zombie: {
     id: 'zombie',
     name: 'Zombie',
@@ -9,20 +10,36 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
       'On play, summon all copies of this card from your discard pile.',
     ],
     flavorText:
-      "The zombie's antipathy for all living creatures is both it's strength and weakness. -- excerpt from the Journals of Morgan, declared anathema by the Smith-in-Exile.",
+      "The zombie's antipathy for all living creatures is both it's strength and weakness. -- Journals of Morgan, declared anathema by the Smith-in-Exile.",
     faction: 'chaos',
     categories: ['Undead'],
     type: 'character',
     rank: 'common',
     strength: 1,
   },
+  burrick: {
+    id: 'burrick',
+    name: 'Burrick',
+    cost: 2,
+    strength: 2,
+    type: 'character',
+    description: [
+      "This card starts with 1 charge', 'Whenever this card attacks, if it has charges left, it does also attack the target's adjacent cards and loses a charge instead.",
+    ],
+    flavorText:
+      'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
+    categories: ['Beast'],
+    faction: 'chaos',
+    rank: 'common',
+    charges: 1,
+  },
   haunt: {
     id: 'haunt',
     name: 'Haunt',
     cost: 3,
     description: [
-      'This card starts with 1 counter.',
-      'Whenever your opponent plays a card, if you have counters left, damage it by 1 and remove a counter.',
+      'This card starts with 1 charge.',
+      'Whenever your opponent plays a card, if you have charges left, damage it by 1 and remove a charge.',
     ],
     flavorText:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
@@ -31,21 +48,37 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'character',
     rank: 'common',
     strength: 3,
-    counter: 1,
+    charges: 1,
   },
-  cook: {
-    id: 'cook',
-    name: 'Cook',
-    cost: 1,
-    description: ['On play, draw a card.'],
+  mysticsSoul: {
+    id: 'mysticsSoul',
+    name: "Mystic's Soul",
+    cost: 5,
+    type: 'instant',
+    description: ['+1 charges for all alied characters on board.'],
     flavorText:
-      "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
-    faction: 'neutral',
-    categories: ['Servant'],
-    type: 'character',
-    rank: 'common',
-    strength: 1,
+      "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the gem called the Mystic's Soul. -- Note found next to Adolpho's corpse",
+    rank: 'elite',
+    categories: ['Necromancer', 'Artifact'],
+    faction: 'chaos',
   },
+  bookOfAsh: {
+    id: 'bookOfAsh',
+    name: 'Book of Ash',
+    cost: 4,
+    description: [
+      'Create and summon a copy of an Undead from your discard pile.',
+    ],
+    flavorText:
+      "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
+    faction: 'chaos',
+    categories: ['Necromancer', 'Artifact'],
+    type: 'instant',
+    rank: 'elite',
+  },
+
+  // Order --------------------------------------- /
+
   novice: {
     id: 'novice',
     name: 'Novice',
@@ -101,20 +134,27 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'instant',
     rank: 'elite',
   },
-  bookOfAsh: {
-    id: 'bookOfAsh',
-    name: 'Book of Ash',
-    cost: 4,
+  highPriestMarkander: {
+    id: 'highPriestMarkander',
+    name: 'High Priest Markander',
+    cost: 5,
+    strength: 4,
+    type: 'character',
     description: [
-      'Create and summon a copy of an Undead from your discard pile.',
+      'This card starts with 5 charges.',
+      'Reduce the charges each time a Hammerite is played.',
+      'At 0, summon this card to the board.',
     ],
     flavorText:
-      "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
-    faction: 'chaos',
-    categories: ['Necromancer', 'Artifact'],
-    type: 'instant',
+      "Our master is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
+    categories: ['Hammerite', 'Priest'],
+    faction: 'order',
     rank: 'elite',
+    charges: 5,
   },
+
+  // Shadow --------------------------------------- /
+
   downwinder: {
     id: 'downwinder',
     name: 'Downwinder',
@@ -128,49 +168,20 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'character',
     rank: 'common',
   },
-  highPriestMarkander: {
-    id: 'highPriestMarkander',
-    name: 'High Priest Markander',
-    cost: 5,
-    strength: 4,
-    type: 'character',
-    description: [
-      'Reduce the counter each time a Hammerite is played.',
-      'At 0, summont this card to the board.',
-    ],
+
+  // Neutral --------------------------------------- /
+
+  cook: {
+    id: 'cook',
+    name: 'Cook',
+    cost: 1,
+    description: ['On play, draw a card.'],
     flavorText:
-      "Our master is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
-    categories: ['Hammerite', 'Priest'],
-    faction: 'order',
-    rank: 'elite',
-    counter: 5,
-  },
-  burrick: {
-    id: 'burrick',
-    name: 'Burrick',
-    cost: 2,
-    strength: 2,
+      "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
+    faction: 'neutral',
+    categories: ['Servant'],
     type: 'character',
-    description: [
-      "This card starts with 1 counter', 'Whenever this card attacks, if it has counters left, it does also attack the target's adjacent cards and loses a counter instead.",
-    ],
-    flavorText:
-      'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
-    categories: ['Beast'],
-    faction: 'chaos',
     rank: 'common',
-    counter: 1,
-  },
-  mysticsSoul: {
-    id: 'mysticsSoul',
-    name: "Mystic's Soul",
-    cost: 5,
-    type: 'instant',
-    description: ['+1 counter for all alied characters on board.'],
-    flavorText:
-      "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the Mystic's Soul. -- Note found next to Adolpho's corpse",
-    rank: 'elite',
-    categories: ['Necromancer', 'Artifact'],
-    faction: 'chaos',
+    strength: 1,
   },
 }

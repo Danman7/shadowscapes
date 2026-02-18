@@ -600,7 +600,7 @@ describe('Haunt reactive effect', () => {
     expect(result.players.player1.discard).toContain(1)
   })
 
-  test('reduces haunt counter by 1 when reacting', () => {
+  test('reduces haunt charges by 1 when reacting', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -627,10 +627,10 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(0)
+    expect(result.cards[2]!.charges).toBe(0)
   })
 
-  test('does not react when counter is 0', () => {
+  test('does not react when charges is 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -825,7 +825,7 @@ describe('Burrick attack effect', () => {
     expect(result.players.player2.board).toContain(4)
   })
 
-  test('reduces counter by 1 when splashing', () => {
+  test('reduces charges by 1 when splashing', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
       activePlayerId: 'player1',
@@ -851,10 +851,10 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[1]!.counter).toBe(0)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 
-  test('attacks as regular card when counter is 0', () => {
+  test('attacks as regular card when charges is 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
       activePlayerId: 'player1',
@@ -891,7 +891,7 @@ describe('Burrick attack effect', () => {
 })
 
 describe("Mystic's Soul effect", () => {
-  test('adds +1 counter to all allied board cards that have counter', () => {
+  test('adds +1 charges to all allied board cards that have charges', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -917,9 +917,9 @@ describe("Mystic's Soul effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(2)
-    expect(result.cards[3]!.counter).toBe(2)
-    expect(result.cards[4]!.counter).toBeUndefined()
+    expect(result.cards[2]!.charges).toBe(2)
+    expect(result.cards[3]!.charges).toBe(2)
+    expect(result.cards[4]!.charges).toBeUndefined()
     expect(result.players.player1.discard).toContain(1)
   })
 
@@ -951,11 +951,11 @@ describe("Mystic's Soul effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(2)
-    expect(result.cards[3]!.counter).toBe(1)
+    expect(result.cards[2]!.charges).toBe(2)
+    expect(result.cards[3]!.charges).toBe(1)
   })
 
-  test('does nothing when no board cards have counter', () => {
+  test('does nothing when no board cards have charges', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -979,7 +979,7 @@ describe("Mystic's Soul effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBeUndefined()
+    expect(result.cards[2]!.charges).toBeUndefined()
   })
 })
 
@@ -1247,7 +1247,7 @@ describe("Yora's Skull effect", () => {
 })
 
 describe('High Priest Markander effect', () => {
-  test('decrements counter when a Hammerite is played', () => {
+  test('decrements charges when a Hammerite is played', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1271,10 +1271,10 @@ describe('High Priest Markander effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(2)
+    expect(result.cards[2]!.charges).toBe(2)
   })
 
-  test('summons Markander from hand when counter reaches 0', () => {
+  test('summons Markander from hand when charges reaches 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1298,12 +1298,12 @@ describe('High Priest Markander effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(0)
+    expect(result.cards[2]!.charges).toBe(0)
     expect(result.players.player1.board).toContain(2)
     expect(result.players.player1.hand).not.toContain(2)
   })
 
-  test('summons Markander from deck when counter reaches 0', () => {
+  test('summons Markander from deck when charges reaches 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1327,12 +1327,12 @@ describe('High Priest Markander effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(0)
+    expect(result.cards[2]!.charges).toBe(0)
     expect(result.players.player1.board).toContain(2)
     expect(result.players.player1.deck).not.toContain(2)
   })
 
-  test('does not decrement counter for non-Hammerite cards', () => {
+  test('does not decrement charges for non-Hammerite cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1356,7 +1356,7 @@ describe('High Priest Markander effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(3)
+    expect(result.cards[2]!.charges).toBe(3)
   })
 
   test('does not affect opponent Markander', () => {
@@ -1386,12 +1386,12 @@ describe('High Priest Markander effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(2)
+    expect(result.cards[2]!.charges).toBe(2)
   })
 })
 
 describe('Markander in both hand and deck', () => {
-  test('summons all Markander copies when counter reaches 0 via Hammerite play', () => {
+  test('summons all Markander copies when charges reaches 0 via Hammerite play', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1452,7 +1452,7 @@ describe('Burrick with no adjacent cards', () => {
 })
 
 describe('Haunt does not react to instant cards without strength', () => {
-  test('haunt counter stays unchanged when an instant with no strength is played', () => {
+  test('haunt charges stays unchanged when an instant with no strength is played', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1479,7 +1479,7 @@ describe('Haunt does not react to instant cards without strength', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.counter).toBe(1)
+    expect(result.cards[2]!.charges).toBe(1)
   })
 })
 
@@ -1570,7 +1570,7 @@ describe('Markander reactive effect when no Markander is present', () => {
     expect(result.players.player1.board).toHaveLength(1)
   })
 
-  test('Markander counter is decremented but not summoned when counter > 1', () => {
+  test('Markander charges is decremented but not summoned when charges > 1', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -1595,8 +1595,8 @@ describe('Markander reactive effect when no Markander is present', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    // Markander counter goes from 3 → 2, not summoned
-    expect(result.cards[2]!.counter).toBe(2)
+    // Markander charges goes from 3 → 2, not summoned
+    expect(result.cards[2]!.charges).toBe(2)
     expect(result.players.player1.hand).toContain(2)
     expect(result.players.player1.board).not.toContain(2)
   })

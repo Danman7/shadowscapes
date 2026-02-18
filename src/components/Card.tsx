@@ -1,6 +1,6 @@
 import { BsLightningFill } from 'react-icons/bs'
+import { FaSun } from 'react-icons/fa'
 import { GiCrownCoin } from 'react-icons/gi'
-import { IoHourglassOutline } from 'react-icons/io5'
 
 import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { CARD_BASES } from '@/constants/cardBases'
@@ -22,7 +22,7 @@ export const Card: React.FC<{
   isAttacking,
   attackDirection,
 }) => {
-  const { strength, baseId, counter, cost } = card
+  const { strength, baseId, charges, cost } = card
   const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, categories, rank, type } =
     base
@@ -56,7 +56,7 @@ export const Card: React.FC<{
           {type === 'character' && strength !== undefined ? (
             <AnimatedNumber value={strength} />
           ) : (
-            <BsLightningFill />
+            <FaSun />
           )}
         </div>
 
@@ -96,9 +96,9 @@ export const Card: React.FC<{
           <GiCrownCoin /> {cost}
         </div>
 
-        {counter !== undefined && (
+        {charges !== undefined && (
           <div className="flex items-center gap-1">
-            <IoHourglassOutline /> {counter}
+            <BsLightningFill /> {charges}
           </div>
         )}
       </div>
