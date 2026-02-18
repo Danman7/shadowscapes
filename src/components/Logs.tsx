@@ -27,7 +27,7 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
 
       <div
         ref={logsContainerRef}
-        className="overflow-scroll text-sm divide-y divide-foreground/10 max-h-32"
+        className="overflow-scroll text-sm divide-y divide-foreground/10 max-h-44"
       >
         {logs.map((log, index) => (
           <div key={index} className="py-1">

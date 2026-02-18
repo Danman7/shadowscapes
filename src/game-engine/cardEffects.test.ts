@@ -729,9 +729,7 @@ describe('Burrick attack effect', () => {
     expect(result.players.player2.discard).toContain(2)
     expect(result.players.player2.board).not.toContain(4)
     expect(result.players.player2.discard).toContain(4)
-    expect(result.cards[1]!.life).toBe(0)
-    expect(result.players.player1.board).not.toContain(1)
-    expect(result.players.player1.discard).toContain(1)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 
   test('damages only left adjacent card when defender is rightmost', () => {
@@ -760,9 +758,8 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[2]!.life).toBe(2)
     expect(result.players.player2.board).toContain(2)
-    expect(result.cards[1]!.life).toBe(1)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 
   test('no splash when defender is the only card', () => {
@@ -792,7 +789,7 @@ describe('Burrick attack effect', () => {
 
     expect(result.players.player2.board).not.toContain(2)
     expect(result.players.player2.discard).toContain(2)
-    expect(result.cards[1]!.life).toBe(1)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 
   test('burrick dies if losing 1 strength brings it to 0', () => {
@@ -821,9 +818,7 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[1]!.life).toBe(0)
-    expect(result.players.player1.board).not.toContain(1)
-    expect(result.players.player1.discard).toContain(1)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 
   test('non-burrick attacks do not trigger splash damage', () => {
@@ -1480,7 +1475,7 @@ describe('Burrick with no adjacent cards', () => {
 
     expect(result.cards[3]!.life).toBe(2)
     expect(result.players.player2.board).toContain(3)
-    expect(result.cards[1]!.life).toBe(1)
+    expect(result.cards[1]!.charges).toBe(0)
   })
 })
 

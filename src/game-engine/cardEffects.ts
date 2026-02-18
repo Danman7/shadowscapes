@@ -4,6 +4,7 @@ import {
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
+import { formatNoun } from '@/game-engine/utils'
 import type { CardBaseId, Duel, DuelAction, PlayerId } from '@/types'
 
 type CardEffect = (
@@ -13,7 +14,22 @@ type CardEffect = (
 ) => Duel
 
 const cookEffect: CardEffect = (state, playerId) => {
-  return drawTopCard(state, playerId)
+  const stateAfterDraw = drawTopCard(state, playerId)
+  const playerAfterDraw = getPlayer(stateAfterDraw, playerId)
+
+  return {
+    ...stateAfterDraw,
+    logs: [
+      ...state.logs,
+      `${playerAfterDraw.name} draw another card because of Cook. They have ${formatNoun(
+        playerAfterDraw.hand.length,
+        'card',
+      )} in hand and ${formatNoun(
+        playerAfterDraw.deck.length,
+        'card',
+      )} left in deck.`,
+    ],
+  }
 }
 
 const zombieEffect: CardEffect = (state, playerId) => {
@@ -45,6 +61,10 @@ const zombieEffect: CardEffect = (state, playerId) => {
       board: [...player.board, ...zombiesInDiscard],
     }),
     cards: newCards,
+    logs: [
+      ...state.logs,
+      `${player.name} resurrects another ${formatNoun(zombiesInDiscard.length, 'Zombie')} from their discard.`,
+    ],
   }
 }
 
@@ -88,11 +108,20 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
   const newDeck = player.deck.filter((id) => !noviceCopiesInDeck.includes(id))
   const newBoard = [...player.board, ...allCopiesToSummon]
 
-  return updatePlayer(state, playerId, {
-    hand: newHand,
-    deck: newDeck,
-    board: newBoard,
-  })
+  return {
+    ...updatePlayer(state, playerId, {
+      hand: newHand,
+      deck: newDeck,
+      board: newBoard,
+    }),
+    logs: [
+      ...state.logs,
+      `${player.name} summons ${formatNoun(
+        allCopiesToSummon.length,
+        'Novice',
+      )} in addition because they have a stronger Hammerite on board.`,
+    ],
+  }
 }
 
 const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
@@ -103,6 +132,7 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
   const sachelmanLife = playedCard.life ?? 0
   const newCards = { ...state.cards }
+  let weakerHammeritesCount = 0
 
   for (const id of player.board) {
     if (id === cardInstanceId) continue
@@ -118,9 +148,17 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
       ...card,
       life: card.life + 1,
     }
+    weakerHammeritesCount++
   }
 
-  return { ...state, cards: newCards }
+  return {
+    ...state,
+    cards: newCards,
+    logs: [
+      ...state.logs,
+      `Brother Sachelman gives 1 life to ${formatNoun(weakerHammeritesCount, 'hammerite')} on board.`,
+    ],
+  }
 }
 
 const mysticsSoulEffect: CardEffect = (state, playerId) => {
@@ -156,12 +194,17 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
       ...state.cards,
       [cardInstanceId]: { ...card, life: card.life + 1 },
     },
+    logs: [
+      ...state.logs,
+      `Temple Guard gains 1 life because ${opponent.name} controls more cards on board.`,
+    ],
   }
 }
 
 const yoraSkullEffect: CardEffect = (state, playerId) => {
   const player = getPlayer(state, playerId)
   const newCards = { ...state.cards }
+  let boostedCardsCount = 0
 
   for (const id of player.board) {
     const card = newCards[id]
@@ -171,9 +214,17 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     if (!base.categories.includes('Hammerite')) continue
 
     newCards[id] = { ...card, life: card.life + 1 }
+    boostedCardsCount++
   }
 
-  return { ...state, cards: newCards }
+  return {
+    ...state,
+    cards: newCards,
+    logs: [
+      ...state.logs,
+      `Yora Skull gives 1 life to ${formatNoun(boostedCardsCount, 'hammerite')} on board.`,
+    ],
+  }
 }
 
 const onPlayEffects: Partial<Record<CardBaseId, CardEffect>> = {
@@ -232,11 +283,22 @@ const applyHauntReactiveEffect = (
         discard: [...player.discard, cardInstanceId],
       }),
       cards: newCards,
+      logs: [
+        ...state.logs,
+        `${formatNoun(hauntsWithCharges.length, 'Haunt')} reacts and defeats ${CARD_BASES[playedCard.baseId].name}.`,
+      ],
     }
   }
 
   newCards[cardInstanceId] = { ...playedCard, life: newLife }
-  return { ...state, cards: newCards }
+  return {
+    ...state,
+    cards: newCards,
+    logs: [
+      ...state.logs,
+      `${formatNoun(hauntsWithCharges.length, 'Haunt')} reacts. ${CARD_BASES[playedCard.baseId].name} loses ${damage} life.`,
+    ],
+  }
 }
 
 const applyBurrickAttackEffect = (
@@ -269,10 +331,12 @@ const applyBurrickAttackEffect = (
   let result = state
   const newCards = { ...result.cards }
   const attackDamage = attacker.strength
+  let affectedAdjacentCount = 0
 
   for (const adjId of adjacentIds) {
     const adjCard = newCards[adjId]
     if (!adjCard || adjCard.life === undefined) continue
+    affectedAdjacentCount++
 
     const adjNewLife = adjCard.life - attackDamage
 
@@ -289,29 +353,25 @@ const applyBurrickAttackEffect = (
   }
 
   const currentAttacker = newCards[attackerId]!
-  const burrickNewLife = (currentAttacker.life ?? 0) - 1
   const newCharges = Math.max(0, (currentAttacker.charges ?? 0) - 1)
+  const attackerName = CARD_BASES[currentAttacker.baseId].name
+  let burrickLog: string
 
-  if (burrickNewLife <= 0) {
-    newCards[attackerId] = {
-      ...currentAttacker,
-      life: 0,
-      charges: newCharges,
-    }
-    const activePlayer = getPlayer(result, state.activePlayerId)
-    result = updatePlayer(result, state.activePlayerId, {
-      board: activePlayer.board.filter((id) => id !== attackerId),
-      discard: [...activePlayer.discard, attackerId],
-    })
-  } else {
-    newCards[attackerId] = {
-      ...currentAttacker,
-      life: burrickNewLife,
-      charges: newCharges,
-    }
+  newCards[attackerId] = {
+    ...currentAttacker,
+    charges: newCharges,
   }
 
-  return { ...result, cards: newCards }
+  burrickLog = `${attackerName} splashes ${formatNoun(
+    affectedAdjacentCount,
+    'adjacent card',
+  )} for ${formatNoun(attackDamage, 'damage')} loosing a charge.`
+
+  return {
+    ...result,
+    cards: newCards,
+    logs: [...result.logs, burrickLog],
+  }
 }
 
 const applyTempleGuardRetaliationEffect = (
@@ -329,6 +389,7 @@ const applyTempleGuardRetaliationEffect = (
 
   const newCards = { ...state.cards }
   const attackerNewLife = attacker.life - defender.strength
+  const attackerName = CARD_BASES[attacker.baseId].name
 
   if (attackerNewLife <= 0) {
     newCards[attackerId] = { ...attacker, life: 0 }
@@ -339,11 +400,28 @@ const applyTempleGuardRetaliationEffect = (
         discard: [...activePlayer.discard, attackerId],
       }),
       cards: newCards,
+      logs: [
+        ...state.logs,
+        `Temple Guard retaliates for ${formatNoun(
+          defender.strength,
+          'damage',
+        )} and defeats ${attackerName}.`,
+      ],
     }
   }
 
   newCards[attackerId] = { ...attacker, life: attackerNewLife }
-  return { ...state, cards: newCards }
+  return {
+    ...state,
+    cards: newCards,
+    logs: [
+      ...state.logs,
+      `Temple Guard retaliates for ${formatNoun(
+        defender.strength,
+        'damage',
+      )}. ${attackerName} has ${formatNoun(attackerNewLife, 'life')} left.`,
+    ],
+  }
 }
 
 const applyMarkanderReactiveEffect = (
@@ -384,11 +462,17 @@ const applyMarkanderReactiveEffect = (
 
   if (idsToSummon.length > 0) {
     const currentPlayer = getPlayer(result, playerId)
-    result = updatePlayer(result, playerId, {
-      hand: currentPlayer.hand.filter((id) => !idsToSummon.includes(id)),
-      deck: currentPlayer.deck.filter((id) => !idsToSummon.includes(id)),
-      board: [...currentPlayer.board, ...idsToSummon],
-    })
+    result = {
+      ...updatePlayer(result, playerId, {
+        hand: currentPlayer.hand.filter((id) => !idsToSummon.includes(id)),
+        deck: currentPlayer.deck.filter((id) => !idsToSummon.includes(id)),
+        board: [...currentPlayer.board, ...idsToSummon],
+      }),
+      logs: [
+        ...state.logs,
+        'Enough Hammerites were played for High Priest Markander to be summoned.',
+      ],
+    }
   }
 
   return result

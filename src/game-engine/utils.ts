@@ -52,5 +52,5 @@ export const coinFlipForPlayerStart = (
   rng: () => number = Math.random,
 ): PlayerId => (rng() < 0.5 ? 'player1' : 'player2')
 
-export const formatCoins = (amount: number): string =>
-  `${amount} coin${amount !== 1 ? 's' : ''}`
+export const formatNoun = (amount: number, noun = 'coin'): string =>
+  `${amount} ${noun}${amount !== 1 ? 's' : ''}`

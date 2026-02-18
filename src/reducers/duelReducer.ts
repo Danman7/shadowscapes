@@ -10,7 +10,7 @@ import {
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
-import { formatCoins } from '@/game-engine/utils'
+import { formatNoun } from '@/game-engine/utils'
 import type { CardInstance, Duel, DuelAction } from '@/types'
 
 export const initialDuelState: Readonly<Duel> = {
@@ -88,12 +88,26 @@ export function duelReducer(
         switchedState,
         switchedState.activePlayerId,
       )
+      const stateAfterDraw = drawTopCard(
+        switchedState,
+        switchedState.activePlayerId,
+      )
+      const newActivePlayerAfterDraw = getPlayer(
+        stateAfterDraw,
+        stateAfterDraw.activePlayerId,
+      )
 
       return {
-        ...drawTopCard(switchedState, switchedState.activePlayerId),
+        ...stateAfterDraw,
         logs: [
           ...state.logs,
-          `It's now ${newActivePlayer.name}'s turn. They drew a card and have ${newActivePlayer.deck.length - 1} cards left in deck.`,
+          `It's now ${newActivePlayer.name}'s turn so they draw a card. They have ${formatNoun(
+            newActivePlayerAfterDraw.hand.length,
+            'card',
+          )} in hand and ${formatNoun(
+            newActivePlayerAfterDraw.deck.length,
+            'card',
+          )} left in deck.`,
         ],
       }
     }
@@ -111,7 +125,7 @@ export function duelReducer(
         phase: 'redraw',
         logs: [
           ...state.logs,
-          `Both players drew ${INITIAL_CARDS_TO_DRAW} cards.`,
+          `Both players draw ${INITIAL_CARDS_TO_DRAW} cards.`,
         ],
       }
     }
@@ -157,9 +171,9 @@ export function duelReducer(
         phase: 'turn-end',
         logs: [
           ...state.logs,
-          `${player.name} played ${CARD_BASES[baseId].name} for ${formatCoins(
+          `${player.name} plays ${CARD_BASES[baseId].name} for ${formatNoun(
             cost,
-          )}. ${player.name} has ${formatCoins(newPlayerCoins)} left.`,
+          )}. They have ${formatNoun(newPlayerCoins)} left.`,
         ],
       }
     }
@@ -181,7 +195,7 @@ export function duelReducer(
 
       return {
         ...drawTopCard(stateWithCardAtBottom, playerId),
-        logs: [...state.logs, `${player.name} redrew a card.`],
+        logs: [...state.logs, `${player.name} redraws a card.`],
       }
     }
 
@@ -195,7 +209,7 @@ export function duelReducer(
         ...updatePlayer(state, playerId, {
           playerReady: true,
         }),
-        logs: [...state.logs, `${player.name} skipped redraw.`],
+        logs: [...state.logs, `${player.name} skips redraw.`],
       }
     }
 
@@ -232,14 +246,14 @@ export function duelReducer(
           discard: [...inactivePlayer.discard, defenderId],
         })
 
-        attackLog = `${CARD_BASES[attacker.baseId].name} attacked and defeated ${CARD_BASES[defender.baseId].name}.`
+        attackLog = `${CARD_BASES[attacker.baseId].name} attacks and defeats ${CARD_BASES[defender.baseId].name}.`
       } else {
         newCards[defenderId] = {
           ...defender,
           life: defenderNewLife,
         }
 
-        attackLog = `${CARD_BASES[attacker.baseId].name} attacked ${CARD_BASES[defender.baseId].name}, dealing ${attacker.strength} damage. ${CARD_BASES[defender.baseId].name} has ${defenderNewLife} life left.`
+        attackLog = `${CARD_BASES[attacker.baseId].name} attacks ${CARD_BASES[defender.baseId].name}, dealing ${attacker.strength} damage. ${CARD_BASES[defender.baseId].name} has ${defenderNewLife} life left.`
       }
 
       return {
@@ -273,7 +287,7 @@ export function duelReducer(
         cards: newCards,
         logs: [
           ...state.logs,
-          `${CARD_BASES[attacker.baseId].name} attacked ${inactivePlayer.name}. ${inactivePlayer.name} has ${formatCoins(
+          `${CARD_BASES[attacker.baseId].name} attacks ${inactivePlayer.name}. ${inactivePlayer.name} has ${formatNoun(
             newInactiveCoins,
           )} left.`,
         ],

@@ -375,9 +375,7 @@ describe('SKIP_REDRAW', () => {
     })
 
     expect(result.players.player1.playerReady).toBe(true)
-    expect(result.logs).toContain(
-      `${state.players.player1.name} skipped redraw.`,
-    )
+    expect(result.logs).toContain(`${state.players.player1.name} skips redraw.`)
   })
 
   test('does not duplicate logs when already ready', () => {
