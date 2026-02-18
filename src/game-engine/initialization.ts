@@ -5,6 +5,7 @@ import {
   resetInstanceIdCounter,
   shuffle,
 } from '@/game-engine/utils'
+import { initialDuelState } from '@/reducers/duelReducer'
 import type {
   CardBaseId,
   CardInstance,
@@ -145,11 +146,11 @@ export const createDuel = (
     startingPlayerId === 'player1' ? 'player2' : 'player1'
 
   let duel: Duel = {
+    ...initialDuelState,
     cards: allCards,
     players: { player1, player2 },
     activePlayerId,
     inactivePlayerId,
-    phase: 'intro',
     startingPlayerId,
   }
 

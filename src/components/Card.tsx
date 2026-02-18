@@ -69,7 +69,7 @@ export const Card: React.FC<{
       </div>
 
       <div
-        className={`flex flex-col justify-around grow overflow-y-auto ${isOnBoard ? 'text-sm' : ''}`}
+        className={`flex flex-col justify-around grow text-center overflow-y-auto ${isOnBoard ? 'text-sm' : ''}`}
       >
         <div>
           {description.map((paragraph, index) => (

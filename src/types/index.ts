@@ -89,6 +89,7 @@ export interface Duel {
   inactivePlayerId: PlayerId
   phase: Phase
   startingPlayerId: PlayerId | null
+  logs: string[]
 }
 
 export type DuelAction =
@@ -131,3 +132,4 @@ export type DuelAction =
         attackerId: number
       }
     }
+  | { type: 'ADD_LOG'; payload: string }

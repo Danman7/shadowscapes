@@ -22,6 +22,7 @@ export const initialDuelState: Readonly<Duel> = {
   inactivePlayerId: 'player2',
   phase: 'intro',
   startingPlayerId: null,
+  logs: [],
 }
 
 export function duelReducer(
@@ -252,6 +253,15 @@ export function duelReducer(
           coins: newInactiveCoins,
         }),
         cards: newCards,
+      }
+    }
+
+    case 'ADD_LOG': {
+      const { payload } = action
+
+      return {
+        ...state,
+        logs: [...state.logs, payload],
       }
     }
 

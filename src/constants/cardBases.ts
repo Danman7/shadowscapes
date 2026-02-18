@@ -21,12 +21,13 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   burrick: {
     id: 'burrick',
     name: 'Burrick',
-    cost: 2,
+    cost: 3,
     life: 2,
     strength: 1,
     type: 'character',
     description: [
-      "This card starts with 1 charge', 'Whenever this card attacks, if it has charges left, it does also attack the target's adjacent cards and loses a charge instead.",
+      'This card starts with 1 charge',
+      "Whenever this card attacks, if it has charges left, it also attacks the target's adjacent cards and loses a charge.",
     ],
     flavorText:
       'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
@@ -38,10 +39,10 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   haunt: {
     id: 'haunt',
     name: 'Haunt',
-    cost: 3,
+    cost: 4,
     description: [
       'This card starts with 1 charge.',
-      'Whenever your opponent plays a card, if you have charges left, damage it by 1 and remove a charge.',
+      'Whenever your opponent plays a card, if this card is on board, and it has charges left, it attacks the played card.',
     ],
     flavorText:
       'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
@@ -56,9 +57,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   mysticsSoul: {
     id: 'mysticsSoul',
     name: "Mystic's Soul",
-    cost: 5,
+    cost: 4,
     type: 'instant',
-    description: ['+1 charges for all alied characters on board.'],
+    description: ['+1 charge for all allied characters on board.'],
     flavorText:
       "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the gem called the Mystic's Soul. -- Note found next to Adolpho's corpse",
     rank: 'elite',
@@ -68,9 +69,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   bookOfAsh: {
     id: 'bookOfAsh',
     name: 'Book of Ash',
-    cost: 4,
+    cost: 5,
     description: [
-      'Create and summon a copy of an Undead from your discard pile.',
+      'Create and summon a copy of a common undead from your discard pile.',
     ],
     flavorText:
       "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
@@ -87,7 +88,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     name: 'Novice',
     cost: 1,
     description: [
-      'On play, if you control a stronger Hammerite, summon all copies of this card from your hand or deck.',
+      'On play, if you control another hammerite with more life than this card, summon all copies of this card from your hand or deck.',
     ],
     flavorText:
       'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
@@ -101,9 +102,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   templeGuard: {
     id: 'templeGuard',
     name: 'Temple Guard',
-    cost: 3,
+    cost: 4,
     description: [
-      '+1 on play if you control fewer cards than your foe.',
+      '+1 life on play if you control fewer cards than your foe.',
       'Retaliates when attacked.',
     ],
     flavorText:
@@ -118,8 +119,10 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   sachelman: {
     id: 'sachelman',
     name: 'Brother Sachelman',
-    cost: 4,
-    description: ['On play, give +1 to all weaker Hammerites you control.'],
+    cost: 5,
+    description: [
+      'On play, give +1 life to all hammerites you control with less life than this card.',
+    ],
     flavorText:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
     faction: 'order',
@@ -132,8 +135,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   yoraSkull: {
     id: 'yoraSkull',
     name: "Saint Yora's Skull",
-    cost: 3,
-    description: ['+1 to all Hammerites you control.'],
+    cost: 5,
+    description: ['+1 life to all hammerites you control.'],
     flavorText: 'Yora was a builder of vision and devout keeper of the faith.',
     faction: 'order',
     categories: ['Hammerite', 'Artifact'],
@@ -144,7 +147,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'highPriestMarkander',
     name: 'High Priest Markander',
     cost: 5,
-    life: 4,
+    life: 3,
     strength: 1,
     type: 'character',
     description: [
@@ -182,7 +185,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   cook: {
     id: 'cook',
     name: 'Cook',
-    cost: 1,
+    cost: 2,
     description: ['On play, draw a card.'],
     flavorText:
       "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",

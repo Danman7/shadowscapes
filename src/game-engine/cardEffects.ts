@@ -216,7 +216,10 @@ const applyHauntReactiveEffect = (
     }
   }
 
-  const damage = hauntsWithCharges.length
+  const damage = hauntsWithCharges.reduce((total, hauntId) => {
+    const hauntCard = newCards[hauntId]
+    return total + (hauntCard?.strength ?? 0)
+  }, 0)
   const newLife = playedCard.life - damage
 
   if (newLife <= 0) {

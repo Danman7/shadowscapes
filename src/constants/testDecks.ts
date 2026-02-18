@@ -5,8 +5,8 @@ export const PLAYER_1_DECK: CardBaseId[] = [
   'zombie',
   'haunt',
   'haunt',
-  'cook',
   'mysticsSoul',
+  'burrick',
   'burrick',
 ]
 
@@ -17,6 +17,5 @@ export const PLAYER_2_DECK: CardBaseId[] = [
   'templeGuard',
   'sachelman',
   'yoraSkull',
-  'cook',
   'highPriestMarkander',
 ]

@@ -19,6 +19,19 @@ const meta: Meta<typeof Card> = {
 export default meta
 type Story = StoryObj<typeof Card>
 
+export const AllCardsGallery: Story = {
+  render: () => (
+    <div className="flex gap-4 flex-wrap">
+      {Object.entries(CARD_BASES).map(([id, base]) => (
+        <div key={id} className="flex flex-col gap-2">
+          <Card card={createCardInstance(id as keyof typeof CARD_BASES)} />
+          <div className="text-center text-sm font-semibold">{base.name}</div>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
 export const Character: Story = {
   args: {
     card: createCardInstance('templeGuard'),
@@ -45,19 +58,6 @@ export const AllFactions: Story = {
       <Card card={createCardInstance('novice')} />
       <Card card={createCardInstance('downwinder')} />
       <Card card={createCardInstance('cook')} />
-    </div>
-  ),
-}
-
-export const AllCardsGallery: Story = {
-  render: () => (
-    <div className="flex gap-4 flex-wrap">
-      {Object.entries(CARD_BASES).map(([id, base]) => (
-        <div key={id} className="flex flex-col gap-2">
-          <Card card={createCardInstance(id as keyof typeof CARD_BASES)} />
-          <div className="text-center text-sm font-semibold">{base.name}</div>
-        </div>
-      ))}
     </div>
   ),
 }

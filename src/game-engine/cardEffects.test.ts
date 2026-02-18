@@ -411,7 +411,7 @@ describe('Zombie effect', () => {
 })
 
 describe('Haunt reactive effect', () => {
-  test('deals 1 damage per haunt to the played card', () => {
+  test('deals damage equal to haunt strength to the played card', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
@@ -503,6 +503,40 @@ describe('Haunt reactive effect', () => {
     })
 
     expect(result.cards[1]!.life).toBe(2)
+  })
+
+  test('applies the sum of all haunt strengths as damage', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: { ...createCardInstance('haunt', 2), strength: 3 },
+        3: createCardInstance('haunt', 3),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2, 3],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[1]!.life).toBe(0)
+    expect(result.players.player1.board).not.toContain(1)
+    expect(result.players.player1.discard).toContain(1)
   })
 
   test('does not damage summoned cards from zombie effect', () => {
