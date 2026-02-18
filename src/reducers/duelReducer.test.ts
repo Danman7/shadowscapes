@@ -740,3 +740,79 @@ describe('unknown action', () => {
     expect(result).toEqual(state)
   })
 })
+
+describe('ATTACK_CARD guard cases', () => {
+  test('returns unchanged state when attacker card does not exist', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: { 2: createCardInstance('haunt', 2) },
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player2: { ...PRELOADED_DUEL_SETUP.players.player2, board: [2] },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 999, defenderId: 2 },
+    })
+
+    expect(result).toEqual(state)
+  })
+
+  test('returns unchanged state when defender card does not exist', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: { 1: createCardInstance('zombie', 1) },
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: { ...PRELOADED_DUEL_SETUP.players.player1, board: [1] },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 999 },
+    })
+
+    expect(result).toEqual(state)
+  })
+
+  test('returns unchanged state when attacker has no strength', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('bookOfAsh', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: { ...PRELOADED_DUEL_SETUP.players.player1, board: [1] },
+        player2: { ...PRELOADED_DUEL_SETUP.players.player2, board: [2] },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result).toEqual(state)
+  })
+})
+
+describe('ATTACK_PLAYER guard cases', () => {
+  test('returns unchanged state when attacker card does not exist', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {},
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_PLAYER',
+      payload: { attackerId: 999 },
+    })
+
+    expect(result).toEqual(state)
+  })
+})

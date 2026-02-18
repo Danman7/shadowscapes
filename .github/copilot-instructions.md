@@ -37,6 +37,13 @@ Game logic lives in [src/game-engine/] as pure functions, separate from React:
 
 ## Development Workflows
 
+### Agent Commands
+
+- When the user types **"update all packages"**, run the following commands in order:
+  1.  `ncu`
+  2.  `ncu -u`
+  3.  `bun install --save`
+
 ### Running & Testing
 
 - **Dev server**: `bun dev` (serves at http://localhost:3000 with HMR)

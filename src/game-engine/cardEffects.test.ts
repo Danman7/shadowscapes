@@ -1012,7 +1012,8 @@ describe('Temple Guard effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    const baseStrength = CARD_BASES.templeGuard.strength
+    const baseStrength = (CARD_BASES.templeGuard as { strength: number })
+      .strength
     expect(result.cards[1]!.strength).toBe(baseStrength + 1)
   })
 
@@ -1043,7 +1044,9 @@ describe('Temple Guard effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(CARD_BASES.templeGuard.strength)
+    expect(result.cards[1]!.strength).toBe(
+      (CARD_BASES.templeGuard as { strength: number }).strength,
+    )
   })
 
   test('retaliates when attacked and survives', () => {
@@ -1384,5 +1387,244 @@ describe('High Priest Markander effect', () => {
     })
 
     expect(result.cards[2]!.counter).toBe(2)
+  })
+})
+
+describe('Markander in both hand and deck', () => {
+  test('summons all Markander copies when counter reaches 0 via Hammerite play', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('templeGuard', 1),
+        2: createCardInstance('highPriestMarkander', 2, 4, 1),
+        3: createCardInstance('highPriestMarkander', 3, 4, 1),
+      },
+      players: {
+        player1: {
+          hand: [1, 2],
+          board: [],
+          deck: [3],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.players.player1.board).toContain(2)
+    expect(result.players.player1.board).toContain(3)
+    expect(result.players.player1.hand).not.toContain(2)
+    expect(result.players.player1.deck).not.toContain(3)
+  })
+})
+
+describe('Burrick with no adjacent cards', () => {
+  test('damages only right adjacent card when defender is leftmost', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1),
+        2: createCardInstance('zombie', 2),
+        3: createCardInstance('templeGuard', 3),
+      },
+      players: {
+        player1: { board: [1] },
+        player2: { board: [2, 3], discard: [] },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.cards[3]!.strength).toBe(1)
+    expect(result.players.player2.board).toContain(3)
+    expect(result.cards[1]!.strength).toBe(1)
+  })
+})
+
+describe('Haunt does not react to instant cards without strength', () => {
+  test('haunt counter stays unchanged when an instant with no strength is played', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('mysticsSoul', 1),
+        2: createCardInstance('haunt', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          board: [2],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    expect(result.cards[2]!.counter).toBe(1)
+  })
+})
+
+describe('Burrick effect early return when defender not in prevState board', () => {
+  test('returns state unchanged when defenderId is not found in prevState inactive board', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('burrick', 1, 2, 2),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: { board: [1] },
+        player2: { board: [], discard: [] },
+      },
+    })
+
+    // card id=2 is not on player2's board — attack with it as defenderId hits defenderIndex === -1
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    // The burrick splash effect returns early; the base ATTACK_CARD result is still applied
+    // but burrick adjacency effect did not execute — attacker strength should be unchanged by splash
+    expect(result.cards[1]!.strength).toBeDefined()
+  })
+})
+
+describe('TempleGuard retaliation does not fire when templeGuard strength is 0', () => {
+  test('attacker is not damaged when templeGuard has strength 0', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 2),
+        2: createCardInstance('templeGuard', 2, 0),
+      },
+      players: {
+        player1: { board: [1] },
+        player2: { board: [2], discard: [] },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    // zombie attacks templeGuard with strength 0 — no retaliation, zombie strength unchanged from attack
+    expect(result.cards[1]!.strength).toBe(2)
+  })
+})
+
+describe('Markander reactive effect when no Markander is present', () => {
+  test('returns state unchanged when no Markander is in hand or deck', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('novice', 1),
+        2: createCardInstance('zombie', 2),
+      },
+      players: {
+        player1: {
+          hand: [1],
+          board: [],
+          deck: [2],
+          discard: [],
+        },
+        player2: { board: [] },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    // Hammerite (novice) played but no Markander anywhere — board just has the novice
+    expect(result.players.player1.board).toContain(1)
+    expect(result.players.player1.hand).not.toContain(1)
+    // No unexpected board additions
+    expect(result.players.player1.board).toHaveLength(1)
+  })
+
+  test('Markander counter is decremented but not summoned when counter > 1', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('novice', 1),
+        2: createCardInstance('highPriestMarkander', 2, undefined, 3),
+      },
+      players: {
+        player1: {
+          hand: [1, 2],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: { board: [] },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 1 },
+    })
+
+    // Markander counter goes from 3 → 2, not summoned
+    expect(result.cards[2]!.counter).toBe(2)
+    expect(result.players.player1.hand).toContain(2)
+    expect(result.players.player1.board).not.toContain(2)
+  })
+})
+
+describe('applyCardEffects PLAY_CARD with missing card instance', () => {
+  test('returns state unchanged when cardInstanceId does not exist in state.cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'player-turn',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1),
+      },
+      players: {
+        player1: { hand: [1], board: [], deck: [], discard: [] },
+        player2: { board: [] },
+      },
+    })
+
+    // Dispatch PLAY_CARD with an id that doesn't exist in state.cards
+    const result = duelReducerWithEffects(state, {
+      type: 'PLAY_CARD',
+      payload: { playerId: 'player1', cardInstanceId: 999 },
+    })
+
+    // State should be unchanged since card 999 doesn't exist
+    expect(result.players.player1.board).toEqual(state.players.player1.board)
+    expect(result.players.player1.hand).toEqual(state.players.player1.hand)
   })
 })

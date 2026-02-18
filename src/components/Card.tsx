@@ -46,9 +46,9 @@ export const Card: React.FC<{
       onClick={onClick}
       data-testid="card"
     >
-      <div className="font-semibold text-background rounded">
+      <div className="font-semibold text-background">
         <div
-          className={`flex justify-between items-center p-2 ${factionColor}`}
+          className={`flex justify-between rounded-t items-center p-2 ${factionColor}`}
           data-testid="card-header"
         >
           <div>{name}</div>
@@ -61,65 +61,47 @@ export const Card: React.FC<{
         </div>
 
         <div
-          className={`text-sm text-center text-background ${rank === 'elite' ? 'bg-primary' : 'bg-foreground'}`}
+          className={`text-sm text-center text-background rounded-b ${rank === 'elite' ? 'bg-primary' : 'bg-foreground'}`}
         >
           {categories.join(' ')}
         </div>
       </div>
 
-      {isOnBoard && (
-        <>
-          <div className="text-sm">
-            {description.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
+      <div
+        className={`flex flex-col justify-around grow overflow-y-auto ${isOnBoard ? 'text-sm' : ''}`}
+      >
+        <div>
+          {description.map((paragraph, index) => (
+            <p key={index} className={isOnBoard ? '' : 'mb-2'}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
-          <div className="flex justify-between items-end text-sm">
-            <div className="flex items-center gap-1 text-primary">
-              <GiCrownCoin /> {cost}
-            </div>
-
-            {counter !== undefined && (
-              <div className="flex items-center gap-1">
-                <IoHourglassOutline /> {counter}
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {!isOnBoard && (
-        <>
-          <div className="flex flex-col justify-around grow overflow-y-auto">
-            <div>
-              {description.map((paragraph, index) => (
-                <p key={index} className="mb-1">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
+        {!isOnBoard && (
+          <>
             <hr className="border-foreground/10" />
 
             <div className="text-sm font-light italic">{flavorText}</div>
+          </>
+        )}
+      </div>
+
+      {!isOnBoard && <hr className="border-foreground/10" />}
+
+      <div
+        className={`flex justify-between items-end ${isOnBoard ? 'text-sm' : ''}`}
+      >
+        <div className="flex items-center gap-1 text-primary">
+          <GiCrownCoin /> {cost}
+        </div>
+
+        {counter !== undefined && (
+          <div className="flex items-center gap-1">
+            <IoHourglassOutline /> {counter}
           </div>
-
-          <hr className="border-foreground/10" />
-
-          <div className="flex justify-between items-end">
-            <div className="flex items-center gap-1 text-primary">
-              <GiCrownCoin /> {cost}
-            </div>
-
-            {counter !== undefined && (
-              <div className="flex items-center gap-1">
-                <IoHourglassOutline /> {counter}
-              </div>
-            )}
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   )
 }
