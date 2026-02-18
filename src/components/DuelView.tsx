@@ -80,7 +80,7 @@ const PhaseButton: React.FC<{
       phaseButtonOnClick = !playerReady
         ? () =>
             dispatch({
-              type: 'PLAYER_READY',
+              type: 'SKIP_REDRAW',
               payload: { playerId: activePlayer.id },
             })
         : undefined
@@ -158,7 +158,7 @@ export const DuelView: React.FC = () => {
   useEffect(() => {
     if (phase === 'redraw') {
       dispatch({
-        type: 'PLAYER_READY',
+        type: 'SKIP_REDRAW',
         payload: { playerId: inactivePlayer.id },
       })
 

@@ -109,16 +109,11 @@ export type DuelAction =
       payload: { playerId: PlayerId; cardInstanceId: number }
     }
   | { type: 'SWITCH_TURN' }
-  | { type: 'DRAW_CARD'; payload: { playerId: PlayerId } }
-  | {
-      type: 'DISCARD_CARD'
-      payload: { playerId: PlayerId; cardInstanceId: number }
-    }
   | {
       type: 'REDRAW_CARD'
       payload: { playerId: PlayerId; cardInstanceId: number }
     }
-  | { type: 'PLAYER_READY'; payload: { playerId: PlayerId } }
+  | { type: 'SKIP_REDRAW'; payload: { playerId: PlayerId } }
   | {
       type: 'ATTACK_CARD'
       payload: {
@@ -132,4 +127,3 @@ export type DuelAction =
         attackerId: number
       }
     }
-  | { type: 'ADD_LOG'; payload: string }

@@ -1,16 +1,17 @@
-import type { CardInstance, Duel, DuelAction } from '@/types'
+import { CARD_BASES } from '@/constants/cardBases'
 import {
   INITIAL_CARDS_TO_DRAW,
   PLACEHOLDER_PLAYER,
 } from '@/constants/duelParams'
+import { applyCardEffects } from '@/game-engine/cardEffects'
 import {
   createDuel,
   drawTopCard,
   getPlayer,
   updatePlayer,
 } from '@/game-engine/initialization'
-import { applyCardEffects } from '@/game-engine/cardEffects'
-import { CARD_BASES } from '@/constants/cardBases'
+import { formatCoins } from '@/game-engine/utils'
+import type { CardInstance, Duel, DuelAction } from '@/types'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},
@@ -83,12 +84,18 @@ export function duelReducer(
         phase: 'player-turn',
       }
 
-      return drawTopCard(switchedState, switchedState.activePlayerId)
-    }
+      const newActivePlayer = getPlayer(
+        switchedState,
+        switchedState.activePlayerId,
+      )
 
-    case 'DRAW_CARD': {
-      const { playerId } = action.payload
-      return drawTopCard(state, playerId)
+      return {
+        ...drawTopCard(switchedState, switchedState.activePlayerId),
+        logs: [
+          ...state.logs,
+          `It's now ${newActivePlayer.name}'s turn. They drew a card and have ${newActivePlayer.deck.length - 1} cards left in deck.`,
+        ],
+      }
     }
 
     case 'INITIAL_DRAW': {
@@ -102,6 +109,10 @@ export function duelReducer(
       return {
         ...stateClone,
         phase: 'redraw',
+        logs: [
+          ...state.logs,
+          `Both players drew ${INITIAL_CARDS_TO_DRAW} cards.`,
+        ],
       }
     }
 
@@ -144,21 +155,13 @@ export function duelReducer(
       return {
         ...newState,
         phase: 'turn-end',
+        logs: [
+          ...state.logs,
+          `${player.name} played ${CARD_BASES[baseId].name} for ${formatCoins(
+            cost,
+          )}. ${player.name} has ${formatCoins(newPlayerCoins)} left.`,
+        ],
       }
-    }
-
-    case 'DISCARD_CARD': {
-      const { playerId, cardInstanceId } = action.payload
-      const player = getPlayer(state, playerId)
-
-      const newhand = player.hand.filter(
-        (id): id is number => id !== cardInstanceId,
-      )
-
-      return updatePlayer(state, playerId, {
-        hand: newhand,
-        discard: [...player.discard, cardInstanceId],
-      })
     }
 
     case 'REDRAW_CARD': {
@@ -176,15 +179,24 @@ export function duelReducer(
         playerReady: true,
       })
 
-      return drawTopCard(stateWithCardAtBottom, playerId)
+      return {
+        ...drawTopCard(stateWithCardAtBottom, playerId),
+        logs: [...state.logs, `${player.name} redrew a card.`],
+      }
     }
 
-    case 'PLAYER_READY': {
+    case 'SKIP_REDRAW': {
       const { playerId } = action.payload
+      const player = getPlayer(state, playerId)
 
-      return updatePlayer(state, playerId, {
-        playerReady: true,
-      })
+      if (player.playerReady) return state
+
+      return {
+        ...updatePlayer(state, playerId, {
+          playerReady: true,
+        }),
+        logs: [...state.logs, `${player.name} skipped redraw.`],
+      }
     }
 
     case 'ATTACK_CARD': {
@@ -199,6 +211,7 @@ export function duelReducer(
       const inactivePlayer = getPlayer(state, state.inactivePlayerId)
 
       let newState = { ...state }
+      let attackLog: string
       const newCards = { ...state.cards }
 
       newCards[attackerId] = {
@@ -218,16 +231,21 @@ export function duelReducer(
           board: inactivePlayer.board.filter((id) => id !== defenderId),
           discard: [...inactivePlayer.discard, defenderId],
         })
+
+        attackLog = `${CARD_BASES[attacker.baseId].name} attacked and defeated ${CARD_BASES[defender.baseId].name}.`
       } else {
         newCards[defenderId] = {
           ...defender,
           life: defenderNewLife,
         }
+
+        attackLog = `${CARD_BASES[attacker.baseId].name} attacked ${CARD_BASES[defender.baseId].name}, dealing ${attacker.strength} damage. ${CARD_BASES[defender.baseId].name} has ${defenderNewLife} life left.`
       }
 
       return {
         ...newState,
         cards: newCards,
+        logs: [...state.logs, attackLog],
       }
     }
 
@@ -253,15 +271,12 @@ export function duelReducer(
           coins: newInactiveCoins,
         }),
         cards: newCards,
-      }
-    }
-
-    case 'ADD_LOG': {
-      const { payload } = action
-
-      return {
-        ...state,
-        logs: [...state.logs, payload],
+        logs: [
+          ...state.logs,
+          `${CARD_BASES[attacker.baseId].name} attacked ${inactivePlayer.name}. ${inactivePlayer.name} has ${formatCoins(
+            newInactiveCoins,
+          )} left.`,
+        ],
       }
     }
 

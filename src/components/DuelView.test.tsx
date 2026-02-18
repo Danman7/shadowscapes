@@ -131,7 +131,7 @@ describe('Initial sequence', () => {
     })
 
     expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'PLAYER_READY',
+      type: 'SKIP_REDRAW',
       payload: { playerId: duelState.inactivePlayerId },
     })
   })

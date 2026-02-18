@@ -5,6 +5,7 @@ import {
   createCardInstance,
   shuffle,
   coinFlipForPlayerStart,
+  formatCoins,
 } from '@/game-engine/utils'
 
 describe('resetInstanceIdCounter and generateInstanceId', () => {
@@ -102,5 +103,15 @@ describe('coinFlipForPlayerStart', () => {
 
   test('returns player2 when random equals 0.9', () => {
     expect(coinFlipForPlayerStart(() => 0.9)).toBe('player2')
+  })
+})
+
+describe('formatCoins', () => {
+  test('formats singular coin amount', () => {
+    expect(formatCoins(1)).toBe('1 coin')
+  })
+
+  test('formats plural coin amount', () => {
+    expect(formatCoins(2)).toBe('2 coins')
   })
 })
