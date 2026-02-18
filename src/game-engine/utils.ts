@@ -9,6 +9,10 @@ export const resetInstanceIdCounter = (): void => {
 
 export const generateInstanceId = (): number => instanceIdCounter++
 
+export const getCardLife = (base: CardBase): number | undefined => {
+  return base.type === 'character' ? base.life : undefined
+}
+
 export const getCardStrength = (base: CardBase): number | undefined => {
   return base.type === 'character' ? base.strength : undefined
 }
@@ -16,13 +20,14 @@ export const getCardStrength = (base: CardBase): number | undefined => {
 export const createCardInstance = (
   baseId: CardBaseId,
   id?: number,
-  strength?: number,
+  life?: number,
   charges?: number,
 ): CardInstance => ({
   id: id ?? generateInstanceId(),
   baseId,
   cost: CARD_BASES[baseId].cost,
-  strength: strength ?? getCardStrength(CARD_BASES[baseId]),
+  life: life ?? getCardLife(CARD_BASES[baseId]),
+  strength: getCardStrength(CARD_BASES[baseId]),
   charges: charges ?? CARD_BASES[baseId].charges,
   didAct: false,
 })

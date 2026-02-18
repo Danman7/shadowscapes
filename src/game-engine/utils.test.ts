@@ -38,6 +38,7 @@ describe('createCardInstance', () => {
 
     expect(instance.id).toBe(0)
     expect(instance.baseId).toBe('zombie')
+    expect(instance.life).toBe(1)
     expect(instance.strength).toBe(1)
   })
 
@@ -46,6 +47,7 @@ describe('createCardInstance', () => {
 
     expect(instance.id).toBe(0)
     expect(instance.baseId).toBe('bookOfAsh')
+    expect(instance.life).toBeUndefined()
     expect(instance.strength).toBeUndefined()
   })
 

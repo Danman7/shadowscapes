@@ -29,12 +29,12 @@ test('renders character card with all details', () => {
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()
   expect(getByText(mockCharacterCard.cost)).toBeInTheDocument()
-  expect(getByText(mockCharacterCard.strength as number)).toBeInTheDocument()
+  expect(getByText(mockCharacterCard.life as number)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
   expect(getByText(flavorText!)).toBeInTheDocument()
 })
 
-test('renders instant card without strength', () => {
+test('renders instant card without life', () => {
   const { getByText } = render(<Card card={mockInstantCard} />)
   const { name, description, flavorText, categories } =
     CARD_BASES[mockInstantCard.baseId]

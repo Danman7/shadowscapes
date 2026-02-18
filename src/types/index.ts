@@ -41,6 +41,7 @@ interface CardBaseCommon {
 
 export interface CardBaseCharacter extends CardBaseCommon {
   type: 'character'
+  life: number
   strength: number
 }
 
@@ -54,6 +55,7 @@ export interface CardInstance {
   id: number
   baseId: CardBaseId
   cost: number
+  life?: number
   strength?: number
   charges?: number
   didAct?: boolean

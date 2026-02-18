@@ -15,13 +15,15 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Undead'],
     type: 'character',
     rank: 'common',
+    life: 1,
     strength: 1,
   },
   burrick: {
     id: 'burrick',
     name: 'Burrick',
     cost: 2,
-    strength: 2,
+    life: 2,
+    strength: 1,
     type: 'character',
     description: [
       "This card starts with 1 charge', 'Whenever this card attacks, if it has charges left, it does also attack the target's adjacent cards and loses a charge instead.",
@@ -47,7 +49,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Undead', 'Hammerite'],
     type: 'character',
     rank: 'common',
-    strength: 3,
+    life: 3,
+    strength: 1,
     charges: 1,
   },
   mysticsSoul: {
@@ -92,6 +95,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite'],
     type: 'character',
     rank: 'common',
+    life: 1,
     strength: 1,
   },
   templeGuard: {
@@ -108,7 +112,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite', 'Guard'],
     type: 'character',
     rank: 'common',
-    strength: 3,
+    life: 3,
+    strength: 1,
   },
   sachelman: {
     id: 'sachelman',
@@ -121,7 +126,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite'],
     type: 'character',
     rank: 'elite',
-    strength: 3,
+    life: 3,
+    strength: 1,
   },
   yoraSkull: {
     id: 'yoraSkull',
@@ -138,7 +144,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'highPriestMarkander',
     name: 'High Priest Markander',
     cost: 5,
-    strength: 4,
+    life: 4,
+    strength: 1,
     type: 'character',
     description: [
       'This card starts with 5 charges.',
@@ -159,7 +166,8 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     id: 'downwinder',
     name: 'Downwinder',
     cost: 2,
-    strength: 2,
+    life: 2,
+    strength: 1,
     description: ['Steal a coin when attacking the enemy player directly.'],
     flavorText:
       "We chose our profession in defiance of the greed of the monarchy. We will not live for the sake of taxes to fatten the noble's pockets.",
@@ -182,6 +190,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Servant'],
     type: 'character',
     rank: 'common',
+    life: 1,
     strength: 1,
   },
 }

@@ -192,7 +192,7 @@ export function duelReducer(
       const defender = state.cards[defenderId]
 
       if (!attacker || !defender) return state
-      if (attacker.strength === undefined || defender.strength === undefined)
+      if (attacker.strength === undefined || defender.life === undefined)
         return state
 
       const inactivePlayer = getPlayer(state, state.inactivePlayerId)
@@ -205,12 +205,12 @@ export function duelReducer(
         didAct: true,
       }
 
-      const defenderNewStrength = defender.strength - attacker.strength
+      const defenderNewLife = defender.life - attacker.strength
 
-      if (defenderNewStrength <= 0) {
+      if (defenderNewLife <= 0) {
         newCards[defenderId] = {
           ...defender,
-          strength: 0,
+          life: 0,
         }
 
         newState = updatePlayer(newState, state.inactivePlayerId, {
@@ -220,7 +220,7 @@ export function duelReducer(
       } else {
         newCards[defenderId] = {
           ...defender,
-          strength: defenderNewStrength,
+          life: defenderNewLife,
         }
       }
 

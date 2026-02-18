@@ -199,12 +199,12 @@ describe('Sachelman effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 3 },
     })
 
-    expect(result.cards[1]!.strength).toBe(
-      (CARD_BASES.novice as { strength: number }).strength + 1,
+    expect(result.cards[1]!.life).toBe(
+      (CARD_BASES.novice as { life: number }).life + 1,
     )
 
-    expect(result.cards[2]!.strength).toBe(
-      (CARD_BASES.templeGuard as { strength: number }).strength,
+    expect(result.cards[2]!.life).toBe(
+      (CARD_BASES.templeGuard as { life: number }).life,
     )
   })
 
@@ -235,8 +235,8 @@ describe('Sachelman effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 2 },
     })
 
-    expect(result.cards[1]!.strength).toBe(
-      (CARD_BASES.zombie as { strength: number }).strength,
+    expect(result.cards[1]!.life).toBe(
+      (CARD_BASES.zombie as { life: number }).life,
     )
   })
 
@@ -267,8 +267,8 @@ describe('Sachelman effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 2 },
     })
 
-    expect(result.cards[1]!.strength).toBe(
-      (CARD_BASES.templeGuard as { strength: number }).strength,
+    expect(result.cards[1]!.life).toBe(
+      (CARD_BASES.templeGuard as { life: number }).life,
     )
   })
 })
@@ -373,10 +373,10 @@ describe('Zombie effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    const baseStrength = (CARD_BASES.zombie as { strength: number }).strength
+    const baseStrength = (CARD_BASES.zombie as { life: number }).life
 
-    expect(result.cards[2]!.strength).toBe(baseStrength)
-    expect(result.cards[3]!.strength).toBe(baseStrength)
+    expect(result.cards[2]!.life).toBe(baseStrength)
+    expect(result.cards[3]!.life).toBe(baseStrength)
     expect(result.players.player1.board).toContain(2)
     expect(result.players.player1.board).toContain(3)
   })
@@ -438,7 +438,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(2)
+    expect(result.cards[1]!.life).toBe(2)
     expect(result.players.player1.board).toContain(1)
   })
 
@@ -471,7 +471,7 @@ describe('Haunt reactive effect', () => {
 
     expect(result.players.player1.board).not.toContain(1)
     expect(result.players.player1.discard).toContain(1)
-    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.cards[1]!.life).toBe(0)
   })
 
   test('multiple haunts deal cumulative damage', () => {
@@ -502,7 +502,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(2)
+    expect(result.cards[1]!.life).toBe(2)
   })
 
   test('does not damage summoned cards from zombie effect', () => {
@@ -533,7 +533,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[2]!.life).toBe(1)
     expect(result.players.player1.board).toContain(2)
   })
 
@@ -566,7 +566,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[2]!.life).toBe(1)
     expect(result.players.player1.board).toContain(2)
   })
 
@@ -657,7 +657,7 @@ describe('Haunt reactive effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(3)
+    expect(result.cards[1]!.life).toBe(3)
     expect(result.players.player1.board).toContain(1)
   })
 })
@@ -690,12 +690,12 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[3]!.strength).toBe(1)
+    expect(result.cards[3]!.life).toBe(2)
     expect(result.players.player2.board).not.toContain(2)
     expect(result.players.player2.discard).toContain(2)
     expect(result.players.player2.board).not.toContain(4)
     expect(result.players.player2.discard).toContain(4)
-    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.cards[1]!.life).toBe(0)
     expect(result.players.player1.board).not.toContain(1)
     expect(result.players.player1.discard).toContain(1)
   })
@@ -726,9 +726,9 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[2]!.strength).toBe(1)
+    expect(result.cards[2]!.life).toBe(2)
     expect(result.players.player2.board).toContain(2)
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[1]!.life).toBe(1)
   })
 
   test('no splash when defender is the only card', () => {
@@ -758,7 +758,7 @@ describe('Burrick attack effect', () => {
 
     expect(result.players.player2.board).not.toContain(2)
     expect(result.players.player2.discard).toContain(2)
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[1]!.life).toBe(1)
   })
 
   test('burrick dies if losing 1 strength brings it to 0', () => {
@@ -787,7 +787,7 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.cards[1]!.life).toBe(0)
     expect(result.players.player1.board).not.toContain(1)
     expect(result.players.player1.discard).toContain(1)
   })
@@ -819,8 +819,8 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[2]!.strength).toBe(1)
-    expect(result.cards[4]!.strength).toBe(1)
+    expect(result.cards[2]!.life).toBe(1)
+    expect(result.cards[4]!.life).toBe(1)
     expect(result.players.player2.board).toContain(2)
     expect(result.players.player2.board).toContain(4)
   })
@@ -881,12 +881,12 @@ describe('Burrick attack effect', () => {
       payload: { attackerId: 1, defenderId: 3 },
     })
 
-    expect(result.cards[3]!.strength).toBe(1)
-    expect(result.cards[2]!.strength).toBe(1)
-    expect(result.cards[4]!.strength).toBe(1)
+    expect(result.cards[3]!.life).toBe(2)
+    expect(result.cards[2]!.life).toBe(1)
+    expect(result.cards[4]!.life).toBe(1)
     expect(result.players.player2.board).toContain(2)
     expect(result.players.player2.board).toContain(4)
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[1]!.life).toBe(1)
   })
 })
 
@@ -1012,9 +1012,8 @@ describe('Temple Guard effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    const baseStrength = (CARD_BASES.templeGuard as { strength: number })
-      .strength
-    expect(result.cards[1]!.strength).toBe(baseStrength + 1)
+    const baseStrength = (CARD_BASES.templeGuard as { life: number }).life
+    expect(result.cards[1]!.life).toBe(baseStrength + 1)
   })
 
   test('does not get +1 when boards are equal', () => {
@@ -1044,8 +1043,8 @@ describe('Temple Guard effect', () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[1]!.strength).toBe(
-      (CARD_BASES.templeGuard as { strength: number }).strength,
+    expect(result.cards[1]!.life).toBe(
+      (CARD_BASES.templeGuard as { life: number }).life,
     )
   })
 
@@ -1077,8 +1076,8 @@ describe('Temple Guard effect', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[2]!.strength).toBe(1)
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[2]!.life).toBe(2)
+    expect(result.cards[1]!.life).toBe(1)
     expect(result.players.player1.board).toContain(1)
     expect(result.players.player2.board).toContain(2)
   })
@@ -1111,21 +1110,21 @@ describe('Temple Guard effect', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[2]!.strength).toBe(2)
+    expect(result.cards[2]!.life).toBe(2)
     expect(result.players.player2.board).toContain(2)
-    expect(result.cards[1]!.strength).toBe(0)
+    expect(result.cards[1]!.life).toBe(0)
     expect(result.players.player1.board).not.toContain(1)
     expect(result.players.player1.discard).toContain(1)
   })
 
-  test('does not retaliate when templeGuard is killed (0 strength)', () => {
+  test('does not retaliate when templeGuard is killed (0 life)', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
       activePlayerId: 'player1',
       inactivePlayerId: 'player2',
       cards: {
-        1: createCardInstance('zombie', 1, 5),
-        2: createCardInstance('templeGuard', 2, 3),
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('templeGuard', 2, 1),
       },
       players: {
         player1: {
@@ -1146,10 +1145,10 @@ describe('Temple Guard effect', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[2]!.strength).toBe(0)
+    expect(result.cards[2]!.life).toBe(0)
     expect(result.players.player2.board).not.toContain(2)
     expect(result.players.player2.discard).toContain(2)
-    expect(result.cards[1]!.strength).toBe(5)
+    expect(result.cards[1]!.life).toBe(1)
     expect(result.players.player1.board).toContain(1)
   })
 })
@@ -1181,9 +1180,9 @@ describe("Yora's Skull effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.strength).toBe(4)
-    expect(result.cards[3]!.strength).toBe(2)
-    expect(result.cards[4]!.strength).toBe(2)
+    expect(result.cards[2]!.life).toBe(4)
+    expect(result.cards[3]!.life).toBe(2)
+    expect(result.cards[4]!.life).toBe(2)
     expect(result.players.player1.discard).toContain(1)
     expect(result.players.player1.board).not.toContain(1)
   })
@@ -1215,7 +1214,7 @@ describe("Yora's Skull effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.strength).toBe(3)
+    expect(result.cards[2]!.life).toBe(3)
   })
 
   test('does nothing when no Hammerites on board', () => {
@@ -1242,7 +1241,7 @@ describe("Yora's Skull effect", () => {
       payload: { playerId: 'player1', cardInstanceId: 1 },
     })
 
-    expect(result.cards[2]!.strength).toBe(2)
+    expect(result.cards[2]!.life).toBe(2)
   })
 })
 
@@ -1445,9 +1444,9 @@ describe('Burrick with no adjacent cards', () => {
       payload: { attackerId: 1, defenderId: 2 },
     })
 
-    expect(result.cards[3]!.strength).toBe(1)
+    expect(result.cards[3]!.life).toBe(2)
     expect(result.players.player2.board).toContain(3)
-    expect(result.cards[1]!.strength).toBe(1)
+    expect(result.cards[1]!.life).toBe(1)
   })
 })
 
@@ -1507,12 +1506,12 @@ describe('Burrick effect early return when defender not in prevState board', () 
 
     // The burrick splash effect returns early; the base ATTACK_CARD result is still applied
     // but burrick adjacency effect did not execute — attacker strength should be unchanged by splash
-    expect(result.cards[1]!.strength).toBeDefined()
+    expect(result.cards[1]!.life).toBeDefined()
   })
 })
 
-describe('TempleGuard retaliation does not fire when templeGuard strength is 0', () => {
-  test('attacker is not damaged when templeGuard has strength 0', () => {
+describe('TempleGuard retaliation does not fire when templeGuard life is 0', () => {
+  test('attacker is not damaged when templeGuard has life 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
       activePlayerId: 'player1',
@@ -1533,7 +1532,7 @@ describe('TempleGuard retaliation does not fire when templeGuard strength is 0',
     })
 
     // zombie attacks templeGuard with strength 0 — no retaliation, zombie strength unchanged from attack
-    expect(result.cards[1]!.strength).toBe(2)
+    expect(result.cards[1]!.life).toBe(2)
   })
 })
 

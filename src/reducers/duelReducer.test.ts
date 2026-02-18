@@ -582,7 +582,7 @@ describe('ATTACK_CARD', () => {
     })
 
     expect(result.cards[1]!.didAct).toBe(true)
-    expect(result.cards[2]!.strength).toBe(2)
+    expect(result.cards[2]!.life).toBe(2)
   })
 
   test('destroys defender when damage exceeds strength', () => {
@@ -647,8 +647,8 @@ describe('ATTACK_CARD', () => {
 
     expect(result.players.player1.board).toContain(1)
     expect(result.players.player1.discard).not.toContain(1)
-    expect(result.cards[1]!.strength).toBe(1)
-    expect(result.cards[2]!.strength).toBe(2)
+    expect(result.cards[1]!.life).toBe(1)
+    expect(result.cards[2]!.life).toBe(2)
   })
 })
 
@@ -784,6 +784,28 @@ describe('ATTACK_CARD guard cases', () => {
       cards: {
         1: createCardInstance('bookOfAsh', 1),
         2: createCardInstance('zombie', 2),
+      },
+      players: {
+        ...PRELOADED_DUEL_SETUP.players,
+        player1: { ...PRELOADED_DUEL_SETUP.players.player1, board: [1] },
+        player2: { ...PRELOADED_DUEL_SETUP.players.player2, board: [2] },
+      },
+    }
+
+    const result = duelReducer(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result).toEqual(state)
+  })
+
+  test('returns unchanged state when defender has no life', () => {
+    const state: Duel = {
+      ...PRELOADED_DUEL_SETUP,
+      cards: {
+        1: createCardInstance('zombie', 1),
+        2: createCardInstance('bookOfAsh', 2),
       },
       players: {
         ...PRELOADED_DUEL_SETUP.players,

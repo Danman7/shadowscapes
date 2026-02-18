@@ -35,7 +35,7 @@ const zombieEffect: CardEffect = (state, playerId) => {
     const base = CARD_BASES[card.baseId]
     newCards[id] = {
       ...card,
-      strength: base.type === 'character' ? base.strength : card.strength,
+      life: base.type === 'character' ? base.life : card.life,
     }
   }
 
@@ -54,7 +54,7 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
   if (!playedCard) return state
 
-  const playedStrength = playedCard.strength ?? 0
+  const playedLife = playedCard.life ?? 0
 
   const hasStrongerHammerite = player.board.some((id) => {
     if (id === cardInstanceId) return false
@@ -64,8 +64,7 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
     const base = CARD_BASES[card.baseId]
     return (
-      base.categories.includes('Hammerite') &&
-      (card.strength ?? 0) > playedStrength
+      base.categories.includes('Hammerite') && (card.life ?? 0) > playedLife
     )
   })
 
@@ -102,22 +101,22 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
   if (!playedCard) return state
 
-  const sachelmanStrength = playedCard.strength ?? 0
+  const sachelmanLife = playedCard.life ?? 0
   const newCards = { ...state.cards }
 
   for (const id of player.board) {
     if (id === cardInstanceId) continue
 
     const card = newCards[id]
-    if (!card || card.strength === undefined) continue
+    if (!card || card.life === undefined) continue
 
     const base = CARD_BASES[card.baseId]
     if (!base.categories.includes('Hammerite')) continue
-    if (card.strength >= sachelmanStrength) continue
+    if (card.life >= sachelmanLife) continue
 
     newCards[id] = {
       ...card,
-      strength: card.strength + 1,
+      life: card.life + 1,
     }
   }
 
@@ -149,13 +148,13 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
   if (opponent.board.length <= player.board.length) return state
 
   const card = state.cards[cardInstanceId]
-  if (!card || card.strength === undefined) return state
+  if (!card || card.life === undefined) return state
 
   return {
     ...state,
     cards: {
       ...state.cards,
-      [cardInstanceId]: { ...card, strength: card.strength + 1 },
+      [cardInstanceId]: { ...card, life: card.life + 1 },
     },
   }
 }
@@ -166,12 +165,12 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
 
   for (const id of player.board) {
     const card = newCards[id]
-    if (!card || card.strength === undefined) continue
+    if (!card || card.life === undefined) continue
 
     const base = CARD_BASES[card.baseId]
     if (!base.categories.includes('Hammerite')) continue
 
-    newCards[id] = { ...card, strength: card.strength + 1 }
+    newCards[id] = { ...card, life: card.life + 1 }
   }
 
   return { ...state, cards: newCards }
@@ -203,7 +202,7 @@ const applyHauntReactiveEffect = (
   if (hauntsWithCharges.length === 0) return state
 
   const playedCard = state.cards[cardInstanceId]
-  if (!playedCard || playedCard.strength === undefined) return state
+  if (!playedCard || playedCard.life === undefined) return state
 
   const newCards = { ...state.cards }
 
@@ -218,10 +217,10 @@ const applyHauntReactiveEffect = (
   }
 
   const damage = hauntsWithCharges.length
-  const newStrength = playedCard.strength - damage
+  const newLife = playedCard.life - damage
 
-  if (newStrength <= 0) {
-    newCards[cardInstanceId] = { ...playedCard, strength: 0 }
+  if (newLife <= 0) {
+    newCards[cardInstanceId] = { ...playedCard, life: 0 }
     const player = getPlayer(state, playerId)
 
     return {
@@ -233,7 +232,7 @@ const applyHauntReactiveEffect = (
     }
   }
 
-  newCards[cardInstanceId] = { ...playedCard, strength: newStrength }
+  newCards[cardInstanceId] = { ...playedCard, life: newLife }
   return { ...state, cards: newCards }
 }
 
@@ -266,34 +265,34 @@ const applyBurrickAttackEffect = (
 
   let result = state
   const newCards = { ...result.cards }
-  const attackStrength = attacker.strength
+  const attackDamage = attacker.strength
 
   for (const adjId of adjacentIds) {
     const adjCard = newCards[adjId]
-    if (!adjCard || adjCard.strength === undefined) continue
+    if (!adjCard || adjCard.life === undefined) continue
 
-    const adjNewStrength = adjCard.strength - attackStrength
+    const adjNewLife = adjCard.life - attackDamage
 
-    if (adjNewStrength <= 0) {
-      newCards[adjId] = { ...adjCard, strength: 0 }
+    if (adjNewLife <= 0) {
+      newCards[adjId] = { ...adjCard, life: 0 }
       const currentInactive = getPlayer(result, state.inactivePlayerId)
       result = updatePlayer(result, state.inactivePlayerId, {
         board: currentInactive.board.filter((id) => id !== adjId),
         discard: [...currentInactive.discard, adjId],
       })
     } else {
-      newCards[adjId] = { ...adjCard, strength: adjNewStrength }
+      newCards[adjId] = { ...adjCard, life: adjNewLife }
     }
   }
 
   const currentAttacker = newCards[attackerId]!
-  const burrickStrength = attackStrength - 1
+  const burrickNewLife = (currentAttacker.life ?? 0) - 1
   const newCharges = Math.max(0, (currentAttacker.charges ?? 0) - 1)
 
-  if (burrickStrength <= 0) {
+  if (burrickNewLife <= 0) {
     newCards[attackerId] = {
       ...currentAttacker,
-      strength: 0,
+      life: 0,
       charges: newCharges,
     }
     const activePlayer = getPlayer(result, state.activePlayerId)
@@ -304,7 +303,7 @@ const applyBurrickAttackEffect = (
   } else {
     newCards[attackerId] = {
       ...currentAttacker,
-      strength: burrickStrength,
+      life: burrickNewLife,
       charges: newCharges,
     }
   }
@@ -319,16 +318,17 @@ const applyTempleGuardRetaliationEffect = (
 ): Duel => {
   const defender = state.cards[defenderId]
   if (!defender || defender.baseId !== 'templeGuard') return state
-  if (defender.strength === undefined || defender.strength <= 0) return state
+  if (defender.life === undefined || defender.life <= 0) return state
 
   const attacker = state.cards[attackerId]
-  if (!attacker || attacker.strength === undefined) return state
+  if (!attacker || attacker.life === undefined) return state
+  if (defender.strength === undefined) return state
 
   const newCards = { ...state.cards }
-  const attackerNewStrength = attacker.strength - defender.strength
+  const attackerNewLife = attacker.life - defender.strength
 
-  if (attackerNewStrength <= 0) {
-    newCards[attackerId] = { ...attacker, strength: 0 }
+  if (attackerNewLife <= 0) {
+    newCards[attackerId] = { ...attacker, life: 0 }
     const activePlayer = getPlayer(state, state.activePlayerId)
     return {
       ...updatePlayer(state, state.activePlayerId, {
@@ -339,7 +339,7 @@ const applyTempleGuardRetaliationEffect = (
     }
   }
 
-  newCards[attackerId] = { ...attacker, strength: attackerNewStrength }
+  newCards[attackerId] = { ...attacker, life: attackerNewLife }
   return { ...state, cards: newCards }
 }
 
