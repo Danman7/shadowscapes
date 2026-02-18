@@ -20,6 +20,10 @@ type Story = StoryObj<typeof Button>
 
 export const Default: Story = {}
 
+export const Secondary: Story = {
+  args: { isSecondary: true },
+}
+
 export const Disabled: Story = {
   args: { onClick: undefined },
 }

@@ -4,6 +4,7 @@ import { Board } from '@/components/Board'
 import { Button } from '@/components/Button'
 import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
+import { Logs } from '@/components/Logs'
 import { PlayerBadge } from '@/components/PlayerBadge'
 import { useGameDispatch } from '@/contexts/GameContext'
 import {
@@ -15,6 +16,7 @@ import {
   useInactivePlayer,
   useInactivePlayerBoard,
   useInactivePlayerHand,
+  useLogs,
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
@@ -48,7 +50,10 @@ const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
   }
 
   return (
-    <div data-testid="phase-info" className="text-lg font-semibold">
+    <div
+      data-testid="phase-info"
+      className="text-lg font-semibold grow text-center w-1/3"
+    >
       {phaseInfoText}
     </div>
   )
@@ -108,9 +113,11 @@ const PhaseButton: React.FC<{
 
   return (
     phaseButtonLabel && (
-      <Button onClick={phaseButtonOnClick} data-testid="phase-button">
-        {phaseButtonLabel}
-      </Button>
+      <div className="w-1/3 flex place-content-end">
+        <Button onClick={phaseButtonOnClick} data-testid="phase-button">
+          {phaseButtonLabel}
+        </Button>
+      </div>
     )
   )
 }
@@ -121,6 +128,8 @@ export const DuelView: React.FC = () => {
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
   const activePlayerCoins = useActivePlayerCoins()
+  const logs = useLogs()
+  const [areLogsVisible, setAreLogsVisible] = useState(false)
 
   const [selectedAttackerId, setSelectedAttackerId] = useState<number | null>(
     null,
@@ -311,6 +320,23 @@ export const DuelView: React.FC = () => {
 
       {/* Row 3: center bar */}
       <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
+        <div className="flex items-start gap-2 w-1/3">
+          {!areLogsVisible && logs.length > 0 && (
+            <Button
+              className="px-2 py-1 text-xs"
+              onClick={() => setAreLogsVisible(true)}
+              data-testid="logs-toggle-button"
+              isSecondary
+            >
+              Logs
+            </Button>
+          )}
+
+          {areLogsVisible ? (
+            <Logs onClose={() => setAreLogsVisible(false)} logs={logs} />
+          ) : null}
+        </div>
+
         <PhaseInfo phase={phase} activePlayerName={activePlayer.name} />
 
         <PhaseButton

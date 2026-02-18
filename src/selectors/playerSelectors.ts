@@ -42,3 +42,5 @@ export const usePlayerDiscardCount = (playerId: PlayerId): number =>
   usePlayer(playerId).discard.length
 
 export const useActivePlayerCoins = (): number => useActivePlayer().coins
+
+export const useLogs = (): string[] => useGameState().logs

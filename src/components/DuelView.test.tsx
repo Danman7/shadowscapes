@@ -50,6 +50,39 @@ test('renders deck and discard piles for both players', () => {
   expect(getAllByTestId('face-down-pile')).toHaveLength(4)
 })
 
+describe('Logs visibility', () => {
+  test('hides logs by default', () => {
+    const { getByRole, queryByText } = renderGameContext(<DuelView />, {
+      preloadedState: MIXED_STACKS_DUEL,
+    })
+
+    expect(getByRole('button', { name: 'Logs' })).toBeInTheDocument()
+    expect(queryByText('Garrett goes first.')).not.toBeInTheDocument()
+  })
+
+  test('shows and hides logs on demand', () => {
+    const { getByRole, queryByRole, getByText, queryByText } =
+      renderGameContext(<DuelView />, {
+        preloadedState: MIXED_STACKS_DUEL,
+      })
+
+    fireEvent.click(getByRole('button', { name: 'Logs' }))
+
+    expect(queryByRole('button', { name: 'Logs' })).not.toBeInTheDocument()
+    expect(getByText('Garrett goes first.')).toBeInTheDocument()
+
+    const logsTitle = getByText('Logs')
+    const closeIcon = logsTitle.parentElement?.querySelector('svg')
+    if (closeIcon === null || closeIcon === undefined)
+      throw new Error('Expected close icon to be rendered')
+
+    fireEvent.click(closeIcon)
+
+    expect(getByRole('button', { name: 'Logs' })).toBeInTheDocument()
+    expect(queryByText('Garrett goes first.')).not.toBeInTheDocument()
+  })
+})
+
 describe('Initial sequence', () => {
   test('transitions from intro to initial-draw to redraw phase', async () => {
     const dispatchSpy = vi.fn()
