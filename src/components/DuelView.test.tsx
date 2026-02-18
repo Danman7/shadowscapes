@@ -17,6 +17,7 @@ import {
   PRELOADED_DUEL_SETUP as preloadedState,
 } from '@/test/mocks/duelSetup'
 import { renderGameContext } from '@/test/renderGameContext'
+import type { Duel } from '@/types'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -639,11 +640,8 @@ describe('Turn end phase', () => {
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
     const activePlayerId = preloadedState.activePlayerId
-    const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
-    const inactivePlayer = preloadedState.players[inactivePlayerId]
 
-    const stateWithBothBoards = {
+    const stateWithBothBoards: Duel = {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
@@ -651,19 +649,19 @@ describe('Turn end phase', () => {
         2: createCardInstance('haunt', 2),
       },
       players: {
-        [activePlayerId]: {
-          ...activePlayer,
+        player1: {
+          ...preloadedState.players.player1,
           hand: [],
           deck: [],
           discard: [],
-          board: [1],
+          board: activePlayerId === 'player1' ? [1] : [2],
         },
-        [inactivePlayerId]: {
-          ...inactivePlayer,
+        player2: {
+          ...preloadedState.players.player2,
           hand: [],
           deck: [],
           discard: [],
-          board: [2],
+          board: activePlayerId === 'player2' ? [1] : [2],
         },
       },
     }
