@@ -1,4 +1,5 @@
 import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
+import { CARD_BASES } from '@/constants/cardBases'
 import {
   coinFlipForPlayerStart,
   createCardInstance,
@@ -28,6 +29,18 @@ export interface CreateDuelOverrides extends Partial<Omit<Duel, 'players'>> {
     Record<PlayerId, Partial<Record<Stack, CardBaseId[]>>>
   >
   rng?: () => number
+}
+
+const getDeckSummaryLog = (playerName: string, cards: CardBaseId[]): string => {
+  const eliteCount = cards.filter(
+    (baseId) => CARD_BASES[baseId].rank === 'elite',
+  ).length
+  const totalCost = cards.reduce(
+    (sum, baseId) => sum + CARD_BASES[baseId].cost,
+    0,
+  )
+
+  return `${playerName}'s deck: ${cards.length} cards / ${eliteCount} elites / ${totalCost} total cost.`
 }
 
 const getNextCardId = (duel: Duel): number => {
@@ -152,6 +165,10 @@ export const createDuel = (
     activePlayerId,
     inactivePlayerId,
     startingPlayerId,
+    logs: [
+      getDeckSummaryLog(player1Name, player1Deck),
+      getDeckSummaryLog(player2Name, player2Deck),
+    ],
   }
 
   const { stackOverrides, cards, players, ...restOverrides } = overrides

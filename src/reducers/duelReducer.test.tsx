@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
+import { CARD_BASES } from '@/constants/cardBases'
 import { INITIAL_CARDS_TO_DRAW } from '@/constants/duelParams'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
 import { createDuel } from '@/game-engine/initialization'
@@ -23,6 +24,7 @@ test('START_DUEL action creates new duel with player names and decks', () => {
     inactivePlayerId,
     players: { player1, player2 },
     cards,
+    logs,
   } = duelReducer(initialDuelState, {
     type: 'START_DUEL',
     payload: {
@@ -50,6 +52,27 @@ test('START_DUEL action creates new duel with player names and decks', () => {
 
   expect(startingPlayerId).not.toBeNull()
   expect(activePlayerId).not.toBe(inactivePlayerId)
+
+  const player1EliteCount = PLAYER_1_DECK.filter(
+    (baseId) => CARD_BASES[baseId].rank === 'elite',
+  ).length
+  const player1TotalCost = PLAYER_1_DECK.reduce(
+    (sum, baseId) => sum + CARD_BASES[baseId].cost,
+    0,
+  )
+
+  const player2EliteCount = PLAYER_2_DECK.filter(
+    (baseId) => CARD_BASES[baseId].rank === 'elite',
+  ).length
+  const player2TotalCost = PLAYER_2_DECK.reduce(
+    (sum, baseId) => sum + CARD_BASES[baseId].cost,
+    0,
+  )
+
+  expect(logs).toEqual([
+    `Alice's deck: ${PLAYER_1_DECK.length} cards / ${player1EliteCount} elites / ${player1TotalCost} total cost.`,
+    `Bob's deck: ${PLAYER_2_DECK.length} cards / ${player2EliteCount} elites / ${player2TotalCost} total cost.`,
+  ])
 })
 
 test('TRANSITION_PHASE action updates the phase and resets playerReady flags', () => {
