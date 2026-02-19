@@ -1274,6 +1274,72 @@ describe("Yora's Skull effect", () => {
   })
 })
 
+describe('Priest effect', () => {
+  test('gains 1 coin per Priest when an allied character is defeated', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 1),
+        2: createCardInstance('priest', 2),
+        3: createCardInstance('priest', 3),
+        4: createCardInstance('templeGuard', 4),
+      },
+      players: {
+        player1: {
+          board: [1, 2, 3],
+          discard: [],
+          coins: 10,
+        },
+        player2: {
+          board: [4],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 4 },
+    })
+
+    expect(result.players.player1.discard).toContain(1)
+    expect(result.players.player1.coins).toBe(12)
+  })
+
+  test('does not gain coins when no Priest is on board', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      phase: 'turn-end',
+      activePlayerId: 'player1',
+      inactivePlayerId: 'player2',
+      cards: {
+        1: createCardInstance('zombie', 1, 1),
+        2: createCardInstance('templeGuard', 2),
+      },
+      players: {
+        player1: {
+          board: [1],
+          discard: [],
+          coins: 10,
+        },
+        player2: {
+          board: [2],
+          discard: [],
+        },
+      },
+    })
+
+    const result = duelReducerWithEffects(state, {
+      type: 'ATTACK_CARD',
+      payload: { attackerId: 1, defenderId: 2 },
+    })
+
+    expect(result.players.player1.discard).toContain(1)
+    expect(result.players.player1.coins).toBe(10)
+  })
+})
+
 describe('High Priest Markander effect', () => {
   test('decrements charges when a Hammerite is played', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {

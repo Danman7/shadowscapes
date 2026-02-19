@@ -478,6 +478,53 @@ const applyMarkanderReactiveEffect = (
   return result
 }
 
+const applyPriestDefeatRewardEffect = (state: Duel, prevState: Duel): Duel => {
+  let result = state
+
+  for (const playerId of ['player1', 'player2'] as const) {
+    const prevPlayer = getPlayer(prevState, playerId)
+    const currentPlayer = getPlayer(result, playerId)
+
+    const newlyDiscardedCharacterCards = currentPlayer.discard.filter((id) => {
+      if (prevPlayer.discard.includes(id)) return false
+
+      const card = result.cards[id]
+      if (!card) return false
+
+      return CARD_BASES[card.baseId].type === 'character'
+    })
+
+    if (newlyDiscardedCharacterCards.length === 0) continue
+
+    const priestsOnBoard = currentPlayer.board.filter((id) => {
+      const card = result.cards[id]
+      return card?.baseId === 'priest'
+    }).length
+
+    if (priestsOnBoard === 0) continue
+
+    const gainedCoins = priestsOnBoard * newlyDiscardedCharacterCards.length
+
+    result = {
+      ...updatePlayer(result, playerId, {
+        coins: currentPlayer.coins + gainedCoins,
+      }),
+      logs: [
+        ...result.logs,
+        `${currentPlayer.name}'s ${formatNoun(
+          priestsOnBoard,
+          'Priest',
+        )} grants ${formatNoun(gainedCoins)} because ${formatNoun(
+          newlyDiscardedCharacterCards.length,
+          'allied character',
+        )} was defeated.`,
+      ],
+    }
+  }
+
+  return result
+}
+
 export function applyCardEffects(
   state: Duel,
   action: DuelAction,
@@ -493,6 +540,7 @@ export function applyCardEffects(
 
     result = applyHauntReactiveEffect(result, playerId, cardInstanceId)
     result = applyMarkanderReactiveEffect(result, playerId, cardInstanceId)
+    result = applyPriestDefeatRewardEffect(result, prevState)
 
     return result
   }
@@ -506,6 +554,7 @@ export function applyCardEffects(
       defenderId,
     )
     result = applyTempleGuardRetaliationEffect(result, attackerId, defenderId)
+    result = applyPriestDefeatRewardEffect(result, prevState)
     return result
   }
 

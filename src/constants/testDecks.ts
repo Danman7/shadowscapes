@@ -15,7 +15,7 @@ export const PLAYER_2_DECK: CardBaseId[] = [
   'novice',
   'templeGuard',
   'templeGuard',
+  'priest',
+  'priest',
   'sachelman',
-  'yoraSkull',
-  'highPriestMarkander',
 ]

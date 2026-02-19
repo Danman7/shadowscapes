@@ -99,6 +99,22 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     life: 1,
     strength: 1,
   },
+  priest: {
+    id: 'priest',
+    name: 'Priest',
+    cost: 3,
+    life: 2,
+    strength: 1,
+    type: 'character',
+    description: [
+      'While this card is in play, whenever an alied character is defeated, gain 1 coin.',
+    ],
+    flavorText:
+      'Temple Priests will be issued keys to most areas, and are allowed in restricted rooms when authorized by the High Priest. They are also, of course, allowed in their own ',
+    faction: 'order',
+    categories: ['Hammerite', 'Priest'],
+    rank: 'common',
+  },
   templeGuard: {
     id: 'templeGuard',
     name: 'Temple Guard',
