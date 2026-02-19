@@ -6,6 +6,7 @@ import {
 } from '@/game-engine/initialization'
 import { formatNoun } from '@/game-engine/utils'
 import type { CardBaseId, Duel, DuelAction, PlayerId } from '@/types'
+import * as balancing from '@/constants/balancing'
 
 type CardEffect = (
   state: Duel,
@@ -146,7 +147,7 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
     newCards[id] = {
       ...card,
-      life: card.life + 1,
+      life: card.life + balancing.SACHELMAN_BUFF_ON_PLAY,
     }
     weakerHammeritesCount++
   }
@@ -156,7 +157,7 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
     cards: newCards,
     logs: [
       ...state.logs,
-      `Brother Sachelman gives 1 life to ${formatNoun(weakerHammeritesCount, 'hammerite')} on board.`,
+      `Brother Sachelman gives ${balancing.SACHELMAN_BUFF_ON_PLAY} life to ${formatNoun(weakerHammeritesCount, 'hammerite')} on board.`,
     ],
   }
 }
@@ -171,7 +172,7 @@ const mysticsSoulEffect: CardEffect = (state, playerId) => {
 
     newCards[id] = {
       ...card,
-      charges: card.charges + 1,
+      charges: card.charges + balancing.MYSTICS_SOUL_BONUS_CHARGES,
     }
   }
 
@@ -192,11 +193,14 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
     ...state,
     cards: {
       ...state.cards,
-      [cardInstanceId]: { ...card, life: card.life + 1 },
+      [cardInstanceId]: {
+        ...card,
+        life: card.life + balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS,
+      },
     },
     logs: [
       ...state.logs,
-      `Temple Guard gains 1 life because ${opponent.name} controls more cards on board.`,
+      `Temple Guard gains ${balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS} life because ${opponent.name} controls more cards on board.`,
     ],
   }
 }
@@ -213,7 +217,10 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     const base = CARD_BASES[card.baseId]
     if (!base.categories.includes('Hammerite')) continue
 
-    newCards[id] = { ...card, life: card.life + 1 }
+    newCards[id] = {
+      ...card,
+      life: card.life + balancing.YORA_SKULL_BUFF_ON_PLAY,
+    }
     boostedCardsCount++
   }
 
@@ -222,7 +229,7 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     cards: newCards,
     logs: [
       ...state.logs,
-      `Yora Skull gives 1 life to ${formatNoun(boostedCardsCount, 'hammerite')} on board.`,
+      `Yora Skull gives ${balancing.YORA_SKULL_BUFF_ON_PLAY} life to ${formatNoun(boostedCardsCount, 'hammerite')} on board.`,
     ],
   }
 }
@@ -503,7 +510,10 @@ const applyPriestDefeatRewardEffect = (state: Duel, prevState: Duel): Duel => {
 
     if (priestsOnBoard === 0) continue
 
-    const gainedCoins = priestsOnBoard * newlyDiscardedCharacterCards.length
+    const gainedCoins =
+      priestsOnBoard *
+      newlyDiscardedCharacterCards.length *
+      balancing.PRIEST_COINS_GAINED
 
     result = {
       ...updatePlayer(result, playerId, {

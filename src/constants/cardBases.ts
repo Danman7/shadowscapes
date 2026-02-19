@@ -1,11 +1,14 @@
 import type { CardBase, CardBaseId } from '@/types'
+import * as balancing from '@/constants/balancing'
 
 export const CARD_BASES: Record<CardBaseId, CardBase> = {
   // Chaos --------------------------------------- /
   zombie: {
     id: 'zombie',
     name: 'Zombie',
-    cost: 1,
+    cost: balancing.ZOMBIE_COST,
+    life: balancing.ZOMBIE_LIFE,
+    strength: balancing.ZOMBIE_STRENGTH,
     description: [
       'On play, summon all copies of this card from your discard pile.',
     ],
@@ -15,18 +18,17 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Undead'],
     type: 'character',
     rank: 'common',
-    life: 1,
-    strength: 1,
   },
   burrick: {
     id: 'burrick',
     name: 'Burrick',
-    cost: 3,
-    life: 2,
-    strength: 1,
+    cost: balancing.BURRICK_COST,
+    life: balancing.BURRICK_LIFE,
+    strength: balancing.BURRICK_STRENGTH,
+    charges: balancing.BURRICK_CHARGES,
     type: 'character',
     description: [
-      'This card starts with 1 charge',
+      `This card starts with ${balancing.BURRICK_CHARGES} charge`,
       "Whenever this card attacks, if it has charges left, it also attacks the target's adjacent cards and loses a charge.",
     ],
     flavorText:
@@ -34,14 +36,16 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Beast'],
     faction: 'chaos',
     rank: 'common',
-    charges: 1,
   },
   haunt: {
     id: 'haunt',
     name: 'Haunt',
-    cost: 4,
+    cost: balancing.HAUNT_COST,
+    life: balancing.HAUNT_LIFE,
+    strength: balancing.HAUNT_STRENGTH,
+    charges: balancing.HAUNT_CHARGES,
     description: [
-      'This card starts with 1 charge.',
+      `This card starts with ${balancing.HAUNT_CHARGES} charge.`,
       'Whenever your opponent plays a card, if this card is on board, and it has charges left, it attacks the played card.',
     ],
     flavorText:
@@ -50,16 +54,15 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Undead', 'Hammerite'],
     type: 'character',
     rank: 'common',
-    life: 3,
-    strength: 1,
-    charges: 1,
   },
   mysticsSoul: {
     id: 'mysticsSoul',
     name: "Mystic's Soul",
-    cost: 4,
+    cost: balancing.MYSTICS_SOUL_COST,
     type: 'instant',
-    description: ['+1 charge for all allied characters on board.'],
+    description: [
+      `+${balancing.MYSTICS_SOUL_BONUS_CHARGES} charge for all allied characters on board.`,
+    ],
     flavorText:
       "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the gem called the Mystic's Soul. -- Note found next to Adolpho's corpse",
     rank: 'elite',
@@ -69,7 +72,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   bookOfAsh: {
     id: 'bookOfAsh',
     name: 'Book of Ash',
-    cost: 5,
+    cost: balancing.BOOK_OF_ASH_COST,
     description: [
       'Create and summon a copy of a common undead from your discard pile.',
     ],
@@ -86,7 +89,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   novice: {
     id: 'novice',
     name: 'Novice',
-    cost: 1,
+    cost: balancing.NOVICE_COST,
+    life: balancing.NOVICE_LIFE,
+    strength: balancing.NOVICE_STRENGTH,
     description: [
       'On play, if you control another hammerite with more life than this card, summon all copies of this card from your hand or deck.',
     ],
@@ -96,18 +101,16 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite'],
     type: 'character',
     rank: 'common',
-    life: 1,
-    strength: 1,
   },
   priest: {
     id: 'priest',
     name: 'Priest',
-    cost: 3,
-    life: 2,
-    strength: 1,
+    cost: balancing.PRIEST_COST,
+    life: balancing.PRIEST_LIFE,
+    strength: balancing.PRIEST_STRENGTH,
     type: 'character',
     description: [
-      'While this card is in play, whenever an alied character is defeated, gain 1 coin.',
+      `While this card is in play, whenever an alied character is defeated, gain ${balancing.PRIEST_COINS_GAINED} coin.`,
     ],
     flavorText:
       'Temple Priests will be issued keys to most areas, and are allowed in restricted rooms when authorized by the High Priest. They are also, of course, allowed in their own ',
@@ -118,9 +121,11 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   templeGuard: {
     id: 'templeGuard',
     name: 'Temple Guard',
-    cost: 4,
+    cost: balancing.TEMPLE_GUARD_COST,
+    life: balancing.TEMPLE_GUARD_LIFE,
+    strength: balancing.TEMPLE_GUARD_STRENGTH,
     description: [
-      '+1 life on play if you control fewer cards than your foe.',
+      `+${balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS} life on play if you control fewer cards than your foe.`,
       'Retaliates when attacked.',
     ],
     flavorText:
@@ -129,15 +134,15 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite', 'Guard'],
     type: 'character',
     rank: 'common',
-    life: 3,
-    strength: 1,
   },
   sachelman: {
     id: 'sachelman',
     name: 'Brother Sachelman',
-    cost: 5,
+    cost: balancing.SACHELMAN_COST,
+    life: balancing.SACHELMAN_LIFE,
+    strength: balancing.SACHELMAN_STRENGTH,
     description: [
-      'On play, give +1 life to all hammerites you control with less life than this card.',
+      `On play, give +${balancing.SACHELMAN_BUFF_ON_PLAY} life to all hammerites you control with less life than this card.`,
     ],
     flavorText:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
@@ -145,14 +150,14 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite'],
     type: 'character',
     rank: 'elite',
-    life: 3,
-    strength: 1,
   },
   yoraSkull: {
     id: 'yoraSkull',
     name: "Saint Yora's Skull",
-    cost: 5,
-    description: ['+1 life to all hammerites you control.'],
+    cost: balancing.YORA_SKULL_COST,
+    description: [
+      `+${balancing.YORA_SKULL_BUFF_ON_PLAY} life to all hammerites you control.`,
+    ],
     flavorText: 'Yora was a builder of vision and devout keeper of the faith.',
     faction: 'order',
     categories: ['Hammerite', 'Artifact'],
@@ -162,12 +167,13 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   highPriestMarkander: {
     id: 'highPriestMarkander',
     name: 'High Priest Markander',
-    cost: 5,
-    life: 3,
-    strength: 1,
+    cost: balancing.HIGH_PRIEST_MARKANDER_COST,
+    life: balancing.HIGH_PRIEST_MARKANDER_LIFE,
+    strength: balancing.HIGH_PRIEST_MARKANDER_STRENGTH,
+    charges: balancing.HIGH_PRIEST_MARKANDER_CHARGES,
     type: 'character',
     description: [
-      'This card starts with 5 charges.',
+      `This card starts with ${balancing.HIGH_PRIEST_MARKANDER_CHARGES} charges.`,
       'Reduce the charges each time a Hammerite is played.',
       'At 0, summon this card to the board.',
     ],
@@ -176,7 +182,6 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Hammerite', 'Priest'],
     faction: 'order',
     rank: 'elite',
-    charges: 5,
   },
 
   // Shadow --------------------------------------- /
@@ -184,9 +189,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   downwinder: {
     id: 'downwinder',
     name: 'Downwinder',
-    cost: 2,
-    life: 2,
-    strength: 1,
+    cost: balancing.DOWNWINDER_COST,
+    life: balancing.DOWNWINDER_LIFE,
+    strength: balancing.DOWNWINDER_STRENGTH,
     description: ['Steal a coin when attacking the enemy player directly.'],
     flavorText:
       "We chose our profession in defiance of the greed of the monarchy. We will not live for the sake of taxes to fatten the noble's pockets.",
@@ -201,7 +206,9 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   cook: {
     id: 'cook',
     name: 'Cook',
-    cost: 2,
+    cost: balancing.COOK_COST,
+    life: balancing.COOK_LIFE,
+    strength: balancing.COOK_STRENGTH,
     description: ['On play, draw a card.'],
     flavorText:
       "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
@@ -209,7 +216,5 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     categories: ['Servant'],
     type: 'character',
     rank: 'common',
-    life: 1,
-    strength: 1,
   },
 }

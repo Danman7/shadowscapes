@@ -5,7 +5,7 @@ import { Card } from '@/components/Card'
 import { CARD_BASES } from '@/constants/cardBases'
 import { FACTION_COLORS } from '@/constants/duelParams'
 import { createCardInstance } from '@/game-engine/utils'
-import type { CardInstance } from '@/types'
+import type { CardBaseCharacter, CardInstance } from '@/types'
 
 let mockCharacterCard: CardInstance
 let mockInstantCard: CardInstance
@@ -52,7 +52,8 @@ test('renders card with charges', () => {
   )
 
   expect(
-    getAllByText(CARD_BASES.highPriestMarkander.charges!).length,
+    getAllByText((CARD_BASES.highPriestMarkander as CardBaseCharacter).charges!)
+      .length,
   ).toBeGreaterThan(1)
 })
 

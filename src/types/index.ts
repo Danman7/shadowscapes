@@ -37,13 +37,13 @@ interface CardBaseCommon {
   faction: Faction
   categories: CardCategory[]
   rank: CardRank
-  charges?: number
 }
 
 export interface CardBaseCharacter extends CardBaseCommon {
   type: 'character'
   life: number
   strength: number
+  charges?: number
 }
 
 export interface CardBaseInstant extends CardBaseCommon {

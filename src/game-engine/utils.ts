@@ -1,4 +1,10 @@
-import type { CardBase, CardBaseId, CardInstance, PlayerId } from '@/types'
+import type {
+  CardBase,
+  CardBaseCharacter,
+  CardBaseId,
+  CardInstance,
+  PlayerId,
+} from '@/types'
 import { CARD_BASES } from '@/constants/cardBases'
 
 let instanceIdCounter = 0
@@ -28,7 +34,8 @@ export const createCardInstance = (
   cost: CARD_BASES[baseId].cost,
   life: life ?? getCardLife(CARD_BASES[baseId]),
   strength: getCardStrength(CARD_BASES[baseId]),
-  charges: charges ?? CARD_BASES[baseId].charges,
+  charges:
+    (charges ?? (CARD_BASES[baseId] as CardBaseCharacter).charges) || undefined,
   didAct: false,
 })
 
