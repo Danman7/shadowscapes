@@ -37,6 +37,7 @@ export const createCardInstance = (
   charges:
     (charges ?? (CARD_BASES[baseId] as CardBaseCharacter).charges) || undefined,
   didAct: false,
+  haste: false,
 })
 
 export const shuffle = <T>(

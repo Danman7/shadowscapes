@@ -10,6 +10,7 @@ export type CardCategory =
   | 'Necromancer'
   | 'Priest'
   | 'Beast'
+  | 'Equipment'
 
 export type CardBaseId =
   | 'zombie'
@@ -25,6 +26,8 @@ export type CardBaseId =
   | 'burrick'
   | 'mysticsSoul'
   | 'priest'
+  | 'speedPotion'
+  | 'flashBomb'
 
 export type CardRank = 'common' | 'elite'
 
@@ -44,6 +47,8 @@ export interface CardBaseCharacter extends CardBaseCommon {
   life: number
   strength: number
   charges?: number
+  stunned?: boolean
+  haste?: boolean
 }
 
 export interface CardBaseInstant extends CardBaseCommon {
@@ -61,6 +66,8 @@ export interface CardInstance {
   charges?: number
   didAct?: boolean
   stunned?: boolean
+  stunnedTurnsRemaining?: number
+  haste?: boolean
 }
 
 export type PlayerId = 'player1' | 'player2'
@@ -84,6 +91,8 @@ export type Phase =
   | 'player-turn'
   | 'turn-end'
 
+export type PendingInstant = { type: 'SPEED_POTION' } | { type: 'FLASH_BOMB' }
+
 export interface Duel {
   cards: Record<number, CardInstance>
   players: { player1: Player; player2: Player }
@@ -92,6 +101,7 @@ export interface Duel {
   phase: Phase
   startingPlayerId: PlayerId | null
   logs: string[]
+  pendingInstant: PendingInstant | null
 }
 
 export type DuelAction =
@@ -128,4 +138,13 @@ export type DuelAction =
       payload: {
         attackerId: number
       }
+    }
+  | { type: 'SET_PENDING_INSTANT'; payload: PendingInstant | null }
+  | {
+      type: 'APPLY_SPEED_POTION'
+      payload: { targetCardInstanceId: number }
+    }
+  | {
+      type: 'APPLY_FLASH_BOMB'
+      payload: { targetCardInstanceId: number }
     }

@@ -1,7 +1,7 @@
 import { BsLightningFill } from 'react-icons/bs'
 import { FaSun } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
-import { GiCrownCoin, GiStarSwirl } from 'react-icons/gi'
+import { GiCrownCoin, GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
 import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { CARD_BASES } from '@/constants/cardBases'
@@ -23,7 +23,7 @@ export const Card: React.FC<{
   isAttacking,
   attackDirection,
 }) => {
-  const { life, strength, baseId, charges, cost, stunned } = card
+  const { life, strength, baseId, charges, cost, stunned, haste } = card
   const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, categories, rank, type } =
     base
@@ -98,6 +98,8 @@ export const Card: React.FC<{
         </div>
 
         {stunned && <GiStarSwirl />}
+
+        {haste && <GiWingfoot />}
 
         {charges !== undefined && (
           <div className="flex items-center gap-1">

@@ -8,6 +8,7 @@ export const PLAYER_1_DECK: CardBaseId[] = [
   'mysticsSoul',
   'burrick',
   'burrick',
+  'speedPotion',
 ]
 
 export const PLAYER_2_DECK: CardBaseId[] = [
@@ -18,4 +19,5 @@ export const PLAYER_2_DECK: CardBaseId[] = [
   'priest',
   'priest',
   'sachelman',
+  'speedPotion',
 ]

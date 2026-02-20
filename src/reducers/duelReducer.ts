@@ -11,7 +11,7 @@ import {
   updatePlayer,
 } from '@/game-engine/initialization'
 import { formatNoun } from '@/game-engine/utils'
-import type { CardInstance, Duel, DuelAction } from '@/types'
+import type { CardInstance, Duel, DuelAction, PendingInstant } from '@/types'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},
@@ -24,6 +24,7 @@ export const initialDuelState: Readonly<Duel> = {
   phase: 'intro',
   startingPlayerId: null,
   logs: [],
+  pendingInstant: null,
 }
 
 export function duelReducer(
@@ -70,10 +71,14 @@ export function duelReducer(
       const resetCards: Record<number, CardInstance> = {}
 
       for (const [id, card] of Object.entries(state.cards)) {
+        const turnsLeft = card.stunnedTurnsRemaining ?? 0
+        const newTurnsLeft = turnsLeft > 0 ? turnsLeft - 1 : 0
+
         resetCards[Number(id)] = {
           ...card,
           didAct: false,
-          stunned: false,
+          stunned: newTurnsLeft > 0,
+          stunnedTurnsRemaining: newTurnsLeft > 0 ? newTurnsLeft : undefined,
         }
       }
 
@@ -155,11 +160,34 @@ export function duelReducer(
 
       let newState: Duel
 
+      const playLog = `${player.name} plays ${CARD_BASES[baseId].name} for ${formatNoun(cost)}. They have ${formatNoun(newPlayerCoins)} left.`
+
       if (type === 'instant') {
         newState = updatePlayer(state, playerId, {
           ...updatedPlayer,
           discard: [...player.discard, cardInstanceId],
         })
+
+        let pendingInstant: PendingInstant | null = null
+
+        if (baseId === 'speedPotion') {
+          const hasHandCharacters = newhand.some(
+            (id) => CARD_BASES[state.cards[id]!.baseId].type === 'character',
+          )
+          if (hasHandCharacters) pendingInstant = { type: 'SPEED_POTION' }
+        } else if (baseId === 'flashBomb') {
+          const totalBoardCards =
+            state.players.player1.board.length +
+            state.players.player2.board.length
+          if (totalBoardCards > 0) pendingInstant = { type: 'FLASH_BOMB' }
+        }
+
+        return {
+          ...newState,
+          pendingInstant,
+          phase: 'turn-end',
+          logs: [...state.logs, playLog],
+        }
       } else {
         newState = updatePlayer(state, playerId, {
           ...updatedPlayer,
@@ -171,7 +199,7 @@ export function duelReducer(
             ...newState.cards,
             [cardInstanceId]: {
               ...newState.cards[cardInstanceId]!,
-              stunned: true,
+              stunned: !card.haste,
             },
           },
         }
@@ -180,12 +208,7 @@ export function duelReducer(
       return {
         ...newState,
         phase: 'turn-end',
-        logs: [
-          ...state.logs,
-          `${player.name} plays ${CARD_BASES[baseId].name} for ${formatNoun(
-            cost,
-          )}. They have ${formatNoun(newPlayerCoins)} left.`,
-        ],
+        logs: [...state.logs, playLog],
       }
     }
 
@@ -303,6 +326,56 @@ export function duelReducer(
           `${CARD_BASES[attacker.baseId].name} attacks ${inactivePlayer.name}. ${inactivePlayer.name} has ${formatNoun(
             newInactiveCoins,
           )} left.`,
+        ],
+      }
+    }
+
+    case 'SET_PENDING_INSTANT': {
+      return { ...state, pendingInstant: action.payload }
+    }
+
+    case 'APPLY_SPEED_POTION': {
+      const { targetCardInstanceId } = action.payload
+      const card = state.cards[targetCardInstanceId]
+
+      if (!card) return state
+
+      return {
+        ...state,
+        pendingInstant: null,
+        cards: {
+          ...state.cards,
+          [targetCardInstanceId]: { ...card, haste: true },
+        },
+        logs: [...state.logs, `${CARD_BASES[card.baseId].name} gains haste.`],
+      }
+    }
+
+    case 'APPLY_FLASH_BOMB': {
+      const { targetCardInstanceId } = action.payload
+      const card = state.cards[targetCardInstanceId]
+
+      if (!card) return state
+
+      const targetIsActive =
+        state.players[state.activePlayerId].board.includes(targetCardInstanceId)
+      const stunnedTurnsRemaining = targetIsActive ? 3 : 2
+
+      return {
+        ...state,
+        pendingInstant: null,
+        cards: {
+          ...state.cards,
+          [targetCardInstanceId]: {
+            ...card,
+            stunned: true,
+            stunnedTurnsRemaining,
+            didAct: true,
+          },
+        },
+        logs: [
+          ...state.logs,
+          `${CARD_BASES[card.baseId].name} is stunned by a flash bomb.`,
         ],
       }
     }

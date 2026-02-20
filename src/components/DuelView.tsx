@@ -6,6 +6,7 @@ import { FaceDownPile } from '@/components/FaceDownPile'
 import { Hand } from '@/components/Hand'
 import { Logs } from '@/components/Logs'
 import { PlayerBadge } from '@/components/PlayerBadge'
+import { CARD_BASES } from '@/constants/cardBases'
 import { useGameDispatch } from '@/contexts/GameContext'
 import {
   useActivePlayer,
@@ -17,6 +18,7 @@ import {
   useInactivePlayerBoard,
   useInactivePlayerHand,
   useLogs,
+  usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from '@/selectors/playerSelectors'
@@ -138,6 +140,7 @@ export const DuelView: React.FC = () => {
   )
   const [attackingCardId, setAttackingCardId] = useState<number | null>(null)
   const attackAnimationTimeoutRef = useRef<number | null>(null)
+  const pendingInstant = usePendingInstant()
 
   const triggerAttackAnimation = (attackerId: number): void => {
     setAttackingCardId(attackerId)
@@ -211,6 +214,8 @@ export const DuelView: React.FC = () => {
         (card) => card.didAct || card.stunned,
       )
 
+      if (pendingInstant !== null) return
+
       if (activeBoard.length === 0) {
         dispatch({ type: 'SWITCH_TURN' })
       } else if (inactiveBoard.length === 0) {
@@ -221,7 +226,7 @@ export const DuelView: React.FC = () => {
         dispatch({ type: 'SWITCH_TURN' })
       }
     }
-  }, [dispatch, phase, activeBoard, inactiveBoard.length])
+  }, [dispatch, phase, activeBoard, inactiveBoard.length, pendingInstant])
 
   const getOnCardClick = (cardId: number): (() => void) | undefined => {
     if (phase === 'redraw') {
@@ -231,6 +236,19 @@ export const DuelView: React.FC = () => {
         dispatch({
           type: 'REDRAW_CARD',
           payload: { playerId: activePlayer.id, cardInstanceId: cardId },
+        })
+      }
+    }
+
+    if (phase === 'turn-end' && pendingInstant?.type === 'SPEED_POTION') {
+      const cardInstance = activeHand.find((c) => c.id === cardId)
+      if (!cardInstance) return undefined
+      if (CARD_BASES[cardInstance.baseId].type !== 'character') return undefined
+
+      return () => {
+        dispatch({
+          type: 'APPLY_SPEED_POTION',
+          payload: { targetCardInstanceId: cardId },
         })
       }
     }
@@ -256,6 +274,15 @@ export const DuelView: React.FC = () => {
     cardId: number,
     isActiveBoard: boolean,
   ): (() => void) | undefined => {
+    if (pendingInstant?.type === 'FLASH_BOMB') {
+      return () => {
+        dispatch({
+          type: 'APPLY_FLASH_BOMB',
+          payload: { targetCardInstanceId: cardId },
+        })
+      }
+    }
+
     if (phase !== 'turn-end') return undefined
 
     if (isActiveBoard) {

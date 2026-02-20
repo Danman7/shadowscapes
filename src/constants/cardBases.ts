@@ -217,4 +217,28 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'character',
     rank: 'common',
   },
+  speedPotion: {
+    id: 'speedPotion',
+    name: 'Speed Potion',
+    cost: balancing.SPEED_POTION_COST,
+    type: 'instant',
+    rank: 'common',
+    categories: ['Equipment'],
+    faction: 'neutral',
+    description: ['Chose a card from your hand. It gains haste.'],
+    flavorText:
+      'I was at the pub, saw a couple of bluecoats ambush the guy there. He managed to get away, though. Never seen anyone move that fast before. He just vanished into the shadows.',
+  },
+  flashBomb: {
+    id: 'flashBomb',
+    name: 'Flash Bomb',
+    cost: balancing.FLASH_BOMB_COST,
+    type: 'instant',
+    rank: 'common',
+    categories: ['Equipment'],
+    faction: 'neutral',
+    description: ['Stun target character.'],
+    flavorText:
+      'Put Spring Wiring and Acidic Mixture through the Fusing Machine. A Flux Spheroid will be manufactured. Put the Flux Spheroid and a Steel Plate through the Fusing Machine. A Flash Bomb will be manufactured. -- Blueprint at Soulforge',
+  },
 }

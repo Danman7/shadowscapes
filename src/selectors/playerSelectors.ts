@@ -1,5 +1,12 @@
 import { useGameState } from '@/contexts/GameContext'
-import type { CardInstance, Phase, Player, PlayerId, Stack } from '@/types'
+import type {
+  CardInstance,
+  PendingInstant,
+  Phase,
+  Player,
+  PlayerId,
+  Stack,
+} from '@/types'
 import { useMemo } from 'react'
 
 export const useDuelPhase = (): Phase => useGameState().phase
@@ -44,3 +51,6 @@ export const usePlayerDiscardCount = (playerId: PlayerId): number =>
 export const useActivePlayerCoins = (): number => useActivePlayer().coins
 
 export const useLogs = (): string[] => useGameState().logs
+
+export const usePendingInstant = (): PendingInstant | null =>
+  useGameState().pendingInstant

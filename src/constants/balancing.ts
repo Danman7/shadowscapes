@@ -59,3 +59,7 @@ export const DOWNWINDER_STRENGTH = 1
 export const COOK_COST = 2
 export const COOK_LIFE = 1
 export const COOK_STRENGTH = 1
+
+export const SPEED_POTION_COST = 1
+
+export const FLASH_BOMB_COST = 2

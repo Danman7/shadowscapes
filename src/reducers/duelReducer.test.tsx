@@ -175,6 +175,25 @@ describe('SWITCH_TURN action', () => {
     expect(player2.hand).toHaveLength(2)
     expect(player2.deck).toHaveLength(1)
   })
+
+  test('does not remove haste from cards', () => {
+    const state = createDuel(DEFAULT_DUEL_SETUP, {
+      cards: {
+        1: { ...createCardInstance('zombie', 1), haste: true },
+      },
+      players: {
+        player1: {
+          board: [1],
+        },
+      },
+    })
+
+    const result = duelReducer(state, {
+      type: 'SWITCH_TURN',
+    })
+
+    expect(result.cards[1]?.haste).toBe(true)
+  })
 })
 
 test('INITIAL_DRAW action draws starting hands for both players and advances to redraw', () => {
