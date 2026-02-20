@@ -60,6 +60,7 @@ export interface CardInstance {
   strength?: number
   charges?: number
   didAct?: boolean
+  stunned?: boolean
 }
 
 export type PlayerId = 'player1' | 'player2'

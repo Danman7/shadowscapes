@@ -73,6 +73,7 @@ export function duelReducer(
         resetCards[Number(id)] = {
           ...card,
           didAct: false,
+          stunned: false,
         }
       }
 
@@ -164,6 +165,16 @@ export function duelReducer(
           ...updatedPlayer,
           board: [...player.board, cardInstanceId],
         })
+        newState = {
+          ...newState,
+          cards: {
+            ...newState.cards,
+            [cardInstanceId]: {
+              ...newState.cards[cardInstanceId]!,
+              stunned: true,
+            },
+          },
+        }
       }
 
       return {
@@ -221,6 +232,7 @@ export function duelReducer(
       if (!attacker || !defender) return state
       if (attacker.strength === undefined || defender.life === undefined)
         return state
+      if (attacker.stunned) return state
 
       const inactivePlayer = getPlayer(state, state.inactivePlayerId)
 
@@ -268,6 +280,7 @@ export function duelReducer(
       const attacker = state.cards[attackerId]
 
       if (!attacker) return state
+      if (attacker.stunned) return state
 
       const inactivePlayer = getPlayer(state, state.inactivePlayerId)
       const newInactiveCoins = Math.max(0, inactivePlayer.coins - 1)

@@ -14,7 +14,7 @@ export const HAUNT_LIFE = 3
 export const HAUNT_STRENGTH = 1
 export const HAUNT_CHARGES = 1
 
-export const MYSTICS_SOUL_COST = 4
+export const MYSTICS_SOUL_COST = 3
 export const MYSTICS_SOUL_BONUS_CHARGES = 1
 
 export const BOOK_OF_ASH_COST = 5

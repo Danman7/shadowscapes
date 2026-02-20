@@ -51,13 +51,8 @@ export const Instant: Story = {
   },
 }
 
-export const AllFactions: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-      <Card card={createCardInstance('zombie')} />
-      <Card card={createCardInstance('novice')} />
-      <Card card={createCardInstance('downwinder')} />
-      <Card card={createCardInstance('cook')} />
-    </div>
-  ),
+export const Stunned: Story = {
+  args: {
+    card: { ...createCardInstance('templeGuard'), stunned: true },
+  },
 }

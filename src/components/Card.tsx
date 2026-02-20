@@ -1,7 +1,7 @@
 import { BsLightningFill } from 'react-icons/bs'
 import { FaSun } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
-import { GiCrownCoin } from 'react-icons/gi'
+import { GiCrownCoin, GiStarSwirl } from 'react-icons/gi'
 
 import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { CARD_BASES } from '@/constants/cardBases'
@@ -23,7 +23,7 @@ export const Card: React.FC<{
   isAttacking,
   attackDirection,
 }) => {
-  const { life, strength, baseId, charges, cost } = card
+  const { life, strength, baseId, charges, cost, stunned } = card
   const base = CARD_BASES[baseId]
   const { name, description, flavorText, faction, categories, rank, type } =
     base
@@ -38,7 +38,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} bg-surface p-2 space-y-2`}
+      className={`card flex flex-col ${rank === 'elite' ? 'border-primary/20' : 'border-foreground/20'} ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} bg-surface p-2 space-y-2 ${stunned && 'opacity-80'}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
@@ -96,6 +96,8 @@ export const Card: React.FC<{
         <div className="flex items-center gap-1 text-primary">
           <GiCrownCoin /> {cost}
         </div>
+
+        {stunned && <GiStarSwirl />}
 
         {charges !== undefined && (
           <div className="flex items-center gap-1">

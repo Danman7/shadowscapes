@@ -89,10 +89,12 @@ const PhaseButton: React.FC<{
     case 'player-turn':
       phaseButtonLabel = 'Pass'
       phaseButtonOnClick = () => {
-        if (activeBoard.length > 0) {
-          dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
-        } else {
+        const allStunned =
+          activeBoard.length > 0 && activeBoard.every((c) => c.stunned)
+        if (activeBoard.length === 0 || allStunned) {
           dispatch({ type: 'SWITCH_TURN' })
+        } else {
+          dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
         }
       }
       break
@@ -190,9 +192,24 @@ export const DuelView: React.FC = () => {
     }
   }, [])
 
+  const activeDeckCount = usePlayerDeckCount(activePlayer.id)
+  const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
+  const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
+  const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
+
+  useEffect(() => {
+    if (phase === 'player-turn') {
+      if (activeHand.length === 0 && activeDeckCount === 0) {
+        dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
+      }
+    }
+  }, [dispatch, phase, activeHand.length, activeDeckCount])
+
   useEffect(() => {
     if (phase === 'turn-end') {
-      const allActiveCardsActed = activeBoard.every((card) => card.didAct)
+      const allActiveCardsActed = activeBoard.every(
+        (card) => card.didAct || card.stunned,
+      )
 
       if (activeBoard.length === 0) {
         dispatch({ type: 'SWITCH_TURN' })
@@ -205,11 +222,6 @@ export const DuelView: React.FC = () => {
       }
     }
   }, [dispatch, phase, activeBoard, inactiveBoard.length])
-
-  const activeDeckCount = usePlayerDeckCount(activePlayer.id)
-  const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
-  const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
-  const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
 
   const getOnCardClick = (cardId: number): (() => void) | undefined => {
     if (phase === 'redraw') {
@@ -248,7 +260,8 @@ export const DuelView: React.FC = () => {
 
     if (isActiveBoard) {
       const cardInstance = activeBoard.find((c) => c.id === cardId)
-      if (!cardInstance || cardInstance.didAct) return undefined
+      if (!cardInstance || cardInstance.didAct || cardInstance.stunned)
+        return undefined
 
       if (inactiveBoard.length === 0) {
         return () => {
