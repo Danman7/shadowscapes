@@ -11,6 +11,5 @@
     "typescriptreact"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "javascript.preferences.importModuleSpecifier": "non-relative",
-  "markdown.validate.enabled": false
+  "javascript.preferences.importModuleSpecifier": "non-relative"
 }

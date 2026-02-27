@@ -3,6 +3,11 @@ import '../src/globals.css'
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ['Duel', ['DuelView']],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

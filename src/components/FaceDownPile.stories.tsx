@@ -13,7 +13,6 @@ const meta: Meta<typeof FaceDownPile> = {
     count: 10,
     flipped: false,
   },
-  tags: ['autodocs'],
 }
 
 export default meta

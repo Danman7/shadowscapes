@@ -10,7 +10,7 @@ const meta: Meta<typeof Card> = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
+
   args: {
     isOnBoard: false,
   },

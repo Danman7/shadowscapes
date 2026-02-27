@@ -9,14 +9,11 @@ const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   async viteFinal(viteConfig) {
     const dirname = path.dirname(fileURLToPath(import.meta.url))
-
     viteConfig.resolve ??= {}
-    const alias = (viteConfig.resolve.alias ?? {}) as Record<string, string>
     viteConfig.resolve.alias = {
-      ...alias,
-      '@': path.resolve(dirname, '../src'),
+      ...((viteConfig.resolve.alias ?? {}) as Record<string, string>),
+      src: path.resolve(dirname, '../src'),
     }
-
     return viteConfig
   },
 }

@@ -9,7 +9,6 @@
     "start": "NODE_ENV=production bun src/index.ts",
     "test": "vitest run",
     "test:coverage": "vitest --coverage run",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
     "storybook": "storybook dev -p 6006",
     "lint": "bun scripts/lint.mjs",
     "prepare": "husky"

@@ -11,7 +11,6 @@ const meta: Meta<typeof CardBack> = {
   args: {
     isSmall: false,
   },
-  tags: ['autodocs'],
 }
 
 export default meta
