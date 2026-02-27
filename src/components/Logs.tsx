@@ -16,7 +16,7 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
   if (!logs.length) return null
 
   return (
-    <div className="box p-2 max-w-80 relative">
+    <div className="box p-2 max-w-80 relative animate-slide-left">
       <div className="font-bold text-center py-1 border-b border-foreground/10">
         Logs
         <IoMdClose

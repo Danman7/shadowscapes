@@ -9,7 +9,7 @@ export const PlayerBadge: React.FC<{
   isActive?: boolean
 }> = ({ player, isActive }) => (
   <div
-    className={`absolute flex items-center gap-2 left-1/2 transform -translate-x-1/2 px-2 name-tag border ${isActive ? 'border-primary bottom-2' : 'top-2'}`}
+    className={`animate-fade-in-scale absolute flex items-center gap-2 left-1/2 transform -translate-x-1/2 px-2 name-tag border ${isActive ? 'border-primary bottom-2' : 'top-2'}`}
     data-testid={isActive ? 'active-player-badge' : 'player-badge'}
   >
     {isActive && (
