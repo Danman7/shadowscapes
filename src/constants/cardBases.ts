@@ -1,5 +1,5 @@
-import type { CardBase, CardBaseId } from '@/types'
-import * as balancing from '@/constants/balancing'
+import type { CardBase, CardBaseId } from 'src/types'
+import * as balancing from 'src/constants/balancing'
 
 export const CARD_BASES: Record<CardBaseId, CardBase> = {
   // Chaos --------------------------------------- /

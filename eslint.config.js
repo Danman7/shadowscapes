@@ -77,7 +77,7 @@ export default [
         {
           groups: [
             ['^\\u0000', '^@?\\w'],
-            ['^@/', '^\\.'],
+            ['^\\.', '^src/'],
           ],
         },
       ],
@@ -93,7 +93,7 @@ export default [
           patterns: [
             {
               group: ['./**', '../**'],
-              message: 'Use @/… absolute imports within src/.',
+              message: 'Use src/… absolute imports within src/.',
             },
           ],
         },

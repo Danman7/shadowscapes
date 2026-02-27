@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
-import { PlayerBadge } from '@/components/PlayerBadge'
-import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
-import type { Player } from '@/types'
+import { PlayerBadge } from 'src/components/PlayerBadge'
+import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
+import type { Player } from 'src/types'
 
 const player: Player = {
   ...PLACEHOLDER_PLAYER,

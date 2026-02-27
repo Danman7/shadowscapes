@@ -1,12 +1,12 @@
-import { PLACEHOLDER_PLAYER } from '@/constants/duelParams'
-import { CARD_BASES } from '@/constants/cardBases'
+import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
+import { CARD_BASES } from 'src/constants/cardBases'
 import {
   coinFlipForPlayerStart,
   createCardInstance,
   resetInstanceIdCounter,
   shuffle,
-} from '@/game-engine/utils'
-import { initialDuelState } from '@/reducers/duelReducer'
+} from 'src/game-engine/utils'
+import { initialDuelState } from 'src/reducers/duelReducer'
 import type {
   CardBaseId,
   CardInstance,
@@ -14,7 +14,7 @@ import type {
   Player,
   PlayerId,
   Stack,
-} from '@/types'
+} from 'src/types'
 
 export interface CreateDuelParams {
   player1Name: string

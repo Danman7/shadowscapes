@@ -1,8 +1,8 @@
 import { FaCheck } from 'react-icons/fa'
 import { GiCrownCoin } from 'react-icons/gi'
 
-import { AnimatedNumber } from '@/components/AnimatedNumber'
-import type { Player } from '@/types'
+import { AnimatedNumber } from 'src/components/AnimatedNumber'
+import type { Player } from 'src/types'
 
 export const PlayerBadge: React.FC<{
   player: Player

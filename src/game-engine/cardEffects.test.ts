@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest'
 
-import { CARD_BASES } from '@/constants/cardBases'
-import { createDuel } from '@/game-engine/initialization'
-import { createCardInstance } from '@/game-engine/utils'
-import { duelReducerWithEffects } from '@/reducers/duelReducer'
-import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
+import { CARD_BASES } from 'src/constants/cardBases'
+import { createDuel } from 'src/game-engine/initialization'
+import { createCardInstance } from 'src/game-engine/utils'
+import { duelReducerWithEffects } from 'src/reducers/duelReducer'
+import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
 
 describe('Cook effect', () => {
   test('draws a card for the player who played Cook', () => {

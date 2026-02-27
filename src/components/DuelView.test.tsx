@@ -2,22 +2,22 @@ import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { DuelView } from '@/components/DuelView'
+import { DuelView } from 'src/components/DuelView'
 import {
   INITIAL_CARDS_TO_DRAW,
   INITIAL_PLAYER_COINS,
-} from '@/constants/duelParams'
-import * as GameContext from '@/contexts/GameContext'
-import { createDuel } from '@/game-engine/initialization'
-import { createCardInstance } from '@/game-engine/utils'
+} from 'src/constants/duelParams'
+import * as GameContext from 'src/contexts/GameContext'
+import { createDuel } from 'src/game-engine/initialization'
+import { createCardInstance } from 'src/game-engine/utils'
 import {
   DEFAULT_DUEL_SETUP,
   MIXED_STACKS_DUEL,
   PRELOADED_DUEL_SETUP,
   PRELOADED_DUEL_SETUP as preloadedState,
-} from '@/test/mocks/duelSetup'
-import { renderGameContext } from '@/test/renderGameContext'
-import type { Duel } from '@/types'
+} from 'src/test/mocks/duelSetup'
+import { renderGameContext } from 'src/test/renderGameContext'
+import type { Duel } from 'src/types'
 
 afterEach(() => {
   vi.restoreAllMocks()

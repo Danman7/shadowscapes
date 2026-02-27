@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { FaceDownPile } from '@/components/FaceDownPile'
+import { FaceDownPile } from 'src/components/FaceDownPile'
 
 const meta: Meta<typeof FaceDownPile> = {
   title: 'Duel/FaceDownPile',

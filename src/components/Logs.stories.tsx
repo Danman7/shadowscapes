@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Logs } from '@/components/Logs'
-import { MOCK_LOGS } from '@/test/mocks/duelSetup'
+import { Logs } from 'src/components/Logs'
+import { MOCK_LOGS } from 'src/test/mocks/duelSetup'
 
 const meta: Meta<typeof Logs> = {
   title: 'Duel/Logs',

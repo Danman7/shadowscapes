@@ -3,10 +3,10 @@ import { FaSun } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
 import { GiCrownCoin, GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
-import { AnimatedNumber } from '@/components/AnimatedNumber'
-import { CARD_BASES } from '@/constants/cardBases'
-import { FACTION_COLORS } from '@/constants/duelParams'
-import type { CardInstance } from '@/types'
+import { AnimatedNumber } from 'src/components/AnimatedNumber'
+import { CARD_BASES } from 'src/constants/cardBases'
+import { FACTION_COLORS } from 'src/constants/duelParams'
+import type { CardInstance } from 'src/types'
 
 export const Card: React.FC<{
   card: CardInstance

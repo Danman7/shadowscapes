@@ -1,17 +1,17 @@
-import { CARD_BASES } from '@/constants/cardBases'
+import { CARD_BASES } from 'src/constants/cardBases'
 import {
   INITIAL_CARDS_TO_DRAW,
   PLACEHOLDER_PLAYER,
-} from '@/constants/duelParams'
-import { applyCardEffects } from '@/game-engine/cardEffects'
+} from 'src/constants/duelParams'
+import { applyCardEffects } from 'src/game-engine/cardEffects'
 import {
   createDuel,
   drawTopCard,
   getPlayer,
   updatePlayer,
-} from '@/game-engine/initialization'
-import { formatNoun } from '@/game-engine/utils'
-import type { CardInstance, Duel, DuelAction, PendingInstant } from '@/types'
+} from 'src/game-engine/initialization'
+import { formatNoun } from 'src/game-engine/utils'
+import type { CardInstance, Duel, DuelAction, PendingInstant } from 'src/types'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},

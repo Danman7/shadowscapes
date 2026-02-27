@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 
-import { DuelView } from '@/components/DuelView'
-import { GameProvider, useGameDispatch } from '@/contexts/GameContext'
-import { DEFAULT_DUEL_SETUP } from '@/test/mocks/duelSetup'
+import { DuelView } from 'src/components/DuelView'
+import { GameProvider, useGameDispatch } from 'src/contexts/GameContext'
+import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
 
 const AppContent: React.FC = () => {
   const dispatch = useGameDispatch()

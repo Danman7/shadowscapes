@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render } from '@testing-library/react'
 import { expect, test, vi } from 'vitest'
 
-import { Logs } from '@/components/Logs'
+import { Logs } from 'src/components/Logs'
 
 test('renders nothing when there are no logs', () => {
   const { queryByText } = render(<Logs logs={[]} onClose={() => {}} />)

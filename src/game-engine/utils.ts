@@ -4,8 +4,8 @@ import type {
   CardBaseId,
   CardInstance,
   PlayerId,
-} from '@/types'
-import { CARD_BASES } from '@/constants/cardBases'
+} from 'src/types'
+import { CARD_BASES } from 'src/constants/cardBases'
 
 let instanceIdCounter = 0
 

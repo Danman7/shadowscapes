@@ -1,4 +1,4 @@
-import type { CardBaseId } from '@/types'
+import type { CardBaseId } from 'src/types'
 
 export const PLAYER_1_DECK: CardBaseId[] = [
   'zombie',

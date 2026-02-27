@@ -1,12 +1,12 @@
-import { CARD_BASES } from '@/constants/cardBases'
+import { CARD_BASES } from 'src/constants/cardBases'
 import {
   drawTopCard,
   getPlayer,
   updatePlayer,
-} from '@/game-engine/initialization'
-import { formatNoun } from '@/game-engine/utils'
-import type { CardBaseId, Duel, DuelAction, PlayerId } from '@/types'
-import * as balancing from '@/constants/balancing'
+} from 'src/game-engine/initialization'
+import { formatNoun } from 'src/game-engine/utils'
+import type { CardBaseId, Duel, DuelAction, PlayerId } from 'src/types'
+import * as balancing from 'src/constants/balancing'
 
 type CardEffect = (
   state: Duel,

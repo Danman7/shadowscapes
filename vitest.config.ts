@@ -1,7 +1,13 @@
+import { resolve } from 'path'
+
 import { defineConfig } from 'vitest/config'
-import path from 'path'
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      src: resolve(__dirname, 'src'),
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -19,11 +25,6 @@ export default defineConfig({
         'src/test/**',
         '**/*.stories.tsx',
       ],
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
     },
   },
 })

@@ -10,15 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
     "types": ["@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],

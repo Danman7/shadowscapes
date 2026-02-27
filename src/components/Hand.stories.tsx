@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Hand } from '@/components/Hand'
-import { createCardInstance } from '@/game-engine/utils'
+import { Hand } from 'src/components/Hand'
+import { createCardInstance } from 'src/game-engine/utils'
 
 const meta: Meta<typeof Hand> = {
   title: 'Duel/Hand',

@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react'
 
-import { Card } from '@/components/Card'
-import { CardBack } from '@/components/CardBack'
-import type { CardInstance } from '@/types'
+import { Card } from 'src/components/Card'
+import { CardBack } from 'src/components/CardBack'
+import type { CardInstance } from 'src/types'
 
 export const Hand: React.FC<{
   cards: CardInstance[]

@@ -6,7 +6,7 @@ import {
   shuffle,
   coinFlipForPlayerStart,
   formatNoun,
-} from '@/game-engine/utils'
+} from 'src/game-engine/utils'
 
 describe('resetInstanceIdCounter and generateInstanceId', () => {
   beforeEach(() => {

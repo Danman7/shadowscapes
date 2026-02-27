@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import { Card } from '@/components/Card'
-import { CARD_BASES } from '@/constants/cardBases'
-import { FACTION_COLORS } from '@/constants/duelParams'
-import { createCardInstance } from '@/game-engine/utils'
-import type { CardBaseCharacter, CardInstance } from '@/types'
+import { Card } from 'src/components/Card'
+import { CARD_BASES } from 'src/constants/cardBases'
+import { FACTION_COLORS } from 'src/constants/duelParams'
+import { createCardInstance } from 'src/game-engine/utils'
+import type { CardBaseCharacter, CardInstance } from 'src/types'
 
 let mockCharacterCard: CardInstance
 let mockInstantCard: CardInstance

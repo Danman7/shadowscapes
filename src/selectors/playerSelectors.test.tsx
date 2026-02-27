@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 import { describe, expect, test } from 'vitest'
 
-import { Board } from '@/components/Board'
-import { Hand } from '@/components/Hand'
-import { CARD_BASES } from '@/constants/cardBases'
+import { Board } from 'src/components/Board'
+import { Hand } from 'src/components/Hand'
+import { CARD_BASES } from 'src/constants/cardBases'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -14,9 +14,9 @@ import {
   useInactivePlayerHand,
   usePlayerDeckCount,
   usePlayerDiscardCount,
-} from '@/selectors/playerSelectors'
-import { MIXED_STACKS_DUEL as preloadedState } from '@/test/mocks/duelSetup'
-import { renderGameContext } from '@/test/renderGameContext'
+} from 'src/selectors/playerSelectors'
+import { MIXED_STACKS_DUEL as preloadedState } from 'src/test/mocks/duelSetup'
+import { renderGameContext } from 'src/test/renderGameContext'
 
 describe('useDuelPhase', () => {
   test('returns current phase from game state', () => {

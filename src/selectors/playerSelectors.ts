@@ -1,4 +1,4 @@
-import { useGameState } from '@/contexts/GameContext'
+import { useGameState } from 'src/contexts/GameContext'
 import type {
   CardInstance,
   PendingInstant,
@@ -6,7 +6,7 @@ import type {
   Player,
   PlayerId,
   Stack,
-} from '@/types'
+} from 'src/types'
 import { useMemo } from 'react'
 
 export const useDuelPhase = (): Phase => useGameState().phase

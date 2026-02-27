@@ -1,5 +1,8 @@
-import { PLAYER_1_DECK, PLAYER_2_DECK } from '@/constants/testDecks'
-import { createDuel, type CreateDuelParams } from '@/game-engine/initialization'
+import { PLAYER_1_DECK, PLAYER_2_DECK } from 'src/constants/testDecks'
+import {
+  createDuel,
+  type CreateDuelParams,
+} from 'src/game-engine/initialization'
 
 export const DEFAULT_DUEL_SETUP: CreateDuelParams = {
   player1Name: 'Constantine',

@@ -1,13 +1,13 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
-import { Board } from '@/components/Board'
-import { Button } from '@/components/Button'
-import { FaceDownPile } from '@/components/FaceDownPile'
-import { Hand } from '@/components/Hand'
-import { Logs } from '@/components/Logs'
-import { PlayerBadge } from '@/components/PlayerBadge'
-import { CARD_BASES } from '@/constants/cardBases'
-import { useGameDispatch } from '@/contexts/GameContext'
+import { Board } from 'src/components/Board'
+import { Button } from 'src/components/Button'
+import { FaceDownPile } from 'src/components/FaceDownPile'
+import { Hand } from 'src/components/Hand'
+import { Logs } from 'src/components/Logs'
+import { PlayerBadge } from 'src/components/PlayerBadge'
+import { CARD_BASES } from 'src/constants/cardBases'
+import { useGameDispatch } from 'src/contexts/GameContext'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -21,8 +21,8 @@ import {
   usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,
-} from '@/selectors/playerSelectors'
-import type { CardInstance, Phase, Player } from '@/types'
+} from 'src/selectors/playerSelectors'
+import type { CardInstance, Phase, Player } from 'src/types'
 
 const ATTACK_ANIMATION_MS = 350
 

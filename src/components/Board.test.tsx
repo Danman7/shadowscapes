@@ -2,9 +2,9 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
-import { Board } from '@/components/Board'
-import { createCardInstance } from '@/game-engine/utils'
-import type { CardInstance } from '@/types'
+import { Board } from 'src/components/Board'
+import { createCardInstance } from 'src/game-engine/utils'
+import type { CardInstance } from 'src/types'
 
 const mockCards: CardInstance[] = [
   createCardInstance('zombie'),

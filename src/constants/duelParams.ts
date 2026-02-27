@@ -1,4 +1,4 @@
-import type { Faction, Player } from '@/types'
+import type { Faction, Player } from 'src/types'
 
 export const INITIAL_CARDS_TO_DRAW = 4
 export const INITIAL_PLAYER_COINS = 30

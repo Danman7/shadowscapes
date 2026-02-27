@@ -1,5 +1,5 @@
-import { Card } from '@/components/Card'
-import type { CardInstance } from '@/types'
+import { Card } from 'src/components/Card'
+import type { CardInstance } from 'src/types'
 
 export const Board: React.FC<{
   cards: CardInstance[]

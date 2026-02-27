@@ -10,8 +10,8 @@ import {
 import {
   duelReducerWithEffects,
   initialDuelState,
-} from '@/reducers/duelReducer'
-import type { Duel, DuelAction } from '@/types'
+} from 'src/reducers/duelReducer'
+import type { Duel, DuelAction } from 'src/types'
 
 const GameStateContext = createContext<Duel | undefined>(undefined)
 const GameDispatchContext = createContext<Dispatch<DuelAction> | null>(null)
