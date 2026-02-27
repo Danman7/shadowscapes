@@ -20,8 +20,7 @@ export default defineConfig({
         'dist/**',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData',
-        'test/**',
+
         'src/test/**',
         '**/*.stories.tsx',
       ],
