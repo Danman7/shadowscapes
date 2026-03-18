@@ -57,8 +57,10 @@ export const shuffle = <T>(
 }
 
 export const coinFlipForPlayerStart = (
+  id1: PlayerId,
+  id2: PlayerId,
   rng: () => number = Math.random,
-): PlayerId => (rng() < 0.5 ? 'player1' : 'player2')
+): PlayerId => (rng() < 0.5 ? id1 : id2)
 
 export const formatNoun = (amount: number, noun = 'coin'): string =>
   `${amount} ${noun}${amount !== 1 ? 's' : ''}`

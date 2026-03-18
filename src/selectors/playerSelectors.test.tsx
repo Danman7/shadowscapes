@@ -46,9 +46,9 @@ describe('useActivePlayer', () => {
       preloadedState,
     })
 
-    expect(getByText(preloadedState.activePlayerId)).toBeInTheDocument()
+    expect(getByText(preloadedState.playerOrder[0])).toBeInTheDocument()
     expect(
-      getByText(preloadedState.players[preloadedState.activePlayerId].name),
+      getByText(preloadedState.players[preloadedState.playerOrder[0]].name),
     ).toBeInTheDocument()
   })
 })
@@ -70,9 +70,9 @@ describe('useInactivePlayer', () => {
       preloadedState,
     })
 
-    expect(getByText(preloadedState.inactivePlayerId)).toBeInTheDocument()
+    expect(getByText(preloadedState.playerOrder[1])).toBeInTheDocument()
     expect(
-      getByText(preloadedState.players[preloadedState.inactivePlayerId].name),
+      getByText(preloadedState.players[preloadedState.playerOrder[1]].name),
     ).toBeInTheDocument()
   })
 })
@@ -85,7 +85,7 @@ describe('useActivePlayerHand', () => {
       preloadedState,
     })
 
-    const stateHand = preloadedState.players[preloadedState.activePlayerId].hand
+    const stateHand = preloadedState.players[preloadedState.playerOrder[0]].hand
 
     expect(getAllByTestId('card')).toHaveLength(stateHand.length)
 
@@ -105,8 +105,7 @@ describe('useInactivePlayerHand', () => {
       preloadedState,
     })
 
-    const stateHand =
-      preloadedState.players[preloadedState.inactivePlayerId].hand
+    const stateHand = preloadedState.players[preloadedState.playerOrder[1]].hand
 
     expect(getAllByTestId('card-back')).toHaveLength(stateHand.length)
   })
@@ -121,7 +120,7 @@ describe('useActivePlayerBoard', () => {
     })
 
     const stateHand =
-      preloadedState.players[preloadedState.activePlayerId].board
+      preloadedState.players[preloadedState.playerOrder[0]].board
 
     expect(getAllByTestId('card')).toHaveLength(stateHand.length)
 
@@ -142,7 +141,7 @@ describe('useInactivePlayerBoard', () => {
     })
 
     const stateHand =
-      preloadedState.players[preloadedState.inactivePlayerId].board
+      preloadedState.players[preloadedState.playerOrder[1]].board
 
     expect(getAllByTestId('card')).toHaveLength(stateHand.length)
 

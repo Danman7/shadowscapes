@@ -70,7 +70,7 @@ export interface CardInstance {
   haste?: boolean
 }
 
-export type PlayerId = 'player1' | 'player2'
+export type PlayerId = string
 export type Stack = 'hand' | 'board' | 'deck' | 'discard'
 
 export interface Player {
@@ -93,11 +93,16 @@ export type Phase =
 
 export type PendingInstant = 'SPEED_POTION' | 'FLASH_BOMB'
 
+export interface PlayerSetup {
+  id: PlayerId
+  name: string
+  deck: CardBaseId[]
+}
+
 export interface Duel {
   cards: Record<number, CardInstance>
-  players: { player1: Player; player2: Player }
-  activePlayerId: PlayerId
-  inactivePlayerId: PlayerId
+  players: Record<PlayerId, Player>
+  playerOrder: [PlayerId, PlayerId]
   phase: Phase
   startingPlayerId: PlayerId | null
   logs: string[]
@@ -108,10 +113,7 @@ export type DuelAction =
   | {
       type: 'START_DUEL'
       payload: {
-        player1Name: string
-        player1Deck: CardBaseId[]
-        player2Name: string
-        player2Deck: CardBaseId[]
+        players: [PlayerSetup, PlayerSetup]
       }
     }
   | { type: 'TRANSITION_PHASE'; payload: Phase }

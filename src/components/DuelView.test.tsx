@@ -132,7 +132,7 @@ describe('Initial sequence', () => {
 
     expect(dispatchSpy).toHaveBeenCalledWith({
       type: 'SKIP_REDRAW',
-      payload: { playerId: duelState.inactivePlayerId },
+      payload: { playerId: duelState.playerOrder[1] },
     })
   })
 
@@ -140,7 +140,7 @@ describe('Initial sequence', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
     const cardInstanceId = activePlayer.deck[0]
 
@@ -197,10 +197,10 @@ describe('Initial sequence', () => {
       },
     })
 
-    const { activePlayerId, players } = PRELOADED_DUEL_SETUP
+    const { playerOrder, players } = PRELOADED_DUEL_SETUP
 
     expect(
-      getByText(`${players[activePlayerId].name}'s Turn`),
+      getByText(`${players[playerOrder[0]].name}'s Turn`),
     ).toBeInTheDocument()
     expect(queryByText('Ready')).not.toBeInTheDocument()
   })
@@ -211,7 +211,7 @@ describe('Player turns', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
     const cardInstanceId = activePlayer.deck[0]
 
@@ -254,7 +254,7 @@ describe('Player turns', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const preloadedStateWithBudget = {
@@ -302,7 +302,7 @@ describe('Player turns', () => {
 
 describe('Phase action buttons', () => {
   test('Pass button transitions to turn-end when active board has cards', () => {
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const stateWithBoard = {
@@ -325,9 +325,9 @@ describe('Phase action buttons', () => {
   })
 
   test('Pass button switches turn when active board is empty', () => {
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
 
     const stateWithEmptyBoard = {
       ...preloadedState,
@@ -350,7 +350,7 @@ describe('Phase action buttons', () => {
   })
 
   test('Skip redraw button transitions to player-turn after active player skips', () => {
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const stateWithRedraw = {
@@ -359,8 +359,8 @@ describe('Phase action buttons', () => {
       players: {
         ...preloadedState.players,
         [activePlayerId]: { ...activePlayer, playerReady: false },
-        [preloadedState.inactivePlayerId]: {
-          ...preloadedState.players[preloadedState.inactivePlayerId],
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
           playerReady: true,
         },
       },
@@ -381,7 +381,7 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const preloadedStateWithEmptyBoard = {
@@ -407,9 +407,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const preloadedStateWithAttack = {
@@ -446,9 +446,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const preloadedStateWithAttack = {
@@ -488,9 +488,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const preloadedStateWithBothBoards = {
@@ -525,9 +525,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const stateWithBothBoards = {
@@ -560,9 +560,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const stateWithBothBoards = {
@@ -599,9 +599,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const preloadedStateWithBothBoards = {
@@ -636,9 +636,9 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
-    const inactivePlayerId = preloadedState.inactivePlayerId
+    const inactivePlayerId = preloadedState.playerOrder[1]
     const inactivePlayer = preloadedState.players[inactivePlayerId]
 
     const stateWithUnactedActive = {
@@ -672,7 +672,7 @@ describe('Turn end phase', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
 
     const stateWithBothBoards: Duel = {
       ...preloadedState,
@@ -743,7 +743,7 @@ describe('PhaseInfo component', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const { getByText } = renderGameContext(<DuelView />, {
@@ -753,8 +753,8 @@ describe('PhaseInfo component', () => {
         players: {
           ...preloadedState.players,
           [activePlayerId]: { ...activePlayer, playerReady: true },
-          [preloadedState.inactivePlayerId]: {
-            ...preloadedState.players[preloadedState.inactivePlayerId],
+          [preloadedState.playerOrder[1]]: {
+            ...preloadedState.players[preloadedState.playerOrder[1]],
             playerReady: false,
           },
         },
@@ -770,7 +770,7 @@ describe('Player turn card interactions', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const activePlayerId = preloadedState.activePlayerId
+    const activePlayerId = preloadedState.playerOrder[0]
     const activePlayer = preloadedState.players[activePlayerId]
 
     const stateWithBoardCard = {

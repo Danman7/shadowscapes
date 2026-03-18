@@ -10,8 +10,7 @@ describe('Cook effect', () => {
   test('draws a card for the player who played Cook', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('cook', 1),
         2: createCardInstance('zombie', 2),
@@ -40,8 +39,7 @@ describe('Cook effect', () => {
   test('does not draw when deck is empty', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('cook', 1),
       },
@@ -70,8 +68,7 @@ describe('Novice effect', () => {
   test('summons copies from hand and deck when stronger Hammerite is on board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('novice', 2),
@@ -108,8 +105,7 @@ describe('Novice effect', () => {
   test('does not summon copies when no stronger Hammerite is on board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('novice', 2),
@@ -142,8 +138,7 @@ describe('Novice effect', () => {
 
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: novice1,
         2: novice2,
@@ -177,8 +172,7 @@ describe('Sachelman effect', () => {
 
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: novice,
         2: templeGuard,
@@ -214,8 +208,7 @@ describe('Sachelman effect', () => {
 
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: zombie,
         2: sachelman,
@@ -246,8 +239,7 @@ describe('Sachelman effect', () => {
 
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: templeGuard,
         2: sachelman,
@@ -276,22 +268,20 @@ describe('Sachelman effect', () => {
 describe('Card effects middleware', () => {
   test('does not interfere with non-PLAY_CARD actions', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
     })
 
     const result = duelReducerWithEffects(state, {
       type: 'SWITCH_TURN',
     })
 
-    expect(result.activePlayerId).toBe('player2')
+    expect(result.playerOrder[0]).toBe('player2')
   })
 
   test('does not interfere with cards that have no effects', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('downwinder', 1),
       },
@@ -319,8 +309,7 @@ describe('Zombie effect', () => {
   test('summons all zombies from discard to board on play', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('zombie', 2),
@@ -351,8 +340,7 @@ describe('Zombie effect', () => {
   test('resets strength of summoned zombies to base value', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('zombie', 2, 0),
@@ -384,8 +372,7 @@ describe('Zombie effect', () => {
   test('does nothing when no zombies in discard', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('haunt', 2),
@@ -414,8 +401,7 @@ describe('Haunt reactive effect', () => {
   test('deals damage equal to haunt strength to the played card', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('haunt', 2),
@@ -445,8 +431,7 @@ describe('Haunt reactive effect', () => {
   test('kills the played card when haunt damage exceeds its strength', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('haunt', 2),
@@ -477,8 +462,7 @@ describe('Haunt reactive effect', () => {
   test('multiple haunts deal cumulative damage', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('haunt', 2),
@@ -508,8 +492,7 @@ describe('Haunt reactive effect', () => {
   test('applies the sum of all haunt strengths as damage', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: { ...createCardInstance('haunt', 2), strength: 3 },
@@ -542,8 +525,7 @@ describe('Haunt reactive effect', () => {
   test('does not damage summoned cards from zombie effect', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('zombie', 2),
@@ -574,8 +556,7 @@ describe('Haunt reactive effect', () => {
   test('does not damage summoned cards from novice effect', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('novice', 2),
@@ -607,8 +588,7 @@ describe('Haunt reactive effect', () => {
   test('does not react to instant cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('bookOfAsh', 1),
         2: createCardInstance('haunt', 2),
@@ -637,8 +617,7 @@ describe('Haunt reactive effect', () => {
   test('reduces haunt charges by 1 when reacting', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('haunt', 2),
@@ -667,8 +646,7 @@ describe('Haunt reactive effect', () => {
   test('does not react when charges is 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('haunt', 2, undefined, 0),
@@ -700,8 +678,7 @@ describe('Burrick attack effect', () => {
   test('damages adjacent cards and loses 1 strength', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1),
         2: createCardInstance('zombie', 2),
@@ -735,8 +712,7 @@ describe('Burrick attack effect', () => {
   test('damages only left adjacent card when defender is rightmost', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1),
         2: createCardInstance('templeGuard', 2),
@@ -765,8 +741,7 @@ describe('Burrick attack effect', () => {
   test('no splash when defender is the only card', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1),
         2: createCardInstance('zombie', 2),
@@ -795,8 +770,7 @@ describe('Burrick attack effect', () => {
   test('burrick dies if losing 1 strength brings it to 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1, 1),
         2: createCardInstance('zombie', 2),
@@ -824,8 +798,7 @@ describe('Burrick attack effect', () => {
   test('non-burrick attacks do not trigger splash damage', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('haunt', 1),
         2: createCardInstance('zombie', 2),
@@ -857,8 +830,7 @@ describe('Burrick attack effect', () => {
   test('reduces charges by 1 when splashing', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1),
         2: createCardInstance('zombie', 2),
@@ -886,8 +858,7 @@ describe('Burrick attack effect', () => {
   test('attacks as regular card when charges is 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1, undefined, 0),
         2: createCardInstance('zombie', 2),
@@ -923,8 +894,7 @@ describe("Mystic's Soul effect", () => {
   test('adds +1 charges to all allied board cards that have charges', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('mysticsSoul', 1),
         2: createCardInstance('haunt', 2),
@@ -955,8 +925,7 @@ describe("Mystic's Soul effect", () => {
   test('does not affect opponent board cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('mysticsSoul', 1),
         2: createCardInstance('haunt', 2),
@@ -987,8 +956,7 @@ describe("Mystic's Soul effect", () => {
   test('does nothing when no board cards have charges', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('mysticsSoul', 1),
         2: createCardInstance('zombie', 2),
@@ -1016,8 +984,7 @@ describe('Temple Guard effect', () => {
   test('gets +1 strength on play when opponent has more board cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('zombie', 2),
@@ -1048,8 +1015,7 @@ describe('Temple Guard effect', () => {
   test('does not get +1 when boards are equal', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('zombie', 2),
@@ -1080,8 +1046,7 @@ describe('Temple Guard effect', () => {
   test('retaliates when attacked and survives', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1, 2),
         2: createCardInstance('templeGuard', 2, 3),
@@ -1114,8 +1079,7 @@ describe('Temple Guard effect', () => {
   test('retaliation kills the attacker when templeGuard has enough strength', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1, 1),
         2: createCardInstance('templeGuard', 2, 3),
@@ -1149,8 +1113,7 @@ describe('Temple Guard effect', () => {
   test('does not retaliate when templeGuard is killed (0 life)', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('templeGuard', 2, 1),
@@ -1186,8 +1149,7 @@ describe("Yora's Skull effect", () => {
   test('gives +1 to all allied Hammerites on board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('yoraSkull', 1),
         2: createCardInstance('templeGuard', 2, 3),
@@ -1219,8 +1181,7 @@ describe("Yora's Skull effect", () => {
   test('does not boost opponent Hammerites', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('yoraSkull', 1),
         2: createCardInstance('templeGuard', 2, 3),
@@ -1249,8 +1210,7 @@ describe("Yora's Skull effect", () => {
   test('does nothing when no Hammerites on board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('yoraSkull', 1),
         2: createCardInstance('zombie', 2, 2),
@@ -1278,8 +1238,7 @@ describe('Priest effect', () => {
   test('gains 1 coin per Priest when an allied character is defeated', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1, 1),
         2: createCardInstance('priest', 2),
@@ -1311,8 +1270,7 @@ describe('Priest effect', () => {
   test('does not gain coins when no Priest is on board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1, 1),
         2: createCardInstance('templeGuard', 2),
@@ -1344,8 +1302,7 @@ describe('High Priest Markander effect', () => {
   test('decrements charges when a Hammerite is played', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 3),
@@ -1371,8 +1328,7 @@ describe('High Priest Markander effect', () => {
   test('summons Markander from hand when charges reaches 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 1),
@@ -1400,8 +1356,7 @@ describe('High Priest Markander effect', () => {
   test('summons Markander from deck when charges reaches 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('sachelman', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 1),
@@ -1429,8 +1384,7 @@ describe('High Priest Markander effect', () => {
   test('does not decrement charges for non-Hammerite cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 3),
@@ -1456,8 +1410,7 @@ describe('High Priest Markander effect', () => {
   test('does not affect opponent Markander', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 2),
@@ -1488,8 +1441,7 @@ describe('Markander in both hand and deck', () => {
   test('summons all Markander copies when charges reaches 0 via Hammerite play', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('templeGuard', 1),
         2: createCardInstance('highPriestMarkander', 2, 4, 1),
@@ -1521,8 +1473,7 @@ describe('Burrick with no adjacent cards', () => {
   test('damages only right adjacent card when defender is leftmost', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1),
         2: createCardInstance('zombie', 2),
@@ -1549,8 +1500,7 @@ describe('Haunt does not react to instant cards without strength', () => {
   test('haunt charges stays unchanged when an instant with no strength is played', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('mysticsSoul', 1),
         2: createCardInstance('haunt', 2),
@@ -1581,8 +1531,7 @@ describe('Burrick effect early return when defender not in prevState board', () 
   test('returns state unchanged when defenderId is not found in prevState inactive board', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('burrick', 1, 2, 2),
         2: createCardInstance('zombie', 2),
@@ -1609,8 +1558,7 @@ describe('TempleGuard retaliation does not fire when templeGuard life is 0', () 
   test('attacker is not damaged when templeGuard has life 0', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'turn-end',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1, 2),
         2: createCardInstance('templeGuard', 2, 0),
@@ -1635,8 +1583,7 @@ describe('Markander reactive effect when no Markander is present', () => {
   test('returns state unchanged when no Markander is in hand or deck', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('zombie', 2),
@@ -1667,8 +1614,7 @@ describe('Markander reactive effect when no Markander is present', () => {
   test('Markander charges is decremented but not summoned when charges > 1', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('novice', 1),
         2: createCardInstance('highPriestMarkander', 2, undefined, 3),
@@ -1700,8 +1646,7 @@ describe('applyCardEffects PLAY_CARD with missing card instance', () => {
   test('returns state unchanged when cardInstanceId does not exist in state.cards', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
       phase: 'player-turn',
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       cards: {
         1: createCardInstance('zombie', 1),
       },

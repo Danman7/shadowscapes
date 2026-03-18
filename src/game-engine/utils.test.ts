@@ -93,16 +93,16 @@ describe('shuffle', () => {
 })
 
 describe('coinFlipForPlayerStart', () => {
-  test('returns player1 when random < 0.5', () => {
-    expect(coinFlipForPlayerStart(() => 0.4)).toBe('player1')
+  test('returns first player when random < 0.5', () => {
+    expect(coinFlipForPlayerStart('alice', 'bob', () => 0.4)).toBe('alice')
   })
 
-  test('returns player2 when random >= 0.5', () => {
-    expect(coinFlipForPlayerStart(() => 0.5)).toBe('player2')
+  test('returns second player when random >= 0.5', () => {
+    expect(coinFlipForPlayerStart('alice', 'bob', () => 0.5)).toBe('bob')
   })
 
-  test('returns player2 when random equals 0.9', () => {
-    expect(coinFlipForPlayerStart(() => 0.9)).toBe('player2')
+  test('returns second player when random equals 0.9', () => {
+    expect(coinFlipForPlayerStart('alice', 'bob', () => 0.9)).toBe('bob')
   })
 })
 

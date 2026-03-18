@@ -1,6 +1,7 @@
 import { CARD_BASES } from 'src/constants/cardBases'
 import {
   drawTopCard,
+  getOpponentId,
   getPlayer,
   updatePlayer,
 } from 'src/game-engine/initialization'
@@ -181,7 +182,7 @@ const mysticsSoulEffect: CardEffect = (state, playerId) => {
 
 const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
   const player = getPlayer(state, playerId)
-  const opponentId: PlayerId = playerId === 'player1' ? 'player2' : 'player1'
+  const opponentId = getOpponentId(state, playerId)
   const opponent = getPlayer(state, opponentId)
 
   if (opponent.board.length <= player.board.length) return state
@@ -249,7 +250,7 @@ const applyHauntReactiveEffect = (
   playerId: PlayerId,
   cardInstanceId: number,
 ): Duel => {
-  const opponentId: PlayerId = playerId === 'player1' ? 'player2' : 'player1'
+  const opponentId = getOpponentId(state, playerId)
   const opponent = getPlayer(state, opponentId)
 
   const hauntsWithCharges = opponent.board.filter((id) => {
@@ -319,7 +320,7 @@ const applyBurrickAttackEffect = (
   if (attacker.strength === undefined) return state
   if ((attacker.charges ?? 0) <= 0) return state
 
-  const inactiveBoard = getPlayer(prevState, prevState.inactivePlayerId).board
+  const inactiveBoard = getPlayer(prevState, prevState.playerOrder[1]).board
   const defenderIndex = inactiveBoard.indexOf(defenderId)
   if (defenderIndex === -1) return state
 
@@ -349,8 +350,8 @@ const applyBurrickAttackEffect = (
 
     if (adjNewLife <= 0) {
       newCards[adjId] = { ...adjCard, life: 0 }
-      const currentInactive = getPlayer(result, state.inactivePlayerId)
-      result = updatePlayer(result, state.inactivePlayerId, {
+      const currentInactive = getPlayer(result, state.playerOrder[1])
+      result = updatePlayer(result, state.playerOrder[1], {
         board: currentInactive.board.filter((id) => id !== adjId),
         discard: [...currentInactive.discard, adjId],
       })
@@ -400,9 +401,9 @@ const applyTempleGuardRetaliationEffect = (
 
   if (attackerNewLife <= 0) {
     newCards[attackerId] = { ...attacker, life: 0 }
-    const activePlayer = getPlayer(state, state.activePlayerId)
+    const activePlayer = getPlayer(state, state.playerOrder[0])
     return {
-      ...updatePlayer(state, state.activePlayerId, {
+      ...updatePlayer(state, state.playerOrder[0], {
         board: activePlayer.board.filter((id) => id !== attackerId),
         discard: [...activePlayer.discard, attackerId],
       }),
@@ -488,7 +489,7 @@ const applyMarkanderReactiveEffect = (
 const applyPriestDefeatRewardEffect = (state: Duel, prevState: Duel): Duel => {
   let result = state
 
-  for (const playerId of ['player1', 'player2'] as const) {
+  for (const playerId of state.playerOrder) {
     const prevPlayer = getPlayer(prevState, playerId)
     const currentPlayer = getPlayer(result, playerId)
 

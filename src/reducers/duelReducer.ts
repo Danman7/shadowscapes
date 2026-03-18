@@ -1,8 +1,5 @@
 import { CARD_BASES } from 'src/constants/cardBases'
-import {
-  INITIAL_CARDS_TO_DRAW,
-  PLACEHOLDER_PLAYER,
-} from 'src/constants/duelParams'
+import { INITIAL_CARDS_TO_DRAW } from 'src/constants/duelParams'
 import { applyCardEffects } from 'src/game-engine/cardEffects'
 import {
   createDuel,
@@ -15,12 +12,8 @@ import type { CardInstance, Duel, DuelAction, PendingInstant } from 'src/types'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},
-  players: {
-    player1: { ...PLACEHOLDER_PLAYER, id: 'player1' },
-    player2: { ...PLACEHOLDER_PLAYER, id: 'player2' },
-  },
-  activePlayerId: 'player1',
-  inactivePlayerId: 'player2',
+  players: {},
+  playerOrder: ['', ''],
   phase: 'intro',
   startingPlayerId: null,
   logs: [],
@@ -33,35 +26,25 @@ export function duelReducer(
 ): Readonly<Duel> {
   switch (action.type) {
     case 'START_DUEL': {
-      const { player1Name, player1Deck, player2Name, player2Deck } =
-        action.payload
-
-      return createDuel({
-        player1Name,
-        player2Name,
-        player1Deck,
-        player2Deck,
-      })
+      return createDuel(action.payload)
     }
 
     case 'TRANSITION_PHASE': {
+      const resetPlayers = Object.fromEntries(
+        Object.entries(state.players).map(([id, p]) => [
+          id,
+          { ...p, playerReady: false },
+        ]),
+      )
+
       const transitionedState: Duel = {
         ...state,
         phase: action.payload,
-        players: {
-          player1: {
-            ...state.players.player1,
-            playerReady: false,
-          },
-          player2: {
-            ...state.players.player2,
-            playerReady: false,
-          },
-        },
+        players: resetPlayers,
       }
 
       if (state.phase === 'redraw' && action.payload === 'player-turn') {
-        return drawTopCard(transitionedState, state.activePlayerId)
+        return drawTopCard(transitionedState, state.playerOrder[0])
       }
 
       return transitionedState
@@ -85,22 +68,21 @@ export function duelReducer(
       const switchedState: Duel = {
         ...state,
         cards: resetCards,
-        activePlayerId: state.inactivePlayerId,
-        inactivePlayerId: state.activePlayerId,
+        playerOrder: [state.playerOrder[1], state.playerOrder[0]],
         phase: 'player-turn',
       }
 
       const newActivePlayer = getPlayer(
         switchedState,
-        switchedState.activePlayerId,
+        switchedState.playerOrder[0],
       )
       const stateAfterDraw = drawTopCard(
         switchedState,
-        switchedState.activePlayerId,
+        switchedState.playerOrder[0],
       )
       const newActivePlayerAfterDraw = getPlayer(
         stateAfterDraw,
-        stateAfterDraw.activePlayerId,
+        stateAfterDraw.playerOrder[0],
       )
 
       return {
@@ -122,8 +104,9 @@ export function duelReducer(
       let stateClone = structuredClone(state)
 
       for (let i = 0; i < INITIAL_CARDS_TO_DRAW; i += 1) {
-        stateClone = drawTopCard(stateClone, 'player1')
-        stateClone = drawTopCard(stateClone, 'player2')
+        for (const pid of state.playerOrder) {
+          stateClone = drawTopCard(stateClone, pid)
+        }
       }
 
       return {
@@ -176,9 +159,10 @@ export function duelReducer(
           )
           if (hasHandCharacters) pendingInstant = 'SPEED_POTION'
         } else if (baseId === 'flashBomb') {
-          const totalBoardCards =
-            state.players.player1.board.length +
-            state.players.player2.board.length
+          const totalBoardCards = Object.values(state.players).reduce(
+            (sum, p) => sum + p.board.length,
+            0,
+          )
           if (totalBoardCards > 0) pendingInstant = 'FLASH_BOMB'
         }
 
@@ -257,7 +241,7 @@ export function duelReducer(
         return state
       if (attacker.stunned) return state
 
-      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
+      const inactivePlayer = getPlayer(state, state.playerOrder[1])
 
       let newState = { ...state }
       let attackLog: string
@@ -276,7 +260,7 @@ export function duelReducer(
           life: 0,
         }
 
-        newState = updatePlayer(newState, state.inactivePlayerId, {
+        newState = updatePlayer(newState, state.playerOrder[1], {
           board: inactivePlayer.board.filter((id) => id !== defenderId),
           discard: [...inactivePlayer.discard, defenderId],
         })
@@ -305,7 +289,7 @@ export function duelReducer(
       if (!attacker) return state
       if (attacker.stunned) return state
 
-      const inactivePlayer = getPlayer(state, state.inactivePlayerId)
+      const inactivePlayer = getPlayer(state, state.playerOrder[1])
       const newInactiveCoins = Math.max(0, inactivePlayer.coins - 1)
 
       const newCards = {
@@ -317,7 +301,7 @@ export function duelReducer(
       }
 
       return {
-        ...updatePlayer(state, state.inactivePlayerId, {
+        ...updatePlayer(state, state.playerOrder[1], {
           coins: newInactiveCoins,
         }),
         cards: newCards,
@@ -358,7 +342,7 @@ export function duelReducer(
       if (!card) return state
 
       const targetIsActive =
-        state.players[state.activePlayerId].board.includes(targetCardInstanceId)
+        state.players[state.playerOrder[0]].board.includes(targetCardInstanceId)
       const stunnedTurnsRemaining = targetIsActive ? 3 : 2
 
       return {

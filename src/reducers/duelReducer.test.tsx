@@ -18,22 +18,21 @@ test('initial state has placeholder duel with intro phase', () => {
 })
 
 test('START_DUEL action creates new duel with player names and decks', () => {
-  const {
-    startingPlayerId,
-    activePlayerId,
-    inactivePlayerId,
-    players: { player1, player2 },
-    cards,
-    logs,
-  } = duelReducer(initialDuelState, {
-    type: 'START_DUEL',
-    payload: {
-      player1Name: 'Alice',
-      player2Name: 'Bob',
-      player1Deck: PLAYER_1_DECK,
-      player2Deck: PLAYER_2_DECK,
+  const { startingPlayerId, playerOrder, players, cards, logs } = duelReducer(
+    initialDuelState,
+    {
+      type: 'START_DUEL',
+      payload: {
+        players: [
+          { id: 'player1', name: 'Alice', deck: PLAYER_1_DECK },
+          { id: 'player2', name: 'Bob', deck: PLAYER_2_DECK },
+        ],
+      },
     },
-  })
+  )
+
+  const player1 = players['player1']
+  const player2 = players['player2']
 
   expect(player1.name).toBe('Alice')
   expect(player2.name).toBe('Bob')
@@ -51,7 +50,7 @@ test('START_DUEL action creates new duel with player names and decks', () => {
   })
 
   expect(startingPlayerId).not.toBeNull()
-  expect(activePlayerId).not.toBe(inactivePlayerId)
+  expect(playerOrder[0]).not.toBe(playerOrder[1])
 
   const player1EliteCount = PLAYER_1_DECK.filter(
     (baseId) => CARD_BASES[baseId].rank === 'elite',
@@ -76,16 +75,15 @@ test('START_DUEL action creates new duel with player names and decks', () => {
 })
 
 test('TRANSITION_PHASE action updates the phase and resets playerReady flags', () => {
-  const {
-    phase,
-    players: { player1, player2 },
-  } = duelReducer(
+  const { phase, players } = duelReducer(
     {
       ...PRELOADED_DUEL_SETUP,
-      players: {
-        player1: { ...PRELOADED_DUEL_SETUP.players.player1, playerReady: true },
-        player2: { ...PRELOADED_DUEL_SETUP.players.player2, playerReady: true },
-      },
+      players: Object.fromEntries(
+        Object.entries(PRELOADED_DUEL_SETUP.players).map(([id, p]) => [
+          id,
+          { ...p, playerReady: true },
+        ]),
+      ),
     },
     {
       type: 'TRANSITION_PHASE',
@@ -94,15 +92,14 @@ test('TRANSITION_PHASE action updates the phase and resets playerReady flags', (
   )
 
   expect(phase).toBe('initial-draw')
-  expect(player1.playerReady).toBe(false)
-  expect(player2.playerReady).toBe(false)
+  expect(players['player1'].playerReady).toBe(false)
+  expect(players['player2'].playerReady).toBe(false)
 })
 
 test('TRANSITION_PHASE redraw to player-turn draws one card for active player', () => {
   const state = createDuel(DEFAULT_DUEL_SETUP, {
     phase: 'redraw',
-    activePlayerId: 'player1',
-    inactivePlayerId: 'player2',
+    playerOrder: ['player1', 'player2'],
     stackOverrides: {
       player1: {
         hand: ['zombie'],
@@ -127,37 +124,34 @@ test('TRANSITION_PHASE redraw to player-turn draws one card for active player', 
 describe('SWITCH_TURN action', () => {
   test('switches active and inactive players', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
     })
 
-    const { activePlayerId, inactivePlayerId } = duelReducer(state, {
+    const { playerOrder } = duelReducer(state, {
       type: 'SWITCH_TURN',
     })
 
-    expect(activePlayerId).toBe('player2')
-    expect(inactivePlayerId).toBe('player1')
+    expect(playerOrder[0]).toBe('player2')
+    expect(playerOrder[1]).toBe('player1')
   })
 
   test('switches back when called twice', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
     })
 
     const result1 = duelReducer(state, { type: 'SWITCH_TURN' })
-    const { activePlayerId, inactivePlayerId } = duelReducer(result1, {
+    const { playerOrder: playerOrder2 } = duelReducer(result1, {
       type: 'SWITCH_TURN',
     })
 
-    expect(activePlayerId).toBe('player1')
-    expect(inactivePlayerId).toBe('player2')
+    expect(playerOrder2[0]).toBe('player1')
+    expect(playerOrder2[1]).toBe('player2')
   })
 
   test('draws one card for the new active player', () => {
     const state = createDuel(DEFAULT_DUEL_SETUP, {
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       stackOverrides: {
         player2: {
           hand: ['cook'],
@@ -455,8 +449,7 @@ describe('ATTACK_CARD', () => {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('haunt', 2),
       },
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       players: {
         ...PRELOADED_DUEL_SETUP.players,
         player1: {
@@ -486,8 +479,7 @@ describe('ATTACK_CARD', () => {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('zombie', 2),
       },
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       players: {
         ...PRELOADED_DUEL_SETUP.players,
         player1: {
@@ -518,8 +510,7 @@ describe('ATTACK_CARD', () => {
         1: createCardInstance('zombie', 1),
         2: createCardInstance('haunt', 2),
       },
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       players: {
         ...PRELOADED_DUEL_SETUP.players,
         player1: {
@@ -553,8 +544,7 @@ describe('ATTACK_PLAYER', () => {
       cards: {
         1: createCardInstance('zombie', 1),
       },
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       players: {
         ...PRELOADED_DUEL_SETUP.players,
         player1: {
@@ -584,8 +574,7 @@ describe('ATTACK_PLAYER', () => {
       cards: {
         1: createCardInstance('zombie', 1),
       },
-      activePlayerId: 'player1',
-      inactivePlayerId: 'player2',
+      playerOrder: ['player1', 'player2'],
       players: {
         ...PRELOADED_DUEL_SETUP.players,
         player1: {
