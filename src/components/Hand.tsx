@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 
-import { Card } from 'src/components/Card'
-import { CardBack } from 'src/components/CardBack'
+import { Card, CardBack } from 'src/components'
 import type { CardInstance } from 'src/types'
 
 export const Hand: React.FC<{

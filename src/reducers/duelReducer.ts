@@ -174,12 +174,12 @@ export function duelReducer(
           const hasHandCharacters = newhand.some(
             (id) => CARD_BASES[state.cards[id]!.baseId].type === 'character',
           )
-          if (hasHandCharacters) pendingInstant = { type: 'SPEED_POTION' }
+          if (hasHandCharacters) pendingInstant = 'SPEED_POTION'
         } else if (baseId === 'flashBomb') {
           const totalBoardCards =
             state.players.player1.board.length +
             state.players.player2.board.length
-          if (totalBoardCards > 0) pendingInstant = { type: 'FLASH_BOMB' }
+          if (totalBoardCards > 0) pendingInstant = 'FLASH_BOMB'
         }
 
         return {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { CardBack } from 'src/components/CardBack'
+import { CardBack } from 'src/components'
 
 const meta: Meta<typeof CardBack> = {
   title: 'Common/CardBack',

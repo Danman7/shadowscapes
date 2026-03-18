@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Hand } from 'src/components/Hand'
+import { Hand } from 'src/components'
 import { createCardInstance } from 'src/game-engine/utils'
 
 const meta: Meta<typeof Hand> = {

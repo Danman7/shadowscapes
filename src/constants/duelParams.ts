@@ -19,3 +19,5 @@ export const PLACEHOLDER_PLAYER: Omit<Player, 'id'> = {
   board: [],
   discard: [],
 }
+
+export const ATTACK_ANIMATION_MS = 350

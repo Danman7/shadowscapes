@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { DuelView } from 'src/components/DuelView'
+import { DuelView } from 'src/components'
 import { GameProvider, useGameDispatch } from 'src/contexts/GameContext'
 import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
 

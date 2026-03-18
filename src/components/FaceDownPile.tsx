@@ -1,4 +1,4 @@
-import { CardBack } from 'src/components/CardBack'
+import { CardBack } from 'src/components'
 
 export const FaceDownPile: React.FC<{
   count: number

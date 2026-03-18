@@ -1,8 +1,7 @@
 import '@testing-library/jest-dom'
 import { describe, expect, test } from 'vitest'
 
-import { Board } from 'src/components/Board'
-import { Hand } from 'src/components/Hand'
+import { Board, Hand } from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'
 import {
   useActivePlayer,

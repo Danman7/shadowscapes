@@ -91,7 +91,7 @@ export type Phase =
   | 'player-turn'
   | 'turn-end'
 
-export type PendingInstant = { type: 'SPEED_POTION' } | { type: 'FLASH_BOMB' }
+export type PendingInstant = 'SPEED_POTION' | 'FLASH_BOMB'
 
 export interface Duel {
   cards: Record<number, CardInstance>

@@ -1,11 +1,13 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
-import { Board } from 'src/components/Board'
-import { Button } from 'src/components/Button'
-import { FaceDownPile } from 'src/components/FaceDownPile'
-import { Hand } from 'src/components/Hand'
-import { Logs } from 'src/components/Logs'
-import { PlayerBadge } from 'src/components/PlayerBadge'
+import {
+  Board,
+  Button,
+  FaceDownPile,
+  Hand,
+  Logs,
+  PlayerBadge,
+} from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'
 import { useGameDispatch } from 'src/contexts/GameContext'
 import {
@@ -244,7 +246,7 @@ export const DuelView: React.FC = () => {
       }
     }
 
-    if (phase === 'turn-end' && pendingInstant?.type === 'SPEED_POTION') {
+    if (phase === 'turn-end' && pendingInstant === 'SPEED_POTION') {
       const cardInstance = activeHand.find((c) => c.id === cardId)
       if (!cardInstance) return undefined
       if (CARD_BASES[cardInstance.baseId].type !== 'character') return undefined
@@ -278,7 +280,7 @@ export const DuelView: React.FC = () => {
     cardId: number,
     isActiveBoard: boolean,
   ): (() => void) | undefined => {
-    if (pendingInstant?.type === 'FLASH_BOMB') {
+    if (pendingInstant === 'FLASH_BOMB') {
       return () => {
         dispatch({
           type: 'APPLY_FLASH_BOMB',

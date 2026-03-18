@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { DuelView } from 'src/components/DuelView'
+import { DuelView } from 'src/components'
 import {
   INITIAL_CARDS_TO_DRAW,
   INITIAL_PLAYER_COINS,

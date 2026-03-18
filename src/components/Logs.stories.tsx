@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Logs } from 'src/components/Logs'
+import { Logs } from 'src/components'
 import { MOCK_LOGS } from 'src/test/mocks/duelSetup'
 
 const meta: Meta<typeof Logs> = {

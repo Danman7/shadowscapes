@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
-import { Board } from 'src/components/Board'
+import { Board } from 'src/components'
 import { createCardInstance } from 'src/game-engine/utils'
 import type { CardInstance } from 'src/types'
 

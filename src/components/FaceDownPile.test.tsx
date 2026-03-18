@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
-import { FaceDownPile } from 'src/components/FaceDownPile'
+import { FaceDownPile } from 'src/components'
 
 test('renders pile with label, cards and count', () => {
   const { getByTestId, getByText } = render(

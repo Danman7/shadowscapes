@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { DuelView } from 'src/components/DuelView'
+import { DuelView } from 'src/components'
 import { GameProvider } from 'src/contexts/GameContext'
 import {
   MIXED_STACKS_DUEL,

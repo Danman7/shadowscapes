@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import { Hand } from 'src/components/Hand'
+import { Hand } from 'src/components'
 import { createCardInstance } from 'src/game-engine/utils'
 import type { CardInstance } from 'src/types'
 
