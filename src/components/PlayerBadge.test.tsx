@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react'
-import { expect, test } from 'vitest'
 
 import { PlayerBadge } from 'src/components'
 import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'

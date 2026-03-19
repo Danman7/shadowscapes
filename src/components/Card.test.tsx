@@ -1,10 +1,9 @@
 import { render } from '@testing-library/react'
-import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { Card } from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'
 import { FACTION_COLORS } from 'src/constants/duelParams'
-import { createCardInstance } from 'src/game-engine/utils'
+import { createCardInstance } from 'src/reducers/helpers'
 import type { CardBaseCharacter, CardInstance } from 'src/types'
 
 let mockCharacterCard: CardInstance

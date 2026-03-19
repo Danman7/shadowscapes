@@ -1,13 +1,9 @@
 import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
 import { CARD_BASES } from 'src/constants/cardBases'
-import {
-  coinFlipForPlayerStart,
-  createCardInstance,
-  resetInstanceIdCounter,
-  shuffle,
-} from 'src/game-engine/utils'
 import { initialDuelState } from 'src/reducers/duelReducer'
 import type {
+  CardBase,
+  CardBaseCharacter,
   CardBaseId,
   CardInstance,
   Duel,
@@ -16,6 +12,61 @@ import type {
   PlayerSetup,
   Stack,
 } from 'src/types'
+
+let instanceIdCounter = 0
+
+export const resetInstanceIdCounter = (): void => {
+  instanceIdCounter = 0
+}
+
+export const generateInstanceId = (): number => instanceIdCounter++
+
+export const getCardLife = (base: CardBase): number | undefined => {
+  return base.type === 'character' ? base.life : undefined
+}
+
+export const getCardStrength = (base: CardBase): number | undefined => {
+  return base.type === 'character' ? base.strength : undefined
+}
+
+export const createCardInstance = (
+  baseId: CardBaseId,
+  id?: number,
+  life?: number,
+  charges?: number,
+): CardInstance => ({
+  id: id ?? generateInstanceId(),
+  baseId,
+  cost: CARD_BASES[baseId].cost,
+  life: life ?? getCardLife(CARD_BASES[baseId]),
+  strength: getCardStrength(CARD_BASES[baseId]),
+  charges:
+    (charges ?? (CARD_BASES[baseId] as CardBaseCharacter).charges) || undefined,
+  didAct: false,
+  haste: false,
+})
+
+export const shuffle = <T>(
+  array: T[],
+  rng: () => number = Math.random,
+): T[] => {
+  const shuffled = [...array]
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1))
+    const temp = shuffled[i]!
+    shuffled[i] = shuffled[j]!
+    shuffled[j] = temp
+  }
+
+  return shuffled
+}
+
+export const coinFlipForPlayerStart = (
+  id1: PlayerId,
+  id2: PlayerId,
+  rng: () => number = Math.random,
+): PlayerId => (rng() < 0.5 ? id1 : id2)
 
 export interface CreateDuelParams {
   players: [PlayerSetup, PlayerSetup]

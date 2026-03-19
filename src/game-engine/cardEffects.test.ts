@@ -1,8 +1,6 @@
-import { describe, expect, test } from 'vitest'
-
 import { CARD_BASES } from 'src/constants/cardBases'
-import { createDuel } from 'src/game-engine/initialization'
-import { createCardInstance } from 'src/game-engine/utils'
+import { createDuel } from 'src/reducers/helpers'
+import { createCardInstance } from 'src/reducers/helpers'
 import { duelReducerWithEffects } from 'src/reducers/duelReducer'
 import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
 

@@ -1,11 +1,9 @@
-import { beforeEach, describe, expect, test } from 'vitest'
-
 import { CARD_BASES } from 'src/constants/cardBases'
 import { INITIAL_CARDS_TO_DRAW } from 'src/constants/duelParams'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from 'src/constants/testDecks'
-import { createDuel } from 'src/game-engine/initialization'
-import { createCardInstance } from 'src/game-engine/utils'
 import { duelReducer, initialDuelState } from 'src/reducers/duelReducer'
+import { createDuel } from 'src/reducers/helpers'
+import { createCardInstance } from 'src/reducers/helpers'
 import {
   DEFAULT_DUEL_SETUP,
   PRELOADED_DUEL_SETUP,

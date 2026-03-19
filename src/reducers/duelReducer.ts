@@ -6,9 +6,9 @@ import {
   drawTopCard,
   getPlayer,
   updatePlayer,
-} from 'src/game-engine/initialization'
-import { formatNoun } from 'src/game-engine/utils'
+} from 'src/reducers/helpers'
 import type { CardInstance, Duel, DuelAction, PendingInstant } from 'src/types'
+import { formatNoun } from 'src/utils'
 
 export const initialDuelState: Readonly<Duel> = {
   cards: {},

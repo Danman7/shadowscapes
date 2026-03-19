@@ -1,12 +1,10 @@
-import { describe, expect, test, beforeEach } from 'vitest'
 import {
-  resetInstanceIdCounter,
-  generateInstanceId,
-  createCardInstance,
-  shuffle,
   coinFlipForPlayerStart,
-  formatNoun,
-} from 'src/game-engine/utils'
+  createCardInstance,
+  generateInstanceId,
+  resetInstanceIdCounter,
+  shuffle,
+} from 'src/reducers/helpers'
 
 describe('resetInstanceIdCounter and generateInstanceId', () => {
   beforeEach(() => {
@@ -103,20 +101,5 @@ describe('coinFlipForPlayerStart', () => {
 
   test('returns second player when random equals 0.9', () => {
     expect(coinFlipForPlayerStart('alice', 'bob', () => 0.9)).toBe('bob')
-  })
-})
-
-describe('formatNoun', () => {
-  test('formats singular coin amount', () => {
-    expect(formatNoun(1)).toBe('1 coin')
-  })
-
-  test('formats plural coin amount', () => {
-    expect(formatNoun(2)).toBe('2 coins')
-  })
-
-  test('formats custom noun with pluralization', () => {
-    expect(formatNoun(1, 'card')).toBe('1 card')
-    expect(formatNoun(3, 'card')).toBe('3 cards')
   })
 })

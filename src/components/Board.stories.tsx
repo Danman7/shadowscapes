@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { Board } from 'src/components'
-import { createCardInstance } from 'src/game-engine/utils'
+import { createCardInstance } from 'src/reducers/helpers'
 
 const meta: Meta<typeof Board> = {
   title: 'Duel/Board',

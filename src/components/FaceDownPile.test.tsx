@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { expect, test } from 'vitest'
 
 import { FaceDownPile } from 'src/components'
 

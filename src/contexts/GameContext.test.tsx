@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { expect, test } from 'vitest'
 
 import { useGameDispatch, useGameState } from 'src/contexts/GameContext'
 import { renderGameContext } from 'src/test/renderGameContext'

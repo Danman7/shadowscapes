@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom'
-import { describe, expect, test } from 'vitest'
 
 import { Board, Hand } from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'

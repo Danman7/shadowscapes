@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render } from '@testing-library/react'
-import { expect, test, vi } from 'vitest'
 
 import { Logs } from 'src/components'
 

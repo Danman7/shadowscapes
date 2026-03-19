@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/react'
-import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { DuelView } from 'src/components'
 import {
@@ -8,8 +7,7 @@ import {
   INITIAL_PLAYER_COINS,
 } from 'src/constants/duelParams'
 import * as GameContext from 'src/contexts/GameContext'
-import { createDuel } from 'src/game-engine/initialization'
-import { createCardInstance } from 'src/game-engine/utils'
+import { createCardInstance, createDuel } from 'src/reducers/helpers'
 import {
   DEFAULT_DUEL_SETUP,
   MIXED_STACKS_DUEL,
