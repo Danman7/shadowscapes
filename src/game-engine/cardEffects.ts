@@ -4,7 +4,7 @@ import {
   getOpponentId,
   getPlayer,
   updatePlayer,
-} from 'src/reducers/helpers'
+} from 'src/game-engine/helpers'
 import { formatNoun } from 'src/utils'
 import type { CardBaseId, Duel, DuelAction, PlayerId } from 'src/types'
 import * as balancing from 'src/constants/balancing'

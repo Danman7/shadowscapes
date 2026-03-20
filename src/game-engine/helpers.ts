@@ -1,6 +1,5 @@
-import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
 import { CARD_BASES } from 'src/constants/cardBases'
-import { initialDuelState } from 'src/reducers/duelReducer'
+import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
 import type {
   CardBase,
   CardBaseCharacter,
@@ -12,6 +11,16 @@ import type {
   PlayerSetup,
   Stack,
 } from 'src/types'
+
+export const initialDuelState: Readonly<Duel> = {
+  cards: {},
+  players: {},
+  playerOrder: ['', ''],
+  phase: 'intro',
+  startingPlayerId: null,
+  logs: [],
+  pendingInstant: null,
+}
 
 let instanceIdCounter = 0
 

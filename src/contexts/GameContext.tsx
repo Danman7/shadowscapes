@@ -1,39 +1,34 @@
 import {
   createContext,
-  type Dispatch,
   type ReactNode,
   useContext,
-  useMemo,
-  useReducer,
+  useState,
+  useSyncExternalStore,
 } from 'react'
 
-import {
-  duelReducerWithEffects,
-  initialDuelState,
-} from 'src/reducers/duelReducer'
+import { initialDuelState } from 'src/game-engine/duelReducer'
+import { GameModel } from 'src/game-engine/GameModel'
 import type { Duel, DuelAction } from 'src/types'
 
 const GameStateContext = createContext<Duel | undefined>(undefined)
-const GameDispatchContext = createContext<Dispatch<DuelAction> | null>(null)
+const GameModelContext = createContext<GameModel | null>(null)
 
 export const GameProvider: React.FC<{
   children: ReactNode
   preloadedState?: Partial<Duel>
 }> = ({ children, preloadedState }) => {
-  const [gameState, dispatch] = useReducer(
-    duelReducerWithEffects,
-    preloadedState,
-    (overrides) => ({ ...initialDuelState, ...overrides }),
+  const [model] = useState(
+    () => new GameModel({ ...initialDuelState, ...preloadedState }),
   )
 
-  const stateValue = useMemo(() => gameState, [gameState])
+  const gameState = useSyncExternalStore(model.subscribe, model.getState)
 
   return (
-    <GameStateContext.Provider value={stateValue}>
-      <GameDispatchContext.Provider value={dispatch}>
+    <GameModelContext.Provider value={model}>
+      <GameStateContext.Provider value={gameState}>
         {children}
-      </GameDispatchContext.Provider>
-    </GameStateContext.Provider>
+      </GameStateContext.Provider>
+    </GameModelContext.Provider>
   )
 }
 
@@ -46,11 +41,20 @@ export const useGameState = (): Duel => {
   return context
 }
 
-export const useGameDispatch = (): Dispatch<DuelAction> => {
-  const context = useContext(GameDispatchContext)
+export const useGameDispatch = (): ((action: DuelAction) => void) => {
+  const model = useContext(GameModelContext)
 
-  if (context === null || context === undefined)
+  if (model === null)
     throw new Error('useGameDispatch must be used within GameProvider')
 
-  return context
+  return model.dispatch
+}
+
+export const useGameModel = (): GameModel => {
+  const model = useContext(GameModelContext)
+
+  if (model === null)
+    throw new Error('useGameModel must be used within GameProvider')
+
+  return model
 }

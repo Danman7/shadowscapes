@@ -1,5 +1,5 @@
 import { PLAYER_1_DECK, PLAYER_2_DECK } from 'src/constants/testDecks'
-import { createDuel, type CreateDuelParams } from 'src/reducers/helpers'
+import { createDuel, type CreateDuelParams } from 'src/game-engine/helpers'
 
 export const DEFAULT_DUEL_SETUP: CreateDuelParams = {
   players: [

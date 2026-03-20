@@ -6,19 +6,11 @@ import {
   drawTopCard,
   getPlayer,
   updatePlayer,
-} from 'src/reducers/helpers'
+} from 'src/game-engine/helpers'
+
+export { initialDuelState } from 'src/game-engine/helpers'
 import type { CardInstance, Duel, DuelAction, PendingInstant } from 'src/types'
 import { formatNoun } from 'src/utils'
-
-export const initialDuelState: Readonly<Duel> = {
-  cards: {},
-  players: {},
-  playerOrder: ['', ''],
-  phase: 'intro',
-  startingPlayerId: null,
-  logs: [],
-  pendingInstant: null,
-}
 
 export function duelReducer(
   state: Readonly<Duel>,

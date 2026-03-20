@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { Card } from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'
-import { createCardInstance } from 'src/reducers/helpers'
+import { createCardInstance } from 'src/game-engine/helpers'
 
 const meta: Meta<typeof Card> = {
   title: 'Common/Card',

@@ -4,7 +4,7 @@ import {
   generateInstanceId,
   resetInstanceIdCounter,
   shuffle,
-} from 'src/reducers/helpers'
+} from 'src/game-engine/helpers'
 
 describe('resetInstanceIdCounter and generateInstanceId', () => {
   beforeEach(() => {

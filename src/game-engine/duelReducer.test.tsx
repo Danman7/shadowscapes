@@ -1,9 +1,12 @@
 import { CARD_BASES } from 'src/constants/cardBases'
 import { INITIAL_CARDS_TO_DRAW } from 'src/constants/duelParams'
 import { PLAYER_1_DECK, PLAYER_2_DECK } from 'src/constants/testDecks'
-import { duelReducer, initialDuelState } from 'src/reducers/duelReducer'
-import { createDuel } from 'src/reducers/helpers'
-import { createCardInstance } from 'src/reducers/helpers'
+import { duelReducer } from 'src/game-engine/duelReducer'
+import {
+  createCardInstance,
+  createDuel,
+  initialDuelState,
+} from 'src/game-engine/helpers'
 import {
   DEFAULT_DUEL_SETUP,
   PRELOADED_DUEL_SETUP,

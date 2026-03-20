@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 
 import { Board } from 'src/components'
-import { createCardInstance } from 'src/reducers/helpers'
+import { createCardInstance } from 'src/game-engine/helpers'
 import type { CardInstance } from 'src/types'
 
 const mockCards: CardInstance[] = [

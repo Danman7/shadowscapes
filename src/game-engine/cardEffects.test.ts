@@ -1,7 +1,6 @@
 import { CARD_BASES } from 'src/constants/cardBases'
-import { createDuel } from 'src/reducers/helpers'
-import { createCardInstance } from 'src/reducers/helpers'
-import { duelReducerWithEffects } from 'src/reducers/duelReducer'
+import { duelReducerWithEffects } from 'src/game-engine/duelReducer'
+import { createCardInstance, createDuel } from 'src/game-engine/helpers'
 import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
 
 describe('Cook effect', () => {

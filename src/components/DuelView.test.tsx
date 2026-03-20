@@ -7,7 +7,7 @@ import {
   INITIAL_PLAYER_COINS,
 } from 'src/constants/duelParams'
 import * as GameContext from 'src/contexts/GameContext'
-import { createCardInstance, createDuel } from 'src/reducers/helpers'
+import { createCardInstance, createDuel } from 'src/game-engine/helpers'
 import {
   DEFAULT_DUEL_SETUP,
   MIXED_STACKS_DUEL,
