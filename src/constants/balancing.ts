@@ -43,10 +43,10 @@ export const SACHELMAN_BUFF_ON_PLAY = 1
 export const YORA_SKULL_COST = 5
 export const YORA_SKULL_BUFF_ON_PLAY = 1
 
-export const HIGH_PRIEST_MARKANDER_COST = 5
-export const HIGH_PRIEST_MARKANDER_LIFE = 3
-export const HIGH_PRIEST_MARKANDER_STRENGTH = 1
-export const HIGH_PRIEST_MARKANDER_CHARGES = 5
+export const MARKANDER_COST = 5
+export const MARKANDER_LIFE = 3
+export const MARKANDER_STRENGTH = 1
+export const MARKANDER_CHARGES = 5
 
 // Shadow --------------------------------------- /
 

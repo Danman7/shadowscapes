@@ -32,7 +32,7 @@ export const MIXED_STACKS_DUEL = createDuel(DEFAULT_DUEL_SETUP, {
     player2: {
       hand: ['novice', 'templeGuard'],
       board: ['novice', 'templeGuard'],
-      discard: ['sachelman', 'yoraSkull', 'highPriestMarkander'],
+      discard: ['sachelman', 'yoraSkull', 'markander'],
       deck: ['cook'],
     },
   },

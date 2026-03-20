@@ -3,10 +3,12 @@
 @import 'tailwindcss';
 
 :root {
-  --primary: var(--color-amber-600);
-  --background: var(--color-neutral-50);
-  --foreground: var(--color-neutral-950);
-  --surface: var(--color-neutral-100);
+  --primary: hsl(10, 80%, 45%);
+  --background: hsl(10, 10%, 98%);
+  --foreground: hsl(10, 20%, 20%);
+  --surface: hsl(10, 20%, 94%);
+  --gold: var(--color-yellow-400);
+  --gold-dark: var(--color-yellow-700);
   --order: var(--color-red-800);
   --shadow: var(--color-indigo-800);
   --chaos: var(--color-emerald-800);
@@ -14,10 +16,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: var(--color-amber-400);
-    --background: var(--color-neutral-950);
-    --foreground: var(--color-neutral-50);
-    --surface: var(--color-neutral-800);
+    --primary: hsl(10, 80%, 60%);
+    --background: hsl(10, 20%, 10%);
+    --foreground: hsl(10, 10%, 85%);
+    --surface: hsl(10, 20%, 20%);
     --order: var(--color-red-400);
     --shadow: var(--color-indigo-400);
     --chaos: var(--color-emerald-400);
@@ -30,6 +32,8 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-elite: var(--elite);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
   --color-order: var(--order);
   --color-shadow: var(--shadow);
   --color-chaos: var(--chaos);
@@ -139,7 +143,11 @@
   }
 
   .card {
-    @apply aspect-25/35 max-w-60 w-full h-full rounded-lg border shadow-sm;
+    @apply aspect-25/35 bg-surface w-60 h-full rounded-2xl shadow-md;
+  }
+
+  .card-circle {
+    @apply border-8 rounded-full text-xl font-bold w-12 h-12 flex place-content-center place-items-center;
   }
 
   .name-tag {

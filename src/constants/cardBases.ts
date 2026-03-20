@@ -66,7 +66,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the gem called the Mystic's Soul. -- Note found next to Adolpho's corpse",
     rank: 'elite',
-    categories: ['Necromancer', 'Artifact'],
+    categories: ['Artifact'],
     faction: 'chaos',
   },
   bookOfAsh: {
@@ -102,22 +102,6 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'character',
     rank: 'common',
   },
-  priest: {
-    id: 'priest',
-    name: 'Priest',
-    cost: balancing.PRIEST_COST,
-    life: balancing.PRIEST_LIFE,
-    strength: balancing.PRIEST_STRENGTH,
-    type: 'character',
-    description: [
-      `While this card is in play, whenever an alied character is defeated, gain ${balancing.PRIEST_COINS_GAINED} coin.`,
-    ],
-    flavorText:
-      'Temple Priests will be issued keys to most areas, and are allowed in restricted rooms when authorized by the High Priest. They are also, of course, allowed in their own ',
-    faction: 'order',
-    categories: ['Hammerite', 'Priest'],
-    rank: 'common',
-  },
   templeGuard: {
     id: 'templeGuard',
     name: 'Temple Guard',
@@ -131,13 +115,13 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     faction: 'order',
-    categories: ['Hammerite', 'Guard'],
+    categories: ['Hammerite'],
     type: 'character',
     rank: 'common',
   },
   sachelman: {
     id: 'sachelman',
-    name: 'Brother Sachelman',
+    name: 'Sachelman',
     cost: balancing.SACHELMAN_COST,
     life: balancing.SACHELMAN_LIFE,
     strength: balancing.SACHELMAN_STRENGTH,
@@ -147,7 +131,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
     faction: 'order',
-    categories: ['Hammerite'],
+    categories: ['Hammerite', 'Brother'],
     type: 'character',
     rank: 'elite',
   },
@@ -164,22 +148,22 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     type: 'instant',
     rank: 'elite',
   },
-  highPriestMarkander: {
-    id: 'highPriestMarkander',
-    name: 'High Priest Markander',
-    cost: balancing.HIGH_PRIEST_MARKANDER_COST,
-    life: balancing.HIGH_PRIEST_MARKANDER_LIFE,
-    strength: balancing.HIGH_PRIEST_MARKANDER_STRENGTH,
-    charges: balancing.HIGH_PRIEST_MARKANDER_CHARGES,
+  markander: {
+    id: 'markander',
+    name: 'Markander',
+    cost: balancing.MARKANDER_COST,
+    life: balancing.MARKANDER_LIFE,
+    strength: balancing.MARKANDER_STRENGTH,
+    charges: balancing.MARKANDER_CHARGES,
     type: 'character',
     description: [
-      `This card starts with ${balancing.HIGH_PRIEST_MARKANDER_CHARGES} charges.`,
+      `This card starts with ${balancing.MARKANDER_CHARGES} charges.`,
       'Reduce the charges each time a Hammerite is played.',
       'At 0, summon this card to the board.',
     ],
     flavorText:
       "Our master is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
-    categories: ['Hammerite', 'Priest'],
+    categories: ['Hammerite', 'High', 'Priest'],
     faction: 'order',
     rank: 'elite',
   },
@@ -213,7 +197,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
     flavorText:
       "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
     faction: 'neutral',
-    categories: ['Servant'],
+    categories: ['Household'],
     type: 'character',
     rank: 'common',
   },

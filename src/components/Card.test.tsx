@@ -2,7 +2,6 @@ import { render } from '@testing-library/react'
 
 import { Card } from 'src/components'
 import { CARD_BASES } from 'src/constants/cardBases'
-import { FACTION_COLORS } from 'src/constants/duelParams'
 import { createCardInstance } from 'src/reducers/helpers'
 import type { CardBaseCharacter, CardInstance } from 'src/types'
 
@@ -22,37 +21,33 @@ afterEach(() => {
 
 test('renders character card with all details', () => {
   const { getByText } = render(<Card card={mockCharacterCard} />)
-  const { name, categories, description, flavorText } =
-    CARD_BASES[mockCharacterCard.baseId]
+  const { name, categories, description } = CARD_BASES[mockCharacterCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()
   expect(getByText(mockCharacterCard.cost)).toBeInTheDocument()
   expect(getByText(mockCharacterCard.life as number)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
-  expect(getByText(flavorText!)).toBeInTheDocument()
 })
 
 test('renders instant card without life', () => {
   const { getByText } = render(<Card card={mockInstantCard} />)
-  const { name, description, flavorText, categories } =
-    CARD_BASES[mockInstantCard.baseId]
+  const { name, description, categories } = CARD_BASES[mockInstantCard.baseId]
 
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(mockInstantCard.cost)).toBeInTheDocument()
   expect(getByText(description[0]!)).toBeInTheDocument()
-  expect(getByText(flavorText!)).toBeInTheDocument()
+
   expect(getByText(categories.join(' '))).toBeInTheDocument()
 })
 
 test('renders card with charges', () => {
   const { getAllByText } = render(
-    <Card card={createCardInstance('highPriestMarkander')} />,
+    <Card card={createCardInstance('markander')} />,
   )
 
   expect(
-    getAllByText((CARD_BASES.highPriestMarkander as CardBaseCharacter).charges!)
-      .length,
+    getAllByText((CARD_BASES.markander as CardBaseCharacter).charges!).length,
   ).toBeGreaterThan(1)
 })
 
@@ -66,36 +61,4 @@ test('calls onClick when clicked', () => {
   cardElement?.click()
 
   expect(handleClick).toHaveBeenCalledTimes(1)
-})
-
-test('applies correct faction colors for order', () => {
-  const { getByTestId } = render(<Card card={mockCharacterCard} />)
-  const headerElement = getByTestId('card-header')
-
-  expect(headerElement?.className).toContain(FACTION_COLORS.order)
-})
-
-test('applies correct faction colors for chaos', () => {
-  const { getByTestId } = render(<Card card={mockInstantCard} />)
-  const headerElement = getByTestId('card-header')
-
-  expect(headerElement?.className).toContain(FACTION_COLORS.chaos)
-})
-
-test('applies correct faction colors for shadow', () => {
-  const { getByTestId } = render(
-    <Card card={createCardInstance('downwinder')} />,
-  )
-  const headerElement = getByTestId('card-header')
-
-  expect(headerElement?.className).toContain(FACTION_COLORS.shadow)
-})
-
-test('applies bg-elite class for elite cards', () => {
-  const { getByText } = render(<Card card={mockInstantCard} />)
-  const { categories } = CARD_BASES[mockInstantCard.baseId]
-
-  const categoriesElement = getByText(categories.join(' '))
-
-  expect(categoriesElement?.className).toContain('bg-primary')
 })
