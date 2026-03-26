@@ -10,6 +10,7 @@ import {
 } from 'src/components'
 import { useGameDispatch } from 'src/contexts/GameContext'
 import type { CardInstance, Phase, Player } from 'src/game-engine/types'
+import { formatString, messages } from 'src/i18n'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -35,16 +36,18 @@ const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
 
   switch (phase) {
     case 'initial-draw':
-      phaseInfoText = 'Draw cards'
+      phaseInfoText = messages.ui.drawCards
       break
 
     case 'redraw':
-      phaseInfoText = 'Redraw phase'
+      phaseInfoText = messages.ui.redrawPhase
       break
 
     case 'player-turn':
     case 'turn-end':
-      phaseInfoText = `${activePlayerName}'s Turn`
+      phaseInfoText = formatString(messages.ui.playerTurn, {
+        playerName: activePlayerName,
+      })
       break
 
     default:
@@ -77,8 +80,8 @@ const PhaseButton: React.FC<{
   switch (phase) {
     case 'redraw':
       phaseButtonLabel = !playerReady
-        ? 'Skip redraw'
-        : 'Waiting for opponent...'
+        ? messages.ui.skipRedraw
+        : messages.ui.waitingForOpponent
 
       phaseButtonOnClick = !playerReady
         ? () =>
@@ -90,7 +93,7 @@ const PhaseButton: React.FC<{
       break
 
     case 'player-turn':
-      phaseButtonLabel = 'Pass'
+      phaseButtonLabel = messages.ui.pass
       phaseButtonOnClick = () => {
         const allStunned =
           activeBoard.length > 0 &&
@@ -104,7 +107,7 @@ const PhaseButton: React.FC<{
       break
 
     case 'turn-end':
-      phaseButtonLabel = 'End Turn'
+      phaseButtonLabel = messages.ui.endTurn
       phaseButtonOnClick = () => {
         onTurnEnd()
         dispatch({ type: 'SWITCH_TURN' })
@@ -341,7 +344,11 @@ export const DuelView: React.FC = () => {
     >
       {/* Row 1: inactive discard / hand / deck */}
       <section className="col-1 row-1">
-        <FaceDownPile flipped count={inactiveDiscardCount} label="Discard" />
+        <FaceDownPile
+          flipped
+          count={inactiveDiscardCount}
+          label={messages.ui.discard}
+        />
       </section>
 
       <section className="col-2 row-1 relative">
@@ -351,7 +358,11 @@ export const DuelView: React.FC = () => {
       </section>
 
       <section className="col-3 row-1">
-        <FaceDownPile flipped count={inactiveDeckCount} label="Deck" />
+        <FaceDownPile
+          flipped
+          count={inactiveDeckCount}
+          label={messages.ui.deck}
+        />
       </section>
 
       {/* Row 2: inactive board full width */}
@@ -374,7 +385,7 @@ export const DuelView: React.FC = () => {
               data-testid="logs-toggle-button"
               isSecondary
             >
-              Logs
+              {messages.ui.logs}
             </Button>
           )}
 
@@ -404,7 +415,7 @@ export const DuelView: React.FC = () => {
 
       {/* Row 5: active discard / hand / deck */}
       <section className="col-1 row-5">
-        <FaceDownPile count={activeDiscardCount} label="Discard" />
+        <FaceDownPile count={activeDiscardCount} label={messages.ui.discard} />
       </section>
 
       <section className="col-2 row-5 relative">
@@ -414,7 +425,7 @@ export const DuelView: React.FC = () => {
       </section>
 
       <section className="col-3 row-5">
-        <FaceDownPile count={activeDeckCount} label="Deck" />
+        <FaceDownPile count={activeDeckCount} label={messages.ui.deck} />
       </section>
     </div>
   )

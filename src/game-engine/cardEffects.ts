@@ -5,8 +5,8 @@ import {
   getOpponentId,
   updatePlayers,
 } from 'src/game-engine/helpers'
-import { formatNoun } from 'src/utils'
 import type { Duel, DuelAction, PlayerId } from 'src/game-engine/types'
+import { formatString, messages } from 'src/i18n'
 
 type CardEffect = (
   state: Duel,
@@ -23,13 +23,11 @@ const cookEffect: CardEffect = (state, playerId) => {
     players: { ...state.players, [playerId]: playerAfterDraw },
     logs: addLogEntry(
       state.logs,
-      `${playerAfterDraw.name} draw another card because of Cook. They have ${formatNoun(
-        playerAfterDraw.hand.length,
-        'card',
-      )} in hand and ${formatNoun(
-        playerAfterDraw.deck.length,
-        'card',
-      )} left in deck.`,
+      formatString(messages.cardEffects.cookDraw, {
+        playerName: playerAfterDraw.name,
+        handCount: playerAfterDraw.hand.length,
+        deckCount: playerAfterDraw.deck.length,
+      }),
     ),
   }
 }
@@ -72,7 +70,10 @@ const zombieEffect: CardEffect = (state, playerId) => {
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      `${player.name} resurrects another ${formatNoun(zombiesInDiscard.length, 'Zombie')} from their discard.`,
+      formatString(messages.cardEffects.zombieResurrect, {
+        playerName: player.name,
+        count: zombiesInDiscard.length,
+      }),
     ),
   }
 }
@@ -123,10 +124,10 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
     })),
     logs: addLogEntry(
       state.logs,
-      `${player.name} summons ${formatNoun(
-        allCopiesToSummon.length,
-        'Novice',
-      )} in addition because they have a stronger Hammerite on board.`,
+      formatString(messages.cardEffects.noviceSummon, {
+        playerName: player.name,
+        count: allCopiesToSummon.length,
+      }),
     ),
   }
 }
@@ -165,7 +166,10 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      `Brother Sachelman gives ${balancing.SACHELMAN_BUFF_ON_PLAY} life to ${formatNoun(weakerHammeritesCount, 'hammerite')} on board.`,
+      formatString(messages.cardEffects.sachelmanBuff, {
+        buff: balancing.SACHELMAN_BUFF_ON_PLAY,
+        count: weakerHammeritesCount,
+      }),
     ),
   }
 }
@@ -215,7 +219,10 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
     },
     logs: addLogEntry(
       state.logs,
-      `Temple Guard gains ${balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS} life because ${opponent.name} controls more cards on board.`,
+      formatString(messages.cardEffects.templeGuardBuff, {
+        buff: balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS,
+        opponentName: opponent.name,
+      }),
     ),
   }
 }
@@ -246,7 +253,10 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      `Yora Skull gives ${balancing.YORA_SKULL_BUFF_ON_PLAY} life to ${formatNoun(boostedCardsCount, 'hammerite')} on board.`,
+      formatString(messages.cardEffects.yoraSkullBuff, {
+        buff: balancing.YORA_SKULL_BUFF_ON_PLAY,
+        count: boostedCardsCount,
+      }),
     ),
   }
 }
@@ -316,7 +326,10 @@ const applyHauntReactiveEffect = (
       cards: newCards,
       logs: addLogEntry(
         state.logs,
-        `${formatNoun(hauntsWithCharges.length, 'Haunt')} reacts and defeats ${playedCard.base.name}.`,
+        formatString(messages.cardEffects.hauntReactDefeats, {
+          count: hauntsWithCharges.length,
+          cardName: playedCard.base.name,
+        }),
       ),
     }
   }
@@ -330,7 +343,11 @@ const applyHauntReactiveEffect = (
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      `${formatNoun(hauntsWithCharges.length, 'Haunt')} reacts. ${playedCard.base.name} loses ${damage} life.`,
+      formatString(messages.cardEffects.hauntReactDamage, {
+        count: hauntsWithCharges.length,
+        cardName: playedCard.base.name,
+        damage,
+      }),
     ),
   }
 }
@@ -403,10 +420,11 @@ const applyBurrickAttackEffect = (
     attributes: { ...currentAttacker.attributes, charges: newCharges },
   }
 
-  const burrickLog = `${currentAttacker.base.name} splashes ${formatNoun(
-    affectedAdjacentCount,
-    'adjacent card',
-  )} for ${formatNoun(attackDamage, 'damage')} loosing a charge.`
+  const burrickLog = formatString(messages.cardEffects.burrickSplash, {
+    cardName: currentAttacker.base.name,
+    count: affectedAdjacentCount,
+    damage: attackDamage,
+  })
 
   return {
     ...result,
@@ -448,10 +466,10 @@ const applyTempleGuardRetaliationEffect = (
       cards: newCards,
       logs: addLogEntry(
         state.logs,
-        `Temple Guard retaliates for ${formatNoun(
-          defender.attributes.strength,
-          'damage',
-        )} and defeats ${attacker.base.name}.`,
+        formatString(messages.cardEffects.templeGuardRetaliateDefeats, {
+          damage: defender.attributes.strength,
+          attackerName: attacker.base.name,
+        }),
       ),
     }
   }
@@ -465,10 +483,11 @@ const applyTempleGuardRetaliationEffect = (
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      `Temple Guard retaliates for ${formatNoun(
-        defender.attributes.strength,
-        'damage',
-      )}. ${attacker.base.name} has ${formatNoun(attackerNewLife, 'life')} left.`,
+      formatString(messages.cardEffects.templeGuardRetaliateDamage, {
+        damage: defender.attributes.strength,
+        attackerName: attacker.base.name,
+        remainingLife: attackerNewLife,
+      }),
     ),
   }
 }
@@ -520,10 +539,7 @@ const applyMarkanderReactiveEffect = (
         deck: p.deck.filter((id) => !idsToSummon.includes(id)),
         board: [...p.board, ...idsToSummon],
       })),
-      logs: addLogEntry(
-        state.logs,
-        'Enough Hammerites were played for High Priest Markander to be summoned.',
-      ),
+      logs: addLogEntry(state.logs, messages.cardEffects.markanderSummoned),
     }
   }
 

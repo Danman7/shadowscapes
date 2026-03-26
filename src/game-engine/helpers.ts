@@ -17,6 +17,7 @@ import type {
   PlayerId,
   PlayerSetup,
 } from 'src/game-engine/types'
+import { formatString, messages } from 'src/i18n'
 
 export const generateUuid = (): string => crypto.randomUUID()
 
@@ -46,7 +47,12 @@ const getDeckSummaryLog = (playerName: string, cards: CardBaseId[]): string => {
     0,
   )
 
-  return `${playerName}'s deck: ${cards.length} cards / ${eliteCount} elites / ${totalCost} total cost.`
+  return formatString(messages.reducer.deckSummary, {
+    playerName,
+    cardCount: cards.length,
+    eliteCount,
+    totalCost,
+  })
 }
 
 const shuffle = <T>(array: T[], rng: () => number = Math.random): T[] => {

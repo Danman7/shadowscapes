@@ -3,6 +3,7 @@ import { GiCrownCoin } from 'react-icons/gi'
 
 import { AnimatedNumber } from 'src/components'
 import type { Player } from 'src/game-engine/types'
+import { messages } from 'src/i18n'
 
 export const PlayerBadge: React.FC<{
   player: Player
@@ -28,7 +29,7 @@ export const PlayerBadge: React.FC<{
     {player.playerReady && (
       <div className="text-chaos text-sm flex items-center gap-1">
         <FaCheck />
-        Ready
+        {messages.ui.ready}
       </div>
     )}
   </div>

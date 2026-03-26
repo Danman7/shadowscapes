@@ -10,6 +10,7 @@ import {
   type CreateDuelParams,
 } from 'src/game-engine/helpers'
 import type { Duel, Player, PlayerSetup } from 'src/game-engine/types'
+import { formatString, messages } from 'src/i18n'
 
 export const MOCK_PLAYER_1_SETUP: PlayerSetup = {
   id: 'player1',
@@ -31,11 +32,20 @@ export const MOCK_DUEL_SETUP: CreateDuelParams = [
 export const MOCK_DUEL = createDuel(MOCK_DUEL_SETUP)
 
 export const MOCK_LOGS: string[] = [
-  'Garrett goes first.',
-  'Constantine skipped redraw.',
-  'Garrett redrew a card.',
-  'Garrett played Temple Guard for 4 coins. Garrett has 26 coins left.',
-  'Temple Guard attacked Constantine. Constantine has 29 coins left.',
+  formatString(messages.reducer.goesFirst, { playerName: 'Garrett' }),
+  formatString(messages.reducer.skipRedraw, { playerName: 'Constantine' }),
+  formatString(messages.reducer.redrawCard, { playerName: 'Garrett' }),
+  formatString(messages.reducer.playCard, {
+    playerName: 'Garrett',
+    cardName: 'Temple Guard',
+    cost: 4,
+    remaining: 26,
+  }),
+  formatString(messages.reducer.attackPlayer, {
+    attackerName: 'Temple Guard',
+    playerName: 'Constantine',
+    coins: 29,
+  }),
 ]
 
 export const MIXED_STACKS_DUEL: Duel = {

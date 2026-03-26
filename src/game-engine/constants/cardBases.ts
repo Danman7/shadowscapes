@@ -1,12 +1,13 @@
 import * as balancing from 'src/game-engine/constants/balancing'
 import * as cardText from 'src/game-engine/constants/cardText'
 import type { CardBase, CardBaseId } from 'src/game-engine/types'
+import { messages } from 'src/i18n'
 
 export const CARD_BASES: Record<CardBaseId, CardBase> = {
   // Chaos --------------------------------------- /
   zombie: {
     id: 'zombie',
-    name: 'Zombie',
+    name: messages.cards.zombie.name,
     faction: 'chaos',
     categories: ['Undead'],
     type: 'character',
@@ -16,7 +17,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   burrick: {
     id: 'burrick',
-    name: 'Burrick',
+    name: messages.cards.burrick.name,
     type: 'character',
     categories: ['Beast'],
     faction: 'chaos',
@@ -26,7 +27,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   haunt: {
     id: 'haunt',
-    name: 'Haunt',
+    name: messages.cards.haunt.name,
     faction: 'chaos',
     categories: ['Undead', 'Hammerite'],
     type: 'character',
@@ -36,7 +37,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   mysticsSoul: {
     id: 'mysticsSoul',
-    name: "Mystic's Soul",
+    name: messages.cards.mysticsSoul.name,
     type: 'instant',
     rank: 'elite',
     categories: ['Artifact'],
@@ -46,7 +47,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   bookOfAsh: {
     id: 'bookOfAsh',
-    name: 'Book of Ash',
+    name: messages.cards.bookOfAsh.name,
     faction: 'chaos',
     categories: ['Necromancer', 'Artifact'],
     type: 'instant',
@@ -59,7 +60,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
 
   novice: {
     id: 'novice',
-    name: 'Novice',
+    name: messages.cards.novice.name,
     faction: 'order',
     categories: ['Hammerite'],
     type: 'character',
@@ -69,7 +70,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   templeGuard: {
     id: 'templeGuard',
-    name: 'Temple Guard',
+    name: messages.cards.templeGuard.name,
     faction: 'order',
     categories: ['Hammerite'],
     type: 'character',
@@ -79,7 +80,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   sachelman: {
     id: 'sachelman',
-    name: 'Sachelman',
+    name: messages.cards.sachelman.name,
     faction: 'order',
     categories: ['Hammerite', 'Brother'],
     type: 'character',
@@ -89,7 +90,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   yoraSkull: {
     id: 'yoraSkull',
-    name: "Saint Yora's Skull",
+    name: messages.cards.yoraSkull.name,
     faction: 'order',
     categories: ['Hammerite', 'Artifact'],
     type: 'instant',
@@ -99,7 +100,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   markander: {
     id: 'markander',
-    name: 'Markander',
+    name: messages.cards.markander.name,
     type: 'character',
     categories: ['Hammerite', 'High', 'Priest'],
     faction: 'order',
@@ -112,7 +113,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
 
   downwinder: {
     id: 'downwinder',
-    name: 'Downwinder',
+    name: messages.cards.downwinder.name,
     faction: 'shadow',
     categories: ['Thief'],
     type: 'character',
@@ -125,7 +126,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
 
   cook: {
     id: 'cook',
-    name: 'Cook',
+    name: messages.cards.cook.name,
     faction: 'neutral',
     categories: ['Household'],
     type: 'character',
@@ -135,7 +136,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   speedPotion: {
     id: 'speedPotion',
-    name: 'Speed Potion',
+    name: messages.cards.speedPotion.name,
     type: 'instant',
     rank: 'common',
     categories: ['Equipment'],
@@ -145,7 +146,7 @@ export const CARD_BASES: Record<CardBaseId, CardBase> = {
   },
   flashBomb: {
     id: 'flashBomb',
-    name: 'Flash Bomb',
+    name: messages.cards.flashBomb.name,
     type: 'instant',
     rank: 'common',
     categories: ['Equipment'],

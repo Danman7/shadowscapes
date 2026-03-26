@@ -11,6 +11,7 @@ import {
 import { duelReducer } from 'src/game-engine/duelReducer'
 import { createCardInstance } from 'src/game-engine/helpers'
 import { makeTestDuel } from 'src/game-engine/mocks'
+import { formatString, messages } from 'src/i18n'
 
 test('initial state has intro phase', () => {
   expect(INITIAL_DUEL_STATE.phase).toBe('intro')
@@ -55,8 +56,18 @@ test('START_DUEL creates new duel with player names and decks', () => {
   )
 
   expect(result.logs).toEqual([
-    `Alice's deck: ${PLAYER_1_DECK.length} cards / ${player1EliteCount} elites / ${player1TotalCost} total cost.`,
-    `Bob's deck: ${PLAYER_2_DECK.length} cards / ${player2EliteCount} elites / ${player2TotalCost} total cost.`,
+    formatString(messages.reducer.deckSummary, {
+      playerName: 'Alice',
+      cardCount: PLAYER_1_DECK.length,
+      eliteCount: player1EliteCount,
+      totalCost: player1TotalCost,
+    }),
+    formatString(messages.reducer.deckSummary, {
+      playerName: 'Bob',
+      cardCount: PLAYER_2_DECK.length,
+      eliteCount: player2EliteCount,
+      totalCost: player2TotalCost,
+    }),
   ])
 })
 
@@ -125,7 +136,9 @@ describe('START_FIRST_PLAYER_TURN', () => {
 
     const result = duelReducer(state, { type: 'START_FIRST_PLAYER_TURN' })
 
-    expect(result.logs).toContain('Alice goes first.')
+    expect(result.logs).toContain(
+      formatString(messages.reducer.goesFirst, { playerName: 'Alice' }),
+    )
   })
 
   test('draws one card for the first player when first turn starts', () => {
@@ -420,7 +433,9 @@ describe('SKIP_REDRAW', () => {
     })
 
     expect(result.players['player1'].playerReady).toBe(true)
-    expect(result.logs).toContain('Alice skips redraw.')
+    expect(result.logs).toContain(
+      formatString(messages.reducer.skipRedraw, { playerName: 'Alice' }),
+    )
   })
 
   test('does not duplicate logs when already ready', () => {

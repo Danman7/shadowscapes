@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { IoMdClose } from 'react-icons/io'
 
+import { messages } from 'src/i18n'
+
 export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
   logs,
   onClose,
@@ -18,7 +20,7 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
   return (
     <div className="box p-2 max-w-80 relative animate-slide-left">
       <div className="font-bold text-center py-1 border-b border-foreground/10">
-        Logs
+        {messages.ui.logs}
         <IoMdClose
           onClick={onClose}
           className="absolute right-2 top-2 cursor-pointer"

@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import { PlayerBadge } from 'src/components'
 import { PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
 import type { Player } from 'src/game-engine/types'
+import { messages } from 'src/i18n'
 
 const player: Player = {
   ...PLACEHOLDER_PLAYER,
@@ -22,7 +23,7 @@ test('renders player is ready', () => {
     <PlayerBadge player={{ ...player, playerReady: true }} />,
   )
 
-  expect(getByText('Ready')).toBeInTheDocument()
+  expect(getByText(messages.ui.ready)).toBeInTheDocument()
 })
 
 test('renders without active indicator when isActive is false', () => {

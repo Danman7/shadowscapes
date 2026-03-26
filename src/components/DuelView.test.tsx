@@ -15,6 +15,7 @@ import {
   MOCK_DUEL_SETUP,
 } from 'src/game-engine/mocks'
 import type { Duel } from 'src/game-engine/types'
+import { formatString, messages } from 'src/i18n'
 import { renderGameContext } from 'src/test/renderGameContext'
 
 afterEach(() => {
@@ -54,8 +55,12 @@ describe('Logs visibility', () => {
       preloadedState: MIXED_STACKS_DUEL,
     })
 
-    expect(getByRole('button', { name: 'Logs' })).toBeInTheDocument()
-    expect(queryByText('Garrett goes first.')).not.toBeInTheDocument()
+    expect(getByRole('button', { name: messages.ui.logs })).toBeInTheDocument()
+    expect(
+      queryByText(
+        formatString(messages.reducer.goesFirst, { playerName: 'Garrett' }),
+      ),
+    ).not.toBeInTheDocument()
   })
 
   test('shows and hides logs on demand', () => {
@@ -64,20 +69,30 @@ describe('Logs visibility', () => {
         preloadedState: MIXED_STACKS_DUEL,
       })
 
-    fireEvent.click(getByRole('button', { name: 'Logs' }))
+    fireEvent.click(getByRole('button', { name: messages.ui.logs }))
 
-    expect(queryByRole('button', { name: 'Logs' })).not.toBeInTheDocument()
-    expect(getByText('Garrett goes first.')).toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: messages.ui.logs }),
+    ).not.toBeInTheDocument()
+    expect(
+      getByText(
+        formatString(messages.reducer.goesFirst, { playerName: 'Garrett' }),
+      ),
+    ).toBeInTheDocument()
 
-    const logsTitle = getByText('Logs')
+    const logsTitle = getByText(messages.ui.logs)
     const closeIcon = logsTitle.parentElement?.querySelector('svg')
     if (closeIcon === null || closeIcon === undefined)
       throw new Error('Expected close icon to be rendered')
 
     fireEvent.click(closeIcon)
 
-    expect(getByRole('button', { name: 'Logs' })).toBeInTheDocument()
-    expect(queryByText('Garrett goes first.')).not.toBeInTheDocument()
+    expect(getByRole('button', { name: messages.ui.logs })).toBeInTheDocument()
+    expect(
+      queryByText(
+        formatString(messages.reducer.goesFirst, { playerName: 'Garrett' }),
+      ),
+    ).not.toBeInTheDocument()
   })
 })
 
@@ -206,7 +221,11 @@ describe('Initial sequence', () => {
     const { playerOrder, players } = MOCK_DUEL
 
     expect(
-      getByText(`${players[playerOrder[0]].name}'s Turn`),
+      getByText(
+        formatString(messages.ui.playerTurn, {
+          playerName: players[playerOrder[0]].name,
+        }),
+      ),
     ).toBeInTheDocument()
     expect(queryByText('Ready')).not.toBeInTheDocument()
   })
@@ -251,7 +270,13 @@ describe('Initial sequence', () => {
 
     fireEvent.click(getAllByTestId('card')[0] as HTMLElement)
 
-    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(
+      getByText(
+        formatString(messages.ui.playerTurn, {
+          playerName: activePlayer.name,
+        }),
+      ),
+    ).toBeInTheDocument()
     expect(getAllByTestId('card')).toHaveLength(2)
   })
 })
@@ -338,7 +363,7 @@ describe('Player turns', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(getByText('End Turn')).toBeInTheDocument()
+    expect(getByText(messages.ui.endTurn)).toBeInTheDocument()
   })
 
   test('only allows clicking affordable cards during player-turn', () => {
@@ -410,9 +435,9 @@ describe('Phase action buttons', () => {
       preloadedState: stateWithBoard,
     })
 
-    fireEvent.click(getByText('Pass'))
+    fireEvent.click(getByText(messages.ui.pass))
 
-    expect(getByText('End Turn')).toBeInTheDocument()
+    expect(getByText(messages.ui.endTurn)).toBeInTheDocument()
   })
 
   test('Pass button switches turn when active board is empty', () => {
@@ -433,10 +458,14 @@ describe('Phase action buttons', () => {
       preloadedState: stateWithEmptyBoard,
     })
 
-    fireEvent.click(getByText('Pass'))
+    fireEvent.click(getByText(messages.ui.pass))
 
     expect(
-      getByText(`${preloadedState.players[inactivePlayerId].name}'s Turn`),
+      getByText(
+        formatString(messages.ui.playerTurn, {
+          playerName: preloadedState.players[inactivePlayerId].name,
+        }),
+      ),
     ).toBeInTheDocument()
   })
 
@@ -461,9 +490,15 @@ describe('Phase action buttons', () => {
       preloadedState: stateWithRedraw,
     })
 
-    fireEvent.click(getByText('Skip redraw'))
+    fireEvent.click(getByText(messages.ui.skipRedraw))
 
-    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(
+      getByText(
+        formatString(messages.ui.playerTurn, {
+          playerName: activePlayer.name,
+        }),
+      ),
+    ).toBeInTheDocument()
   })
 
   test('skipping redraw starts first turn with one additional draw', () => {
@@ -504,9 +539,15 @@ describe('Phase action buttons', () => {
       preloadedState: stateWithRedraw,
     })
 
-    fireEvent.click(getByText('Skip redraw'))
+    fireEvent.click(getByText(messages.ui.skipRedraw))
 
-    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(
+      getByText(
+        formatString(messages.ui.playerTurn, {
+          playerName: activePlayer.name,
+        }),
+      ),
+    ).toBeInTheDocument()
     expect(getAllByTestId('card')).toHaveLength(2)
   })
 })
@@ -843,7 +884,7 @@ describe('Turn end phase', () => {
     fireEvent.click(cards[1] as HTMLElement)
 
     // Click End Turn — this calls onTurnEnd (clears selectedAttackerId) then SWITCH_TURN
-    fireEvent.click(getByText('End Turn'))
+    fireEvent.click(getByText(messages.ui.endTurn))
 
     expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
   })
@@ -869,9 +910,9 @@ describe('PhaseInfo component', () => {
       preloadedState: { ...preloadedState, phase: 'intro' },
     })
 
-    expect(queryByText('Pass')).not.toBeInTheDocument()
-    expect(queryByText('End Turn')).not.toBeInTheDocument()
-    expect(queryByText('Skip redraw')).not.toBeInTheDocument()
+    expect(queryByText(messages.ui.pass)).not.toBeInTheDocument()
+    expect(queryByText(messages.ui.endTurn)).not.toBeInTheDocument()
+    expect(queryByText(messages.ui.skipRedraw)).not.toBeInTheDocument()
   })
 
   test('shows Waiting for opponent button when active player is already ready in redraw', () => {
@@ -896,7 +937,7 @@ describe('PhaseInfo component', () => {
       },
     })
 
-    expect(getByText('Waiting for opponent...')).toBeInTheDocument()
+    expect(getByText(messages.ui.waitingForOpponent)).toBeInTheDocument()
   })
 })
 

@@ -11,7 +11,7 @@ import {
   updatePlayers,
 } from 'src/game-engine/helpers'
 import type { Duel, DuelAction } from 'src/game-engine/types'
-import { formatNoun } from 'src/utils'
+import { formatString, messages } from 'src/i18n'
 
 export function duelReducer(
   state: Readonly<Duel>,
@@ -37,7 +37,9 @@ export function duelReducer(
         phase: 'initial-draw',
         logs: addLogEntry(
           state.logs,
-          `Both players draw ${INITIAL_CARDS_TO_DRAW} cards.`,
+          formatString(messages.reducer.bothPlayersDraw, {
+            count: INITIAL_CARDS_TO_DRAW,
+          }),
         ),
       }
     }
@@ -62,7 +64,9 @@ export function duelReducer(
         ),
         logs: addLogEntry(
           state.logs,
-          `${state.players[activePlayerId].name} goes first.`,
+          formatString(messages.reducer.goesFirst, {
+            playerName: state.players[activePlayerId].name,
+          }),
         ),
       }
     }
@@ -89,7 +93,9 @@ export function duelReducer(
         ),
         logs: addLogEntry(
           state.logs,
-          `It's now ${state.players[newActiveId].name}'s turn so they draw a card.`,
+          formatString(messages.reducer.switchTurn, {
+            playerName: state.players[newActiveId].name,
+          }),
         ),
       }
     }
@@ -101,7 +107,12 @@ export function duelReducer(
 
       const newHand = player.hand.filter((id) => id !== cardInstanceId)
       const newCoins = player.coins - card.attributes.cost
-      const playLog = `${player.name} plays ${card.base.name} for ${formatNoun(card.attributes.cost)}. They have ${formatNoun(newCoins)} left.`
+      const playLog = formatString(messages.reducer.playCard, {
+        playerName: player.name,
+        cardName: card.base.name,
+        cost: card.attributes.cost,
+        remaining: newCoins,
+      })
 
       const updatedState: Duel = {
         ...state,
@@ -157,7 +168,12 @@ export function duelReducer(
             playerReady: true,
           }),
         ),
-        logs: addLogEntry(state.logs, `${player.name} redraws a card.`),
+        logs: addLogEntry(
+          state.logs,
+          formatString(messages.reducer.redrawCard, {
+            playerName: player.name,
+          }),
+        ),
       }
     }
 
@@ -173,7 +189,12 @@ export function duelReducer(
           ...state.players,
           [playerId]: { ...player, playerReady: true },
         },
-        logs: addLogEntry(state.logs, `${player.name} skips redraw.`),
+        logs: addLogEntry(
+          state.logs,
+          formatString(messages.reducer.skipRedraw, {
+            playerName: player.name,
+          }),
+        ),
       }
     }
 
@@ -217,8 +238,16 @@ export function duelReducer(
         logs: addLogEntry(
           state.logs,
           defeated
-            ? `${attacker.base.name} attacks and defeats ${defender.base.name}.`
-            : `${attacker.base.name} attacks ${defender.base.name}, dealing ${attacker.attributes.strength} damage. ${defender.base.name} has ${defenderNewLife} life left.`,
+            ? formatString(messages.reducer.attackCardDefeated, {
+                attackerName: attacker.base.name,
+                defenderName: defender.base.name,
+              })
+            : formatString(messages.reducer.attackCardDamage, {
+                attackerName: attacker.base.name,
+                defenderName: defender.base.name,
+                damage: attacker.attributes.strength,
+                remainingLife: defenderNewLife,
+              }),
         ),
       }
     }
@@ -245,7 +274,11 @@ export function duelReducer(
         })),
         logs: addLogEntry(
           state.logs,
-          `${attacker.base.name} attacks ${inactivePlayer.name}. ${inactivePlayer.name} has ${formatNoun(newCoins)} left.`,
+          formatString(messages.reducer.attackPlayer, {
+            attackerName: attacker.base.name,
+            playerName: inactivePlayer.name,
+            coins: newCoins,
+          }),
         ),
       }
     }
@@ -270,7 +303,12 @@ export function duelReducer(
             attributes: { ...card.attributes, haste: true },
           },
         },
-        logs: addLogEntry(state.logs, `${card.base.name} gains haste.`),
+        logs: addLogEntry(
+          state.logs,
+          formatString(messages.reducer.gainsHaste, {
+            cardName: card.base.name,
+          }),
+        ),
       }
     }
 
@@ -293,7 +331,9 @@ export function duelReducer(
         },
         logs: addLogEntry(
           state.logs,
-          `${card.base.name} is stunned by a flash bomb.`,
+          formatString(messages.reducer.stunnedByFlashBomb, {
+            cardName: card.base.name,
+          }),
         ),
       }
     }
