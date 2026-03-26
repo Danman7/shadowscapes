@@ -1,11 +1,13 @@
+import type { UnknownAction } from '@reduxjs/toolkit'
+
 import { balancing } from 'src/game-engine/constants'
+import { attackCard, playCard } from 'src/game-engine/duelSlice'
 import {
   addLogEntry,
-  drawTopCard,
   getOpponentId,
   updatePlayers,
 } from 'src/game-engine/helpers'
-import type { Duel, DuelAction, PlayerId } from 'src/game-engine/types'
+import type { Duel, PlayerId } from 'src/game-engine/types'
 import { formatString, messages } from 'src/i18n'
 
 type CardEffect = (
@@ -16,7 +18,15 @@ type CardEffect = (
 
 const cookEffect: CardEffect = (state, playerId) => {
   const player = state.players[playerId]
-  const playerAfterDraw = drawTopCard(player)
+  const [drawnCardId, ...remainingDeck] = player.deck
+  const playerAfterDraw =
+    drawnCardId === undefined
+      ? player
+      : {
+          ...player,
+          deck: remainingDeck,
+          hand: [...player.hand, drawnCardId],
+        }
 
   return {
     ...state,
@@ -548,10 +558,10 @@ const applyMarkanderReactiveEffect = (
 
 export function applyCardEffects(
   state: Duel,
-  action: DuelAction,
+  action: UnknownAction,
   prevState: Duel,
 ): Duel {
-  if (action.type === 'PLAY_CARD') {
+  if (playCard.match(action)) {
     const { playerId, cardInstanceId } = action.payload
     const card = state.cards[cardInstanceId]
     if (!card) return state
@@ -565,7 +575,7 @@ export function applyCardEffects(
     return result
   }
 
-  if (action.type === 'ATTACK_CARD') {
+  if (attackCard.match(action)) {
     const { attackerId, defenderId } = action.payload
     let result = applyBurrickAttackEffect(
       state,

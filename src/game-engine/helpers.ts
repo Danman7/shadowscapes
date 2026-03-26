@@ -108,18 +108,6 @@ export const createDuel = (playerSetups: CreateDuelParams): Duel => {
   }
 }
 
-export const drawTopCard = (player: Player): Player => {
-  if (player.deck.length === 0) return player
-
-  const [drawnCardId, ...remainingDeck] = player.deck
-
-  return {
-    ...player,
-    deck: remainingDeck,
-    hand: [...player.hand, drawnCardId],
-  }
-}
-
 export const getOpponentId = (
   playerOrder: DuelPlayerOrder,
   playerId: PlayerId,

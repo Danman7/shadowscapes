@@ -1,4 +1,5 @@
-import { useGameState } from 'src/contexts/GameContext'
+import { createSelector } from '@reduxjs/toolkit'
+
 import type {
   CardInstance,
   PendingInstant,
@@ -7,40 +8,87 @@ import type {
   PlayerId,
   Stack,
 } from 'src/game-engine'
-import { useMemo } from 'react'
+import { useAppSelector } from 'src/hooks'
+import type { RootState } from 'src/store'
 
-export const useDuelPhase = (): Phase => useGameState().phase
+const selectCards = (state: RootState) => state.duel.cards
+const selectPlayers = (state: RootState) => state.duel.players
+const selectPlayerOrder = (state: RootState) => state.duel.playerOrder
+
+const selectActivePlayerId = createSelector(
+  selectPlayerOrder,
+  (order) => order[0],
+)
+
+const selectInactivePlayerId = createSelector(
+  selectPlayerOrder,
+  (order) => order[1],
+)
+
+const selectActivePlayer = createSelector(
+  selectPlayers,
+  selectActivePlayerId,
+  (players, id) => players[id],
+)
+
+const selectInactivePlayer = createSelector(
+  selectPlayers,
+  selectInactivePlayerId,
+  (players, id) => players[id],
+)
+
+const makeSelectPlayerCards = (
+  selectPlayerId: (state: RootState) => PlayerId,
+  stack: Stack,
+) =>
+  createSelector(
+    selectCards,
+    selectPlayers,
+    selectPlayerId,
+    (cards, players, playerId) => {
+      const player = players[playerId]
+      return player[stack].map((id: string) => cards[id]!)
+    },
+  )
+
+const selectActivePlayerHand = makeSelectPlayerCards(
+  selectActivePlayerId,
+  'hand',
+)
+const selectActivePlayerBoard = makeSelectPlayerCards(
+  selectActivePlayerId,
+  'board',
+)
+const selectInactivePlayerHand = makeSelectPlayerCards(
+  selectInactivePlayerId,
+  'hand',
+)
+const selectInactivePlayerBoard = makeSelectPlayerCards(
+  selectInactivePlayerId,
+  'board',
+)
+
+export const useDuelPhase = (): Phase => useAppSelector((s) => s.duel.phase)
 
 export const usePlayer = (playerId: PlayerId): Player =>
-  useGameState().players[playerId]
+  useAppSelector((s) => s.duel.players[playerId])
 
-export const useActivePlayer = (): Player =>
-  usePlayer(useGameState().playerOrder[0])
+export const useActivePlayer = (): Player => useAppSelector(selectActivePlayer)
 
 export const useInactivePlayer = (): Player =>
-  usePlayer(useGameState().playerOrder[1])
-
-const usePlayerCards = (playerId: PlayerId, stack: Stack): CardInstance[] => {
-  const { cards } = useGameState()
-  const player = usePlayer(playerId)
-
-  return useMemo(() => {
-    const cardIds = player[stack]
-    return cardIds.map((id) => cards[id]!)
-  }, [cards, player, stack])
-}
+  useAppSelector(selectInactivePlayer)
 
 export const useActivePlayerHand = (): CardInstance[] =>
-  usePlayerCards(useGameState().playerOrder[0], 'hand')
+  useAppSelector(selectActivePlayerHand)
 
 export const useActivePlayerBoard = (): CardInstance[] =>
-  usePlayerCards(useGameState().playerOrder[0], 'board')
+  useAppSelector(selectActivePlayerBoard)
 
 export const useInactivePlayerHand = (): CardInstance[] =>
-  usePlayerCards(useGameState().playerOrder[1], 'hand')
+  useAppSelector(selectInactivePlayerHand)
 
 export const useInactivePlayerBoard = (): CardInstance[] =>
-  usePlayerCards(useGameState().playerOrder[1], 'board')
+  useAppSelector(selectInactivePlayerBoard)
 
 export const usePlayerDeckCount = (playerId: PlayerId): number =>
   usePlayer(playerId).deck.length
@@ -50,7 +98,7 @@ export const usePlayerDiscardCount = (playerId: PlayerId): number =>
 
 export const useActivePlayerCoins = (): number => useActivePlayer().coins
 
-export const useLogs = (): string[] => useGameState().logs
+export const useLogs = (): string[] => useAppSelector((s) => s.duel.logs)
 
 export const usePendingInstant = (): PendingInstant | null =>
-  useGameState().pendingInstant
+  useAppSelector((s) => s.duel.pendingInstant)

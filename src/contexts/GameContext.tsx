@@ -1,45 +1,19 @@
-import { createContext, type ReactNode, useContext, useReducer } from 'react'
+import type { ReactNode } from 'react'
+import { Provider } from 'react-redux'
 
-import type { Duel, DuelAction } from 'src/game-engine'
-import { duelReducerWithEffects, INITIAL_DUEL_STATE } from 'src/game-engine'
-
-const GameStateContext = createContext<Duel | undefined>(undefined)
-const GameDispatchContext = createContext<React.Dispatch<DuelAction> | null>(
-  null,
-)
+import type { Duel } from 'src/game-engine'
+import { useAppDispatch, useAppSelector } from 'src/hooks'
+import { type AppDispatch, makeStore } from 'src/store'
 
 export const GameProvider: React.FC<{
   children: ReactNode
   preloadedState?: Partial<Duel>
 }> = ({ children, preloadedState }) => {
-  const [gameState, dispatch] = useReducer(duelReducerWithEffects, {
-    ...INITIAL_DUEL_STATE,
-    ...preloadedState,
-  })
+  const reduxStore = makeStore(preloadedState)
 
-  return (
-    <GameDispatchContext.Provider value={dispatch}>
-      <GameStateContext.Provider value={gameState}>
-        {children}
-      </GameStateContext.Provider>
-    </GameDispatchContext.Provider>
-  )
+  return <Provider store={reduxStore}>{children}</Provider>
 }
 
-export const useGameState = (): Duel => {
-  const context = useContext(GameStateContext)
+export const useGameState = (): Duel => useAppSelector((state) => state.duel)
 
-  if (context === undefined)
-    throw new Error('useGameState must be used within GameProvider')
-
-  return context
-}
-
-export const useGameDispatch = (): React.Dispatch<DuelAction> => {
-  const dispatch = useContext(GameDispatchContext)
-
-  if (dispatch === null)
-    throw new Error('useGameDispatch must be used within GameProvider')
-
-  return dispatch
-}
+export const useGameDispatch = (): AppDispatch => useAppDispatch()

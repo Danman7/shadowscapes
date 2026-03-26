@@ -15,6 +15,16 @@ import {
   MOCK_DUEL as preloadedState,
   MOCK_DUEL_SETUP,
 } from 'src/game-engine'
+import {
+  attackCard,
+  attackPlayer,
+  goToRedraw,
+  playCard,
+  redrawCard,
+  skipRedraw,
+  startInitialDraw,
+  switchTurn,
+} from 'src/game-engine/duelSlice'
 import { formatString, messages } from 'src/i18n'
 
 afterEach(() => {
@@ -107,7 +117,7 @@ describe('Initial sequence', () => {
       },
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'START_INITIAL_DRAW' })
+    expect(dispatchSpy).toHaveBeenCalledWith(startInitialDraw())
   })
 
   test('dispatches GO_TO_REDRAW when phase is initial-draw', () => {
@@ -121,7 +131,7 @@ describe('Initial sequence', () => {
       },
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'GO_TO_REDRAW' })
+    expect(dispatchSpy).toHaveBeenCalledWith(goToRedraw())
   })
 
   test('draws initial cards when transitioning from intro', () => {
@@ -150,10 +160,9 @@ describe('Initial sequence', () => {
       preloadedState: duelState,
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'SKIP_REDRAW',
-      payload: { playerId: duelState.playerOrder[1] },
-    })
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      skipRedraw({ playerId: duelState.playerOrder[1] }),
+    )
   })
 
   test('dispatches REDRAW_CARD when card is clicked in redraw phase', () => {
@@ -190,13 +199,12 @@ describe('Initial sequence', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'REDRAW_CARD',
-      payload: {
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      redrawCard({
         playerId: activePlayerId,
         cardInstanceId,
-      },
-    })
+      }),
+    )
   })
 
   test('transitions to active player turn after both players are ready in redraw phase', () => {
@@ -315,13 +323,12 @@ describe('Player turns', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'PLAY_CARD',
-      payload: {
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      playCard({
         playerId: activePlayerId,
         cardInstanceId,
-      },
-    })
+      }),
+    )
   })
 
   test('transitions to turn-end phase after playing a character card', () => {
@@ -401,13 +408,12 @@ describe('Player turns', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'PLAY_CARD',
-      payload: {
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      playCard({
         playerId: activePlayerId,
         cardInstanceId: '1',
-      },
-    })
+      }),
+    )
 
     dispatchSpy.mockClear()
     fireEvent.click(cards[1] as HTMLElement)
@@ -575,7 +581,7 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithEmptyBoard,
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).toHaveBeenCalledWith(switchTurn())
   })
 
   test('dispatches ATTACK_PLAYER when active has board cards and inactive has none', () => {
@@ -611,10 +617,9 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithAttack,
     })
 
-    expect(dispatchSpy).not.toHaveBeenCalledWith({
-      type: 'ATTACK_PLAYER',
-      payload: { attackerId: '1' },
-    })
+    expect(dispatchSpy).not.toHaveBeenCalledWith(
+      attackPlayer({ attackerId: '1' }),
+    )
   })
 
   test('dispatches ATTACK_PLAYER when active board card is clicked and inactive board is empty', () => {
@@ -653,10 +658,7 @@ describe('Turn end phase', () => {
     const cards = getAllByTestId('card')
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'ATTACK_PLAYER',
-      payload: { attackerId: '1' },
-    })
+    expect(dispatchSpy).toHaveBeenCalledWith(attackPlayer({ attackerId: '1' }))
   })
 
   test('dispatches SWITCH_TURN when both players have cards but all acted', () => {
@@ -693,7 +695,7 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithBothBoards,
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).toHaveBeenCalledWith(switchTurn())
   })
 
   test('does not dispatch when inactive board card is clicked with no selected attacker', () => {
@@ -727,7 +729,7 @@ describe('Turn end phase', () => {
     fireEvent.click(cards[0] as HTMLElement)
 
     expect(dispatchSpy).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'ATTACK_CARD' }),
+      expect.objectContaining({ type: attackCard.type }),
     )
   })
 
@@ -764,10 +766,9 @@ describe('Turn end phase', () => {
     fireEvent.click(cards[1] as HTMLElement)
     fireEvent.click(cards[0] as HTMLElement)
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
   })
 
   test('does not auto-switch when cards have not acted yet', () => {
@@ -804,7 +805,7 @@ describe('Turn end phase', () => {
       preloadedState: preloadedStateWithBothBoards,
     })
 
-    expect(dispatchSpy).not.toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).not.toHaveBeenCalledWith(switchTurn())
   })
 
   test('does not auto-switch when inactive board is empty but active cards have not all acted', () => {
@@ -840,7 +841,7 @@ describe('Turn end phase', () => {
       preloadedState: stateWithUnactedActive,
     })
 
-    expect(dispatchSpy).not.toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).not.toHaveBeenCalledWith(switchTurn())
   })
 
   test('End Turn button dispatches SWITCH_TURN and calls onTurnEnd', () => {
@@ -885,7 +886,7 @@ describe('Turn end phase', () => {
     // Click End Turn — this calls onTurnEnd (clears selectedAttackerId) then SWITCH_TURN
     fireEvent.click(getByText(messages.ui.endTurn))
 
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'SWITCH_TURN' })
+    expect(dispatchSpy).toHaveBeenCalledWith(switchTurn())
   })
 })
 
@@ -983,7 +984,7 @@ describe('Player turn card interactions', () => {
       fireEvent.click(boardCard)
       expect(dispatchSpy).not.toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'PLAY_CARD',
+          type: playCard.type,
           payload: expect.objectContaining({ cardInstanceId: '1' }),
         }),
       )

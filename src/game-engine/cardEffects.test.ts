@@ -1,8 +1,18 @@
 import { applyCardEffects } from 'src/game-engine/cardEffects'
 import { CARD_BASES, PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
-import { duelReducerWithEffects } from 'src/game-engine/duelReducer'
+import { attackCard, playCard, switchTurn } from 'src/game-engine/duelSlice'
 import { createCardInstance } from 'src/game-engine/helpers'
 import { makeTestDuel } from 'src/game-engine/mocks'
+import type { Duel } from 'src/game-engine/types'
+import { makeStore } from 'src/store'
+
+import type { UnknownAction } from '@reduxjs/toolkit'
+
+const dispatchWithEffects = (state: Duel, action: UnknownAction): Duel => {
+  const store = makeStore(state)
+  store.dispatch(action)
+  return store.getState().duel
+}
 
 describe('Cook effect', () => {
   test('draws a card for the player who played Cook', () => {
@@ -27,10 +37,10 @@ describe('Cook effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].hand).toEqual(['2'])
@@ -57,10 +67,10 @@ describe('Cook effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].hand).toEqual([])
@@ -93,10 +103,10 @@ describe('Novice effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].board).toContain('2')
@@ -131,10 +141,10 @@ describe('Novice effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].board).not.toContain('2')
@@ -163,10 +173,10 @@ describe('Novice effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toEqual(['3', '1'])
     expect(result.players['player1'].hand).toEqual(['2'])
@@ -196,10 +206,10 @@ describe('Sachelman effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '3' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(
       CARD_BASES['novice'].attributes.life! + 1,
@@ -231,10 +241,10 @@ describe('Sachelman effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '2' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(
       CARD_BASES['zombie'].attributes.life,
@@ -262,10 +272,10 @@ describe('Sachelman effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '2' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(
       CARD_BASES['templeGuard'].attributes.life,
@@ -277,9 +287,7 @@ describe('Card effects middleware', () => {
   test('does not interfere with non-PLAY_CARD actions', () => {
     const state = makeTestDuel()
 
-    const result = duelReducerWithEffects(state, {
-      type: 'SWITCH_TURN',
-    })
+    const result = dispatchWithEffects(state, switchTurn())
 
     expect(result.playerOrder[0]).toBe('player2')
   })
@@ -304,10 +312,10 @@ describe('Card effects middleware', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toEqual(['1'])
     expect(result.phase).toBe('turn-end')
@@ -338,10 +346,10 @@ describe('Zombie effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].board).toContain('2')
@@ -371,10 +379,10 @@ describe('Zombie effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     const baseLife = CARD_BASES['zombie'].attributes.life
 
@@ -405,10 +413,10 @@ describe('Zombie effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toEqual(['1'])
     expect(result.players['player1'].discard).toEqual(['2'])
@@ -442,10 +450,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(2)
     expect(result.players['player1'].board).toContain('1')
@@ -477,10 +485,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).not.toContain('1')
     expect(result.players['player1'].discard).toContain('1')
@@ -514,10 +522,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(2)
   })
@@ -550,10 +558,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(0)
     expect(result.players['player1'].board).not.toContain('1')
@@ -587,10 +595,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(1)
     expect(result.players['player1'].board).toContain('2')
@@ -624,10 +632,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(1)
     expect(result.players['player1'].board).toContain('2')
@@ -659,10 +667,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].discard).toContain('1')
   })
@@ -693,10 +701,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(0)
   })
@@ -727,10 +735,10 @@ describe('Haunt reactive effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(3)
     expect(result.players['player1'].board).toContain('1')
@@ -764,10 +772,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '3' }),
+    )
 
     expect(result.cards['3']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).not.toContain('2')
@@ -802,10 +810,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '3' }),
+    )
 
     expect(result.players['player2'].board).toContain('2')
     expect(result.cards['1']!.attributes.charges).toBe(0)
@@ -835,10 +843,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.players['player2'].board).not.toContain('2')
     expect(result.players['player2'].discard).toContain('2')
@@ -870,10 +878,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['1']!.attributes.charges).toBe(0)
   })
@@ -904,10 +912,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '3' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(1)
     expect(result.cards['4']!.attributes.life).toBe(1)
@@ -940,10 +948,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '3' }),
+    )
 
     expect(result.cards['1']!.attributes.charges).toBe(0)
   })
@@ -974,10 +982,10 @@ describe('Burrick attack effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '3' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '3' }),
+    )
 
     expect(result.cards['3']!.attributes.life).toBe(2)
     expect(result.cards['2']!.attributes.life).toBe(1)
@@ -1012,10 +1020,10 @@ describe("Mystic's Soul effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(2)
     expect(result.cards['3']!.attributes.charges).toBe(2)
@@ -1050,10 +1058,10 @@ describe("Mystic's Soul effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(2)
     expect(result.cards['3']!.attributes.charges).toBe(1)
@@ -1080,10 +1088,10 @@ describe("Mystic's Soul effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBeUndefined()
   })
@@ -1117,10 +1125,10 @@ describe('Temple Guard effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     const baseLife = CARD_BASES['templeGuard'].attributes.life!
     expect(result.cards['1']!.attributes.life).toBe(baseLife + 1)
@@ -1152,10 +1160,10 @@ describe('Temple Guard effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(
       CARD_BASES['templeGuard'].attributes.life,
@@ -1189,10 +1197,10 @@ describe('Temple Guard effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.cards['1']!.attributes.life).toBe(1)
@@ -1227,10 +1235,10 @@ describe('Temple Guard effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).toContain('2')
@@ -1266,10 +1274,10 @@ describe('Temple Guard effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(0)
     expect(result.players['player2'].board).not.toContain('2')
@@ -1303,10 +1311,10 @@ describe("Yora's Skull effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(4)
     expect(result.cards['3']!.attributes.life).toBe(2)
@@ -1341,10 +1349,10 @@ describe("Yora's Skull effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(3)
   })
@@ -1370,10 +1378,10 @@ describe("Yora's Skull effect", () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.life).toBe(2)
   })
@@ -1401,10 +1409,10 @@ describe('High Priest Markander effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(2)
   })
@@ -1430,10 +1438,10 @@ describe('High Priest Markander effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(0)
     expect(result.players['player1'].board).toContain('2')
@@ -1461,10 +1469,10 @@ describe('High Priest Markander effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(0)
     expect(result.players['player1'].board).toContain('2')
@@ -1492,10 +1500,10 @@ describe('High Priest Markander effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(3)
   })
@@ -1526,10 +1534,10 @@ describe('High Priest Markander effect', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(2)
   })
@@ -1558,10 +1566,10 @@ describe('Markander in both hand and deck', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('2')
     expect(result.players['player1'].board).toContain('3')
@@ -1596,10 +1604,10 @@ describe('Burrick with no adjacent cards', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['3']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).toContain('3')
@@ -1634,10 +1642,10 @@ describe('Haunt does not react to instant cards without strength', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(1)
   })
@@ -1668,10 +1676,10 @@ describe('Burrick effect early return when defender not in prevState board', () 
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBeDefined()
   })
@@ -1702,10 +1710,10 @@ describe('TempleGuard retaliation does not fire when templeGuard life is 0', () 
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: '1', defenderId: '2' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: '1', defenderId: '2' }),
+    )
 
     expect(result.cards['1']!.attributes.life).toBe(2)
   })
@@ -1738,10 +1746,10 @@ describe('Markander reactive effect when no Markander is present', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.players['player1'].board).toContain('1')
     expect(result.players['player1'].hand).not.toContain('1')
@@ -1774,10 +1782,10 @@ describe('Markander reactive effect when no Markander is present', () => {
       },
     })
 
-    const result = duelReducerWithEffects(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: '1' },
-    })
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: '1' }),
+    )
 
     expect(result.cards['2']!.attributes.charges).toBe(2)
     expect(result.players['player1'].hand).toContain('2')

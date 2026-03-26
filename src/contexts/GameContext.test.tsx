@@ -41,7 +41,7 @@ test('useGameState throws error when used outside GameProvider', () => {
 
   expect(() => {
     render(<TestComponent />)
-  }).toThrow('useGameState must be used within GameProvider')
+  }).toThrow('could not find react-redux context value')
 })
 
 test('useGameDispatch throws error when used outside GameProvider', () => {
@@ -52,7 +52,7 @@ test('useGameDispatch throws error when used outside GameProvider', () => {
 
   expect(() => {
     render(<TestComponent />)
-  }).toThrow('useGameDispatch must be used within GameProvider')
+  }).toThrow('could not find react-redux context value')
 })
 
 test('GameProvider supports preloaded state overrides', () => {

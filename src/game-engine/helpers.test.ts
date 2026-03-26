@@ -3,7 +3,6 @@ import {
   addLogEntry,
   createCardInstance,
   createDuel,
-  drawTopCard,
   getOpponentId,
   getPendingInstant,
   resetCards,
@@ -70,31 +69,6 @@ describe('createDuel', () => {
         )
       })
     })
-  })
-})
-
-describe('drawTopCard', () => {
-  const player = MOCK_DUEL.players[MOCK_DUEL.playerOrder[0]]
-
-  test('draws the top card from the player deck', () => {
-    const initialDeckSize = player.deck.length
-    const initialHandSize = player.hand.length
-    const drawnCardId = player.deck[0]
-
-    const updatedPlayer = drawTopCard(player)
-
-    expect(updatedPlayer.deck).toHaveLength(initialDeckSize - 1)
-    expect(updatedPlayer.hand).toHaveLength(initialHandSize + 1)
-    expect(updatedPlayer.hand).toContain(drawnCardId)
-    expect(updatedPlayer.deck).not.toContain(drawnCardId)
-  })
-
-  test('draws no card if the deck is empty', () => {
-    const emptyDeckPlayer = { ...player, deck: [] }
-    const updatedPlayer = drawTopCard(emptyDeckPlayer)
-
-    expect(updatedPlayer.deck).toHaveLength(0)
-    expect(updatedPlayer.hand).toHaveLength(player.hand.length)
   })
 })
 
@@ -223,20 +197,6 @@ describe('updatePlayers', () => {
     }))
 
     expect(result[otherPlayerId]).toEqual(players[otherPlayerId])
-  })
-
-  test('composes with drawTopCard', () => {
-    const player = players[playerId]
-    const initialDeckSize = player.deck.length
-    const initialHandSize = player.hand.length
-    const drawnCardId = player.deck[0]
-
-    const result = updatePlayers(players, playerId, drawTopCard)
-
-    expect(result[playerId].deck).toHaveLength(initialDeckSize - 1)
-    expect(result[playerId].hand).toHaveLength(initialHandSize + 1)
-    expect(result[playerId].hand).toContain(drawnCardId)
-    expect(result[playerId].deck).not.toContain(drawnCardId)
   })
 })
 

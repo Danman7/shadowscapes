@@ -8,7 +8,19 @@ import {
   PLAYER_1_DECK,
   PLAYER_2_DECK,
 } from 'src/game-engine/constants/testDecks'
-import { duelReducer } from 'src/game-engine/duelReducer'
+import {
+  attackCard,
+  attackPlayer,
+  duelReducer,
+  goToRedraw,
+  playCard,
+  redrawCard,
+  skipRedraw,
+  startDuel,
+  startFirstPlayerTurn,
+  startInitialDraw,
+  switchTurn,
+} from 'src/game-engine/duelSlice'
 import { createCardInstance } from 'src/game-engine/helpers'
 import { makeTestDuel } from 'src/game-engine/mocks'
 import { formatString, messages } from 'src/i18n'
@@ -18,15 +30,15 @@ test('initial state has intro phase', () => {
 })
 
 test('START_DUEL creates new duel with player names and decks', () => {
-  const result = duelReducer(INITIAL_DUEL_STATE, {
-    type: 'START_DUEL',
-    payload: {
+  const result = duelReducer(
+    INITIAL_DUEL_STATE,
+    startDuel({
       players: [
         { id: 'player1', name: 'Alice', deck: PLAYER_1_DECK },
         { id: 'player2', name: 'Bob', deck: PLAYER_2_DECK },
       ],
-    },
-  })
+    }),
+  )
 
   expect(result.players['player1'].name).toBe('Alice')
   expect(result.players['player2'].name).toBe('Bob')
@@ -73,17 +85,17 @@ test('START_DUEL creates new duel with player names and decks', () => {
 
 describe('START_INITIAL_DRAW', () => {
   test('draws starting hands for both players', () => {
-    const duel = duelReducer(INITIAL_DUEL_STATE, {
-      type: 'START_DUEL',
-      payload: {
+    const duel = duelReducer(
+      INITIAL_DUEL_STATE,
+      startDuel({
         players: [
           { id: 'player1', name: 'Alice', deck: PLAYER_1_DECK },
           { id: 'player2', name: 'Bob', deck: PLAYER_2_DECK },
         ],
-      },
-    })
+      }),
+    )
 
-    const result = duelReducer(duel, { type: 'START_INITIAL_DRAW' })
+    const result = duelReducer(duel, startInitialDraw())
 
     expect(result.players[result.playerOrder[0]].hand).toHaveLength(
       INITIAL_CARDS_TO_DRAW,
@@ -98,7 +110,7 @@ describe('START_INITIAL_DRAW', () => {
 describe('GO_TO_REDRAW', () => {
   test('transitions from initial-draw to redraw phase', () => {
     const state = makeTestDuel({ phase: 'initial-draw' })
-    const result = duelReducer(state, { type: 'GO_TO_REDRAW' })
+    const result = duelReducer(state, goToRedraw())
 
     expect(result.phase).toBe('redraw')
   })
@@ -124,7 +136,7 @@ describe('START_FIRST_PLAYER_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'START_FIRST_PLAYER_TURN' })
+    const result = duelReducer(state, startFirstPlayerTurn())
 
     expect(result.phase).toBe('player-turn')
     expect(result.players['player1'].playerReady).toBe(false)
@@ -134,7 +146,7 @@ describe('START_FIRST_PLAYER_TURN', () => {
   test('logs which player goes first', () => {
     const state = makeTestDuel()
 
-    const result = duelReducer(state, { type: 'START_FIRST_PLAYER_TURN' })
+    const result = duelReducer(state, startFirstPlayerTurn())
 
     expect(result.logs).toContain(
       formatString(messages.reducer.goesFirst, { playerName: 'Alice' }),
@@ -166,7 +178,7 @@ describe('START_FIRST_PLAYER_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'START_FIRST_PLAYER_TURN' })
+    const result = duelReducer(state, startFirstPlayerTurn())
 
     expect(result.players['player1'].hand).toEqual(['c1', 'c2'])
     expect(result.players['player1'].deck).toEqual([])
@@ -177,7 +189,7 @@ describe('SWITCH_TURN', () => {
   test('switches active and inactive players', () => {
     const state = makeTestDuel()
 
-    const { playerOrder } = duelReducer(state, { type: 'SWITCH_TURN' })
+    const { playerOrder } = duelReducer(state, switchTurn())
 
     expect(playerOrder[0]).toBe('player2')
     expect(playerOrder[1]).toBe('player1')
@@ -186,8 +198,8 @@ describe('SWITCH_TURN', () => {
   test('switches back when called twice', () => {
     const state = makeTestDuel()
 
-    const result1 = duelReducer(state, { type: 'SWITCH_TURN' })
-    const { playerOrder } = duelReducer(result1, { type: 'SWITCH_TURN' })
+    const result1 = duelReducer(state, switchTurn())
+    const { playerOrder } = duelReducer(result1, switchTurn())
 
     expect(playerOrder[0]).toBe('player1')
     expect(playerOrder[1]).toBe('player2')
@@ -212,7 +224,7 @@ describe('SWITCH_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'SWITCH_TURN' })
+    const result = duelReducer(state, switchTurn())
 
     expect(result.players['player2'].hand).toHaveLength(2)
     expect(result.players['player2'].deck).toHaveLength(1)
@@ -226,7 +238,7 @@ describe('SWITCH_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'SWITCH_TURN' })
+    const result = duelReducer(state, switchTurn())
 
     expect(result.cards['c1']!.didAct).toBe(false)
     expect(result.cards['c2']!.didAct).toBe(false)
@@ -248,7 +260,7 @@ describe('SWITCH_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'SWITCH_TURN' })
+    const result = duelReducer(state, switchTurn())
 
     expect(result.cards['c1']!.attributes.haste).toBe(true)
   })
@@ -271,7 +283,7 @@ describe('SWITCH_TURN', () => {
       },
     })
 
-    const result = duelReducer(state, { type: 'SWITCH_TURN' })
+    const result = duelReducer(state, switchTurn())
 
     expect(result.players['player1'].playerReady).toBe(false)
     expect(result.players['player2'].playerReady).toBe(false)
@@ -297,10 +309,10 @@ describe('PLAY_CARD', () => {
   })
 
   test('moves character card from hand to board', () => {
-    const result = duelReducer(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'z1' },
-    })
+    const result = duelReducer(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'z1' }),
+    )
 
     expect(result.players['player1'].hand).toEqual(['b1'])
     expect(result.players['player1'].board).toEqual(['z1'])
@@ -311,19 +323,19 @@ describe('PLAY_CARD', () => {
   })
 
   test('transitions to turn-end when playing a character card', () => {
-    const result = duelReducer(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'z1' },
-    })
+    const result = duelReducer(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'z1' }),
+    )
 
     expect(result.phase).toBe('turn-end')
   })
 
   test('moves instant card from hand to discard', () => {
-    const result = duelReducer(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'b1' },
-    })
+    const result = duelReducer(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'b1' }),
+    )
 
     expect(result.players['player1'].hand).toEqual(['z1'])
     expect(result.players['player1'].board).toEqual([])
@@ -335,10 +347,10 @@ describe('PLAY_CARD', () => {
   })
 
   test('does not modify other player', () => {
-    const result = duelReducer(state, {
-      type: 'PLAY_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'z1' },
-    })
+    const result = duelReducer(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'z1' }),
+    )
 
     expect(result.players['player2']).toEqual(state.players['player2'])
   })
@@ -364,10 +376,10 @@ describe('REDRAW_CARD', () => {
   })
 
   test('puts card at bottom of deck and draws from top', () => {
-    const result = duelReducer(state, {
-      type: 'REDRAW_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'c1' },
-    })
+    const result = duelReducer(
+      state,
+      redrawCard({ playerId: 'player1', cardInstanceId: 'c1' }),
+    )
 
     expect(result.players['player1'].hand).toEqual(['c2', 'c3'])
     expect(result.players['player1'].deck).toEqual(['c1'])
@@ -389,10 +401,10 @@ describe('REDRAW_CARD', () => {
       },
     })
 
-    const result = duelReducer(emptyDeckState, {
-      type: 'REDRAW_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'c1' },
-    })
+    const result = duelReducer(
+      emptyDeckState,
+      redrawCard({ playerId: 'player1', cardInstanceId: 'c1' }),
+    )
 
     expect(result.players['player1'].hand).toEqual(['c1'])
     expect(result.players['player1'].deck).toEqual([])
@@ -400,24 +412,24 @@ describe('REDRAW_CARD', () => {
   })
 
   test('handles multiple redraws sequentially', () => {
-    const result1 = duelReducer(state, {
-      type: 'REDRAW_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'c1' },
-    })
-    const result2 = duelReducer(result1, {
-      type: 'REDRAW_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'c2' },
-    })
+    const result1 = duelReducer(
+      state,
+      redrawCard({ playerId: 'player1', cardInstanceId: 'c1' }),
+    )
+    const result2 = duelReducer(
+      result1,
+      redrawCard({ playerId: 'player1', cardInstanceId: 'c2' }),
+    )
 
     expect(result2.players['player1'].hand).toEqual(['c3', 'c1'])
     expect(result2.players['player1'].deck).toEqual(['c2'])
   })
 
   test('does not modify other player', () => {
-    const result = duelReducer(state, {
-      type: 'REDRAW_CARD',
-      payload: { playerId: 'player1', cardInstanceId: 'c1' },
-    })
+    const result = duelReducer(
+      state,
+      redrawCard({ playerId: 'player1', cardInstanceId: 'c1' }),
+    )
 
     expect(result.players['player2']).toEqual(state.players['player2'])
   })
@@ -427,10 +439,7 @@ describe('SKIP_REDRAW', () => {
   test('sets playerReady to true and appends a log', () => {
     const state = makeTestDuel({ phase: 'redraw' })
 
-    const result = duelReducer(state, {
-      type: 'SKIP_REDRAW',
-      payload: { playerId: 'player1' },
-    })
+    const result = duelReducer(state, skipRedraw({ playerId: 'player1' }))
 
     expect(result.players['player1'].playerReady).toBe(true)
     expect(result.logs).toContain(
@@ -441,14 +450,8 @@ describe('SKIP_REDRAW', () => {
   test('does not duplicate logs when already ready', () => {
     const state = makeTestDuel({ phase: 'redraw' })
 
-    const result1 = duelReducer(state, {
-      type: 'SKIP_REDRAW',
-      payload: { playerId: 'player1' },
-    })
-    const result2 = duelReducer(result1, {
-      type: 'SKIP_REDRAW',
-      payload: { playerId: 'player1' },
-    })
+    const result1 = duelReducer(state, skipRedraw({ playerId: 'player1' }))
+    const result2 = duelReducer(result1, skipRedraw({ playerId: 'player1' }))
 
     expect(result2.logs).toHaveLength(1)
   })
@@ -477,10 +480,10 @@ describe('ATTACK_CARD', () => {
       },
     })
 
-    const result = duelReducer(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: 'z1', defenderId: 'h1' },
-    })
+    const result = duelReducer(
+      state,
+      attackCard({ attackerId: 'z1', defenderId: 'h1' }),
+    )
 
     expect(result.cards['z1']!.didAct).toBe(true)
     expect(result.cards['h1']!.attributes.life).toBe(2)
@@ -508,10 +511,10 @@ describe('ATTACK_CARD', () => {
       },
     })
 
-    const result = duelReducer(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: 'z1', defenderId: 'z2' },
-    })
+    const result = duelReducer(
+      state,
+      attackCard({ attackerId: 'z1', defenderId: 'z2' }),
+    )
 
     expect(result.players['player2'].board).not.toContain('z2')
     expect(result.players['player2'].discard).toContain('z2')
@@ -539,10 +542,10 @@ describe('ATTACK_CARD', () => {
       },
     })
 
-    const result = duelReducer(state, {
-      type: 'ATTACK_CARD',
-      payload: { attackerId: 'z1', defenderId: 'h1' },
-    })
+    const result = duelReducer(
+      state,
+      attackCard({ attackerId: 'z1', defenderId: 'h1' }),
+    )
 
     expect(result.players['player1'].board).toContain('z1')
     expect(result.players['player1'].discard).not.toContain('z1')
@@ -569,10 +572,7 @@ describe('ATTACK_PLAYER', () => {
       },
     })
 
-    const result = duelReducer(state, {
-      type: 'ATTACK_PLAYER',
-      payload: { attackerId: 'z1' },
-    })
+    const result = duelReducer(state, attackPlayer({ attackerId: 'z1' }))
 
     expect(result.cards['z1']!.didAct).toBe(true)
     expect(result.players['player2'].coins).toBe(4)
@@ -597,10 +597,7 @@ describe('ATTACK_PLAYER', () => {
       },
     })
 
-    const result = duelReducer(state, {
-      type: 'ATTACK_PLAYER',
-      payload: { attackerId: 'z1' },
-    })
+    const result = duelReducer(state, attackPlayer({ attackerId: 'z1' }))
 
     expect(result.players['player2'].coins).toBe(0)
   })
