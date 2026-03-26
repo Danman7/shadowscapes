@@ -2,20 +2,20 @@ import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/react'
 
 import { DuelView } from 'src/components'
+import * as GameContext from 'src/contexts/GameContext'
 import {
   INITIAL_CARDS_TO_DRAW,
   INITIAL_PLAYER_COINS,
-} from 'src/constants/duelParams'
-import * as GameContext from 'src/contexts/GameContext'
+} from 'src/game-engine/constants/duelParams'
 import { createCardInstance, createDuel } from 'src/game-engine/helpers'
 import {
-  DEFAULT_DUEL_SETUP,
   MIXED_STACKS_DUEL,
-  PRELOADED_DUEL_SETUP,
-  PRELOADED_DUEL_SETUP as preloadedState,
-} from 'src/test/mocks/duelSetup'
+  MOCK_DUEL,
+  MOCK_DUEL as preloadedState,
+  MOCK_DUEL_SETUP,
+} from 'src/game-engine/mocks'
+import type { Duel } from 'src/game-engine/types'
 import { renderGameContext } from 'src/test/renderGameContext'
-import type { Duel } from 'src/types'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -82,28 +82,39 @@ describe('Logs visibility', () => {
 })
 
 describe('Initial sequence', () => {
-  test('transitions from intro to initial-draw to redraw phase', async () => {
+  test('dispatches START_INITIAL_DRAW when phase is intro', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
     renderGameContext(<DuelView />, {
       preloadedState: {
-        ...PRELOADED_DUEL_SETUP,
+        ...MOCK_DUEL,
         phase: 'intro',
       },
     })
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: 'TRANSITION_PHASE',
-      payload: 'initial-draw',
-    })
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'START_INITIAL_DRAW' })
   })
 
-  test('triggers INITIAL_DRAW action when phase is initial-draw', () => {
+  test('dispatches GO_TO_REDRAW when phase is initial-draw', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    renderGameContext(<DuelView />, {
+      preloadedState: {
+        ...MOCK_DUEL,
+        phase: 'initial-draw',
+      },
+    })
+
+    expect(dispatchSpy).toHaveBeenCalledWith({ type: 'GO_TO_REDRAW' })
+  })
+
+  test('draws initial cards when transitioning from intro', () => {
     const { container } = renderGameContext(<DuelView />, {
       preloadedState: {
-        ...PRELOADED_DUEL_SETUP,
-        phase: 'initial-draw',
+        ...MOCK_DUEL,
+        phase: 'intro',
       },
     })
 
@@ -115,12 +126,9 @@ describe('Initial sequence', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const deterministicSetup = {
-      ...DEFAULT_DUEL_SETUP,
-    }
     const duelState = {
-      ...PRELOADED_DUEL_SETUP,
-      ...createDuel(deterministicSetup, { rng: () => 0.6 }),
+      ...MOCK_DUEL,
+      ...createDuel(MOCK_DUEL_SETUP),
       phase: 'redraw' as const,
     }
 
@@ -156,7 +164,7 @@ describe('Initial sequence', () => {
         [activePlayerId]: {
           ...activePlayer,
           hand: [cardInstanceId],
-          deck: [2, 3],
+          deck: ['2', '3'],
         },
       },
     }
@@ -180,27 +188,71 @@ describe('Initial sequence', () => {
   test('transitions to active player turn after both players are ready in redraw phase', () => {
     const { getByText, queryByText } = renderGameContext(<DuelView />, {
       preloadedState: {
-        ...PRELOADED_DUEL_SETUP,
+        ...MOCK_DUEL,
         phase: 'redraw',
         players: {
           player1: {
-            ...PRELOADED_DUEL_SETUP.players.player1,
+            ...MOCK_DUEL.players.player1,
             playerReady: true,
           },
           player2: {
-            ...PRELOADED_DUEL_SETUP.players.player2,
+            ...MOCK_DUEL.players.player2,
             playerReady: true,
           },
         },
       },
     })
 
-    const { playerOrder, players } = PRELOADED_DUEL_SETUP
+    const { playerOrder, players } = MOCK_DUEL
 
     expect(
       getByText(`${players[playerOrder[0]].name}'s Turn`),
     ).toBeInTheDocument()
     expect(queryByText('Ready')).not.toBeInTheDocument()
+  })
+
+  test('redrawing a card starts first turn with one additional draw', () => {
+    const activePlayerId = preloadedState.playerOrder[0]
+    const inactivePlayerId = preloadedState.playerOrder[1]
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const stateWithRedraw = {
+      ...preloadedState,
+      phase: 'redraw' as const,
+      cards: {
+        h1: createCardInstance('zombie', 'h1'),
+        d1: createCardInstance('haunt', 'd1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          playerReady: false,
+          hand: ['h1'],
+          deck: ['d1'],
+          board: [],
+          discard: [],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          playerReady: true,
+          hand: [],
+          deck: [],
+          board: [],
+          discard: [],
+        },
+      },
+    }
+
+    const { getAllByTestId, getByText } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithRedraw,
+    })
+
+    fireEvent.click(getAllByTestId('card')[0] as HTMLElement)
+
+    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(getAllByTestId('card')).toHaveLength(2)
   })
 })
 
@@ -248,6 +300,47 @@ describe('Player turns', () => {
     })
   })
 
+  test('transitions to turn-end phase after playing a character card', () => {
+    const activePlayerId = preloadedState.playerOrder[0]
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayerId = preloadedState.playerOrder[1]
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const stateWithHand = {
+      ...preloadedState,
+      phase: 'player-turn' as const,
+      cards: {
+        '1': createCardInstance('zombie', '1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          hand: ['1'],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          hand: [],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+      },
+    }
+
+    const { getAllByTestId, getByText } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithHand,
+    })
+
+    const cards = getAllByTestId('card')
+    fireEvent.click(cards[0] as HTMLElement)
+
+    expect(getByText('End Turn')).toBeInTheDocument()
+  })
+
   test('only allows clicking affordable cards during player-turn', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
@@ -259,15 +352,15 @@ describe('Player turns', () => {
       ...preloadedState,
       phase: 'player-turn' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
           coins: 2,
-          hand: [1, 2],
+          hand: ['1', '2'],
           board: [],
         },
       },
@@ -288,7 +381,7 @@ describe('Player turns', () => {
       type: 'PLAY_CARD',
       payload: {
         playerId: activePlayerId,
-        cardInstanceId: 1,
+        cardInstanceId: '1',
       },
     })
 
@@ -306,10 +399,10 @@ describe('Phase action buttons', () => {
     const stateWithBoard = {
       ...preloadedState,
       phase: 'player-turn' as const,
-      cards: { 1: createCardInstance('zombie', 1) },
+      cards: { '1': createCardInstance('zombie', '1') },
       players: {
         ...preloadedState.players,
-        [activePlayerId]: { ...activePlayer, board: [1] },
+        [activePlayerId]: { ...activePlayer, board: ['1'] },
       },
     }
 
@@ -372,6 +465,50 @@ describe('Phase action buttons', () => {
 
     expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
   })
+
+  test('skipping redraw starts first turn with one additional draw', () => {
+    const activePlayerId = preloadedState.playerOrder[0]
+    const inactivePlayerId = preloadedState.playerOrder[1]
+    const activePlayer = preloadedState.players[activePlayerId]
+    const inactivePlayer = preloadedState.players[inactivePlayerId]
+
+    const stateWithRedraw = {
+      ...preloadedState,
+      phase: 'redraw' as const,
+      cards: {
+        h1: createCardInstance('zombie', 'h1'),
+        d1: createCardInstance('haunt', 'd1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...activePlayer,
+          playerReady: false,
+          hand: ['h1'],
+          deck: ['d1'],
+          board: [],
+          discard: [],
+        },
+        [inactivePlayerId]: {
+          ...inactivePlayer,
+          playerReady: true,
+          hand: [],
+          deck: [],
+          board: [],
+          discard: [],
+        },
+      },
+    }
+
+    const { getAllByTestId, getByText } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithRedraw,
+    })
+
+    fireEvent.click(getByText('Skip redraw'))
+
+    expect(getByText(`${activePlayer.name}'s Turn`)).toBeInTheDocument()
+    expect(getAllByTestId('card')).toHaveLength(2)
+  })
 })
 
 describe('Turn end phase', () => {
@@ -414,14 +551,14 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          board: [1, 2],
+          board: ['1', '2'],
         },
         [inactivePlayerId]: {
           ...inactivePlayer,
@@ -436,7 +573,7 @@ describe('Turn end phase', () => {
 
     expect(dispatchSpy).not.toHaveBeenCalledWith({
       type: 'ATTACK_PLAYER',
-      payload: { attackerId: 1 },
+      payload: { attackerId: '1' },
     })
   })
 
@@ -453,14 +590,14 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          board: [1, 2],
+          board: ['1', '2'],
         },
         [inactivePlayerId]: {
           ...inactivePlayer,
@@ -478,7 +615,7 @@ describe('Turn end phase', () => {
 
     expect(dispatchSpy).toHaveBeenCalledWith({
       type: 'ATTACK_PLAYER',
-      payload: { attackerId: 1 },
+      payload: { attackerId: '1' },
     })
   })
 
@@ -495,19 +632,19 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: { ...createCardInstance('zombie', 1), didAct: true },
-        2: { ...createCardInstance('haunt', 2), didAct: true },
-        3: createCardInstance('cook', 3),
+        '1': { ...createCardInstance('zombie', '1'), didAct: true },
+        '2': { ...createCardInstance('haunt', '2'), didAct: true },
+        '3': createCardInstance('cook', '3'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          board: [1, 2],
+          board: ['1', '2'],
         },
         [inactivePlayerId]: {
           ...inactivePlayer,
-          board: [3],
+          board: ['3'],
         },
       },
     }
@@ -532,13 +669,13 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
-        [activePlayerId]: { ...activePlayer, board: [1] },
-        [inactivePlayerId]: { ...inactivePlayer, board: [2] },
+        [activePlayerId]: { ...activePlayer, board: ['1'] },
+        [inactivePlayerId]: { ...inactivePlayer, board: ['2'] },
       },
     }
 
@@ -567,13 +704,13 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
-        [activePlayerId]: { ...activePlayer, board: [1] },
-        [inactivePlayerId]: { ...inactivePlayer, board: [2] },
+        [activePlayerId]: { ...activePlayer, board: ['1'] },
+        [inactivePlayerId]: { ...inactivePlayer, board: ['2'] },
       },
     }
 
@@ -589,7 +726,7 @@ describe('Turn end phase', () => {
 
     expect(dispatchSpy).toHaveBeenCalledWith({
       type: 'ATTACK_CARD',
-      payload: { attackerId: 1, defenderId: 2 },
+      payload: { attackerId: '1', defenderId: '2' },
     })
   })
 
@@ -606,19 +743,19 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
-        3: createCardInstance('cook', 3),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
+        '3': createCardInstance('cook', '3'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          board: [1, 2],
+          board: ['1', '2'],
         },
         [inactivePlayerId]: {
           ...inactivePlayer,
-          board: [3],
+          board: ['3'],
         },
       },
     }
@@ -643,14 +780,14 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: { ...createCardInstance('haunt', 2), didAct: true },
+        '1': createCardInstance('zombie', '1'),
+        '2': { ...createCardInstance('haunt', '2'), didAct: true },
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          board: [1, 2],
+          board: ['1', '2'],
         },
         [inactivePlayerId]: {
           ...inactivePlayer,
@@ -676,8 +813,8 @@ describe('Turn end phase', () => {
       ...preloadedState,
       phase: 'turn-end' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         player1: {
@@ -685,14 +822,14 @@ describe('Turn end phase', () => {
           hand: [],
           deck: [],
           discard: [],
-          board: activePlayerId === 'player1' ? [1] : [2],
+          board: activePlayerId === 'player1' ? ['1'] : ['2'],
         },
         player2: {
           ...preloadedState.players.player2,
           hand: [],
           deck: [],
           discard: [],
-          board: activePlayerId === 'player2' ? [1] : [2],
+          board: activePlayerId === 'player2' ? ['1'] : ['2'],
         },
       },
     }
@@ -775,15 +912,15 @@ describe('Player turn card interactions', () => {
       ...preloadedState,
       phase: 'player-turn' as const,
       cards: {
-        1: createCardInstance('zombie', 1),
-        2: createCardInstance('haunt', 2),
+        '1': createCardInstance('zombie', '1'),
+        '2': createCardInstance('haunt', '2'),
       },
       players: {
         ...preloadedState.players,
         [activePlayerId]: {
           ...activePlayer,
-          hand: [2],
-          board: [1],
+          hand: ['2'],
+          board: ['1'],
         },
       },
     }
@@ -807,7 +944,7 @@ describe('Player turn card interactions', () => {
       expect(dispatchSpy).not.toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'PLAY_CARD',
-          payload: expect.objectContaining({ cardInstanceId: 1 }),
+          payload: expect.objectContaining({ cardInstanceId: '1' }),
         }),
       )
     }

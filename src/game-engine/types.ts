@@ -1,5 +1,6 @@
 export type Faction = 'chaos' | 'order' | 'shadow' | 'neutral'
 export type CardType = 'character' | 'instant'
+export type CardRank = 'common' | 'elite'
 export type CardCategory =
   | 'Undead'
   | 'Hammerite'
@@ -30,45 +31,37 @@ export type CardBaseId =
   | 'speedPotion'
   | 'flashBomb'
 
-export type CardRank = 'common' | 'elite'
-
-interface CardBaseCommon {
-  id: CardBaseId
-  name: string
-  cost: number
+export interface CardText {
   description: string[]
-  flavorText: string
-  faction: Faction
-  categories: CardCategory[]
-  rank: CardRank
+  flavor: string
 }
 
-export interface CardBaseCharacter extends CardBaseCommon {
-  type: 'character'
-  life: number
-  strength: number
-  charges?: number
-  stunned?: boolean
-  haste?: boolean
-}
-
-export interface CardBaseInstant extends CardBaseCommon {
-  type: 'instant'
-}
-
-export type CardBase = CardBaseCharacter | CardBaseInstant
-
-export interface CardInstance {
-  id: number
-  baseId: CardBaseId
+export interface CardAttributes {
   cost: number
   life?: number
   strength?: number
   charges?: number
-  didAct?: boolean
-  stunned?: boolean
-  stunnedTurnsRemaining?: number
   haste?: boolean
+  hidden?: boolean
+  stunned?: boolean
+}
+
+export interface CardBase {
+  id: CardBaseId
+  name: string
+  type: CardType
+  faction: Faction
+  categories: CardCategory[]
+  rank: CardRank
+  text: CardText
+  attributes: CardAttributes
+}
+
+export interface CardInstance {
+  id: string
+  base: CardBase
+  attributes: CardAttributes
+  didAct?: boolean
 }
 
 export type PlayerId = string
@@ -79,10 +72,10 @@ export interface Player {
   name: string
   coins: number
   playerReady: boolean
-  deck: number[]
-  hand: number[]
-  board: number[]
-  discard: number[]
+  deck: string[]
+  hand: string[]
+  board: string[]
+  discard: string[]
 }
 
 export type Phase =
@@ -100,13 +93,17 @@ export interface PlayerSetup {
   deck: CardBaseId[]
 }
 
+export type DuelCards = Record<string, CardInstance>
+export type DuelPlayers = Record<PlayerId, Player>
+export type DuelPlayerOrder = [PlayerId, PlayerId]
+export type DuelLog = string
+
 export interface Duel {
-  cards: Record<number, CardInstance>
-  players: Record<PlayerId, Player>
-  playerOrder: [PlayerId, PlayerId]
+  cards: DuelCards
+  players: DuelPlayers
+  playerOrder: DuelPlayerOrder
   phase: Phase
-  startingPlayerId: PlayerId | null
-  logs: string[]
+  logs: DuelLog[]
   pendingInstant: PendingInstant | null
 }
 
@@ -117,37 +114,42 @@ export type DuelAction =
         players: [PlayerSetup, PlayerSetup]
       }
     }
-  | { type: 'TRANSITION_PHASE'; payload: Phase }
-  | { type: 'INITIAL_DRAW' }
+  | { type: 'START_INITIAL_DRAW' }
+  | { type: 'GO_TO_REDRAW' }
+  | { type: 'START_FIRST_PLAYER_TURN' }
+  | { type: 'GO_TO_END_OF_TURN' }
   | {
       type: 'PLAY_CARD'
-      payload: { playerId: PlayerId; cardInstanceId: number }
+      payload: { playerId: PlayerId; cardInstanceId: string }
     }
   | { type: 'SWITCH_TURN' }
   | {
       type: 'REDRAW_CARD'
-      payload: { playerId: PlayerId; cardInstanceId: number }
+      payload: { playerId: PlayerId; cardInstanceId: string }
     }
   | { type: 'SKIP_REDRAW'; payload: { playerId: PlayerId } }
   | {
       type: 'ATTACK_CARD'
       payload: {
-        attackerId: number
-        defenderId: number
+        attackerId: string
+        defenderId: string
       }
     }
   | {
       type: 'ATTACK_PLAYER'
       payload: {
-        attackerId: number
+        attackerId: string
       }
     }
-  | { type: 'SET_PENDING_INSTANT'; payload: PendingInstant | null }
+  | {
+      type: 'SET_PENDING_INSTANT'
+      payload: { pendingInstant: PendingInstant | null }
+    }
   | {
       type: 'APPLY_SPEED_POTION'
-      payload: { targetCardInstanceId: number }
+      payload: { targetCardInstanceId: string }
     }
   | {
       type: 'APPLY_FLASH_BOMB'
-      payload: { targetCardInstanceId: number }
+      payload: { targetCardInstanceId: string }
     }

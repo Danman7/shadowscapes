@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { PlayerBadge } from 'src/components'
-import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
+import { PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
 
 const meta: Meta<typeof PlayerBadge> = {
   title: 'Duel/PlayerBadge',

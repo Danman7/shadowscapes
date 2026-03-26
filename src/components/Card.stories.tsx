@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { Card } from 'src/components'
-import { CARD_BASES } from 'src/constants/cardBases'
+import { CARD_BASES } from 'src/game-engine/constants'
 import { createCardInstance } from 'src/game-engine/helpers'
 
 const meta: Meta<typeof Card> = {
@@ -53,6 +53,6 @@ export const Instant: Story = {
 
 export const Stunned: Story = {
   args: {
-    card: { ...createCardInstance('templeGuard'), stunned: true },
+    card: createCardInstance('templeGuard', undefined, { stunned: true }),
   },
 }

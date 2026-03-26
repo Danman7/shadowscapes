@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 
 import { PlayerBadge } from 'src/components'
-import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
-import type { Player } from 'src/types'
+import { PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
+import type { Player } from 'src/game-engine/types'
 
 const player: Player = {
   ...PLACEHOLDER_PLAYER,

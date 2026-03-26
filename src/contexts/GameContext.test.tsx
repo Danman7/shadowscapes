@@ -1,11 +1,7 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 
-import {
-  useGameDispatch,
-  useGameModel,
-  useGameState,
-} from 'src/contexts/GameContext'
+import { useGameDispatch, useGameState } from 'src/contexts/GameContext'
 import { renderGameContext } from 'src/test/renderGameContext'
 
 test('renders children', () => {
@@ -70,26 +66,4 @@ test('GameProvider supports preloaded state overrides', () => {
   })
 
   expect(getByText('Phase: player-turn')).toBeInTheDocument()
-})
-
-test('useGameModel returns a GameModel instance', () => {
-  function TestComponent() {
-    const model = useGameModel()
-    return <div>Has model: {model !== null ? 'yes' : 'no'}</div>
-  }
-
-  const { getByText } = renderGameContext(<TestComponent />)
-
-  expect(getByText('Has model: yes')).toBeInTheDocument()
-})
-
-test('useGameModel throws error when used outside GameProvider', () => {
-  function TestComponent() {
-    useGameModel()
-    return <div>Should not render</div>
-  }
-
-  expect(() => {
-    render(<TestComponent />)
-  }).toThrow('useGameModel must be used within GameProvider')
 })

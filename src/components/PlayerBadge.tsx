@@ -2,7 +2,7 @@ import { FaCheck } from 'react-icons/fa'
 import { GiCrownCoin } from 'react-icons/gi'
 
 import { AnimatedNumber } from 'src/components'
-import type { Player } from 'src/types'
+import type { Player } from 'src/game-engine/types'
 
 export const PlayerBadge: React.FC<{
   player: Player

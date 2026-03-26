@@ -1,13 +1,13 @@
 import type { CSSProperties } from 'react'
 
 import { Card, CardBack } from 'src/components'
-import type { CardInstance } from 'src/types'
+import type { CardInstance } from 'src/game-engine/types'
 
 export const Hand: React.FC<{
   cards: CardInstance[]
   isActive?: boolean
   isOnTop?: boolean
-  onCardClick?: (cardId: number) => (() => void) | undefined
+  onCardClick?: (cardId: string) => (() => void) | undefined
 }> = ({ cards, isActive, isOnTop, onCardClick }) => {
   const cardCount = cards.length
   const totalSpread = cardCount > 1 ? Math.min(50, (cardCount - 1) * 12) : 0

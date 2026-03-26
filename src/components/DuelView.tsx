@@ -8,8 +8,8 @@ import {
   Logs,
   PlayerBadge,
 } from 'src/components'
-import { CARD_BASES } from 'src/constants/cardBases'
 import { useGameDispatch } from 'src/contexts/GameContext'
+import type { CardInstance, Phase, Player } from 'src/game-engine/types'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -24,7 +24,6 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from 'src/selectors/playerSelectors'
-import type { CardInstance, Phase, Player } from 'src/types'
 
 const ATTACK_ANIMATION_MS = 350
 
@@ -94,11 +93,12 @@ const PhaseButton: React.FC<{
       phaseButtonLabel = 'Pass'
       phaseButtonOnClick = () => {
         const allStunned =
-          activeBoard.length > 0 && activeBoard.every((c) => c.stunned)
+          activeBoard.length > 0 &&
+          activeBoard.every((c) => c.attributes.stunned)
         if (activeBoard.length === 0 || allStunned) {
           dispatch({ type: 'SWITCH_TURN' })
         } else {
-          dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
+          dispatch({ type: 'GO_TO_END_OF_TURN' })
         }
       }
       break
@@ -141,14 +141,14 @@ export const DuelView: React.FC = () => {
   const logs = useLogs()
   const [areLogsVisible, setAreLogsVisible] = useState(false)
 
-  const [selectedAttackerId, setSelectedAttackerId] = useState<number | null>(
+  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
     null,
   )
-  const [attackingCardId, setAttackingCardId] = useState<number | null>(null)
+  const [attackingCardId, setAttackingCardId] = useState<string | null>(null)
   const attackAnimationTimeoutRef = useRef<number | null>(null)
   const pendingInstant = usePendingInstant()
 
-  const triggerAttackAnimation = (attackerId: number): void => {
+  const triggerAttackAnimation = (attackerId: string): void => {
     setAttackingCardId(attackerId)
 
     if (attackAnimationTimeoutRef.current !== null) {
@@ -162,8 +162,8 @@ export const DuelView: React.FC = () => {
   }
 
   useEffect(() => {
-    if (phase === 'intro')
-      dispatch({ type: 'TRANSITION_PHASE', payload: 'initial-draw' })
+    if (phase === 'intro') dispatch({ type: 'START_INITIAL_DRAW' })
+    if (phase === 'initial-draw') dispatch({ type: 'GO_TO_REDRAW' })
   }, [dispatch, phase])
 
   useEffect(() => {
@@ -172,22 +172,18 @@ export const DuelView: React.FC = () => {
         type: 'SKIP_REDRAW',
         payload: { playerId: inactivePlayer.id },
       })
-
-      if (activePlayer.playerReady && inactivePlayer.playerReady) {
-        dispatch({ type: 'TRANSITION_PHASE', payload: 'player-turn' })
-      }
     }
-  }, [
-    dispatch,
-    phase,
-    inactivePlayer.id,
-    activePlayer.playerReady,
-    inactivePlayer.playerReady,
-  ])
+  }, [dispatch, inactivePlayer.id, phase])
 
   useEffect(() => {
-    if (phase === 'initial-draw') dispatch({ type: 'INITIAL_DRAW' })
-  }, [dispatch, phase])
+    if (
+      phase === 'redraw' &&
+      activePlayer.playerReady &&
+      inactivePlayer.playerReady
+    ) {
+      dispatch({ type: 'START_FIRST_PLAYER_TURN' })
+    }
+  }, [activePlayer.playerReady, dispatch, inactivePlayer.playerReady, phase])
 
   const activeHand = useActivePlayerHand()
   const inactiveHand = useInactivePlayerHand()
@@ -209,7 +205,7 @@ export const DuelView: React.FC = () => {
   useEffect(() => {
     if (phase === 'player-turn') {
       if (activeHand.length === 0 && activeDeckCount === 0) {
-        dispatch({ type: 'TRANSITION_PHASE', payload: 'turn-end' })
+        dispatch({ type: 'GO_TO_END_OF_TURN' })
       }
     }
   }, [dispatch, phase, activeHand.length, activeDeckCount])
@@ -217,7 +213,7 @@ export const DuelView: React.FC = () => {
   useEffect(() => {
     if (phase === 'turn-end') {
       const allActiveCardsActed = activeBoard.every(
-        (card) => card.didAct || card.stunned,
+        (card) => card.didAct || card.attributes.stunned,
       )
 
       if (pendingInstant !== null) return
@@ -234,7 +230,7 @@ export const DuelView: React.FC = () => {
     }
   }, [dispatch, phase, activeBoard, inactiveBoard.length, pendingInstant])
 
-  const getOnCardClick = (cardId: number): (() => void) | undefined => {
+  const getOnCardClick = (cardId: string): (() => void) | undefined => {
     if (phase === 'redraw') {
       if (activePlayer.playerReady) return undefined
 
@@ -249,7 +245,7 @@ export const DuelView: React.FC = () => {
     if (phase === 'turn-end' && pendingInstant === 'SPEED_POTION') {
       const cardInstance = activeHand.find((c) => c.id === cardId)
       if (!cardInstance) return undefined
-      if (CARD_BASES[cardInstance.baseId].type !== 'character') return undefined
+      if (cardInstance.base.type !== 'character') return undefined
 
       return () => {
         dispatch({
@@ -263,7 +259,7 @@ export const DuelView: React.FC = () => {
       const cardInstance = activeHand.find((c) => c.id === cardId)
       if (!cardInstance) return undefined
 
-      if (cardInstance.cost > activePlayerCoins) return undefined
+      if (cardInstance.attributes.cost > activePlayerCoins) return undefined
 
       return () => {
         dispatch({
@@ -277,7 +273,7 @@ export const DuelView: React.FC = () => {
   }
 
   const getOnBoardCardClick = (
-    cardId: number,
+    cardId: string,
     isActiveBoard: boolean,
   ): (() => void) | undefined => {
     if (pendingInstant === 'FLASH_BOMB') {
@@ -293,7 +289,11 @@ export const DuelView: React.FC = () => {
 
     if (isActiveBoard) {
       const cardInstance = activeBoard.find((c) => c.id === cardId)
-      if (!cardInstance || cardInstance.didAct || cardInstance.stunned)
+      if (
+        !cardInstance ||
+        cardInstance.didAct ||
+        cardInstance.attributes.stunned
+      )
         return undefined
 
       if (inactiveBoard.length === 0) {

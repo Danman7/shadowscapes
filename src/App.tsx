@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { DuelView } from 'src/components'
 import { GameProvider, useGameDispatch } from 'src/contexts/GameContext'
-import { DEFAULT_DUEL_SETUP } from 'src/test/mocks/duelSetup'
+import { MOCK_DUEL_SETUP } from 'src/game-engine/mocks'
 
 const AppContent: React.FC = () => {
   const dispatch = useGameDispatch()
@@ -10,7 +10,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     dispatch({
       type: 'START_DUEL',
-      payload: DEFAULT_DUEL_SETUP,
+      payload: { players: MOCK_DUEL_SETUP },
     })
   }, [dispatch])
 

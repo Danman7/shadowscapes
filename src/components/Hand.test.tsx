@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 
 import { Hand } from 'src/components'
 import { createCardInstance } from 'src/game-engine/helpers'
-import type { CardInstance } from 'src/types'
+import type { CardInstance } from 'src/game-engine/types'
 
 let mockCards: CardInstance[]
 
@@ -68,7 +68,7 @@ test('does not render clickable cards in inactive hand', () => {
 })
 
 test('applies is-clickable class when onCardClick returns a function', () => {
-  const handleCardClick = vi.fn((cardId: number) => {
+  const handleCardClick = vi.fn((cardId: string) => {
     if (cardId === mockCards[0]?.id) return vi.fn()
     return undefined
   })

@@ -1,11 +1,11 @@
 import { Card } from 'src/components'
-import type { CardInstance } from 'src/types'
+import type { CardInstance } from 'src/game-engine/types'
 
 export const Board: React.FC<{
   cards: CardInstance[]
   isTopBoard?: boolean
-  attackingCardId?: number | null
-  onCardClick?: (cardId: number) => (() => void) | undefined
+  attackingCardId?: string | null
+  onCardClick?: (cardId: string) => (() => void) | undefined
 }> = ({ cards, isTopBoard, attackingCardId, onCardClick }) => (
   <div className="flex gap-2 justify-center" data-testid="board">
     {cards.map((card) => {

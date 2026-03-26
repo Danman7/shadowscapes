@@ -1,64 +1,55 @@
-import { CARD_BASES } from 'src/constants/cardBases'
-import { PLACEHOLDER_PLAYER } from 'src/constants/duelParams'
+import {
+  CARD_BASES,
+  INITIAL_DUEL_STATE,
+  PLACEHOLDER_PLAYER,
+} from 'src/game-engine/constants'
 import type {
-  CardBase,
-  CardBaseCharacter,
+  CardAttributes,
   CardBaseId,
   CardInstance,
   Duel,
+  DuelCards,
+  DuelLog,
+  DuelPlayerOrder,
+  DuelPlayers,
+  PendingInstant,
   Player,
   PlayerId,
   PlayerSetup,
-  Stack,
-} from 'src/types'
+} from 'src/game-engine/types'
 
-export const initialDuelState: Readonly<Duel> = {
-  cards: {},
-  players: {},
-  playerOrder: ['', ''],
-  phase: 'intro',
-  startingPlayerId: null,
-  logs: [],
-  pendingInstant: null,
-}
+export const generateUuid = (): string => crypto.randomUUID()
 
-let instanceIdCounter = 0
-
-export const resetInstanceIdCounter = (): void => {
-  instanceIdCounter = 0
-}
-
-export const generateInstanceId = (): number => instanceIdCounter++
-
-export const getCardLife = (base: CardBase): number | undefined => {
-  return base.type === 'character' ? base.life : undefined
-}
-
-export const getCardStrength = (base: CardBase): number | undefined => {
-  return base.type === 'character' ? base.strength : undefined
-}
+export type AttributeOverride = Partial<CardAttributes>
 
 export const createCardInstance = (
   baseId: CardBaseId,
-  id?: number,
-  life?: number,
-  charges?: number,
-): CardInstance => ({
-  id: id ?? generateInstanceId(),
-  baseId,
-  cost: CARD_BASES[baseId].cost,
-  life: life ?? getCardLife(CARD_BASES[baseId]),
-  strength: getCardStrength(CARD_BASES[baseId]),
-  charges:
-    (charges ?? (CARD_BASES[baseId] as CardBaseCharacter).charges) || undefined,
-  didAct: false,
-  haste: false,
-})
+  id?: string,
+  attributeOverrides?: AttributeOverride,
+): CardInstance => {
+  const base = CARD_BASES[baseId]
 
-export const shuffle = <T>(
-  array: T[],
-  rng: () => number = Math.random,
-): T[] => {
+  return {
+    id: id ?? generateUuid(),
+    base,
+    attributes: { ...base.attributes, ...attributeOverrides },
+    didAct: false,
+  }
+}
+
+const getDeckSummaryLog = (playerName: string, cards: CardBaseId[]): string => {
+  const eliteCount = cards.filter(
+    (baseId) => CARD_BASES[baseId].rank === 'elite',
+  ).length
+  const totalCost = cards.reduce(
+    (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,
+    0,
+  )
+
+  return `${playerName}'s deck: ${cards.length} cards / ${eliteCount} elites / ${totalCost} total cost.`
+}
+
+const shuffle = <T>(array: T[], rng: () => number = Math.random): T[] => {
   const shuffled = [...array]
 
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -71,208 +62,122 @@ export const shuffle = <T>(
   return shuffled
 }
 
-export const coinFlipForPlayerStart = (
-  id1: PlayerId,
-  id2: PlayerId,
-  rng: () => number = Math.random,
-): PlayerId => (rng() < 0.5 ? id1 : id2)
+export type CreateDuelParams = [PlayerSetup, PlayerSetup]
 
-export interface CreateDuelParams {
-  players: [PlayerSetup, PlayerSetup]
-}
+export const createDuel = (playerSetups: CreateDuelParams): Duel => {
+  const allCards: DuelCards = {}
+  const players: DuelPlayers = {}
 
-export interface CreateDuelOverrides extends Partial<Omit<Duel, 'players'>> {
-  players?: Partial<Record<PlayerId, Partial<Player>>>
-  stackOverrides?: Partial<
-    Record<PlayerId, Partial<Record<Stack, CardBaseId[]>>>
-  >
-  rng?: () => number
-}
-
-const getDeckSummaryLog = (playerName: string, cards: CardBaseId[]): string => {
-  const eliteCount = cards.filter(
-    (baseId) => CARD_BASES[baseId].rank === 'elite',
-  ).length
-  const totalCost = cards.reduce(
-    (sum, baseId) => sum + CARD_BASES[baseId].cost,
-    0,
-  )
-
-  return `${playerName}'s deck: ${cards.length} cards / ${eliteCount} elites / ${totalCost} total cost.`
-}
-
-const getNextCardId = (duel: Duel): number => {
-  const ids = Object.keys(duel.cards).map((id) => Number(id))
-  if (ids.length === 0) return 1
-
-  return Math.max(...ids) + 1
-}
-
-const buildStackIds = (baseIds: CardBaseId[] | undefined, startId: number) => {
-  if (!baseIds) return { ids: undefined, cards: [], nextId: startId }
-
-  let idCounter = startId
-  const cards = baseIds.map((baseId) => createCardInstance(baseId, idCounter++))
-
-  return {
-    ids: cards.map((card) => card.id),
-    cards,
-    nextId: idCounter,
-  }
-}
-
-const applyStackOverrides = (
-  duel: Duel,
-  stackOverrides: CreateDuelOverrides['stackOverrides'],
-): Duel => {
-  if (!stackOverrides) return duel
-
-  let nextId = getNextCardId(duel)
-  const newCards: Duel['cards'] = { ...duel.cards }
-  const players = { ...duel.players }
-
-  ;(Object.keys(stackOverrides) as PlayerId[]).forEach((playerId) => {
-    const overrides = stackOverrides[playerId]
-    if (!overrides) {
-      return
-    }
-
-    const basePlayer = players[playerId]
-    const hand = buildStackIds(overrides.hand, nextId)
-    nextId = hand.nextId
-
-    const board = buildStackIds(overrides.board, nextId)
-    nextId = board.nextId
-
-    const discard = buildStackIds(overrides.discard, nextId)
-    nextId = discard.nextId
-
-    const deck = buildStackIds(overrides.deck, nextId)
-    nextId = deck.nextId
-
-    const stackResults = { hand, board, discard, deck }
-
-    Object.values(stackResults).forEach((result) => {
-      result.cards.forEach((card) => {
-        newCards[card.id] = card
-      })
-    })
-
-    players[playerId] = {
-      ...basePlayer,
-      hand: stackResults.hand.ids ?? basePlayer.hand,
-      board: stackResults.board.ids ?? basePlayer.board,
-      discard: stackResults.discard.ids ?? basePlayer.discard,
-      deck: stackResults.deck.ids ?? basePlayer.deck,
-    }
-  })
-
-  return {
-    ...duel,
-    cards: newCards,
-    players,
-  }
-}
-
-export const createDuel = (
-  { players: playerSetups }: CreateDuelParams,
-  overrides: CreateDuelOverrides = {},
-): Duel => {
-  resetInstanceIdCounter()
-
-  const allCards: Record<number, CardInstance> = {}
-  const players: Record<PlayerId, Player> = {}
-
-  for (const setup of playerSetups) {
-    const shuffledDeck = shuffle(setup.deck)
+  for (const playerSetup of playerSetups) {
+    const shuffledDeck = shuffle(playerSetup.deck)
     const deckIds = shuffledDeck.map((baseId) => {
       const instance = createCardInstance(baseId)
       allCards[instance.id] = instance
       return instance.id
     })
 
-    players[setup.id] = {
+    players[playerSetup.id] = {
       ...PLACEHOLDER_PLAYER,
-      id: setup.id,
-      name: setup.name,
+      id: playerSetup.id,
+      name: playerSetup.name,
       deck: deckIds,
     }
   }
 
-  const [p1, p2] = playerSetups
-  const startingPlayerId = coinFlipForPlayerStart(p1.id, p2.id)
-  const inactivePlayerId = startingPlayerId === p1.id ? p2.id : p1.id
+  const [player1, player2] = playerSetups
+  const startingPlayerId = Math.random() < 0.5 ? player1.id : player2.id
+  const inactivePlayerId = getOpponentId(
+    [player1.id, player2.id],
+    startingPlayerId,
+  )
 
-  let duel: Duel = {
-    ...initialDuelState,
+  return {
+    ...INITIAL_DUEL_STATE,
     cards: allCards,
     players,
     playerOrder: [startingPlayerId, inactivePlayerId],
-    startingPlayerId,
-    logs: playerSetups.map((s) => getDeckSummaryLog(s.name, s.deck)),
-  }
-
-  const {
-    stackOverrides,
-    cards,
-    players: playerOverrides,
-    ...restOverrides
-  } = overrides
-
-  duel = applyStackOverrides(duel, stackOverrides)
-
-  const mergedCards = cards ?? duel.cards
-  const mergedPlayers = playerOverrides
-    ? Object.fromEntries(
-        Object.entries(duel.players).map(([id, player]) => [
-          id,
-          { ...player, ...(playerOverrides[id] ?? {}) },
-        ]),
-      )
-    : duel.players
-
-  return {
-    ...duel,
-    ...restOverrides,
-    cards: mergedCards,
-    players: mergedPlayers,
+    logs: playerSetups.map((player) =>
+      getDeckSummaryLog(player.name, player.deck),
+    ),
   }
 }
 
-export const getPlayer = (duel: Duel, playerId: PlayerId): Player =>
-  duel.players[playerId]
-
-export const updatePlayer = (
-  duel: Duel,
-  playerId: PlayerId,
-  updates: Partial<Player>,
-): Duel => ({
-  ...duel,
-  players: {
-    ...duel.players,
-    [playerId]: { ...duel.players[playerId], ...updates },
-  },
-})
-
-export const drawTopCard = (
-  duel: Readonly<Duel>,
-  playerId: PlayerId,
-): Readonly<Duel> => {
-  const player = getPlayer(duel, playerId)
-
-  if (player.deck.length === 0) return duel
+export const drawTopCard = (player: Player): Player => {
+  if (player.deck.length === 0) return player
 
   const [drawnCardId, ...remainingDeck] = player.deck
 
-  if (drawnCardId == null) return duel
-
-  return updatePlayer(duel, playerId, {
+  return {
+    ...player,
     deck: remainingDeck,
     hand: [...player.hand, drawnCardId],
-  })
+  }
 }
 
-export const getOpponentId = (duel: Duel, playerId: PlayerId): PlayerId => {
-  const [id1, id2] = duel.playerOrder
-  return playerId === id1 ? id2 : id1
+export const getOpponentId = (
+  playerOrder: DuelPlayerOrder,
+  playerId: PlayerId,
+): PlayerId => (playerOrder[0] === playerId ? playerOrder[1] : playerOrder[0])
+
+export const hasCharactersInHand = (
+  hand: string[],
+  cards: Record<string, CardInstance>,
+): boolean => hand.some((id) => cards[id]?.base.type === 'character')
+
+export const hasBoardCards = (players: Record<string, Player>): boolean =>
+  Object.values(players).some((p) => p.board.length > 0)
+
+export const getPendingInstant = (
+  card: CardInstance,
+  hand: string[],
+  state: Readonly<Duel>,
+): PendingInstant | null => {
+  if (card.base.id === 'speedPotion' && hasCharactersInHand(hand, state.cards))
+    return 'SPEED_POTION'
+  if (card.base.id === 'flashBomb' && hasBoardCards(state.players))
+    return 'FLASH_BOMB'
+  return null
 }
+
+export const updatePlayers = (
+  players: DuelPlayers,
+  playerId: PlayerId,
+  updater: (player: Player) => Player,
+): DuelPlayers => ({
+  ...players,
+  [playerId]: updater(players[playerId]),
+})
+
+export const updateCard = (
+  cards: DuelCards,
+  cardId: string,
+  updater: (card: CardInstance) => CardInstance,
+): DuelCards => ({
+  ...cards,
+  [cardId]: updater(cards[cardId]),
+})
+
+export const resetPlayers = (players: DuelPlayers): DuelPlayers =>
+  Object.fromEntries(
+    Object.entries(players).map(([id, player]) => [
+      id,
+      { ...player, playerReady: false },
+    ]),
+  )
+
+export const resetCards = (cards: DuelCards): DuelCards =>
+  Object.fromEntries(
+    Object.entries(cards).map(([id, card]) => [
+      id,
+      {
+        ...card,
+        didAct: false,
+        attributes: { ...card.attributes, stunned: false },
+      },
+    ]),
+  )
+
+export const addLogEntry = (logs: DuelLog[], entry: string): DuelLog[] => [
+  ...logs,
+  entry,
+]

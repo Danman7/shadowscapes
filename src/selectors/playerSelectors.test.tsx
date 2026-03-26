@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 
 import { Board, Hand } from 'src/components'
-import { CARD_BASES } from 'src/constants/cardBases'
+import { CARD_BASES } from 'src/game-engine/constants'
+import { MIXED_STACKS_DUEL as preloadedState } from 'src/game-engine/mocks'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -13,7 +14,6 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from 'src/selectors/playerSelectors'
-import { MIXED_STACKS_DUEL as preloadedState } from 'src/test/mocks/duelSetup'
 import { renderGameContext } from 'src/test/renderGameContext'
 
 describe('useDuelPhase', () => {
@@ -90,7 +90,7 @@ describe('useActivePlayerHand', () => {
 
     stateHand.forEach((cardId) => {
       expect(
-        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.base.id].name),
       ).toBeInTheDocument()
     })
   })
@@ -125,7 +125,7 @@ describe('useActivePlayerBoard', () => {
 
     stateHand.forEach((cardId) => {
       expect(
-        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.base.id].name),
       ).toBeInTheDocument()
     })
   })
@@ -146,7 +146,7 @@ describe('useInactivePlayerBoard', () => {
 
     stateHand.forEach((cardId) => {
       expect(
-        getByText(CARD_BASES[preloadedState.cards[cardId]!.baseId].name),
+        getByText(CARD_BASES[preloadedState.cards[cardId]!.base.id].name),
       ).toBeInTheDocument()
     })
   })

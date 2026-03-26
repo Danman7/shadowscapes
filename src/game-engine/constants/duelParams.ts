@@ -1,4 +1,13 @@
-import type { Faction, Player } from 'src/types'
+import type { Duel, Faction, Player } from 'src/game-engine/types'
+
+export const INITIAL_DUEL_STATE: Readonly<Duel> = {
+  cards: {},
+  players: {},
+  playerOrder: ['', ''],
+  phase: 'intro',
+  logs: [],
+  pendingInstant: null,
+}
 
 export const INITIAL_CARDS_TO_DRAW = 4
 export const INITIAL_PLAYER_COINS = 30

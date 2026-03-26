@@ -3,12 +3,11 @@ import { FaSun } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
 import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
-import { CARD_BASES } from 'src/constants/cardBases'
 import {
   FACTION_BORDER_COLORS,
   FACTION_TEXT_COLORS,
-} from 'src/constants/duelParams'
-import type { CardInstance } from 'src/types'
+} from 'src/game-engine/constants/duelParams'
+import type { CardInstance } from 'src/game-engine/types'
 
 export const Card: React.FC<{
   card: CardInstance
@@ -25,9 +24,10 @@ export const Card: React.FC<{
   isAttacking,
   attackDirection,
 }) => {
-  const { life, strength, baseId, charges, cost, stunned, haste } = card
-  const base = CARD_BASES[baseId]
-  const { name, description, faction, categories, type } = base
+  const { base, attributes } = card
+  const { name, faction, categories, type, text } = base
+  const { description } = text
+  const { life, strength, charges, cost, stunned, haste } = attributes
   const factionBorderColor = FACTION_BORDER_COLORS[faction]
 
   const attackClassName =
@@ -80,13 +80,17 @@ export const Card: React.FC<{
         </div>
       </div>
 
-      <div
-        className={`flex flex-col grow justify-around p-4 text-center overflow-y-auto ${isOnBoard ? 'text-sm' : ''}`}
-      >
-        {description.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </div>
+      {!isOnBoard && (
+        <div
+          className={
+            'flex flex-col grow justify-around p-4 text-center overflow-y-auto $'
+          }
+        >
+          {description.map((paragraph: string, index: number) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      )}
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 pl-2 text-xl">
