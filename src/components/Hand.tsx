@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 
 import { Card, CardBack } from 'src/components'
-import type { CardInstance } from 'src/game-engine/types'
+import type { CardInstance } from 'src/game-engine'
 
 export const Hand: React.FC<{
   cards: CardInstance[]

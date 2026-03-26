@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 
 import { useGameDispatch, useGameState } from 'src/contexts/GameContext'
-import { renderGameContext } from 'src/test/renderGameContext'
+import { renderGameContext } from 'src/contexts/renderGameContext'
 
 test('renders children', () => {
   const { getByText } = renderGameContext(<div>Test Child</div>)

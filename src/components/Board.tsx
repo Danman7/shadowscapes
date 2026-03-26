@@ -1,5 +1,5 @@
 import { Card } from 'src/components'
-import type { CardInstance } from 'src/game-engine/types'
+import type { CardInstance } from 'src/game-engine'
 
 export const Board: React.FC<{
   cards: CardInstance[]

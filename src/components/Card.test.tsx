@@ -1,9 +1,8 @@
 import { render } from '@testing-library/react'
 
 import { Card } from 'src/components'
-import { CARD_BASES } from 'src/game-engine/constants'
-import { createCardInstance } from 'src/game-engine/helpers'
-import type { CardInstance } from 'src/game-engine/types'
+import type { CardInstance } from 'src/game-engine'
+import { CARD_BASES, createCardInstance } from 'src/game-engine'
 
 let mockCharacterCard: CardInstance
 let mockInstantCard: CardInstance

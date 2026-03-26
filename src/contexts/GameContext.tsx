@@ -1,8 +1,7 @@
 import { createContext, type ReactNode, useContext, useReducer } from 'react'
 
-import { INITIAL_DUEL_STATE } from 'src/game-engine/constants/duelParams'
-import { duelReducerWithEffects } from 'src/game-engine/duelReducer'
-import type { Duel, DuelAction } from 'src/game-engine/types'
+import type { Duel, DuelAction } from 'src/game-engine'
+import { duelReducerWithEffects, INITIAL_DUEL_STATE } from 'src/game-engine'
 
 const GameStateContext = createContext<Duel | undefined>(undefined)
 const GameDispatchContext = createContext<React.Dispatch<DuelAction> | null>(

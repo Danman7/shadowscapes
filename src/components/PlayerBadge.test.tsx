@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 
 import { PlayerBadge } from 'src/components'
-import { PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
-import type { Player } from 'src/game-engine/types'
+import type { Player } from 'src/game-engine'
+import { PLACEHOLDER_PLAYER } from 'src/game-engine'
 import { messages } from 'src/i18n'
 
 const player: Player = {

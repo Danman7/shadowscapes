@@ -2,8 +2,8 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 
 import { Hand } from 'src/components'
-import { createCardInstance } from 'src/game-engine/helpers'
-import type { CardInstance } from 'src/game-engine/types'
+import type { CardInstance } from 'src/game-engine'
+import { createCardInstance } from 'src/game-engine'
 
 let mockCards: CardInstance[]
 

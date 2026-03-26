@@ -6,7 +6,7 @@ import type {
   Player,
   PlayerId,
   Stack,
-} from 'src/game-engine/types'
+} from 'src/game-engine'
 import { useMemo } from 'react'
 
 export const useDuelPhase = (): Phase => useGameState().phase

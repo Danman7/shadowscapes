@@ -8,15 +8,13 @@ import {
   Logs,
   PlayerBadge,
 } from 'src/components'
-import { useGameDispatch } from 'src/contexts/GameContext'
-import type { CardInstance, Phase, Player } from 'src/game-engine/types'
-import { formatString, messages } from 'src/i18n'
 import {
   useActivePlayer,
   useActivePlayerBoard,
   useActivePlayerCoins,
   useActivePlayerHand,
   useDuelPhase,
+  useGameDispatch,
   useInactivePlayer,
   useInactivePlayerBoard,
   useInactivePlayerHand,
@@ -24,7 +22,9 @@ import {
   usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,
-} from 'src/selectors/playerSelectors'
+} from 'src/contexts'
+import type { CardInstance, Phase, Player } from 'src/game-engine'
+import { formatString, messages } from 'src/i18n'
 
 const ATTACK_ANIMATION_MS = 350
 

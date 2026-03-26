@@ -3,11 +3,8 @@ import { FaSun } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
 import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
-import {
-  FACTION_BORDER_COLORS,
-  FACTION_TEXT_COLORS,
-} from 'src/game-engine/constants/duelParams'
-import type { CardInstance } from 'src/game-engine/types'
+import type { CardInstance } from 'src/game-engine'
+import { FACTION_BORDER_COLORS, FACTION_TEXT_COLORS } from 'src/game-engine'
 
 export const Card: React.FC<{
   card: CardInstance

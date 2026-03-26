@@ -2,7 +2,7 @@ import { render, type RenderOptions } from '@testing-library/react'
 import { createElement, type ReactElement, type ReactNode } from 'react'
 
 import { GameProvider } from 'src/contexts/GameContext'
-import type { Duel } from 'src/game-engine/types'
+import type { Duel } from 'src/game-engine'
 
 interface RenderGameContextOptions extends Omit<RenderOptions, 'wrapper'> {
   preloadedState?: Partial<Duel>

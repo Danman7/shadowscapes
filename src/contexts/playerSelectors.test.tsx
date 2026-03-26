@@ -1,9 +1,8 @@
 import '@testing-library/jest-dom'
 
 import { Board, Hand } from 'src/components'
-import { CARD_BASES } from 'src/game-engine/constants'
-import { MIXED_STACKS_DUEL as preloadedState } from 'src/game-engine/mocks'
 import {
+  renderGameContext,
   useActivePlayer,
   useActivePlayerBoard,
   useActivePlayerHand,
@@ -13,8 +12,11 @@ import {
   useInactivePlayerHand,
   usePlayerDeckCount,
   usePlayerDiscardCount,
-} from 'src/selectors/playerSelectors'
-import { renderGameContext } from 'src/test/renderGameContext'
+} from 'src/contexts'
+import {
+  CARD_BASES,
+  MIXED_STACKS_DUEL as preloadedState,
+} from 'src/game-engine'
 
 describe('useDuelPhase', () => {
   test('returns current phase from game state', () => {

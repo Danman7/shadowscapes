@@ -1,8 +1,11 @@
 export { CARD_BASES } from 'src/game-engine/constants/cardBases'
 export {
-  INITIAL_DUEL_STATE,
-  PLACEHOLDER_PLAYER,
+  FACTION_BORDER_COLORS,
+  FACTION_TEXT_COLORS,
   INITIAL_CARDS_TO_DRAW,
+  INITIAL_DUEL_STATE,
+  INITIAL_PLAYER_COINS,
+  PLACEHOLDER_PLAYER,
 } from 'src/game-engine/constants/duelParams'
 export * as balancing from 'src/game-engine/constants/balancing'
 export {
