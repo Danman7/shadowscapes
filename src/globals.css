@@ -5,13 +5,16 @@
 :root {
   --primary: hsl(10, 80%, 45%);
   --background: hsl(10, 10%, 98%);
+  --fixed-background: hsl(10, 10%, 98%);
   --foreground: hsl(10, 20%, 20%);
   --surface: hsl(10, 20%, 94%);
   --gold: var(--color-yellow-400);
-  --gold-dark: var(--color-yellow-700);
+  --gold-text: var(--color-yellow-700);
+  --gold-text-fixed: var(--color-yellow-800);
   --order: var(--color-red-800);
   --shadow: var(--color-indigo-800);
   --chaos: var(--color-emerald-800);
+  --neutral: var(--color-neutral-600);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,23 +23,24 @@
     --background: hsl(10, 20%, 10%);
     --foreground: hsl(10, 10%, 85%);
     --surface: hsl(10, 20%, 20%);
-    --order: var(--color-red-400);
-    --shadow: var(--color-indigo-400);
-    --chaos: var(--color-emerald-400);
+    --gold-text: var(--color-yellow-200);
   }
 }
 
 @theme inline {
   --color-primary: var(--primary);
   --color-background: var(--background);
+  --color-fixed-background: var(--fixed-background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-elite: var(--elite);
   --color-gold: var(--gold);
-  --color-gold-dark: var(--gold-dark);
+  --color-gold-text: var(--gold-text);
+  --color-gold-text-fixed: var(--gold-text-fixed);
   --color-order: var(--order);
   --color-shadow: var(--shadow);
   --color-chaos: var(--chaos);
+  --color-neutral: var(--neutral);
 
   --animate-fade-in-scale: fade-in-scale 0.3s ease-out both;
 
@@ -143,15 +147,23 @@
   }
 
   .card {
-    @apply aspect-25/35 bg-surface w-60 h-full rounded-2xl shadow-md;
+    @apply aspect-25/35 bg-surface w-56 h-full rounded-2xl shadow-md;
   }
 
-  .card-circle {
-    @apply border-8 rounded-full text-xl font-bold w-12 h-12 flex place-content-center place-items-center;
+  .badge {
+    @apply rounded flex items-center justify-center text-fixed-background w-8 h-8 shadow;
   }
 
   .name-tag {
     @apply bg-background/50 backdrop-blur-sm rounded shadow-sm text-xl flex place-items-center gap-2 z-50;
+  }
+
+  .coin {
+    @apply flex items-center font-bold text-shadow-sm justify-center rounded-full w-8 h-8 bg-gold text-gold-text-fixed shadow border-4 border-gold-text-fixed/20;
+  }
+
+  .flavor-text {
+    @apply text-sm font-light;
   }
 
   .hand-card {

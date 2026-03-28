@@ -35,8 +35,6 @@ const cookEffect: CardEffect = (state, playerId) => {
       state.logs,
       formatString(messages.cardEffects.cookDraw, {
         playerName: playerAfterDraw.name,
-        handCount: playerAfterDraw.hand.length,
-        deckCount: playerAfterDraw.deck.length,
       }),
     ),
   }
@@ -81,7 +79,6 @@ const zombieEffect: CardEffect = (state, playerId) => {
     logs: addLogEntry(
       state.logs,
       formatString(messages.cardEffects.zombieResurrect, {
-        playerName: player.name,
         count: zombiesInDiscard.length,
       }),
     ),
@@ -176,7 +173,7 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      formatString(messages.cardEffects.sachelmanBuff, {
+      formatString(messages.cardEffects.buffOnBoard, {
         buff: balancing.SACHELMAN_BUFF_ON_PLAY,
         count: weakerHammeritesCount,
       }),
@@ -263,7 +260,7 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      formatString(messages.cardEffects.yoraSkullBuff, {
+      formatString(messages.cardEffects.buffOnBoard, {
         buff: balancing.YORA_SKULL_BUFF_ON_PLAY,
         count: boostedCardsCount,
       }),
@@ -431,7 +428,6 @@ const applyBurrickAttackEffect = (
   }
 
   const burrickLog = formatString(messages.cardEffects.burrickSplash, {
-    cardName: currentAttacker.base.name,
     count: affectedAdjacentCount,
     damage: attackDamage,
   })
@@ -476,8 +472,9 @@ const applyTempleGuardRetaliationEffect = (
       cards: newCards,
       logs: addLogEntry(
         state.logs,
-        formatString(messages.cardEffects.templeGuardRetaliateDefeats, {
+        formatString(messages.cardEffects.retaliateDefeats, {
           damage: defender.attributes.strength,
+          defenderName: defender.base.name,
           attackerName: attacker.base.name,
         }),
       ),
@@ -493,10 +490,9 @@ const applyTempleGuardRetaliationEffect = (
     cards: newCards,
     logs: addLogEntry(
       state.logs,
-      formatString(messages.cardEffects.templeGuardRetaliateDamage, {
+      formatString(messages.cardEffects.retaliateDamage, {
         damage: defender.attributes.strength,
-        attackerName: attacker.base.name,
-        remainingLife: attackerNewLife,
+        defenderName: defender.base.name,
       }),
     ),
   }

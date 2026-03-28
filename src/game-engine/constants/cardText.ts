@@ -12,18 +12,12 @@ export const BURRICK_TEXT: CardText = {
     formatString(messages.cards.burrick.description[0], {
       charges: balancing.BURRICK_ATTRIBUTES.charges!,
     }),
-    messages.cards.burrick.description[1],
   ],
   flavor: messages.cards.burrick.flavor,
 }
 
 export const HAUNT_TEXT: CardText = {
-  description: [
-    formatString(messages.cards.haunt.description[0], {
-      charges: balancing.HAUNT_ATTRIBUTES.charges!,
-    }),
-    messages.cards.haunt.description[1],
-  ],
+  description: [messages.cards.haunt.description[0]],
   flavor: messages.cards.haunt.flavor,
 }
 
@@ -76,11 +70,8 @@ export const YORA_SKULL_TEXT: CardText = {
 
 export const MARKANDER_TEXT: CardText = {
   description: [
-    formatString(messages.cards.markander.description[0], {
-      charges: balancing.MARKANDER_ATTRIBUTES.charges!,
-    }),
+    messages.cards.markander.description[0],
     messages.cards.markander.description[1],
-    messages.cards.markander.description[2],
   ],
   flavor: messages.cards.markander.flavor,
 }

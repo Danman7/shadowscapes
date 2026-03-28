@@ -4,7 +4,10 @@ import { FaHandFist } from 'react-icons/fa6'
 import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
 import type { CardInstance } from 'src/game-engine'
-import { FACTION_BORDER_COLORS, FACTION_TEXT_COLORS } from 'src/game-engine'
+import {
+  FACTION_BACKGROUND_COLORS,
+  FACTION_BORDER_COLORS,
+} from 'src/game-engine'
 
 export const Card: React.FC<{
   card: CardInstance
@@ -22,10 +25,11 @@ export const Card: React.FC<{
   attackDirection,
 }) => {
   const { base, attributes } = card
-  const { name, faction, categories, type, text } = base
+  const { name, faction, categories, type, text, rank } = base
   const { description } = text
   const { life, strength, charges, cost, stunned, haste } = attributes
   const factionBorderColor = FACTION_BORDER_COLORS[faction]
+  const factionBackgroundColor = FACTION_BACKGROUND_COLORS[faction]
 
   const attackClassName =
     isAttacking && attackDirection === 'down'
@@ -47,29 +51,19 @@ export const Card: React.FC<{
     >
       <div className="flex justify-between items-start">
         <div>
-          <div className={`card-circle -ml-2 -mt-2 ${factionBorderColor}`}>
+          <div
+            className={`badge h-12 w-12 rounded-tl-xl font-bold text-xl -ml-2 -mt-2 ${factionBackgroundColor}`}
+          >
             {type === 'instant' ? <FaSun /> : <>{life}</>}
           </div>
-
-          {type === 'character' && (
-            <div className="flex items-center text-lg pl-1 pt-1 gap-1 font-bold">
-              {stunned ? (
-                <GiStarSwirl />
-              ) : (
-                <>
-                  <FaHandFist /> {strength}
-                </>
-              )}
-            </div>
-          )}
         </div>
 
         <div>
           <div className="text-right pr-2">
-            <div className="text-sm font-light">{categories.join(' ')}</div>
+            <div className="flavor-text">{categories.join(' ')}</div>
 
             <div
-              className={`text-2xl font-bold ${FACTION_TEXT_COLORS[faction]}`}
+              className={`font-bold text-lg ${rank === 'elite' ? 'text-gold-text' : ''}`}
             >
               {name}
             </div>
@@ -89,21 +83,32 @@ export const Card: React.FC<{
         </div>
       )}
 
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2 pl-2 text-xl">
+      <div className="flex justify-between items-center p-2">
+        <div className="flex items-center gap-2 ">
+          {type === 'character' && (
+            <div>
+              {stunned ? (
+                <div className={`badge ${factionBackgroundColor}`}>
+                  <GiStarSwirl />
+                </div>
+              ) : (
+                <div className={`badge ${factionBackgroundColor}`}>
+                  <FaHandFist /> {strength}
+                </div>
+              )}
+            </div>
+          )}
+
           {charges !== undefined && (
-            <div className="flex items-center gap-1">
+            <div className={`badge ${factionBackgroundColor}`}>
               <BsLightningFill /> {charges}
             </div>
           )}
 
           {haste && <GiWingfoot />}
         </div>
-        <div
-          className={`card-circle bg-gold -mr-2 -mb-2 ${factionBorderColor}`}
-        >
-          <div className="text-gold-dark text-shadow-md">{cost}</div>
-        </div>
+
+        <div className="coin">{cost}</div>
       </div>
 
       {/* <div

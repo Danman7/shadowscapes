@@ -17,8 +17,6 @@ test('renders logs title and all log entries', () => {
     formatString(messages.reducer.playCard, {
       playerName: 'Garrett',
       cardName: 'Temple Guard',
-      cost: 4,
-      remaining: 0,
     }),
   ]
 

@@ -117,8 +117,6 @@ const duelSlice = createSlice({
         formatString(messages.reducer.playCard, {
           playerName: player.name,
           cardName: card.base.name,
-          cost: card.attributes.cost,
-          remaining: player.coins,
         }),
       )
 
@@ -209,7 +207,6 @@ const duelSlice = createSlice({
               attackerName: attacker.base.name,
               defenderName: defender.base.name,
               damage: attacker.attributes.strength,
-              remainingLife: defenderNewLife,
             }),
       )
     },
@@ -275,7 +272,7 @@ const duelSlice = createSlice({
       card.didAct = true
 
       state.logs.push(
-        formatString(messages.reducer.stunnedByFlashBomb, {
+        formatString(messages.reducer.stunned, {
           cardName: card.base.name,
         }),
       )

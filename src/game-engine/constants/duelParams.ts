@@ -16,14 +16,14 @@ export const FACTION_BORDER_COLORS: Record<Faction, string> = {
   chaos: 'border-chaos',
   order: 'border-order',
   shadow: 'border-shadow',
-  neutral: 'border-foreground',
+  neutral: 'border-neutral',
 }
 
-export const FACTION_TEXT_COLORS: Record<Faction, string> = {
-  chaos: 'text-chaos',
-  order: 'text-order',
-  shadow: 'text-shadow',
-  neutral: 'text-foreground',
+export const FACTION_BACKGROUND_COLORS: Record<Faction, string> = {
+  chaos: 'bg-chaos',
+  order: 'bg-order',
+  shadow: 'bg-shadow',
+  neutral: 'bg-neutral',
 }
 
 export const PLACEHOLDER_PLAYER: Omit<Player, 'id'> = {
