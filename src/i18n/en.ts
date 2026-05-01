@@ -95,7 +95,7 @@ export const messages = {
     novice: {
       name: 'Novice',
       description: [
-        'On play, summon all Novices from your hand or deck, if you have a stronger Hammerite on board.',
+        'On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.',
       ],
       flavor:
         'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',

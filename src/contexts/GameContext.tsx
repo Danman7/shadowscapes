@@ -2,8 +2,12 @@ import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 
 import type { Duel } from 'src/game-engine'
-import { useAppDispatch, useAppSelector } from 'src/hooks'
-import { type AppDispatch, makeStore } from 'src/store'
+import {
+  type AppDispatch,
+  makeStore,
+  useAppDispatch,
+  useAppSelector,
+} from 'src/store'
 
 export const GameProvider: React.FC<{
   children: ReactNode
@@ -15,5 +19,4 @@ export const GameProvider: React.FC<{
 }
 
 export const useGameState = (): Duel => useAppSelector((state) => state.duel)
-
 export const useGameDispatch = (): AppDispatch => useAppDispatch()

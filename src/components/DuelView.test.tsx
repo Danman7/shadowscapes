@@ -24,7 +24,7 @@ import {
   skipRedraw,
   startInitialDraw,
   switchTurn,
-} from 'src/game-engine/duelSlice'
+} from 'src/game-engine/duel'
 import { formatString, messages } from 'src/i18n'
 
 afterEach(() => {

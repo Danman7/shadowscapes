@@ -1,3 +1,4 @@
+import { createCardInstance } from 'src/game-engine/cards'
 import {
   CARD_BASES,
   INITIAL_CARDS_TO_DRAW,
@@ -20,8 +21,7 @@ import {
   startFirstPlayerTurn,
   startInitialDraw,
   switchTurn,
-} from 'src/game-engine/duelSlice'
-import { createCardInstance } from 'src/game-engine/helpers'
+} from 'src/game-engine/duel'
 import { makeTestDuel } from 'src/game-engine/mocks'
 import { formatString, messages } from 'src/i18n'
 
@@ -247,7 +247,7 @@ describe('SWITCH_TURN', () => {
   test('does not remove haste from cards', () => {
     const state = makeTestDuel({
       cards: {
-        c1: createCardInstance('zombie', 'c1', { haste: true }),
+        c1: createCardInstance('zombie', 'c1', { hasHaste: true }),
       },
       players: {
         player1: {
@@ -262,7 +262,7 @@ describe('SWITCH_TURN', () => {
 
     const result = duelReducer(state, switchTurn())
 
-    expect(result.cards['c1']!.attributes.haste).toBe(true)
+    expect(result.cards['c1']!.attributes.hasHaste).toBe(true)
   })
 
   test('resets playerReady for all players', () => {

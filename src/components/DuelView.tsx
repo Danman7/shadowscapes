@@ -37,7 +37,7 @@ import {
   startFirstPlayerTurn,
   startInitialDraw,
   switchTurn,
-} from 'src/game-engine/duelSlice'
+} from 'src/game-engine/duel'
 import { formatString, messages } from 'src/i18n'
 
 const ATTACK_ANIMATION_MS = 350
@@ -107,7 +107,7 @@ const PhaseButton: React.FC<{
       phaseButtonOnClick = () => {
         const allStunned =
           activeBoard.length > 0 &&
-          activeBoard.every((c) => c.attributes.stunned)
+          activeBoard.every((c) => c.attributes.isStunned)
         if (activeBoard.length === 0 || allStunned) {
           dispatch(switchTurn())
         } else {
@@ -223,7 +223,7 @@ export const DuelView: React.FC = () => {
   useEffect(() => {
     if (phase === 'turn-end') {
       const allActiveCardsActed = activeBoard.every(
-        (card) => card.didAct || card.attributes.stunned,
+        (card) => card.didAct || card.attributes.isStunned,
       )
 
       if (pendingInstant !== null) return
@@ -294,7 +294,7 @@ export const DuelView: React.FC = () => {
       if (
         !cardInstance ||
         cardInstance.didAct ||
-        cardInstance.attributes.stunned
+        cardInstance.attributes.isStunned
       )
         return undefined
 

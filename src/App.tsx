@@ -2,8 +2,7 @@ import { useEffect } from 'react'
 
 import { DuelView } from 'src/components'
 import { GameProvider, useGameDispatch } from 'src/contexts'
-import { MOCK_DUEL_SETUP } from 'src/game-engine'
-import { startDuel } from 'src/game-engine/duelSlice'
+import { MOCK_DUEL_SETUP, startDuel } from 'src/game-engine'
 
 const AppContent: React.FC = () => {
   const dispatch = useGameDispatch()

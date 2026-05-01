@@ -1,18 +1,20 @@
 import { CARD_BASES, INITIAL_DUEL_STATE } from 'src/game-engine/constants'
 import {
-  addLogEntry,
+  type AttributeOverride,
   createCardInstance,
   createDuel,
+} from 'src/game-engine/cards'
+import {
+  getCardsInStack,
+  hasCardInStack,
   getOpponentId,
   getPendingInstant,
-  resetCards,
-  resetPlayers,
+  resetPlayersReady,
   updateCard,
   updatePlayers,
-  type AttributeOverride,
-} from 'src/game-engine/helpers'
+} from 'src/game-engine/utils'
 import { makeTestDuel, MOCK_DUEL, MOCK_DUEL_SETUP } from 'src/game-engine/mocks'
-import type { Duel, DuelLog } from 'src/game-engine/types'
+import type { Duel } from 'src/game-engine/types'
 
 const zombieBase = CARD_BASES['zombie']
 
@@ -81,6 +83,46 @@ describe('getOpponentId', () => {
   })
 })
 
+describe('stack queries', () => {
+  const cards = {
+    zombie1: createCardInstance('zombie', 'zombie1'),
+    haunt1: createCardInstance('haunt', 'haunt1'),
+    speedPotion1: createCardInstance('speedPotion', 'speedPotion1'),
+  }
+
+  test('getCardsInStack returns matching cards by predicate', () => {
+    const result = getCardsInStack(
+      ['zombie1', 'haunt1', 'missing'],
+      cards,
+      (card) => {
+        return card.base.type === 'character'
+      },
+    )
+
+    expect(result).toEqual(['zombie1', 'haunt1'])
+  })
+
+  test('hasCardInStack returns true when at least one card matches', () => {
+    const result = hasCardInStack(
+      ['speedPotion1', 'zombie1'],
+      cards,
+      (card) => {
+        return card.base.id === 'zombie'
+      },
+    )
+
+    expect(result).toBe(true)
+  })
+
+  test('hasCardInStack returns false when no cards match', () => {
+    const result = hasCardInStack(['speedPotion1'], cards, (card) => {
+      return card.base.type === 'character'
+    })
+
+    expect(result).toBe(false)
+  })
+})
+
 describe('getPendingInstant', () => {
   const baseState: Duel = {
     ...INITIAL_DUEL_STATE,
@@ -143,35 +185,21 @@ describe('getPendingInstant', () => {
   })
 })
 
-describe('resetPlayers', () => {
+describe('resetPlayersReady', () => {
   test('resets playerReady status', () => {
-    let players = MOCK_DUEL.players
+    const state = { ...MOCK_DUEL }
 
     MOCK_DUEL.playerOrder.forEach((playerId) => {
-      players[playerId].playerReady = true
+      state.players[playerId].playerReady = true
     })
 
-    const player = players
+    expect(state.players[MOCK_DUEL.playerOrder[0]].playerReady).toBe(true)
+    expect(state.players[MOCK_DUEL.playerOrder[1]].playerReady).toBe(true)
 
-    expect(player[MOCK_DUEL.playerOrder[0]].playerReady).toBe(true)
-    expect(player[MOCK_DUEL.playerOrder[1]].playerReady).toBe(true)
+    resetPlayersReady(state)
 
-    const resetPlayersResult = resetPlayers(player)
-
-    expect(resetPlayersResult[MOCK_DUEL.playerOrder[0]].playerReady).toBe(false)
-    expect(resetPlayersResult[MOCK_DUEL.playerOrder[1]].playerReady).toBe(false)
-  })
-})
-
-describe('addLogEntry', () => {
-  test('adds a log entry to the duel logs', () => {
-    const initialLogs: DuelLog[] = ['First log entry']
-
-    const newLogEntry = 'Second log entry'
-    const updatedLogs = addLogEntry(initialLogs, newLogEntry)
-
-    expect(updatedLogs).toHaveLength(2)
-    expect(updatedLogs[1]).toBe(newLogEntry)
+    expect(state.players[MOCK_DUEL.playerOrder[0]].playerReady).toBe(false)
+    expect(state.players[MOCK_DUEL.playerOrder[1]].playerReady).toBe(false)
   })
 })
 
@@ -200,38 +228,6 @@ describe('updatePlayers', () => {
   })
 })
 
-describe('resetCards', () => {
-  test('resets didAct and stunned on all cards', () => {
-    const cards = {
-      card1: createCardInstance('zombie', 'card1'),
-      card2: createCardInstance('zombie', 'card2'),
-    }
-    cards['card1'] = { ...cards['card1'], didAct: true }
-    cards['card2'] = {
-      ...cards['card2'],
-      attributes: { ...cards['card2'].attributes, stunned: true },
-    }
-
-    const result = resetCards(cards)
-
-    expect(result['card1'].didAct).toBe(false)
-    expect(result['card2'].attributes.stunned).toBe(false)
-  })
-
-  test('preserves other card properties', () => {
-    const cards = {
-      card1: createCardInstance('zombie', 'card1', { life: 5, strength: 3 }),
-    }
-
-    const result = resetCards(cards)
-
-    expect(result['card1'].attributes.life).toBe(5)
-    expect(result['card1'].attributes.strength).toBe(3)
-    expect(result['card1'].base).toEqual(cards['card1'].base)
-    expect(result['card1'].id).toBe('card1')
-  })
-})
-
 describe('updateCard', () => {
   const cards = {
     card1: createCardInstance('zombie', 'card1'),
@@ -253,10 +249,10 @@ describe('updateCard', () => {
   test('can update card attributes', () => {
     const result = updateCard(cards, 'card1', (c) => ({
       ...c,
-      attributes: { ...c.attributes, stunned: true },
+      attributes: { ...c.attributes, isStunned: true },
     }))
 
-    expect(result['card1'].attributes.stunned).toBe(true)
+    expect(result['card1'].attributes.isStunned).toBe(true)
   })
 })
 

@@ -1,13 +1,16 @@
 import type { UnknownAction } from '@reduxjs/toolkit'
 
 import { balancing } from 'src/game-engine/constants'
-import { attackCard, playCard } from 'src/game-engine/duelSlice'
-import {
-  addLogEntry,
-  getOpponentId,
-  updatePlayers,
-} from 'src/game-engine/helpers'
+import { attackCard, playCard } from 'src/game-engine/duel/slice'
 import type { Duel, PlayerId } from 'src/game-engine/types'
+import {
+  addLog,
+  drawCards,
+  getCardsInStack,
+  getOpponentId,
+  hasCardInStack,
+  updatePlayers,
+} from 'src/game-engine/utils'
 import { formatString, messages } from 'src/i18n'
 
 type CardEffect = (
@@ -17,72 +20,59 @@ type CardEffect = (
 ) => Duel
 
 const cookEffect: CardEffect = (state, playerId) => {
-  const player = state.players[playerId]
-  const [drawnCardId, ...remainingDeck] = player.deck
-  const playerAfterDraw =
-    drawnCardId === undefined
-      ? player
-      : {
-          ...player,
-          deck: remainingDeck,
-          hand: [...player.hand, drawnCardId],
-        }
-
-  return {
-    ...state,
-    players: { ...state.players, [playerId]: playerAfterDraw },
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.cookDraw, {
-        playerName: playerAfterDraw.name,
-      }),
-    ),
+  const sourcePlayer = state.players[playerId]
+  const player = {
+    ...sourcePlayer,
+    deck: [...sourcePlayer.deck],
+    hand: [...sourcePlayer.hand],
   }
+  drawCards(player)
+
+  const nextState = {
+    ...state,
+    players: { ...state.players, [playerId]: player },
+  }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.cookDraw, {
+      playerName: player.name,
+    }),
+  )
+
+  return nextState
 }
 
 const zombieEffect: CardEffect = (state, playerId) => {
   const player = state.players[playerId]
 
-  const zombiesInDiscard = player.discard.filter((id) => {
-    const card = state.cards[id]
-    return card?.base.id === 'zombie'
-  })
+  const zombiesInDiscard = getCardsInStack(
+    player.discard,
+    state.cards,
+    (card) => {
+      return card.base.id === 'zombie'
+    },
+  )
 
   if (zombiesInDiscard.length === 0) return state
 
-  const newCards = { ...state.cards }
-
-  for (const id of zombiesInDiscard) {
-    const card = newCards[id]
-    if (!card) continue
-
-    newCards[id] = {
-      ...card,
-      attributes: {
-        ...card.attributes,
-        life:
-          card.base.type === 'character'
-            ? card.base.attributes.life
-            : card.attributes.life,
-      },
-    }
-  }
-
-  return {
+  const nextState = {
     ...state,
     players: updatePlayers(state.players, playerId, (p) => ({
       ...p,
       discard: p.discard.filter((id) => !zombiesInDiscard.includes(id)),
       board: [...p.board, ...zombiesInDiscard],
     })),
-    cards: newCards,
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.zombieResurrect, {
-        count: zombiesInDiscard.length,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.zombieResurrect, {
+      count: zombiesInDiscard.length,
+    }),
+  )
+
+  return nextState
 }
 
 const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
@@ -93,35 +83,40 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
   const playedLife = playedCard.attributes.life ?? 0
 
-  const hasStrongerHammerite = player.board.some((id) => {
-    if (id === cardInstanceId) return false
-
-    const card = state.cards[id]
-    if (!card) return false
-
-    return (
-      card.base.categories.includes('Hammerite') &&
-      (card.attributes.life ?? 0) > playedLife
-    )
-  })
+  const hasStrongerHammerite = hasCardInStack(
+    player.board.filter((id) => id !== cardInstanceId),
+    state.cards,
+    (card) => {
+      return (
+        card.base.categories.includes('Hammerite') &&
+        (card.attributes.life ?? 0) > playedLife
+      )
+    },
+  )
 
   if (!hasStrongerHammerite) return state
 
-  const noviceCopiesInHand = player.hand.filter((id) => {
-    const card = state.cards[id]
-    return card?.base.id === 'novice'
-  })
+  const noviceCopiesInHand = getCardsInStack(
+    player.hand,
+    state.cards,
+    (card) => {
+      return card.base.id === 'novice'
+    },
+  )
 
-  const noviceCopiesInDeck = player.deck.filter((id) => {
-    const card = state.cards[id]
-    return card?.base.id === 'novice'
-  })
+  const noviceCopiesInDeck = getCardsInStack(
+    player.deck,
+    state.cards,
+    (card) => {
+      return card.base.id === 'novice'
+    },
+  )
 
   const allCopiesToSummon = [...noviceCopiesInHand, ...noviceCopiesInDeck]
 
   if (allCopiesToSummon.length === 0) return state
 
-  return {
+  const nextState = {
     ...state,
     players: updatePlayers(state.players, playerId, (p) => ({
       ...p,
@@ -129,14 +124,17 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
       deck: p.deck.filter((id) => !noviceCopiesInDeck.includes(id)),
       board: [...p.board, ...allCopiesToSummon],
     })),
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.noviceSummon, {
-        playerName: player.name,
-        count: allCopiesToSummon.length,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.noviceSummon, {
+      playerName: player.name,
+      count: allCopiesToSummon.length,
+    }),
+  )
+
+  return nextState
 }
 
 const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
@@ -168,17 +166,20 @@ const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
     weakerHammeritesCount++
   }
 
-  return {
+  const nextState = {
     ...state,
     cards: newCards,
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.buffOnBoard, {
-        buff: balancing.SACHELMAN_BUFF_ON_PLAY,
-        count: weakerHammeritesCount,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.buffOnBoard, {
+      buff: balancing.SACHELMAN_BUFF_ON_PLAY,
+      count: weakerHammeritesCount,
+    }),
+  )
+
+  return nextState
 }
 
 const mysticsSoulEffect: CardEffect = (state, playerId) => {
@@ -211,7 +212,7 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
   const card = state.cards[cardInstanceId]
   if (!card || card.attributes.life === undefined) return state
 
-  return {
+  const nextState = {
     ...state,
     cards: {
       ...state.cards,
@@ -224,14 +225,17 @@ const templeGuardEffect: CardEffect = (state, playerId, cardInstanceId) => {
         },
       },
     },
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.templeGuardBuff, {
-        buff: balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS,
-        opponentName: opponent.name,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.templeGuardBuff, {
+      buff: balancing.TEMPLE_GUARD_BUFF_ON_LESS_CARDS,
+      opponentName: opponent.name,
+    }),
+  )
+
+  return nextState
 }
 
 const yoraSkullEffect: CardEffect = (state, playerId) => {
@@ -255,17 +259,20 @@ const yoraSkullEffect: CardEffect = (state, playerId) => {
     boostedCardsCount++
   }
 
-  return {
+  const nextState = {
     ...state,
     cards: newCards,
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.buffOnBoard, {
-        buff: balancing.YORA_SKULL_BUFF_ON_PLAY,
-        count: boostedCardsCount,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.buffOnBoard, {
+      buff: balancing.YORA_SKULL_BUFF_ON_PLAY,
+      count: boostedCardsCount,
+    }),
+  )
+
+  return nextState
 }
 
 const onPlayEffects: Partial<Record<string, CardEffect>> = {
@@ -286,10 +293,13 @@ const applyHauntReactiveEffect = (
   const opponentId = getOpponentId(state.playerOrder, playerId)
   const opponent = state.players[opponentId]
 
-  const hauntsWithCharges = opponent.board.filter((id) => {
-    const card = state.cards[id]
-    return card?.base.id === 'haunt' && (card.attributes.charges ?? 0) > 0
-  })
+  const hauntsWithCharges = getCardsInStack(
+    opponent.board,
+    state.cards,
+    (card) => {
+      return card.base.id === 'haunt' && (card.attributes.charges ?? 0) > 0
+    },
+  )
 
   if (hauntsWithCharges.length === 0) return state
 
@@ -323,40 +333,41 @@ const applyHauntReactiveEffect = (
       attributes: { ...playedCard.attributes, life: 0 },
     }
 
-    return {
+    const nextState = {
       ...state,
-      players: updatePlayers(state.players, playerId, (p) => ({
-        ...p,
-        board: p.board.filter((id) => id !== cardInstanceId),
-        discard: [...p.discard, cardInstanceId],
-      })),
       cards: newCards,
-      logs: addLogEntry(
-        state.logs,
-        formatString(messages.cardEffects.hauntReactDefeats, {
-          count: hauntsWithCharges.length,
-          cardName: playedCard.base.name,
-        }),
-      ),
     }
+
+    addLog(
+      nextState,
+      formatString(messages.cardEffects.hauntReactDefeats, {
+        count: hauntsWithCharges.length,
+        cardName: playedCard.base.name,
+      }),
+    )
+
+    return nextState
   }
 
   newCards[cardInstanceId] = {
     ...playedCard,
     attributes: { ...playedCard.attributes, life: newLife },
   }
-  return {
+  const nextState = {
     ...state,
     cards: newCards,
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.hauntReactDamage, {
-        count: hauntsWithCharges.length,
-        cardName: playedCard.base.name,
-        damage,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.hauntReactDamage, {
+      count: hauntsWithCharges.length,
+      cardName: playedCard.base.name,
+      damage,
+    }),
+  )
+
+  return nextState
 }
 
 const applyBurrickAttackEffect = (
@@ -386,8 +397,7 @@ const applyBurrickAttackEffect = (
     if (rightId !== undefined) adjacentIds.push(rightId)
   }
 
-  let result = state
-  const newCards = { ...result.cards }
+  const newCards = { ...state.cards }
   const attackDamage = attacker.attributes.strength
   let affectedAdjacentCount = 0
 
@@ -402,14 +412,6 @@ const applyBurrickAttackEffect = (
       newCards[adjId] = {
         ...adjCard,
         attributes: { ...adjCard.attributes, life: 0 },
-      }
-      result = {
-        ...result,
-        players: updatePlayers(result.players, state.playerOrder[1], (p) => ({
-          ...p,
-          board: p.board.filter((id) => id !== adjId),
-          discard: [...p.discard, adjId],
-        })),
       }
     } else {
       newCards[adjId] = {
@@ -432,11 +434,14 @@ const applyBurrickAttackEffect = (
     damage: attackDamage,
   })
 
-  return {
-    ...result,
+  const nextState = {
+    ...state,
     cards: newCards,
-    logs: addLogEntry(result.logs, burrickLog),
   }
+
+  addLog(nextState, burrickLog)
+
+  return nextState
 }
 
 const applyTempleGuardRetaliationEffect = (
@@ -444,6 +449,9 @@ const applyTempleGuardRetaliationEffect = (
   attackerId: string,
   defenderId: string,
 ): Duel => {
+  const inactivePlayer = state.players[state.playerOrder[1]]
+  if (!inactivePlayer.board.includes(defenderId)) return state
+
   const defender = state.cards[defenderId]
   if (!defender || defender.base.id !== 'templeGuard') return state
   if (defender.attributes.life === undefined || defender.attributes.life <= 0)
@@ -462,40 +470,41 @@ const applyTempleGuardRetaliationEffect = (
       ...attacker,
       attributes: { ...attacker.attributes, life: 0 },
     }
-    return {
+    const nextState = {
       ...state,
-      players: updatePlayers(state.players, state.playerOrder[0], (p) => ({
-        ...p,
-        board: p.board.filter((id) => id !== attackerId),
-        discard: [...p.discard, attackerId],
-      })),
       cards: newCards,
-      logs: addLogEntry(
-        state.logs,
-        formatString(messages.cardEffects.retaliateDefeats, {
-          damage: defender.attributes.strength,
-          defenderName: defender.base.name,
-          attackerName: attacker.base.name,
-        }),
-      ),
     }
+
+    addLog(
+      nextState,
+      formatString(messages.cardEffects.retaliateDefeats, {
+        damage: defender.attributes.strength,
+        defenderName: defender.base.name,
+        attackerName: attacker.base.name,
+      }),
+    )
+
+    return nextState
   }
 
   newCards[attackerId] = {
     ...attacker,
     attributes: { ...attacker.attributes, life: attackerNewLife },
   }
-  return {
+  const nextState = {
     ...state,
     cards: newCards,
-    logs: addLogEntry(
-      state.logs,
-      formatString(messages.cardEffects.retaliateDamage, {
-        damage: defender.attributes.strength,
-        defenderName: defender.base.name,
-      }),
-    ),
   }
+
+  addLog(
+    nextState,
+    formatString(messages.cardEffects.retaliateDamage, {
+      damage: defender.attributes.strength,
+      defenderName: defender.base.name,
+    }),
+  )
+
+  return nextState
 }
 
 const applyMarkanderReactiveEffect = (
@@ -509,10 +518,13 @@ const applyMarkanderReactiveEffect = (
   if (!playedCard.base.categories.includes('Hammerite')) return state
 
   const player = state.players[playerId]
-  const markanderIds = [...player.hand, ...player.deck].filter((id) => {
-    const card = state.cards[id]
-    return card?.base.id === 'markander'
-  })
+  const markanderIds = getCardsInStack(
+    [...player.hand, ...player.deck],
+    state.cards,
+    (card) => {
+      return card.base.id === 'markander'
+    },
+  )
 
   if (markanderIds.length === 0) return state
 
@@ -545,8 +557,9 @@ const applyMarkanderReactiveEffect = (
         deck: p.deck.filter((id) => !idsToSummon.includes(id)),
         board: [...p.board, ...idsToSummon],
       })),
-      logs: addLogEntry(state.logs, messages.cardEffects.markanderSummoned),
     }
+
+    addLog(result, messages.cardEffects.markanderSummoned)
   }
 
   return result

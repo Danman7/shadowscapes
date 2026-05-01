@@ -8,7 +8,7 @@ import type {
   PlayerId,
   Stack,
 } from 'src/game-engine'
-import { useAppSelector } from 'src/hooks'
+import { useAppSelector } from 'src/store'
 import type { RootState } from 'src/store'
 
 const selectCards = (state: RootState) => state.duel.cards

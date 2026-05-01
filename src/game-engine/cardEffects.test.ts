@@ -1,7 +1,7 @@
-import { applyCardEffects } from 'src/game-engine/cardEffects'
+import { applyCardEffects } from 'src/game-engine/duel/effects'
 import { CARD_BASES, PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
-import { attackCard, playCard, switchTurn } from 'src/game-engine/duelSlice'
-import { createCardInstance } from 'src/game-engine/helpers'
+import { attackCard, playCard, switchTurn } from 'src/game-engine/duel'
+import { createCardInstance } from 'src/game-engine/cards'
 import { makeTestDuel } from 'src/game-engine/mocks'
 import type { Duel } from 'src/game-engine/types'
 import { makeStore } from 'src/store'
@@ -357,13 +357,13 @@ describe('Zombie effect', () => {
     expect(result.players['player1'].discard).toEqual(['4'])
   })
 
-  test('resets life of summoned zombies to base value', () => {
+  test('keeps summoned zombies at base life when discard state is valid', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
         '1': createCardInstance('zombie', '1'),
-        '2': createCardInstance('zombie', '2', { life: 0 }),
-        '3': createCardInstance('zombie', '3', { life: 0 }),
+        '2': createCardInstance('zombie', '2'),
+        '3': createCardInstance('zombie', '3'),
       },
       players: {
         player1: {
@@ -492,7 +492,9 @@ describe('Haunt reactive effect', () => {
 
     expect(result.players['player1'].board).not.toContain('1')
     expect(result.players['player1'].discard).toContain('1')
-    expect(result.cards['1']!.attributes.life).toBe(0)
+    expect(result.cards['1']!.attributes.life).toBe(
+      CARD_BASES['zombie'].attributes.life,
+    )
   })
 
   test('multiple haunts deal cumulative damage', () => {
@@ -563,7 +565,9 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['1']!.attributes.life).toBe(0)
+    expect(result.cards['1']!.attributes.life).toBe(
+      CARD_BASES['templeGuard'].attributes.life,
+    )
     expect(result.players['player1'].board).not.toContain('1')
     expect(result.players['player1'].discard).toContain('1')
   })
@@ -1242,7 +1246,9 @@ describe('Temple Guard effect', () => {
 
     expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).toContain('2')
-    expect(result.cards['1']!.attributes.life).toBe(0)
+    expect(result.cards['1']!.attributes.life).toBe(
+      CARD_BASES['zombie'].attributes.life,
+    )
     expect(result.players['player1'].board).not.toContain('1')
     expect(result.players['player1'].discard).toContain('1')
   })
@@ -1279,7 +1285,9 @@ describe('Temple Guard effect', () => {
       attackCard({ attackerId: '1', defenderId: '2' }),
     )
 
-    expect(result.cards['2']!.attributes.life).toBe(0)
+    expect(result.cards['2']!.attributes.life).toBe(
+      CARD_BASES['templeGuard'].attributes.life,
+    )
     expect(result.players['player2'].board).not.toContain('2')
     expect(result.players['player2'].discard).toContain('2')
     expect(result.cards['1']!.attributes.life).toBe(1)

@@ -8,7 +8,7 @@ import {
   createCardInstance,
   createDuel,
   type CreateDuelParams,
-} from 'src/game-engine/helpers'
+} from 'src/game-engine/cards'
 import type { Duel, Player, PlayerSetup } from 'src/game-engine/types'
 import { formatString, messages } from 'src/i18n'
 

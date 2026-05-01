@@ -10,7 +10,9 @@
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/*"]
+    },
     "types": ["@testing-library/jest-dom", "vitest/globals"]
   },
   "include": ["src/**/*"],

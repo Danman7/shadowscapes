@@ -1,5 +1,6 @@
 export * from 'src/game-engine/constants'
-export { duelReducer } from 'src/game-engine/duelSlice'
-export { createCardInstance, createDuel } from 'src/game-engine/helpers'
+export * from 'src/game-engine/cards'
+export * from 'src/game-engine/utils'
+export * from 'src/game-engine/duel'
 export * from 'src/game-engine/mocks'
 export type * from 'src/game-engine/types'

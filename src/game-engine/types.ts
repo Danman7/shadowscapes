@@ -41,9 +41,9 @@ export interface CardAttributes {
   life?: number
   strength?: number
   charges?: number
-  haste?: boolean
-  hidden?: boolean
-  stunned?: boolean
+  hasHaste?: boolean
+  isHidden?: boolean
+  isStunned?: boolean
 }
 
 export interface CardBase {
@@ -57,8 +57,10 @@ export interface CardBase {
   attributes: CardAttributes
 }
 
+export type CardInstanceId = string
+
 export interface CardInstance {
-  id: string
+  id: CardInstanceId
   base: CardBase
   attributes: CardAttributes
   didAct?: boolean
@@ -72,10 +74,10 @@ export interface Player {
   name: string
   coins: number
   playerReady: boolean
-  deck: string[]
-  hand: string[]
-  board: string[]
-  discard: string[]
+  deck: CardInstanceId[]
+  hand: CardInstanceId[]
+  board: CardInstanceId[]
+  discard: CardInstanceId[]
 }
 
 export type Phase =
@@ -93,7 +95,7 @@ export interface PlayerSetup {
   deck: CardBaseId[]
 }
 
-export type DuelCards = Record<string, CardInstance>
+export type DuelCards = Record<CardInstanceId, CardInstance>
 export type DuelPlayers = Record<PlayerId, Player>
 export type DuelPlayerOrder = [PlayerId, PlayerId]
 export type DuelLog = string

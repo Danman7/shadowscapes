@@ -27,7 +27,7 @@ export const Card: React.FC<{
   const { base, attributes } = card
   const { name, faction, categories, type, text, rank } = base
   const { description } = text
-  const { life, strength, charges, cost, stunned, haste } = attributes
+  const { life, strength, charges, cost, isStunned, hasHaste } = attributes
   const factionBorderColor = FACTION_BORDER_COLORS[faction]
   const factionBackgroundColor = FACTION_BACKGROUND_COLORS[faction]
 
@@ -40,7 +40,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} ${stunned && 'opacity-70'}`}
+      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} ${isStunned && 'opacity-70'}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
@@ -87,7 +87,7 @@ export const Card: React.FC<{
         <div className="flex items-center gap-2 ">
           {type === 'character' && (
             <div>
-              {stunned ? (
+              {isStunned ? (
                 <div className={`badge ${factionBackgroundColor}`}>
                   <GiStarSwirl />
                 </div>
@@ -105,7 +105,7 @@ export const Card: React.FC<{
             </div>
           )}
 
-          {haste && <GiWingfoot />}
+          {hasHaste && <GiWingfoot />}
         </div>
 
         <div className="coin">{cost}</div>

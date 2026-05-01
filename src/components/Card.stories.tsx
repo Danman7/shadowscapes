@@ -52,6 +52,6 @@ export const Instant: Story = {
 
 export const Stunned: Story = {
   args: {
-    card: createCardInstance('templeGuard', undefined, { stunned: true }),
+    card: createCardInstance('templeGuard', undefined, { isStunned: true }),
   },
 }
