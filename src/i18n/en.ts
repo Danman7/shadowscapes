@@ -51,6 +51,22 @@ export const messages = {
     deck: 'Deck',
     discard: 'Discard',
     ready: 'Ready',
+    characterDescription: 'Remains on the board until defeated.',
+    instantDescription:
+      'Has an immediate effect and then goes to the discard pile.',
+    remainingLife: 'Remaining life',
+    cost: 'Cost',
+    amountOfCoins: '{coins} {coins|coin|coins}',
+    strength: 'Strength',
+    strengthDescription:
+      'The amount of life this character takes away when attacking.',
+    charges: 'Charges',
+    haste: 'Haste',
+    hasteDescription: 'Can act immediately after being played.',
+    stunned: 'Stunned',
+    stunnedDescription: 'Cannot act this turn.',
+    hidden: 'Hidden',
+    hiddenDescription: 'Cannot be targeted. Can attack the player directly.',
   },
 
   cards: {

@@ -3,44 +3,37 @@
 @import 'tailwindcss';
 
 :root {
-  --primary: hsl(10, 80%, 45%);
   --background: hsl(10, 10%, 98%);
-  --fixed-background: hsl(10, 10%, 98%);
   --foreground: hsl(10, 20%, 20%);
-  --surface: hsl(10, 20%, 94%);
+  --surface: hsl(10, 10%, 92%);
+  --primary: hsl(10, 80%, 45%);
   --gold: var(--color-yellow-400);
-  --gold-text: var(--color-yellow-700);
-  --gold-text-fixed: var(--color-yellow-800);
+  --gold-text: var(--color-yellow-800);
   --order: var(--color-red-800);
   --shadow: var(--color-indigo-800);
   --chaos: var(--color-emerald-800);
-  --neutral: var(--color-neutral-600);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: hsl(10, 80%, 60%);
-    --background: hsl(10, 20%, 10%);
-    --foreground: hsl(10, 10%, 85%);
-    --surface: hsl(10, 20%, 20%);
-    --gold-text: var(--color-yellow-200);
+    --background: hsl(10, 20%, 5%);
+    --foreground: hsl(10, 10%, 95%);
+    --surface: hsl(10, 20%, 15%);
+    --primary: hsl(10, 80%, 55%);
   }
 }
 
 @theme inline {
   --color-primary: var(--primary);
   --color-background: var(--background);
-  --color-fixed-background: var(--fixed-background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-elite: var(--elite);
   --color-gold: var(--gold);
   --color-gold-text: var(--gold-text);
-  --color-gold-text-fixed: var(--gold-text-fixed);
   --color-order: var(--order);
   --color-shadow: var(--shadow);
   --color-chaos: var(--chaos);
-  --color-neutral: var(--neutral);
 
   --animate-fade-in-scale: fade-in-scale 0.3s ease-out both;
 
@@ -130,6 +123,34 @@
   }
 }
 
+@utility border-line {
+  @apply border border-foreground/10;
+}
+
+@utility divide-line {
+  @apply divide-y divide-foreground/10;
+}
+
+@utility box {
+  @apply border-line rounded shadow-sm;
+}
+
+@utility card {
+  @apply box bg-background rounded-2xl w-55 h-77 p-2 space-y-2 divide-line;
+}
+
+@utility badge {
+  @apply box bg-surface flex items-center justify-center w-8 h-8;
+}
+
+@utility flavor {
+  @apply text-sm italic;
+}
+
+@utility coin {
+  @apply flex items-center font-bold text-shadow-sm justify-center rounded-full w-8 h-8 bg-gold text-gold-text shadow border-4 border-gold-text/20;
+}
+
 @layer base {
   html,
   body {
@@ -142,28 +163,8 @@
 }
 
 @layer components {
-  .box {
-    @apply bg-surface border border-foreground/10 rounded shadow-sm;
-  }
-
-  .card {
-    @apply aspect-25/35 bg-surface w-56 h-full rounded-2xl shadow-md;
-  }
-
-  .badge {
-    @apply rounded flex items-center justify-center text-fixed-background w-8 h-8 shadow;
-  }
-
   .name-tag {
     @apply bg-background/50 backdrop-blur-sm rounded shadow-sm text-xl flex place-items-center gap-2 z-50;
-  }
-
-  .coin {
-    @apply flex items-center font-bold text-shadow-sm justify-center rounded-full w-8 h-8 bg-gold text-gold-text-fixed shadow border-4 border-gold-text-fixed/20;
-  }
-
-  .flavor-text {
-    @apply text-sm font-light;
   }
 
   .hand-card {

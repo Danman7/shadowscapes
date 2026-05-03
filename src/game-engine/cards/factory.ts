@@ -32,7 +32,7 @@ const shuffle = <T>(array: T[]): T[] => {
 
 const getDeckSummaryLog = (playerName: string, cards: CardBaseId[]): string => {
   const eliteCount = cards.filter(
-    (baseId) => CARD_BASES[baseId].rank === 'elite',
+    (baseId) => CARD_BASES[baseId].isElite === true,
   ).length
   const totalCost = cards.reduce(
     (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,

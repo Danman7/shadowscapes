@@ -1,13 +1,10 @@
-import { BsLightningFill } from 'react-icons/bs'
-import { FaSun } from 'react-icons/fa'
-import { FaHandFist } from 'react-icons/fa6'
-import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
+import { PiArrowsClockwiseFill } from 'react-icons/pi'
 
+import { CardAttributesDetails } from 'src/components/CardAttributesDetails'
+import { CardAttributesFooter } from 'src/components/CardAttributesFooter'
 import type { CardInstance } from 'src/game-engine'
-import {
-  FACTION_BACKGROUND_COLORS,
-  FACTION_BORDER_COLORS,
-} from 'src/game-engine'
+import { FACTION_BORDER_COLORS } from 'src/game-engine'
+import { messages } from 'src/i18n'
 
 export const Card: React.FC<{
   card: CardInstance
@@ -25,11 +22,10 @@ export const Card: React.FC<{
   attackDirection,
 }) => {
   const { base, attributes } = card
-  const { name, faction, categories, type, text, rank } = base
-  const { description } = text
-  const { life, strength, charges, cost, isStunned, hasHaste } = attributes
+  const { name, faction, categories, type, text, isElite } = base
+  const { description, flavor } = text
+  const { life, isStunned, isHidden } = attributes
   const factionBorderColor = FACTION_BORDER_COLORS[faction]
-  const factionBackgroundColor = FACTION_BACKGROUND_COLORS[faction]
 
   const attackClassName =
     isAttacking && attackDirection === 'down'
@@ -40,7 +36,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard && 'aspect-auto w-60'} ${isClickable && 'cursor-pointer'} ${attackClassName} ${isStunned && 'opacity-70'}`}
+      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
@@ -51,79 +47,42 @@ export const Card: React.FC<{
     >
       <div className="flex justify-between items-start">
         <div>
-          <div
-            className={`badge h-12 w-12 rounded-tl-xl font-bold text-xl -ml-2 -mt-2 ${factionBackgroundColor}`}
-          >
-            {type === 'instant' ? <FaSun /> : <>{life}</>}
-          </div>
+          <div className="flavor">{categories.join(' ')}</div>
+
+          <div className="font-bold">{name}</div>
         </div>
 
-        <div>
-          <div className="text-right pr-2">
-            <div className="flavor-text">{categories.join(' ')}</div>
-
-            <div
-              className={`font-bold text-lg ${rank === 'elite' ? 'text-gold-text' : ''}`}
-            >
-              {name}
-            </div>
-          </div>
+        <div
+          className={`badge text-lg font-bold ${isElite ? 'outline-4 outline-gold' : ''}`}
+        >
+          {type === 'character' && life !== undefined ? (
+            <>{life}</>
+          ) : (
+            <PiArrowsClockwiseFill />
+          )}
         </div>
       </div>
 
       {!isOnBoard && (
-        <div
-          className={
-            'flex flex-col grow justify-around p-4 text-center overflow-y-auto $'
-          }
-        >
-          {description.map((paragraph: string, index: number) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+        <div className="grow overflow-y-auto space-y-2">
+          <p>{description}</p>
+
+          <p className="flavor">{flavor}</p>
+
+          <div className="text-sm space-y-2">
+            <p>
+              <strong>{type}: </strong>
+              {type === 'character'
+                ? messages.ui.characterDescription
+                : messages.ui.instantDescription}
+            </p>
+
+            <CardAttributesDetails attributes={attributes} />
+          </div>
         </div>
       )}
 
-      <div className="flex justify-between items-center p-2">
-        <div className="flex items-center gap-2 ">
-          {type === 'character' && (
-            <div>
-              {isStunned ? (
-                <div className={`badge ${factionBackgroundColor}`}>
-                  <GiStarSwirl />
-                </div>
-              ) : (
-                <div className={`badge ${factionBackgroundColor}`}>
-                  <FaHandFist /> {strength}
-                </div>
-              )}
-            </div>
-          )}
-
-          {charges !== undefined && (
-            <div className={`badge ${factionBackgroundColor}`}>
-              <BsLightningFill /> {charges}
-            </div>
-          )}
-
-          {hasHaste && <GiWingfoot />}
-        </div>
-
-        <div className="coin">{cost}</div>
-      </div>
-
-      {/* <div
-        className={`flex justify-between items-end ${isOnBoard ? 'text-sm' : ''}`}
-      >
-       
-
-        
-
-        
-
-       
-
-        
-      </div> */}
+      <CardAttributesFooter attributes={attributes} type={type} />
     </div>
   )
 }

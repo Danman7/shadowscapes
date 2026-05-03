@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 test('renders character card with all details', () => {
-  const { getByText } = render(<Card card={mockCharacterCard} />)
+  const { getByText, getAllByText } = render(<Card card={mockCharacterCard} />)
   const {
     name,
     categories,
@@ -29,9 +29,9 @@ test('renders character card with all details', () => {
   expect(getByText(name)).toBeInTheDocument()
   expect(getByText(categories.join(' '))).toBeInTheDocument()
   expect(getByText(mockCharacterCard.attributes.cost)).toBeInTheDocument()
-  expect(
-    getByText(mockCharacterCard.attributes.life as number),
-  ).toBeInTheDocument()
+  expect(getAllByText(mockCharacterCard.attributes.life as number).length).toBe(
+    2,
+  )
   expect(getByText(description[0]!)).toBeInTheDocument()
 })
 

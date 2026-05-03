@@ -1,6 +1,5 @@
 export type Faction = 'chaos' | 'order' | 'shadow' | 'neutral'
 export type CardType = 'character' | 'instant'
-export type CardRank = 'common' | 'elite'
 export type CardCategory =
   | 'Undead'
   | 'Hammerite'
@@ -32,7 +31,7 @@ export type CardBaseId =
   | 'flashBomb'
 
 export interface CardText {
-  description: string[]
+  description: string
   flavor: string
 }
 
@@ -52,7 +51,7 @@ export interface CardBase {
   type: CardType
   faction: Faction
   categories: CardCategory[]
-  rank: CardRank
+  isElite?: boolean
   text: CardText
   attributes: CardAttributes
 }

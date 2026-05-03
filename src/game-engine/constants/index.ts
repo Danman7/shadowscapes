@@ -5,7 +5,6 @@ export {
   INITIAL_DUEL_STATE,
   INITIAL_PLAYER_COINS,
   PLACEHOLDER_PLAYER,
-  FACTION_BACKGROUND_COLORS,
 } from 'src/game-engine/constants/duelParams'
 export * as balancing from 'src/game-engine/constants/balancing'
 export {

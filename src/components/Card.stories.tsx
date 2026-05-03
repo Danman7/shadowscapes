@@ -55,3 +55,15 @@ export const Stunned: Story = {
     card: createCardInstance('templeGuard', undefined, { isStunned: true }),
   },
 }
+
+export const HasHaste: Story = {
+  args: {
+    card: createCardInstance('templeGuard', undefined, { hasHaste: true }),
+  },
+}
+
+export const IsHidden: Story = {
+  args: {
+    card: createCardInstance('templeGuard', undefined, { isHidden: true }),
+  },
+}

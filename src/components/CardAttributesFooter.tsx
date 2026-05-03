@@ -1,0 +1,89 @@
+import { BsLightningFill } from 'react-icons/bs'
+import { FaRegEyeSlash } from 'react-icons/fa'
+import { FaHandFist } from 'react-icons/fa6'
+import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
+
+import { CARD_ATTRIBUTE_KEYS } from 'src/components/cardAttributeKeys'
+import type { CardAttributes, CardType } from 'src/game-engine'
+
+type FooterAttributeKey = Exclude<keyof CardAttributes, 'cost' | 'life'>
+
+interface FooterAttributeConfig {
+  shouldRender: (attributes: CardAttributes, type: CardType) => boolean
+  renderBadge: (attributes: CardAttributes) => React.ReactNode
+}
+
+const CARD_FOOTER_ATTRIBUTE_MAP: Record<
+  FooterAttributeKey,
+  FooterAttributeConfig
+> = {
+  strength: {
+    shouldRender: ({ strength }, type) =>
+      type === 'character' && strength !== undefined,
+    renderBadge: ({ isStunned, strength }) =>
+      isStunned ? (
+        <div className="badge">
+          <GiStarSwirl />
+        </div>
+      ) : (
+        <div className="badge">
+          <FaHandFist /> {strength}
+        </div>
+      ),
+  },
+  charges: {
+    shouldRender: ({ charges }) => charges !== undefined,
+    renderBadge: ({ charges }) => (
+      <div className="badge">
+        <BsLightningFill /> {charges}
+      </div>
+    ),
+  },
+  hasHaste: {
+    shouldRender: ({ hasHaste }) => hasHaste === true,
+    renderBadge: () => (
+      <div className="badge">
+        <GiWingfoot />
+      </div>
+    ),
+  },
+  isStunned: {
+    shouldRender: () => false,
+    renderBadge: () => null,
+  },
+  isHidden: {
+    shouldRender: ({ isHidden }) => isHidden === true,
+    renderBadge: () => (
+      <div className="badge">
+        <FaRegEyeSlash />
+      </div>
+    ),
+  },
+}
+
+const CARD_FOOTER_ATTRIBUTE_KEYS = CARD_ATTRIBUTE_KEYS.filter(
+  (attributeKey): attributeKey is FooterAttributeKey =>
+    attributeKey !== 'cost' && attributeKey !== 'life',
+)
+
+export const CardAttributesFooter: React.FC<{
+  attributes: CardAttributes
+  type: CardType
+}> = ({ attributes, type }) => {
+  return (
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 ">
+        {CARD_FOOTER_ATTRIBUTE_KEYS.map((attributeKey) => {
+          const { shouldRender, renderBadge } =
+            CARD_FOOTER_ATTRIBUTE_MAP[attributeKey]
+
+          if (!shouldRender(attributes, type)) return null
+
+          return <div key={attributeKey}>{renderBadge(attributes)}</div>
+        })}
+      </div>
+
+      <div className="coin">{attributes.cost}</div>
+    </div>
+  )
+}

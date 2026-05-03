@@ -53,14 +53,14 @@ test('START_DUEL creates new duel with player names and decks', () => {
   })
 
   const player1EliteCount = PLAYER_1_DECK.filter(
-    (baseId) => CARD_BASES[baseId].rank === 'elite',
+    (baseId) => CARD_BASES[baseId].isElite === true,
   ).length
   const player1TotalCost = PLAYER_1_DECK.reduce(
     (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,
     0,
   )
   const player2EliteCount = PLAYER_2_DECK.filter(
-    (baseId) => CARD_BASES[baseId].rank === 'elite',
+    (baseId) => CARD_BASES[baseId].isElite === true,
   ).length
   const player2TotalCost = PLAYER_2_DECK.reduce(
     (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,
