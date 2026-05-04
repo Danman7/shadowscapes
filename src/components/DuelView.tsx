@@ -375,7 +375,7 @@ export const DuelView: React.FC = () => {
         <div className="flex items-start gap-2 w-1/3">
           {!areLogsVisible && logs.length > 0 && (
             <Button
-              className="px-2 py-1 text-xs animate-slide-left"
+              className="animate-slide-left"
               onClick={() => setAreLogsVisible(true)}
               data-testid="logs-toggle-button"
               isSecondary

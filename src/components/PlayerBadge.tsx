@@ -9,17 +9,17 @@ export const PlayerBadge: React.FC<{
   isActive?: boolean
 }> = ({ player, isActive }) => (
   <div
-    className={`box px-4 py-1 shadow-xl animate-fade-in-scale absolute flex-list left-1/2 transform -translate-x-1/2 z-50 ${isActive ? 'border-primary bottom-2' : 'top-2'}`}
+    className={`box px-4 py-1 shadow-xl animate-fade-in-scale absolute flex-list left-1/2 transform -translate-x-1/2 z-50 ${isActive ? 'border-primary bottom-2' : 'top-2 border-foreground/20'}`}
     data-testid={isActive ? 'active-player-badge' : 'player-badge'}
   >
     {isActive && (
-      <span className="relative flex size-3" data-testid="active-indicator">
+      <span className="relative flex size-4" data-testid="active-indicator">
         <span
           className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
           data-testid="active-indicator-ping"
         ></span>
         <span
-          className="relative inline-flex size-3 rounded-full bg-primary"
+          className="relative inline-flex size-4 rounded-full bg-primary"
           data-testid="active-indicator-dot"
         ></span>
       </span>

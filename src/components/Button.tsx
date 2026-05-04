@@ -6,14 +6,17 @@ export const Button: React.FC<{
   onClick?: () => void
   isSecondary?: boolean
 }> = ({ children, className, onClick, isSecondary = false }) => {
+  const buttonBase =
+    'inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-md active:shadow-lg uppercase'
+
   const buttonStyle = isSecondary
-    ? 'bg-surface border border-foreground text-foreground hover:bg-surface/90 active:bg-surface/80'
-    : 'bg-primary text-background hover:bg-primary/90 active:bg-primary/80'
+    ? 'bg-surface border border-surface/20 hover:bg-surface/5 active:bg-surface/10 focus-visible:ring-surface/40'
+    : 'bg-primary text-background hover:bg-primary/70 active:bg-primary/80 focus-visible:ring-primary/50'
 
   return (
     <button
       onClick={onClick}
-      className={`box px-4 py-2 uppercase cursor-pointer shadow-sm hover:scale-102 hover:shadow-md active:shadow-none active:scale-99 transition-all disabled:cursor-not-allowed disabled:bg-surface disabled:shadow-surface disabled:scale-100 disabled:shadow-xs disabled:text-foreground/50 ${buttonStyle} ${className}`}
+      className={`${buttonBase} ${buttonStyle} ${className}`}
       disabled={!onClick}
     >
       {children}

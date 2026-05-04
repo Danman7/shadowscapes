@@ -71,7 +71,7 @@ export const CardAttributesFooter: React.FC<{
   type: CardType
 }> = ({ attributes, type }) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center pt-1">
       <div className="flex-list">
         {CARD_FOOTER_ATTRIBUTE_KEYS.map((attributeKey) => {
           const { shouldRender, renderBadge } =

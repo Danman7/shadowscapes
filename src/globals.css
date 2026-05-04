@@ -19,7 +19,7 @@
     --background: hsl(10, 20%, 5%);
     --foreground: hsl(10, 10%, 95%);
     --surface: hsl(10, 20%, 15%);
-    --primary: hsl(10, 80%, 55%);
+    --primary: hsl(10, 80%, 60%);
   }
 }
 
@@ -140,7 +140,7 @@
 }
 
 @utility card {
-  @apply box rounded-2xl w-55 h-77 p-2 space-y-2 divide-line;
+  @apply box rounded-2xl w-55 h-77 p-2 divide-line;
 }
 
 @utility badge {

@@ -36,7 +36,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''}`}
+      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer hover:shadow-md'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }
@@ -45,7 +45,7 @@ export const Card: React.FC<{
       onClick={onClick}
       data-testid="card"
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start pb-1">
         <div>
           <div className="flavor" data-testid="card-categories">
             {categories.join(' ')}
@@ -68,7 +68,7 @@ export const Card: React.FC<{
       </div>
 
       {!isOnBoard && (
-        <div className="grow overflow-y-auto space-y-2">
+        <div className="grow overflow-y-auto space-y-2 py-1">
           <p data-testid="card-description">{description}</p>
 
           <p className="flavor">{flavor}</p>
