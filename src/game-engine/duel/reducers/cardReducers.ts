@@ -27,7 +27,7 @@ export const playCard: CaseReducer<
     }),
   )
 
-  if (card.base.type === 'instant') {
+  if (card.base.type === 'Instant') {
     state.pendingInstant = getPendingInstant(card, player.hand, state)
     player.discard.push(cardInstanceId)
     return
@@ -154,7 +154,7 @@ export const cleanupDefeatedCharacters: CaseReducer<Duel> = (state) => {
 
       return (
         card !== undefined &&
-        card.base.type === 'character' &&
+        card.base.type === 'Character' &&
         card.attributes.life !== undefined &&
         card.attributes.life <= 0
       )

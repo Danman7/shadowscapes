@@ -20,7 +20,7 @@ type Story = StoryObj<typeof Card>
 
 export const AllCardsGallery: Story = {
   render: () => (
-    <div className="flex gap-4 flex-wrap">
+    <div className="flex gap-2 flex-wrap">
       {Object.entries(CARD_BASES).map(([id, base]) => (
         <div key={id} className="flex flex-col gap-2">
           <Card card={createCardInstance(id as keyof typeof CARD_BASES)} />

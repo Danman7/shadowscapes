@@ -1,5 +1,5 @@
 export type Faction = 'chaos' | 'order' | 'shadow' | 'neutral'
-export type CardType = 'character' | 'instant'
+export type CardType = 'Character' | 'Instant'
 export type CardCategory =
   | 'Undead'
   | 'Hammerite'

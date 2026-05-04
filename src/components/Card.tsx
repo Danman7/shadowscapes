@@ -47,15 +47,19 @@ export const Card: React.FC<{
     >
       <div className="flex justify-between items-start">
         <div>
-          <div className="flavor">{categories.join(' ')}</div>
+          <div className="flavor" data-testid="card-categories">
+            {categories.join(' ')}
+          </div>
 
-          <div className="font-bold">{name}</div>
+          <div className="font-bold" data-testid="card-name">
+            {name}
+          </div>
         </div>
 
         <div
-          className={`badge text-lg font-bold ${isElite ? 'outline-4 outline-gold' : ''}`}
+          className={`badge text-lg font-bold ${isElite ? 'outline-2 outline-gold' : ''}`}
         >
-          {type === 'character' && life !== undefined ? (
+          {type === 'Character' && life !== undefined ? (
             <>{life}</>
           ) : (
             <PiArrowsClockwiseFill />
@@ -65,14 +69,14 @@ export const Card: React.FC<{
 
       {!isOnBoard && (
         <div className="grow overflow-y-auto space-y-2">
-          <p>{description}</p>
+          <p data-testid="card-description">{description}</p>
 
           <p className="flavor">{flavor}</p>
 
           <div className="text-sm space-y-2">
             <p>
               <strong>{type}: </strong>
-              {type === 'character'
+              {type === 'Character'
                 ? messages.ui.characterDescription
                 : messages.ui.instantDescription}
             </p>

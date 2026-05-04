@@ -72,102 +72,93 @@ export const messages = {
   cards: {
     zombie: {
       name: 'Zombie',
-      description: ['On play, summon all Zombies from your discard pile.'],
+      description: 'On play, summon all Zombies from your discard pile.',
       flavor:
         "The zombie's antipathy for all living creatures is both it's strength and weakness. -- Journals of Morgan, declared anathema by the Smith-in-Exile.",
     },
     burrick: {
       name: 'Burrick',
-      description: [
-        "If it has charges, attacks hit the target's adjacent cards and consume a charge.",
-      ],
+      description:
+        'During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.',
       flavor:
         'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
     },
     haunt: {
       name: 'Haunt',
-      description: [
-        'While on board and it has charges, it attacks any character played by the opponent.',
-      ],
+      description:
+        'While on board, if this card has charges, it attacks any character played by the opponent and consumes a charge.',
       flavor:
         'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
     },
     mysticsSoul: {
       name: "Mystic's Soul",
-      description: [
+      description:
         'All allied characters on board gain {charges} {charges|charge|charges}.',
-      ],
       flavor:
         "I've decided to take the plunge. If my records are correct, there should be a stash of fire crystals in the lowest oubliette. I'll need them, if I'm going to get the gem called the Mystic's Soul. -- Note found next to Adolpho's corpse",
     },
     bookOfAsh: {
       name: 'Book of Ash',
-      description: [
+      description:
         'Create and summon a copy of a common undead from your discard pile.',
-      ],
       flavor:
         "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
     },
     novice: {
       name: 'Novice',
-      description: [
+      description:
         'On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.',
-      ],
       flavor:
         'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
     },
     templeGuard: {
       name: 'Temple Guard',
-      description: [
-        'Gain {buff} life on play if you control fewer cards than your foe.',
-        'Retaliates when attacked.',
-      ],
+      description:
+        'Gain {buff} life on play if you control fewer cards than your foe. Retaliates when attacked.',
       flavor:
         'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     },
     sachelman: {
       name: 'Sachelman',
-      description: [
+      description:
         'On play, give {buff} life to all Hammerites you control with less life than this card.',
-      ],
       flavor:
         'May the Hammer fall on the unrighteous. Officially, Brother Sachelman',
     },
     yoraSkull: {
       name: "Saint Yora's Skull",
-      description: ['Give {buff} life to all Hammerites you control.'],
+      description: 'Give {buff} life to all Hammerites you control.',
       flavor: 'Yora was a builder of vision and devout keeper of the faith.',
     },
     markander: {
       name: 'Markander',
-      description: [
-        'Loose a charge each time a Hammerite is played.',
-        'At 0 charges, summon this card to the board.',
-      ],
+      description:
+        'Loose a charge each time a Hammerite is played. At 0 charges, summon this card to the board.',
+
       flavor:
         "Our master is old, and the Master Forgers do jostle each other for precedence. But I spy not on my betters. 'Tis in The Builder's Hands.",
     },
     downwinder: {
       name: 'Downwinder',
-      description: ['Steal a coin when attacking the enemy player.'],
+      description: 'Steal a coin when attacking the enemy player.',
       flavor:
         "We chose our profession in defiance of the greed of the monarchy. We will not live for the sake of taxes to fatten the noble's pockets.",
     },
     cook: {
       name: 'Cook',
-      description: ['On play, draw a card.'],
+      description: 'On play, draw a card.',
       flavor:
         "I suspect that the lamb was somewhat older than this spring's, and  I am in no way fooled by his practice of warming the salad to disguise wilting. If Cook is incapable of finding adequate ingredients, he can be replaced. -- Lord Bafford",
     },
     speedPotion: {
       name: 'Speed Potion',
-      description: ['Chose a card from your hand. It gains haste.'],
+      description: 'Chose a card from your hand. It gains haste.',
       flavor:
         'I was at the pub, saw a couple of bluecoats ambush the guy there. He managed to get away, though. Never seen anyone move that fast before. He just vanished into the shadows.',
     },
     flashBomb: {
       name: 'Flash Bomb',
-      description: ['Stun target character on board.'],
+      description: 'Stun target character on board.',
       flavor:
         'Put Spring Wiring and Acidic Mixture through the Fusing Machine. A Flux Spheroid will be manufactured. Put the Flux Spheroid and a Steel Plate through the Fusing Machine. A Flash Bomb will be manufactured. -- Blueprint at Soulforge',
     },

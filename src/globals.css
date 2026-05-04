@@ -123,6 +123,10 @@
   }
 }
 
+@utility flex-list {
+  @apply flex items-center gap-2;
+}
+
 @utility border-line {
   @apply border border-foreground/10;
 }
@@ -132,15 +136,15 @@
 }
 
 @utility box {
-  @apply border-line rounded shadow-sm;
+  @apply border-line rounded shadow-sm bg-background;
 }
 
 @utility card {
-  @apply box bg-background rounded-2xl w-55 h-77 p-2 space-y-2 divide-line;
+  @apply box rounded-2xl w-55 h-77 p-2 space-y-2 divide-line;
 }
 
 @utility badge {
-  @apply box bg-surface flex items-center justify-center w-8 h-8;
+  @apply box bg-surface flex items-center justify-center size-8;
 }
 
 @utility flavor {
@@ -148,7 +152,7 @@
 }
 
 @utility coin {
-  @apply flex items-center font-bold text-shadow-sm justify-center rounded-full w-8 h-8 bg-gold text-gold-text shadow border-4 border-gold-text/20;
+  @apply flex items-center font-bold text-shadow-sm justify-center rounded-full size-7 text-sm bg-gold text-gold-text shadow border-4 border-gold-text/20;
 }
 
 @layer base {
@@ -163,10 +167,6 @@
 }
 
 @layer components {
-  .name-tag {
-    @apply bg-background/50 backdrop-blur-sm rounded shadow-sm text-xl flex place-items-center gap-2 z-50;
-  }
-
   .hand-card {
     @apply absolute transition-transform duration-200 ease-out;
     transform: translateX(var(--card-x, 0px)) translateY(var(--card-y, 0px))

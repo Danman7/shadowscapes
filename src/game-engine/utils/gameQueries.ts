@@ -40,7 +40,7 @@ export const getPendingInstant = (
   if (
     card.base.id === 'speedPotion' &&
     hasCardInStack(hand, state.cards, (stackCard) => {
-      return stackCard.base.type === 'character'
+      return stackCard.base.type === 'Character'
     })
   )
     return 'SPEED_POTION'

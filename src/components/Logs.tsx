@@ -19,7 +19,7 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
 
   return (
     <div className="box p-2 max-w-80 relative animate-slide-left">
-      <div className="font-bold text-center py-1 border-line">
+      <div className="font-bold py-1">
         {messages.ui.logs}
         <IoMdClose
           onClick={onClose}

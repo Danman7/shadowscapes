@@ -254,7 +254,7 @@ export const DuelView: React.FC = () => {
     if (phase === 'turn-end' && pendingInstant === 'SPEED_POTION') {
       const cardInstance = activeHand.find((c) => c.id === cardId)
       if (!cardInstance) return undefined
-      if (cardInstance.base.type !== 'character') return undefined
+      if (cardInstance.base.type !== 'Character') return undefined
 
       return () => {
         dispatch(applySpeedPotion({ targetCardInstanceId: cardId }))

@@ -27,30 +27,28 @@ test('renders player is ready', () => {
 })
 
 test('renders without active indicator when isActive is false', () => {
-  const { container } = render(<PlayerBadge player={player} />)
+  const { getByTestId, queryByTestId } = render(<PlayerBadge player={player} />)
 
-  const badge = container.querySelector('.name-tag')
+  const badge = getByTestId('player-badge')
   expect(badge).toBeInTheDocument()
   expect(badge).toHaveClass('top-2')
   expect(badge).not.toHaveClass('border-primary')
   expect(badge).not.toHaveClass('bottom-2')
 
-  const pingIndicator = container.querySelector('.animate-ping')
+  const pingIndicator = queryByTestId('active-indicator-ping')
   expect(pingIndicator).not.toBeInTheDocument()
 })
 
 test('renders with active indicator when isActive is true', () => {
-  const { container } = render(<PlayerBadge player={player} isActive />)
+  const { getByTestId } = render(<PlayerBadge player={player} isActive />)
 
-  const badge = container.querySelector('.name-tag')
+  const badge = getByTestId('active-player-badge')
   expect(badge).toBeInTheDocument()
   expect(badge).toHaveClass('border-primary')
   expect(badge).toHaveClass('bottom-2')
   expect(badge).not.toHaveClass('top-2')
 
-  const pingIndicators = container.querySelectorAll('.animate-ping')
-  expect(pingIndicators).toHaveLength(1)
-
-  const primaryBgElements = container.querySelectorAll('.bg-primary')
-  expect(primaryBgElements.length).toBeGreaterThanOrEqual(2)
+  expect(getByTestId('active-indicator')).toBeInTheDocument()
+  expect(getByTestId('active-indicator-ping')).toBeInTheDocument()
+  expect(getByTestId('active-indicator-dot')).toBeInTheDocument()
 })

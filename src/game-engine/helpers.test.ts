@@ -95,7 +95,7 @@ describe('stack queries', () => {
       ['zombie1', 'haunt1', 'missing'],
       cards,
       (card) => {
-        return card.base.type === 'character'
+        return card.base.type === 'Character'
       },
     )
 
@@ -116,7 +116,7 @@ describe('stack queries', () => {
 
   test('hasCardInStack returns false when no cards match', () => {
     const result = hasCardInStack(['speedPotion1'], cards, (card) => {
-      return card.base.type === 'character'
+      return card.base.type === 'Character'
     })
 
     expect(result).toBe(false)

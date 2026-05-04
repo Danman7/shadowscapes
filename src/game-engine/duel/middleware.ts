@@ -15,7 +15,7 @@ const hasDefeatedCharactersOnBoard = (duel: Duel): boolean => {
   return Object.values(duel.players).some((player) => {
     return hasCardInStack(player.board, duel.cards, (card) => {
       return (
-        card.base.type === 'character' &&
+        card.base.type === 'Character' &&
         card.attributes.life !== undefined &&
         card.attributes.life <= 0
       )

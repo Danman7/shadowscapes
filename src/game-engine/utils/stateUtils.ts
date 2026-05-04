@@ -34,7 +34,7 @@ export const drawCards = (player: Player, amount = 1): void => {
 }
 
 export const resetCharacterAttributes = (card: CardInstance): CardInstance => {
-  if (card.base.type !== 'character') return card
+  if (card.base.type !== 'Character') return card
 
   return {
     ...card,

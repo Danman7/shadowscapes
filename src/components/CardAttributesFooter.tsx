@@ -19,7 +19,7 @@ const CARD_FOOTER_ATTRIBUTE_MAP: Record<
 > = {
   strength: {
     shouldRender: ({ strength }, type) =>
-      type === 'character' && strength !== undefined,
+      type === 'Character' && strength !== undefined,
     renderBadge: ({ isStunned, strength }) =>
       isStunned ? (
         <div className="badge">
@@ -72,7 +72,7 @@ export const CardAttributesFooter: React.FC<{
 }> = ({ attributes, type }) => {
   return (
     <div className="flex justify-between items-center">
-      <div className="flex items-center gap-2 ">
+      <div className="flex-list">
         {CARD_FOOTER_ATTRIBUTE_KEYS.map((attributeKey) => {
           const { shouldRender, renderBadge } =
             CARD_FOOTER_ATTRIBUTE_MAP[attributeKey]
