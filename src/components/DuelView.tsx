@@ -38,46 +38,9 @@ import {
   startInitialDraw,
   switchTurn,
 } from 'src/game-engine/duel'
-import { formatString, messages } from 'src/i18n'
+import { messages } from 'src/i18n'
 
 const ATTACK_ANIMATION_MS = 350
-
-const PhaseInfo: React.FC<{ phase: Phase; activePlayerName: string }> = ({
-  phase,
-  activePlayerName,
-}) => {
-  let phaseInfoText: ReactNode = null
-
-  switch (phase) {
-    case 'initial-draw':
-      phaseInfoText = messages.ui.drawCards
-      break
-
-    case 'redraw':
-      phaseInfoText = messages.ui.redrawPhase
-      break
-
-    case 'player-turn':
-    case 'turn-end':
-      phaseInfoText = formatString(messages.ui.playerTurn, {
-        playerName: activePlayerName,
-      })
-      break
-
-    default:
-      phaseInfoText = ''
-      break
-  }
-
-  return (
-    <div
-      data-testid="phase-info"
-      className="text-lg font-semibold grow text-center w-1/3"
-    >
-      {phaseInfoText}
-    </div>
-  )
-}
 
 const PhaseButton: React.FC<{
   phase: Phase
@@ -332,9 +295,9 @@ export const DuelView: React.FC = () => {
 
   return (
     <div
-      className="grid h-screen gap-4
-        grid-cols-[120px_minmax(0,2fr)_120px]
-        grid-rows-[140px_1fr_50px_1fr_140px] overflow-hidden"
+      className="grid h-screen gap-2
+        grid-cols-[100px_minmax(0,2fr)_100px]
+        grid-rows-[140px_1fr_0px_1fr_140px] overflow-hidden"
       data-testid="duel-view"
     >
       {/* Row 1: inactive discard / hand / deck */}
@@ -371,7 +334,7 @@ export const DuelView: React.FC = () => {
       </section>
 
       {/* Row 3: center bar */}
-      <section className="col-[1/4] w-full px-4 row-3 flex justify-between place-items-center">
+      <section className="col-[1/4] w-full px-2 row-3 flex justify-between place-items-center">
         <div className="flex items-start gap-2 w-1/3">
           {!areLogsVisible && logs.length > 0 && (
             <Button
@@ -388,8 +351,6 @@ export const DuelView: React.FC = () => {
             <Logs onClose={() => setAreLogsVisible(false)} logs={logs} />
           ) : null}
         </div>
-
-        <PhaseInfo phase={phase} activePlayerName={activePlayer.name} />
 
         <PhaseButton
           phase={phase}

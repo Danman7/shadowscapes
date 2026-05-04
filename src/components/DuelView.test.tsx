@@ -225,15 +225,7 @@ describe('Initial sequence', () => {
       },
     })
 
-    const { playerOrder, players } = MOCK_DUEL
-
-    expect(
-      getByText(
-        formatString(messages.ui.playerTurn, {
-          playerName: players[playerOrder[0]].name,
-        }),
-      ),
-    ).toBeInTheDocument()
+    expect(getByText(messages.ui.pass)).toBeInTheDocument()
     expect(queryByText('Ready')).not.toBeInTheDocument()
   })
 
@@ -277,13 +269,7 @@ describe('Initial sequence', () => {
 
     fireEvent.click(getAllByTestId('card')[0] as HTMLElement)
 
-    expect(
-      getByText(
-        formatString(messages.ui.playerTurn, {
-          playerName: activePlayer.name,
-        }),
-      ),
-    ).toBeInTheDocument()
+    expect(getByText(messages.ui.pass)).toBeInTheDocument()
     expect(getAllByTestId('card')).toHaveLength(2)
   })
 })
@@ -459,19 +445,15 @@ describe('Phase action buttons', () => {
       },
     }
 
-    const { getByText } = renderGameContext(<DuelView />, {
+    const { getByText, getByTestId } = renderGameContext(<DuelView />, {
       preloadedState: stateWithEmptyBoard,
     })
 
     fireEvent.click(getByText(messages.ui.pass))
 
-    expect(
-      getByText(
-        formatString(messages.ui.playerTurn, {
-          playerName: preloadedState.players[inactivePlayerId].name,
-        }),
-      ),
-    ).toBeInTheDocument()
+    expect(getByTestId('active-player-badge')).toHaveTextContent(
+      preloadedState.players[inactivePlayerId].name,
+    )
   })
 
   test('Skip redraw button transitions to player-turn after active player skips', () => {
@@ -497,13 +479,7 @@ describe('Phase action buttons', () => {
 
     fireEvent.click(getByText(messages.ui.skipRedraw))
 
-    expect(
-      getByText(
-        formatString(messages.ui.playerTurn, {
-          playerName: activePlayer.name,
-        }),
-      ),
-    ).toBeInTheDocument()
+    expect(getByText(messages.ui.pass)).toBeInTheDocument()
   })
 
   test('skipping redraw starts first turn with one additional draw', () => {
@@ -546,13 +522,7 @@ describe('Phase action buttons', () => {
 
     fireEvent.click(getByText(messages.ui.skipRedraw))
 
-    expect(
-      getByText(
-        formatString(messages.ui.playerTurn, {
-          playerName: activePlayer.name,
-        }),
-      ),
-    ).toBeInTheDocument()
+    expect(getByText(messages.ui.pass)).toBeInTheDocument()
     expect(getAllByTestId('card')).toHaveLength(2)
   })
 })
@@ -895,11 +865,11 @@ describe('PhaseInfo component', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
 
-    const { getByTestId } = renderGameContext(<DuelView />, {
+    const { queryByTestId } = renderGameContext(<DuelView />, {
       preloadedState: { ...preloadedState, phase: 'intro' },
     })
 
-    expect(getByTestId('phase-info').textContent).toBe('')
+    expect(queryByTestId('phase-button')).not.toBeInTheDocument()
   })
 
   test('renders no phase button for intro phase (default case)', () => {

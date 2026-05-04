@@ -41,9 +41,6 @@ export const messages = {
 
   ui: {
     logs: 'Logs',
-    drawCards: 'Draw cards',
-    redrawPhase: 'Redraw phase',
-    playerTurn: "{playerName}'s Turn",
     skipRedraw: 'Skip redraw',
     waitingForOpponent: 'Waiting for opponent...',
     pass: 'Pass',
