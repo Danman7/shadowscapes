@@ -1,5 +1,3 @@
-import type { CSSProperties } from 'react'
-
 import { Card, CardBack } from 'src/components'
 import type { CardInstance } from 'src/game-engine'
 
@@ -9,37 +7,20 @@ export const Hand: React.FC<{
   isOnTop?: boolean
   onCardClick?: (cardId: string) => (() => void) | undefined
 }> = ({ cards, isActive, isOnTop, onCardClick }) => {
-  const cardCount = cards.length
-  const totalSpread = cardCount > 1 ? Math.min(50, (cardCount - 1) * 12) : 0
-  const angleStep = cardCount > 1 ? totalSpread / (cardCount - 1) : 0
-  const overlap = 36
-  const midpoint = (cardCount - 1) / 2
-  const rotationDirection = isActive ? 1 : -1
-
   return (
     <div
       className={`relative flex w-full justify-center overflow-visible h-24 ${isOnTop ? 'items-end' : 'items-start'}`}
       data-testid="hand"
     >
-      {cards.map((card, index) => {
-        const relativeIndex = index - midpoint
-        const rotation =
-          rotationDirection * (angleStep * index - totalSpread / 2)
-        const xOffset = relativeIndex * overlap
-
-        const style: CSSProperties & Record<string, string | number> = {
-          '--card-x': `${xOffset}px`,
-          '--card-rotate': `${rotation}deg`,
-        }
-
+      {cards.map((card) => {
         const clickHandler = onCardClick?.(card.id)
         const isClickable = clickHandler !== undefined
 
         return (
           <div
             key={card.id}
-            className={`hand-card ${isActive ? 'is-active' : 'is-inactive'} ${isClickable ? 'is-clickable' : ''}`}
-            style={style}
+            className={`duration-200 ease-out -mx-10 ${isActive ? 'hover:-translate-y-55 hover:z-40' : 'pointer-events-none'} ${isClickable ? 'cursor-pointer drop-shadow-[0_0_7px_var(--color-primary)] is-clickable' : ''}`}
+            data-testid="hand-card"
           >
             {isActive ? (
               <Card card={card} onClick={clickHandler} />

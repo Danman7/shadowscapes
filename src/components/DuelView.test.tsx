@@ -397,11 +397,11 @@ describe('Player turns', () => {
       },
     }
 
-    const { getAllByTestId, container } = renderGameContext(<DuelView />, {
+    const { getAllByTestId } = renderGameContext(<DuelView />, {
       preloadedState: preloadedStateWithBudget,
     })
 
-    const handCards = container.querySelectorAll('.hand-card')
+    const handCards = getAllByTestId('hand-card')
     expect(handCards[0]).toHaveClass('is-clickable')
     expect(handCards[1]).not.toHaveClass('is-clickable')
 

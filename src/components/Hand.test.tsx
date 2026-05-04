@@ -73,31 +73,31 @@ test('applies is-clickable class when onCardClick returns a function', () => {
     return undefined
   })
 
-  const { container } = render(
+  const { getAllByTestId } = render(
     <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
   )
 
-  const handCards = container.querySelectorAll('.hand-card')
+  const handCards = getAllByTestId('hand-card')
   expect(handCards[0]).toHaveClass('is-clickable')
   expect(handCards[1]).not.toHaveClass('is-clickable')
 })
 
 test('does not apply is-clickable class when onCardClick returns undefined', () => {
   const handleCardClick = vi.fn(() => undefined)
-  const { container } = render(
+  const { getAllByTestId } = render(
     <Hand cards={mockCards} isActive={true} onCardClick={handleCardClick} />,
   )
 
-  const handCards = container.querySelectorAll('.hand-card')
+  const handCards = getAllByTestId('hand-card')
   handCards.forEach((card) => {
     expect(card).not.toHaveClass('is-clickable')
   })
 })
 
 test('does not apply is-clickable class when no onCardClick provided', () => {
-  const { container } = render(<Hand cards={mockCards} isActive={true} />)
+  const { getAllByTestId } = render(<Hand cards={mockCards} isActive={true} />)
 
-  const handCards = container.querySelectorAll('.hand-card')
+  const handCards = getAllByTestId('hand-card')
   handCards.forEach((card) => {
     expect(card).not.toHaveClass('is-clickable')
   })
