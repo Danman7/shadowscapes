@@ -1,8 +1,8 @@
 import {
   INITIAL_DUEL_STATE,
   PLACEHOLDER_PLAYER,
-  PLAYER_1_DECK,
-  PLAYER_2_DECK,
+  PLAYER_1_TEST_DECK,
+  PLAYER_2_TEST_DECK,
 } from 'src/game-engine/constants'
 import {
   createCardInstance,
@@ -11,17 +11,21 @@ import {
 } from 'src/game-engine/cards'
 import type { Duel, Player, PlayerSetup } from 'src/game-engine/types'
 import { formatString, messages } from 'src/i18n'
+import {
+  PLAYER_1_GAME_DECK,
+  PLAYER_2_GAME_DECK,
+} from 'src/game-engine/constants/testDecks'
 
 export const MOCK_PLAYER_1_SETUP: PlayerSetup = {
   id: 'player1',
   name: 'Constantine',
-  deck: PLAYER_1_DECK,
+  deck: PLAYER_1_TEST_DECK,
 }
 
 export const MOCK_PLAYER_2_SETUP: PlayerSetup = {
   id: 'player2',
   name: 'Garrett',
-  deck: PLAYER_2_DECK,
+  deck: PLAYER_2_TEST_DECK,
 }
 
 export const MOCK_DUEL_SETUP: CreateDuelParams = [
@@ -30,6 +34,11 @@ export const MOCK_DUEL_SETUP: CreateDuelParams = [
 ]
 
 export const MOCK_DUEL = createDuel(MOCK_DUEL_SETUP)
+
+export const GAME_DUEL = createDuel([
+  { id: 'player1', name: 'Garrett', deck: PLAYER_1_GAME_DECK },
+  { id: 'player2', name: 'Constantine', deck: PLAYER_2_GAME_DECK },
+])
 
 export const MOCK_LOGS: string[] = [
   formatString(messages.reducer.goesFirst, { playerName: 'Garrett' }),

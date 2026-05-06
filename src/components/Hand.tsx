@@ -19,7 +19,7 @@ export const Hand: React.FC<{
         return (
           <div
             key={card.id}
-            className={`duration-200 ease-out -mx-10 ${isActive ? 'translate-y-4 hover:-translate-y-54 hover:z-40' : 'pointer-events-none -translate-y-6'} ${isClickable ? 'cursor-pointer drop-shadow-[0_0_7px_var(--color-primary)] is-clickable' : ''}`}
+            className={`duration-200 ease-out -mx-12 ${isActive ? 'translate-y-4 hover:-translate-y-54 hover:z-40' : 'pointer-events-none -translate-y-6'} ${isClickable ? 'cursor-pointer drop-shadow-[0_0_7px_var(--color-primary)] is-clickable' : ''}`}
             data-testid="hand-card"
           >
             {isActive ? (

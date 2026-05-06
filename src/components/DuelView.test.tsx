@@ -16,6 +16,7 @@ import {
   MOCK_DUEL_SETUP,
 } from 'src/game-engine'
 import {
+  activateCharacterAbility,
   attackCard,
   attackPlayer,
   goToRedraw,
@@ -912,6 +913,96 @@ describe('PhaseInfo component', () => {
 })
 
 describe('Player turn card interactions', () => {
+  test('dispatches activate character ability when burrick is clicked during player-turn', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.playerOrder[0]
+
+    const stateWithBurrick = {
+      ...preloadedState,
+      phase: 'player-turn' as const,
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { charges: 1 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...preloadedState.players[activePlayerId],
+          hand: [],
+          board: ['b1'],
+        },
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
+          hand: [],
+          board: ['t1'],
+        },
+      },
+    }
+
+    const { getAllByTestId } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithBurrick,
+    })
+
+    const boardCards = getAllByTestId('card').filter(
+      (el) => (el as HTMLElement).closest('[data-testid="board"]') !== null,
+    ) as HTMLElement[]
+
+    fireEvent.click(boardCards[1] as HTMLElement)
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      activateCharacterAbility({ cardInstanceId: 'b1' }),
+    )
+  })
+
+  test('dispatches activate character ability when targeting during player-turn', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.playerOrder[0]
+
+    const stateWithPendingBurrickAbility = {
+      ...preloadedState,
+      phase: 'player-turn' as const,
+      pendingCharacterAbility: {
+        sourceCardInstanceId: 'b1',
+        sourceCardBaseId: 'burrick' as const,
+      },
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { charges: 1 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...preloadedState.players[activePlayerId],
+          hand: [],
+          board: ['b1'],
+        },
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
+          hand: [],
+          board: ['t1'],
+        },
+      },
+    }
+
+    const { getAllByTestId } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithPendingBurrickAbility,
+    })
+
+    const boardCards = getAllByTestId('card').filter(
+      (el) => (el as HTMLElement).closest('[data-testid="board"]') !== null,
+    ) as HTMLElement[]
+
+    fireEvent.click(boardCards[0] as HTMLElement)
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      activateCharacterAbility({ cardInstanceId: 't1' }),
+    )
+  })
+
   test('does not dispatch when clicking a board card (not in hand) during player-turn', () => {
     const dispatchSpy = vi.fn()
     vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)

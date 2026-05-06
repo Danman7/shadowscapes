@@ -6,8 +6,8 @@ import {
   PLACEHOLDER_PLAYER,
 } from 'src/game-engine/constants'
 import {
-  PLAYER_1_DECK,
-  PLAYER_2_DECK,
+  PLAYER_1_TEST_DECK,
+  PLAYER_2_TEST_DECK,
 } from 'src/game-engine/constants/testDecks'
 import {
   attackCard,
@@ -34,35 +34,37 @@ test('START_DUEL creates new duel with player names and decks', () => {
     INITIAL_DUEL_STATE,
     startDuel({
       players: [
-        { id: 'player1', name: 'Alice', deck: PLAYER_1_DECK },
-        { id: 'player2', name: 'Bob', deck: PLAYER_2_DECK },
+        { id: 'player1', name: 'Alice', deck: PLAYER_1_TEST_DECK },
+        { id: 'player2', name: 'Bob', deck: PLAYER_2_TEST_DECK },
       ],
     }),
   )
 
   expect(result.players['player1'].name).toBe('Alice')
   expect(result.players['player2'].name).toBe('Bob')
-  expect(result.players['player1'].deck).toHaveLength(PLAYER_1_DECK.length)
-  expect(result.players['player2'].deck).toHaveLength(PLAYER_2_DECK.length)
+  expect(result.players['player1'].deck).toHaveLength(PLAYER_1_TEST_DECK.length)
+  expect(result.players['player2'].deck).toHaveLength(PLAYER_2_TEST_DECK.length)
   expect(result.players['player1'].hand).toEqual([])
   expect(result.players['player2'].hand).toEqual([])
   expect(result.playerOrder[0]).not.toBe(result.playerOrder[1])
 
   Object.values(result.cards).forEach((card) => {
-    expect([...PLAYER_1_DECK, ...PLAYER_2_DECK]).toContain(card.base.id)
+    expect([...PLAYER_1_TEST_DECK, ...PLAYER_2_TEST_DECK]).toContain(
+      card.base.id,
+    )
   })
 
-  const player1EliteCount = PLAYER_1_DECK.filter(
+  const player1EliteCount = PLAYER_1_TEST_DECK.filter(
     (baseId) => CARD_BASES[baseId].isElite === true,
   ).length
-  const player1TotalCost = PLAYER_1_DECK.reduce(
+  const player1TotalCost = PLAYER_1_TEST_DECK.reduce(
     (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,
     0,
   )
-  const player2EliteCount = PLAYER_2_DECK.filter(
+  const player2EliteCount = PLAYER_2_TEST_DECK.filter(
     (baseId) => CARD_BASES[baseId].isElite === true,
   ).length
-  const player2TotalCost = PLAYER_2_DECK.reduce(
+  const player2TotalCost = PLAYER_2_TEST_DECK.reduce(
     (sum, baseId) => sum + CARD_BASES[baseId].attributes.cost,
     0,
   )
@@ -70,13 +72,13 @@ test('START_DUEL creates new duel with player names and decks', () => {
   expect(result.logs).toEqual([
     formatString(messages.reducer.deckSummary, {
       playerName: 'Alice',
-      cardCount: PLAYER_1_DECK.length,
+      cardCount: PLAYER_1_TEST_DECK.length,
       eliteCount: player1EliteCount,
       totalCost: player1TotalCost,
     }),
     formatString(messages.reducer.deckSummary, {
       playerName: 'Bob',
-      cardCount: PLAYER_2_DECK.length,
+      cardCount: PLAYER_2_TEST_DECK.length,
       eliteCount: player2EliteCount,
       totalCost: player2TotalCost,
     }),
@@ -89,8 +91,8 @@ describe('START_INITIAL_DRAW', () => {
       INITIAL_DUEL_STATE,
       startDuel({
         players: [
-          { id: 'player1', name: 'Alice', deck: PLAYER_1_DECK },
-          { id: 'player2', name: 'Bob', deck: PLAYER_2_DECK },
+          { id: 'player1', name: 'Alice', deck: PLAYER_1_TEST_DECK },
+          { id: 'player2', name: 'Bob', deck: PLAYER_2_TEST_DECK },
         ],
       }),
     )

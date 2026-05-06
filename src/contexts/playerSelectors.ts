@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 
 import type {
   CardInstance,
+  PendingCharacterAbility,
   PendingInstant,
   Phase,
   Player,
@@ -102,3 +103,6 @@ export const useLogs = (): string[] => useAppSelector((s) => s.duel.logs)
 
 export const usePendingInstant = (): PendingInstant | null =>
   useAppSelector((s) => s.duel.pendingInstant)
+
+export const usePendingCharacterAbility = (): PendingCharacterAbility | null =>
+  useAppSelector((s) => s.duel.pendingCharacterAbility)

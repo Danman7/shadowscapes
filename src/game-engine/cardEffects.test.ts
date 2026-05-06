@@ -1,6 +1,11 @@
 import { applyCardEffects } from 'src/game-engine/duel/effects'
 import { CARD_BASES, PLACEHOLDER_PLAYER } from 'src/game-engine/constants'
-import { attackCard, playCard, switchTurn } from 'src/game-engine/duel'
+import {
+  activateCharacterAbility,
+  attackCard,
+  playCard,
+  switchTurn,
+} from 'src/game-engine/duel'
 import { createCardInstance } from 'src/game-engine/cards'
 import { makeTestDuel } from 'src/game-engine/mocks'
 import type { Duel } from 'src/game-engine/types'
@@ -13,6 +18,85 @@ const dispatchWithEffects = (state: Duel, action: UnknownAction): Duel => {
   store.dispatch(action)
   return store.getState().duel
 }
+
+describe('Character ability middleware', () => {
+  test('arms burrick ability on first activation', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { charges: 1 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['b1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['t1'],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      activateCharacterAbility({ cardInstanceId: 'b1' }),
+    )
+
+    expect(result.pendingCharacterAbility).toEqual({
+      sourceCardInstanceId: 'b1',
+      sourceCardBaseId: 'burrick',
+    })
+  })
+
+  test('resolves burrick ability on target activation and clears pending state', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      pendingCharacterAbility: {
+        sourceCardInstanceId: 'b1',
+        sourceCardBaseId: 'burrick',
+      },
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { charges: 1 }),
+        z1: createCardInstance('zombie', 'z1'),
+        t1: createCardInstance('templeGuard', 't1'),
+        z2: createCardInstance('zombie', 'z2'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['b1'],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['z1', 't1', 'z2'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      activateCharacterAbility({ cardInstanceId: 't1' }),
+    )
+
+    expect(result.pendingCharacterAbility).toBeNull()
+    expect(result.cards['b1']!.attributes.charges).toBe(0)
+    expect(result.cards['b1']!.attributes.life).toBe(2)
+    expect(result.players['player2'].discard).toContain('z1')
+    expect(result.players['player2'].discard).toContain('z2')
+  })
+})
 
 describe('Cook effect', () => {
   test('draws a card for the player who played Cook', () => {
@@ -115,6 +199,8 @@ describe('Novice effect', () => {
 
     expect(result.players['player1'].hand).not.toContain('2')
     expect(result.players['player1'].deck).not.toContain('3')
+    expect(result.cards['2']!.attributes.isStunned).toBe(true)
+    expect(result.cards['3']!.attributes.isStunned).toBe(true)
 
     expect(result.players['player1'].deck).toContain('5')
   })
@@ -388,6 +474,8 @@ describe('Zombie effect', () => {
 
     expect(result.cards['2']!.attributes.life).toBe(baseLife)
     expect(result.cards['3']!.attributes.life).toBe(baseLife)
+    expect(result.cards['2']!.attributes.isStunned).toBe(true)
+    expect(result.cards['3']!.attributes.isStunned).toBe(true)
     expect(result.players['player1'].board).toContain('2')
     expect(result.players['player1'].board).toContain('3')
   })
@@ -1292,6 +1380,47 @@ describe('Temple Guard effect', () => {
     expect(result.players['player2'].discard).toContain('2')
     expect(result.cards['1']!.attributes.life).toBe(1)
     expect(result.players['player1'].board).toContain('1')
+  })
+
+  test('does not retaliate when attacked by burrick ability', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        '1': createCardInstance('burrick', '1', { life: 2, charges: 1 }),
+        '2': createCardInstance('templeGuard', '2', { life: 3 }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          hand: [],
+          board: ['1'],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['2'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({
+        attackerId: '1',
+        defenderId: '2',
+        source: 'burrick-ability',
+      }),
+    )
+
+    expect(result.cards['2']!.attributes.life).toBe(2)
+    expect(result.cards['1']!.attributes.life).toBe(2)
+    expect(result.cards['1']!.attributes.charges).toBe(0)
   })
 })
 

@@ -20,6 +20,7 @@ export const applySpeedPotion: CaseReducer<
   if (!card) return
 
   state.pendingInstant = null
+  state.pendingCharacterAbility = null
   card.attributes.hasHaste = true
 
   state.logs.push(
@@ -39,6 +40,7 @@ export const applyFlashBomb: CaseReducer<
   if (!card) return
 
   state.pendingInstant = null
+  state.pendingCharacterAbility = null
   card.attributes.isStunned = true
   card.didAct = true
 

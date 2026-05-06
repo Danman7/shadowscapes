@@ -5,7 +5,11 @@ import {
   getPendingInstant,
   resetCharacterAttributes,
 } from 'src/game-engine/utils'
-import type { Duel, PlayerId } from 'src/game-engine/types'
+import type {
+  Duel,
+  PendingCharacterAbility,
+  PlayerId,
+} from 'src/game-engine/types'
 import { formatString, messages } from 'src/i18n'
 
 export const playCard: CaseReducer<
@@ -18,6 +22,7 @@ export const playCard: CaseReducer<
 
   player.hand = player.hand.filter((id) => id !== cardInstanceId)
   player.coins -= card.attributes.cost
+  state.pendingCharacterAbility = null
 
   state.phase = 'turn-end'
   state.logs.push(
@@ -67,6 +72,7 @@ export const skipRedraw: CaseReducer<
   if (player.playerReady) return
 
   player.playerReady = true
+  state.pendingCharacterAbility = null
   state.logs.push(
     formatString(messages.reducer.skipRedraw, {
       playerName: player.name,
@@ -76,7 +82,11 @@ export const skipRedraw: CaseReducer<
 
 export const attackCard: CaseReducer<
   Duel,
-  PayloadAction<{ attackerId: string; defenderId: string }>
+  PayloadAction<{
+    attackerId: string
+    defenderId: string
+    source?: 'burrick-ability'
+  }>
 > = (state, action) => {
   const { attackerId, defenderId } = action.payload
   const attacker = state.cards[attackerId]
@@ -145,6 +155,18 @@ export const attackPlayer: CaseReducer<
       coins: inactivePlayer.coins,
     }),
   )
+}
+
+export const activateCharacterAbility: CaseReducer<
+  Duel,
+  PayloadAction<{ cardInstanceId: string }>
+> = (state) => state
+
+export const setPendingCharacterAbility: CaseReducer<
+  Duel,
+  PayloadAction<{ pendingCharacterAbility: PendingCharacterAbility | null }>
+> = (state, action) => {
+  state.pendingCharacterAbility = action.payload.pendingCharacterAbility
 }
 
 export const cleanupDefeatedCharacters: CaseReducer<Duel> = (state) => {

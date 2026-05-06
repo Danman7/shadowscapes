@@ -21,6 +21,7 @@ export const makeStore = (preloadedDuelState?: Partial<Duel>) =>
           phase: 'intro' as const,
           logs: [],
           pendingInstant: null,
+          pendingCharacterAbility: null,
           ...preloadedDuelState,
         },
       },

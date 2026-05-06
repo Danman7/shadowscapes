@@ -13,6 +13,7 @@ export {
   useInactivePlayerBoard,
   useInactivePlayerHand,
   useLogs,
+  usePendingCharacterAbility,
   usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,

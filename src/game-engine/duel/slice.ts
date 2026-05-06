@@ -13,6 +13,7 @@ const initialState: Duel = {
   phase: 'intro',
   logs: [],
   pendingInstant: null,
+  pendingCharacterAbility: null,
 }
 
 const duelSlice = createSlice({
@@ -31,6 +32,8 @@ const duelSlice = createSlice({
     attackCard: cardReducers.attackCard,
     attackPlayer: cardReducers.attackPlayer,
     _cleanupDefeatedCharacters: cardReducers.cleanupDefeatedCharacters,
+    activateCharacterAbility: cardReducers.activateCharacterAbility,
+    setPendingCharacterAbility: cardReducers.setPendingCharacterAbility,
     setPendingInstant: instantReducers.setPendingInstant,
     applySpeedPotion: instantReducers.applySpeedPotion,
     applyFlashBomb: instantReducers.applyFlashBomb,
@@ -51,6 +54,8 @@ export const {
   attackCard,
   attackPlayer,
   _cleanupDefeatedCharacters,
+  activateCharacterAbility,
+  setPendingCharacterAbility,
   setPendingInstant,
   applySpeedPotion,
   applyFlashBomb,

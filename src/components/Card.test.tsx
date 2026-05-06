@@ -73,3 +73,19 @@ test('calls onClick when clicked', () => {
 
   expect(handleClick).toHaveBeenCalledTimes(1)
 })
+
+test('renders exhausted board character sideways with reduced opacity', () => {
+  const { getByTestId } = render(
+    <Card
+      card={{
+        ...mockCharacterCard,
+        didAct: true,
+      }}
+      isOnBoard
+    />,
+  )
+
+  const cardElement = getByTestId('card')
+  expect(cardElement).toHaveClass('rotate-90')
+  expect(cardElement).toHaveClass('opacity-50')
+})

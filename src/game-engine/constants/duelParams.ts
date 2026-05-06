@@ -7,6 +7,7 @@ export const INITIAL_DUEL_STATE: Readonly<Duel> = {
   phase: 'intro',
   logs: [],
   pendingInstant: null,
+  pendingCharacterAbility: null,
 }
 
 export const INITIAL_CARDS_TO_DRAW = 4

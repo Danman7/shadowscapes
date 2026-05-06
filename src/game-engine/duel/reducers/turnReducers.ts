@@ -26,10 +26,12 @@ export const startInitialDraw: CaseReducer<Duel> = (state) => {
 
 export const goToRedraw: CaseReducer<Duel> = (state) => {
   state.phase = 'redraw'
+  state.pendingCharacterAbility = null
 }
 
 export const startFirstPlayerTurn: CaseReducer<Duel> = (state) => {
   resetPlayersReady(state)
+  state.pendingCharacterAbility = null
 
   const { playerOrder, players } = state
 
@@ -48,6 +50,7 @@ export const startFirstPlayerTurn: CaseReducer<Duel> = (state) => {
 
 export const goToEndOfTurn: CaseReducer<Duel> = (state) => {
   state.phase = 'turn-end'
+  state.pendingCharacterAbility = null
 }
 
 export const switchTurn: CaseReducer<Duel> = (state) => {
@@ -58,6 +61,7 @@ export const switchTurn: CaseReducer<Duel> = (state) => {
 
   state.playerOrder = [state.playerOrder[1], state.playerOrder[0]]
   state.phase = 'player-turn'
+  state.pendingCharacterAbility = null
 
   resetPlayersReady(state)
 

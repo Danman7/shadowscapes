@@ -88,6 +88,11 @@ export type Phase =
 
 export type PendingInstant = 'SPEED_POTION' | 'FLASH_BOMB'
 
+export interface PendingCharacterAbility {
+  sourceCardInstanceId: CardInstanceId
+  sourceCardBaseId: CardBaseId
+}
+
 export interface PlayerSetup {
   id: PlayerId
   name: string
@@ -106,4 +111,5 @@ export interface Duel {
   phase: Phase
   logs: DuelLog[]
   pendingInstant: PendingInstant | null
+  pendingCharacterAbility: PendingCharacterAbility | null
 }

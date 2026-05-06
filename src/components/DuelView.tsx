@@ -8,6 +8,7 @@ import {
   Logs,
   PlayerBadge,
 } from 'src/components'
+import { useScopedSelection } from 'src/components/useScopedSelection'
 import {
   useActivePlayer,
   useActivePlayerBoard,
@@ -19,12 +20,14 @@ import {
   useInactivePlayerBoard,
   useInactivePlayerHand,
   useLogs,
+  usePendingCharacterAbility,
   usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from 'src/contexts'
 import type { CardInstance, Phase, Player } from 'src/game-engine'
 import {
+  activateCharacterAbility,
   applyFlashBomb,
   applySpeedPotion,
   attackCard,
@@ -116,13 +119,13 @@ export const DuelView: React.FC = () => {
   const activePlayerCoins = useActivePlayerCoins()
   const logs = useLogs()
   const [areLogsVisible, setAreLogsVisible] = useState(false)
-
-  const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(
-    null,
-  )
   const [attackingCardId, setAttackingCardId] = useState<string | null>(null)
   const attackAnimationTimeoutRef = useRef<number | null>(null)
+  const pendingCharacterAbility = usePendingCharacterAbility()
   const pendingInstant = usePendingInstant()
+  const selectedAttackerSelection = useScopedSelection(
+    phase === 'turn-end' ? `${phase}:${activePlayer.id}` : null,
+  )
 
   const triggerAttackAnimation = (attackerId: string): void => {
     setAttackingCardId(attackerId)
@@ -250,6 +253,19 @@ export const DuelView: React.FC = () => {
       }
     }
 
+    if (phase === 'player-turn') {
+      if (!isActiveBoard && pendingCharacterAbility !== null) {
+        return () => {
+          triggerAttackAnimation(pendingCharacterAbility.sourceCardInstanceId)
+          dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
+        }
+      }
+
+      return () => {
+        dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
+      }
+    }
+
     if (phase !== 'turn-end') return undefined
 
     if (isActiveBoard) {
@@ -269,9 +285,10 @@ export const DuelView: React.FC = () => {
       }
 
       return () => {
-        setSelectedAttackerId(cardId)
+        selectedAttackerSelection.select(cardId)
       }
     } else {
+      const selectedAttackerId = selectedAttackerSelection.selectedId
       if (selectedAttackerId === null) return undefined
 
       const selectedCard = activeBoard.find((c) => c.id === selectedAttackerId)
@@ -288,7 +305,7 @@ export const DuelView: React.FC = () => {
             defenderId: cardId,
           }),
         )
-        setSelectedAttackerId(null)
+        selectedAttackerSelection.clear()
       }
     }
   }
@@ -297,7 +314,7 @@ export const DuelView: React.FC = () => {
     <div
       className="grid h-screen gap-2
         grid-cols-[100px_minmax(0,2fr)_100px]
-        grid-rows-[140px_1fr_0px_1fr_140px] overflow-hidden"
+        grid-rows-[140px_1fr_50px_1fr_140px] overflow-hidden"
       data-testid="duel-view"
     >
       {/* Row 1: inactive discard / hand / deck */}
@@ -356,7 +373,7 @@ export const DuelView: React.FC = () => {
           phase={phase}
           activePlayer={activePlayer}
           activeBoard={activeBoard}
-          onTurnEnd={() => setSelectedAttackerId(null)}
+          onTurnEnd={() => selectedAttackerSelection.clear()}
         />
       </section>
 

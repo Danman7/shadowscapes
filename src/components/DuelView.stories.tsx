@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { DuelView } from 'src/components'
 import { GameProvider } from 'src/contexts'
-import { MIXED_STACKS_DUEL, MOCK_DUEL } from 'src/game-engine'
+import { GAME_DUEL, MIXED_STACKS_DUEL } from 'src/game-engine'
 
 const meta: Meta<typeof DuelView> = {
   title: 'Duel/DuelView',
@@ -18,7 +18,7 @@ type Story = StoryObj<typeof DuelView>
 
 export const RedrawPhase: Story = {
   render: () => (
-    <GameProvider preloadedState={MOCK_DUEL}>
+    <GameProvider preloadedState={GAME_DUEL}>
       <DuelView />
     </GameProvider>
   ),

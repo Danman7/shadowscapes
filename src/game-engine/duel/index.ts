@@ -1,6 +1,7 @@
 export {
   _cleanupDefeatedCharacters,
   _applyEffects,
+  activateCharacterAbility,
   attackCard,
   attackPlayer,
   applyFlashBomb,
@@ -10,6 +11,7 @@ export {
   goToRedraw,
   playCard,
   redrawCard,
+  setPendingCharacterAbility,
   setPendingInstant,
   skipRedraw,
   startDuel,

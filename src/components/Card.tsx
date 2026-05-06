@@ -21,7 +21,7 @@ export const Card: React.FC<{
   isAttacking,
   attackDirection,
 }) => {
-  const { base, attributes } = card
+  const { base, attributes, didAct } = card
   const { name, faction, categories, type, text, isElite } = base
   const { description, flavor } = text
   const { life, isStunned, isHidden } = attributes
@@ -36,7 +36,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer hover:shadow-md'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''}`}
+      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer hover:shadow-md'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''} ${didAct ? 'rotate-90 opacity-50' : ''}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }

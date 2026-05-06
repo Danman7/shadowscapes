@@ -56,8 +56,23 @@ const zombieEffect: CardEffect = (state, playerId) => {
 
   if (zombiesInDiscard.length === 0) return state
 
+  const newCards = { ...state.cards }
+  for (const zombieId of zombiesInDiscard) {
+    const zombieCard = newCards[zombieId]
+    if (!zombieCard) continue
+
+    newCards[zombieId] = {
+      ...zombieCard,
+      attributes: {
+        ...zombieCard.attributes,
+        isStunned: true,
+      },
+    }
+  }
+
   const nextState = {
     ...state,
+    cards: newCards,
     players: updatePlayers(state.players, playerId, (p) => ({
       ...p,
       discard: p.discard.filter((id) => !zombiesInDiscard.includes(id)),
@@ -116,8 +131,23 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
 
   if (allCopiesToSummon.length === 0) return state
 
+  const newCards = { ...state.cards }
+  for (const noviceId of allCopiesToSummon) {
+    const noviceCard = newCards[noviceId]
+    if (!noviceCard) continue
+
+    newCards[noviceId] = {
+      ...noviceCard,
+      attributes: {
+        ...noviceCard.attributes,
+        isStunned: true,
+      },
+    }
+  }
+
   const nextState = {
     ...state,
+    cards: newCards,
     players: updatePlayers(state.players, playerId, (p) => ({
       ...p,
       hand: p.hand.filter((id) => !noviceCopiesInHand.includes(id)),
@@ -448,7 +478,10 @@ const applyTempleGuardRetaliationEffect = (
   state: Duel,
   attackerId: string,
   defenderId: string,
+  preventRetaliation?: boolean,
 ): Duel => {
+  if (preventRetaliation) return state
+
   const inactivePlayer = state.players[state.playerOrder[1]]
   if (!inactivePlayer.board.includes(defenderId)) return state
 
@@ -585,14 +618,19 @@ export function applyCardEffects(
   }
 
   if (attackCard.match(action)) {
-    const { attackerId, defenderId } = action.payload
+    const { attackerId, defenderId, source } = action.payload
     let result = applyBurrickAttackEffect(
       state,
       prevState,
       attackerId,
       defenderId,
     )
-    result = applyTempleGuardRetaliationEffect(result, attackerId, defenderId)
+    result = applyTempleGuardRetaliationEffect(
+      result,
+      attackerId,
+      defenderId,
+      source === 'burrick-ability',
+    )
 
     return result
   }
