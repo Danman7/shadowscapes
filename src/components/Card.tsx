@@ -36,7 +36,7 @@ export const Card: React.FC<{
 
   return (
     <div
-      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer hover:shadow-md'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''} ${didAct ? 'rotate-90 opacity-50' : ''}`}
+      className={`card flex flex-col ${factionBorderColor} border-8 ${isOnBoard ? 'h-auto' : ''} ${isClickable && 'cursor-pointer hover:shadow-lg'} ${attackClassName} ${isStunned || isHidden ? 'opacity-70' : ''} ${didAct ? 'rotate-90 opacity-50' : ''}`}
       style={
         isClickable
           ? { filter: 'drop-shadow(0 0 8px var(--color-primary))' }

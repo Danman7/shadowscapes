@@ -8,31 +8,34 @@ Shadowscapes is a Bun + React TypeScript card game project set in the Thief univ
 
 ## Architecture Patterns
 
-### State Management: Reducer + Context Pattern
+### State Management: Redux Toolkit + Context Selectors
 
-The codebase uses a **centralized reducer pattern** ([src/reducers/duelReducer.ts]) with React Context ([src/contexts/GameContext.tsx]). Never mutate state directly—all state changes flow through `DuelAction` types dispatched to `duelReducer`.
+The game state is managed with a Redux Toolkit slice in [src/game-engine/duel/slice.ts], exposed to React through [src/contexts/GameContext.tsx] and selector hooks in [src/contexts/playerSelectors.ts]. Never mutate state outside reducers and never bypass dispatched actions for duel state changes.
 
 Key flow:
 
 1. Components dispatch typed actions via `useGameDispatch()`
-2. Actions are processed by `duelReducer` which returns immutable new state
-3. Components read state via custom selectors in [src/selectors/playerSelectors.ts] (e.g., `useActivePlayerHand()`, `useInactivePlayerBoard()`)
-4. Use selector hooks rather than accessing `useGameState()` directly—they provide memoization and cleaner component code
+2. Slice reducers in [src/game-engine/duel/reducers/] update state immutably (Immer)
+3. Middleware in [src/game-engine/duel/middleware.ts] handles cross-action behavior and card effects
+4. Components read state via selector hooks from [src/contexts/playerSelectors.ts] instead of pulling raw state where possible
 
 ### Type System Organization
 
-Types are centralized in [src/types/index.ts]. Important concepts:
+Types are centralized in [src/game-engine/types.ts]. Important concepts:
 
-- **CardBase vs CardInstance**: `CardBase` defines card templates in [src/constants/cardBases.ts]; `CardInstance` represents actual card objects in play with unique IDs
-- **PlayerId typing**: Always use `'player1' | 'player2'` literal types, never strings
-- **Phase progression**: Game phases are strictly typed: `'intro' → 'initial-draw' → 'redraw' → 'player-turn'`
+- **CardBase vs CardInstance**: `CardBase` defines templates in [src/game-engine/constants/cardBases.ts]; `CardInstance` is a concrete card in a duel with a unique id
+- **Player identity**: Use `PlayerId` from [src/game-engine/types.ts] instead of ad hoc string literals
+- **Phase progression**: Game phases are typed in [src/game-engine/types.ts] as `'intro' → 'initial-draw' → 'redraw' → 'player-turn' → 'turn-end'`
 
 ### Game Engine Layer
 
-Game logic lives in [src/game-engine/] as pure functions, separate from React:
+Game logic lives in [src/game-engine/] and is isolated from React components:
 
-- `initialization.ts`: Duel setup, card creation, stack overrides for testing
-- `utils.ts`: Pure helpers like `shuffle()`, `createCardInstance()`, `coinFlipForPlayerStart()`
+- `duel/reducers/`: Core turn, card, and instant reducers
+- `duel/middleware.ts`: Effect orchestration and action chaining
+- `duel/effects.ts`: On-play and reactive card effects
+- `cards/`: Duel creation and card instantiation
+- `utils/`: Query and state helper utilities
 - Never call React hooks from game engine functions
 
 ## Development Workflows
@@ -54,16 +57,16 @@ Game logic lives in [src/game-engine/] as pure functions, separate from React:
 
 ### Testing Conventions
 
-1. **Component tests** use `renderGameContext()` helper ([src/test/renderGameContext.ts]) which wraps components in `GameProvider` with optional `preloadedState`
+1. **Component tests** use `renderGameContext()` helper ([src/contexts/renderGameContext.ts]) with optional `preloadedState`
 2. **Storybook stories** (e.g., [src/components/Card.stories.tsx]) use `createCardInstance()` directly—don't wrap in GameContext for isolated component demos
 3. **Test files** are co-located: `Component.tsx`, `Component.test.tsx`, `Component.stories.tsx`
-4. Use [src/test/mocks/duelSetup.ts] for consistent test data
+4. Use helpers from [src/game-engine/mocks/] when shared duel setup data is needed
 
 ### Import Patterns
 
-- **Path alias**: `@/` maps to `src/` (configured in [tsconfig.json] and [vitest.config.ts])
+- **Path alias**: use `src/` absolute imports for internal modules
 - **Import sorting**: Auto-sorted by `eslint-plugin-simple-import-sort` (external → internal → types)
-- Always use `@/` prefix for internal imports, never relative paths like `../`
+- Avoid deep relative imports when a `src/` absolute import is available
 
 ## Code Conventions
 
@@ -95,15 +98,17 @@ Strict mode enabled with:
 
 **Creating new actions:**
 
-1. Add to `DuelAction` union type in [src/types/index.ts]
-2. Add case to `duelReducer` in [src/reducers/duelReducer.ts]
-3. Write reducer unit tests in `duelReducer.test.ts`
+1. Add reducer handlers in the appropriate file under [src/game-engine/duel/reducers/]
+2. Wire the action in [src/game-engine/duel/slice.ts]
+3. If side effects or chained behavior are needed, update [src/game-engine/duel/middleware.ts]
+4. Add or update tests in [src/game-engine/cardEffects.test.ts] and/or [src/game-engine/duelReducer.test.tsx]
 
 **Adding new card types:**
 
-1. Define `CardBaseId` literal in [src/types/index.ts]
-2. Add full card definition to `CARD_BASES` in [src/constants/cardBases.ts]
-3. Use `createCardInstance()` to instantiate cards
+1. Add `CardBaseId` in [src/game-engine/types.ts]
+2. Add card data in [src/game-engine/constants/cardBases.ts]
+3. Add text in [src/i18n/en.ts] if needed
+4. Use `createCardInstance()` from [src/game-engine/cards/] to instantiate
 
 **Component development workflow:**
 

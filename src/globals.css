@@ -136,7 +136,7 @@
 }
 
 @utility box {
-  @apply border-line rounded shadow-sm bg-background;
+  @apply border-line rounded-lg shadow-md bg-background;
 }
 
 @utility card {
