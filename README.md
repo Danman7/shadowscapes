@@ -33,6 +33,8 @@ This section documents the currently implemented rules in the engine.
 
 ### Setup and phases
 
+Players start with 30 coins.
+
 1. **Intro**: duel is initialized.
 2. **Initial draw**: both players draw 4 cards.
 3. **Redraw**: each player may redraw cards from hand into deck; both must be ready.
@@ -63,6 +65,7 @@ At turn switch:
 - If the opponent has board cards, attacks target enemy characters.
 - Character-vs-character damage reduces defender life by attacker strength.
 - Defeated characters are removed from board, reset to base attributes, and moved to discard.
+- Characters like the Burrick that attack via abilities during player turn phase, skip retaliation and opponent being attack effects. As if they are shooting a ranged attack.
 
 ### Character abilities and reactive effects
 
@@ -77,6 +80,13 @@ At turn switch:
 
 - This project currently models duel flow through phases and coin reduction.
 - There is no separate explicit "match over" phase/state yet; practical victory is opponent coins reaching 0.
+
+## Deck Building
+
+- Cards from different factions cannot be included in a single deck.
+- Neutral cards can be mixed in with any faction decks.
+- Only one copy of `isElite` cards allowed per deck.
+- Two copies max of no `isElite` cards allowed per deck.
 
 ## Scripts
 

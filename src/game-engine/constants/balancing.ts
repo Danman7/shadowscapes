@@ -27,7 +27,7 @@ export const MYSTICS_SOUL_ATTRIBUTES: CardAttributes = {
 export const MYSTICS_SOUL_BONUS_CHARGES = 1
 
 export const BOOK_OF_ASH_ATTRIBUTES: CardAttributes = {
-  cost: 5,
+  cost: 4,
 }
 
 // Order --------------------------------------- /
