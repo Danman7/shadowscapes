@@ -4,6 +4,7 @@ export {
   INITIAL_CARDS_TO_DRAW,
   INITIAL_DUEL_STATE,
   INITIAL_PLAYER_COINS,
+  SECOND_PLAYER_COIN_BONUS,
   PLACEHOLDER_PLAYER,
 } from 'src/game-engine/constants/duelParams'
 export * as balancing from 'src/game-engine/constants/balancing'

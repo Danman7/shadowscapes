@@ -14,6 +14,7 @@ import {
   MOCK_DUEL,
   MOCK_DUEL as preloadedState,
   MOCK_DUEL_SETUP,
+  SECOND_PLAYER_COIN_BONUS,
 } from 'src/game-engine'
 import {
   activateCharacterAbility,
@@ -48,7 +49,10 @@ test('displays player info in game view', () => {
 
   expect(getByText(preloadedState.players.player1.name)).toBeInTheDocument()
   expect(getByText(preloadedState.players.player2.name)).toBeInTheDocument()
-  expect(getAllByText(INITIAL_PLAYER_COINS)).toHaveLength(2)
+  expect(getAllByText(INITIAL_PLAYER_COINS)).toHaveLength(1)
+  expect(
+    getByText(INITIAL_PLAYER_COINS + SECOND_PLAYER_COIN_BONUS),
+  ).toBeInTheDocument()
 })
 
 test('renders deck and discard piles for both players', () => {
@@ -953,6 +957,49 @@ describe('Player turn card interactions', () => {
 
     expect(dispatchSpy).toHaveBeenCalledWith(
       activateCharacterAbility({ cardInstanceId: 'b1' }),
+    )
+  })
+
+  test('does not dispatch ability activation when clicking inactive board card with no pending ability', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.playerOrder[0]
+
+    const stateWithBoards = {
+      ...preloadedState,
+      phase: 'player-turn' as const,
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { charges: 1 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...preloadedState.players[activePlayerId],
+          hand: [],
+          board: ['b1'],
+        },
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
+          hand: [],
+          board: ['t1'],
+        },
+      },
+    }
+
+    const { getAllByTestId } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithBoards,
+    })
+
+    const boardCards = getAllByTestId('card').filter(
+      (el) => (el as HTMLElement).closest('[data-testid="board"]') !== null,
+    ) as HTMLElement[]
+
+    fireEvent.click(boardCards[0] as HTMLElement)
+
+    expect(dispatchSpy).not.toHaveBeenCalledWith(
+      activateCharacterAbility({ cardInstanceId: 't1' }),
     )
   })
 

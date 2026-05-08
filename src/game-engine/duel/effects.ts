@@ -351,10 +351,7 @@ const applyHauntReactiveEffect = (
     }
   }
 
-  const damage = hauntsWithCharges.reduce((total, hauntId) => {
-    const hauntCard = newCards[hauntId]
-    return total + (hauntCard?.attributes.strength ?? 0)
-  }, 0)
+  const damage = hauntsWithCharges.length * balancing.HAUNT_DAMAGE_ON_PLAY
   const newLife = playedCard.attributes.life - damage
 
   if (newLife <= 0) {
@@ -474,72 +471,6 @@ const applyBurrickAttackEffect = (
   return nextState
 }
 
-const applyTempleGuardRetaliationEffect = (
-  state: Duel,
-  attackerId: string,
-  defenderId: string,
-  preventRetaliation?: boolean,
-): Duel => {
-  if (preventRetaliation) return state
-
-  const inactivePlayer = state.players[state.playerOrder[1]]
-  if (!inactivePlayer.board.includes(defenderId)) return state
-
-  const defender = state.cards[defenderId]
-  if (!defender || defender.base.id !== 'templeGuard') return state
-  if (defender.attributes.life === undefined || defender.attributes.life <= 0)
-    return state
-
-  const attacker = state.cards[attackerId]
-  if (!attacker || attacker.attributes.life === undefined) return state
-  if (defender.attributes.strength === undefined) return state
-
-  const newCards = { ...state.cards }
-  const attackerNewLife =
-    attacker.attributes.life - defender.attributes.strength
-
-  if (attackerNewLife <= 0) {
-    newCards[attackerId] = {
-      ...attacker,
-      attributes: { ...attacker.attributes, life: 0 },
-    }
-    const nextState = {
-      ...state,
-      cards: newCards,
-    }
-
-    addLog(
-      nextState,
-      formatString(messages.cardEffects.retaliateDefeats, {
-        damage: defender.attributes.strength,
-        defenderName: defender.base.name,
-        attackerName: attacker.base.name,
-      }),
-    )
-
-    return nextState
-  }
-
-  newCards[attackerId] = {
-    ...attacker,
-    attributes: { ...attacker.attributes, life: attackerNewLife },
-  }
-  const nextState = {
-    ...state,
-    cards: newCards,
-  }
-
-  addLog(
-    nextState,
-    formatString(messages.cardEffects.retaliateDamage, {
-      damage: defender.attributes.strength,
-      defenderName: defender.base.name,
-    }),
-  )
-
-  return nextState
-}
-
 const applyMarkanderReactiveEffect = (
   state: Duel,
   playerId: PlayerId,
@@ -618,21 +549,9 @@ export function applyCardEffects(
   }
 
   if (attackCard.match(action)) {
-    const { attackerId, defenderId, source } = action.payload
-    let result = applyBurrickAttackEffect(
-      state,
-      prevState,
-      attackerId,
-      defenderId,
-    )
-    result = applyTempleGuardRetaliationEffect(
-      result,
-      attackerId,
-      defenderId,
-      source === 'burrick-ability',
-    )
+    const { attackerId, defenderId } = action.payload
 
-    return result
+    return applyBurrickAttackEffect(state, prevState, attackerId, defenderId)
   }
 
   return state

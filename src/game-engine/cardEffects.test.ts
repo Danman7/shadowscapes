@@ -92,9 +92,11 @@ describe('Character ability middleware', () => {
 
     expect(result.pendingCharacterAbility).toBeNull()
     expect(result.cards['b1']!.attributes.charges).toBe(0)
-    expect(result.cards['b1']!.attributes.life).toBe(2)
-    expect(result.players['player2'].discard).toContain('z1')
-    expect(result.players['player2'].discard).toContain('z2')
+    expect(result.cards['b1']!.attributes.life).toBe(3)
+    expect(result.players['player2'].board).toContain('z1')
+    expect(result.players['player2'].board).toContain('z2')
+    expect(result.cards['z1']!.attributes.life).toBe(1)
+    expect(result.cards['z2']!.attributes.life).toBe(1)
   })
 })
 
@@ -512,7 +514,7 @@ describe('Zombie effect', () => {
 })
 
 describe('Haunt reactive effect', () => {
-  test('deals damage equal to haunt strength to the played card', () => {
+  test('deals fixed damage to the played card', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
@@ -543,11 +545,11 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['1']!.attributes.life).toBe(2)
+    expect(result.cards['1']!.attributes.life).toBe(3)
     expect(result.players['player1'].board).toContain('1')
   })
 
-  test('kills the played card when haunt damage exceeds its life', () => {
+  test('damages the played card when haunt damage does not exceed its life', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
@@ -578,11 +580,9 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.players['player1'].board).not.toContain('1')
-    expect(result.players['player1'].discard).toContain('1')
-    expect(result.cards['1']!.attributes.life).toBe(
-      CARD_BASES['zombie'].attributes.life,
-    )
+    expect(result.players['player1'].board).toContain('1')
+    expect(result.players['player1'].discard).not.toContain('1')
+    expect(result.cards['1']!.attributes.life).toBe(1)
   })
 
   test('multiple haunts deal cumulative damage', () => {
@@ -617,10 +617,10 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['1']!.attributes.life).toBe(2)
+    expect(result.cards['1']!.attributes.life).toBe(3)
   })
 
-  test('applies the sum of all haunt strengths as damage', () => {
+  test('ignores haunt strength and applies fixed damage per haunt', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
@@ -653,11 +653,8 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['1']!.attributes.life).toBe(
-      CARD_BASES['templeGuard'].attributes.life,
-    )
-    expect(result.players['player1'].board).not.toContain('1')
-    expect(result.players['player1'].discard).toContain('1')
+    expect(result.cards['1']!.attributes.life).toBe(3)
+    expect(result.players['player1'].board).toContain('1')
   })
 
   test('does not damage summoned cards from zombie effect', () => {
@@ -692,7 +689,7 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['2']!.attributes.life).toBe(1)
+    expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.players['player1'].board).toContain('2')
   })
 
@@ -729,7 +726,7 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['2']!.attributes.life).toBe(1)
+    expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.players['player1'].board).toContain('2')
   })
 
@@ -832,7 +829,7 @@ describe('Haunt reactive effect', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['1']!.attributes.life).toBe(3)
+    expect(result.cards['1']!.attributes.life).toBe(4)
     expect(result.players['player1'].board).toContain('1')
   })
 })
@@ -869,11 +866,11 @@ describe('Burrick attack effect', () => {
       attackCard({ attackerId: '1', defenderId: '3' }),
     )
 
-    expect(result.cards['3']!.attributes.life).toBe(2)
-    expect(result.players['player2'].board).not.toContain('2')
-    expect(result.players['player2'].discard).toContain('2')
-    expect(result.players['player2'].board).not.toContain('4')
-    expect(result.players['player2'].discard).toContain('4')
+    expect(result.cards['3']!.attributes.life).toBe(3)
+    expect(result.players['player2'].board).toContain('2')
+    expect(result.players['player2'].discard).not.toContain('2')
+    expect(result.players['player2'].board).toContain('4')
+    expect(result.players['player2'].discard).not.toContain('4')
     expect(result.cards['1']!.attributes.charges).toBe(0)
   })
 
@@ -940,8 +937,8 @@ describe('Burrick attack effect', () => {
       attackCard({ attackerId: '1', defenderId: '2' }),
     )
 
-    expect(result.players['player2'].board).not.toContain('2')
-    expect(result.players['player2'].discard).toContain('2')
+    expect(result.players['player2'].board).toContain('2')
+    expect(result.players['player2'].discard).not.toContain('2')
     expect(result.cards['1']!.attributes.charges).toBe(0)
   })
 
@@ -1009,8 +1006,8 @@ describe('Burrick attack effect', () => {
       attackCard({ attackerId: '1', defenderId: '3' }),
     )
 
-    expect(result.cards['2']!.attributes.life).toBe(1)
-    expect(result.cards['4']!.attributes.life).toBe(1)
+    expect(result.cards['2']!.attributes.life).toBe(2)
+    expect(result.cards['4']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).toContain('2')
     expect(result.players['player2'].board).toContain('4')
   })
@@ -1079,12 +1076,12 @@ describe('Burrick attack effect', () => {
       attackCard({ attackerId: '1', defenderId: '3' }),
     )
 
-    expect(result.cards['3']!.attributes.life).toBe(2)
-    expect(result.cards['2']!.attributes.life).toBe(1)
-    expect(result.cards['4']!.attributes.life).toBe(1)
+    expect(result.cards['3']!.attributes.life).toBe(3)
+    expect(result.cards['2']!.attributes.life).toBe(2)
+    expect(result.cards['4']!.attributes.life).toBe(2)
     expect(result.players['player2'].board).toContain('2')
     expect(result.players['player2'].board).toContain('4')
-    expect(result.cards['1']!.attributes.life).toBe(1)
+    expect(result.cards['1']!.attributes.life).toBe(3)
   })
 })
 
@@ -1262,7 +1259,7 @@ describe('Temple Guard effect', () => {
     )
   })
 
-  test('retaliates when attacked and survives', () => {
+  test('does not retaliate when attacked', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
@@ -1295,132 +1292,9 @@ describe('Temple Guard effect', () => {
     )
 
     expect(result.cards['2']!.attributes.life).toBe(2)
-    expect(result.cards['1']!.attributes.life).toBe(1)
-    expect(result.players['player1'].board).toContain('1')
-    expect(result.players['player2'].board).toContain('2')
-  })
-
-  test('retaliation kills the attacker when templeGuard has enough strength', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('zombie', '1', { life: 1 }),
-        '2': createCardInstance('templeGuard', '2', { life: 3 }),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: [],
-          board: ['1'],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-          discard: [],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      attackCard({ attackerId: '1', defenderId: '2' }),
-    )
-
-    expect(result.cards['2']!.attributes.life).toBe(2)
-    expect(result.players['player2'].board).toContain('2')
-    expect(result.cards['1']!.attributes.life).toBe(
-      CARD_BASES['zombie'].attributes.life,
-    )
-    expect(result.players['player1'].board).not.toContain('1')
-    expect(result.players['player1'].discard).toContain('1')
-  })
-
-  test('does not retaliate when templeGuard is killed (0 life)', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('zombie', '1'),
-        '2': createCardInstance('templeGuard', '2', { life: 1 }),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: [],
-          board: ['1'],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-          discard: [],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      attackCard({ attackerId: '1', defenderId: '2' }),
-    )
-
-    expect(result.cards['2']!.attributes.life).toBe(
-      CARD_BASES['templeGuard'].attributes.life,
-    )
-    expect(result.players['player2'].board).not.toContain('2')
-    expect(result.players['player2'].discard).toContain('2')
-    expect(result.cards['1']!.attributes.life).toBe(1)
-    expect(result.players['player1'].board).toContain('1')
-  })
-
-  test('does not retaliate when attacked by burrick ability', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('burrick', '1', { life: 2, charges: 1 }),
-        '2': createCardInstance('templeGuard', '2', { life: 3 }),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: [],
-          board: ['1'],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-          discard: [],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      attackCard({
-        attackerId: '1',
-        defenderId: '2',
-        source: 'burrick-ability',
-      }),
-    )
-
-    expect(result.cards['2']!.attributes.life).toBe(2)
     expect(result.cards['1']!.attributes.life).toBe(2)
-    expect(result.cards['1']!.attributes.charges).toBe(0)
+    expect(result.players['player1'].board).toContain('1')
+    expect(result.players['player2'].board).toContain('2')
   })
 })
 
@@ -1746,7 +1620,7 @@ describe('Burrick with no adjacent cards', () => {
       attackCard({ attackerId: '1', defenderId: '2' }),
     )
 
-    expect(result.cards['3']!.attributes.life).toBe(2)
+    expect(result.cards['3']!.attributes.life).toBe(3)
     expect(result.players['player2'].board).toContain('3')
     expect(result.cards['1']!.attributes.charges).toBe(0)
   })

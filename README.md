@@ -33,7 +33,7 @@ This section documents the currently implemented rules in the engine.
 
 ### Setup and phases
 
-Players start with 30 coins.
+Players start with 30 coins. The second player starts with +1 coin.
 
 1. **Intro**: duel is initialized.
 2. **Initial draw**: both players draw 4 cards.

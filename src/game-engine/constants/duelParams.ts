@@ -12,6 +12,7 @@ export const INITIAL_DUEL_STATE: Readonly<Duel> = {
 
 export const INITIAL_CARDS_TO_DRAW = 4
 export const INITIAL_PLAYER_COINS = 30
+export const SECOND_PLAYER_COIN_BONUS = 1
 
 export const FACTION_BORDER_COLORS: Record<Faction, string> = {
   chaos: 'border-chaos',

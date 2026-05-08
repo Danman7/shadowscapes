@@ -15,8 +15,8 @@
     "paths": {
       "src/*": ["./src/*"]
     },
-    "types": ["@testing-library/jest-dom", "vitest/globals"]
+    "types": ["bun-types", "@testing-library/jest-dom", "vitest/globals"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["dist", "node_modules"]
 }

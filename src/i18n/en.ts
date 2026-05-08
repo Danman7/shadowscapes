@@ -83,7 +83,7 @@ export const messages = {
     haunt: {
       name: 'Haunt',
       description:
-        'While on board, if this card has charges, it attacks any character played by the opponent and consumes a charge.',
+        'While on board, if this card has charges, it deals {damage} damage to any character played by the opponent and consumes a charge.',
       flavor:
         'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
     },
@@ -111,7 +111,7 @@ export const messages = {
     templeGuard: {
       name: 'Temple Guard',
       description:
-        'Gain {buff} life on play if you control fewer cards than your foe. Retaliates when attacked.',
+        'Gain {buff} life on play if you control fewer cards than your foe.',
       flavor:
         'Thy hammer pounds the nail, holds the roof-beam. Thy hammer strikes the iron, shapes the cauldron.',
     },

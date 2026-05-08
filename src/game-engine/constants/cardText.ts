@@ -16,7 +16,9 @@ export const BURRICK_TEXT: CardText = {
 }
 
 export const HAUNT_TEXT: CardText = {
-  description: messages.cards.haunt.description,
+  description: formatString(messages.cards.haunt.description, {
+    damage: balancing.HAUNT_DAMAGE_ON_PLAY,
+  }),
   flavor: messages.cards.haunt.flavor,
 }
 

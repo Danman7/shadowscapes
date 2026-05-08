@@ -3,7 +3,9 @@ import {
   CARD_BASES,
   INITIAL_CARDS_TO_DRAW,
   INITIAL_DUEL_STATE,
+  INITIAL_PLAYER_COINS,
   PLACEHOLDER_PLAYER,
+  SECOND_PLAYER_COIN_BONUS,
 } from 'src/game-engine/constants'
 import {
   PLAYER_1_TEST_DECK,
@@ -47,6 +49,12 @@ test('START_DUEL creates new duel with player names and decks', () => {
   expect(result.players['player1'].hand).toEqual([])
   expect(result.players['player2'].hand).toEqual([])
   expect(result.playerOrder[0]).not.toBe(result.playerOrder[1])
+  expect(result.players[result.playerOrder[0]]!.coins).toBe(
+    INITIAL_PLAYER_COINS,
+  )
+  expect(result.players[result.playerOrder[1]]!.coins).toBe(
+    INITIAL_PLAYER_COINS + SECOND_PLAYER_COIN_BONUS,
+  )
 
   Object.values(result.cards).forEach((card) => {
     expect([...PLAYER_1_TEST_DECK, ...PLAYER_2_TEST_DECK]).toContain(
@@ -290,6 +298,37 @@ describe('SWITCH_TURN', () => {
     expect(result.players['player1'].playerReady).toBe(false)
     expect(result.players['player2'].playerReady).toBe(false)
   })
+
+  test("keeps stunned cards stunned until their owner's next turn", () => {
+    const state = makeTestDuel({
+      playerOrder: ['player1', 'player2'],
+      cards: {
+        c1: createCardInstance('zombie', 'c1', { isStunned: true }),
+        c2: createCardInstance('haunt', 'c2', { isStunned: true }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['c1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['c2'],
+        },
+      },
+    })
+
+    const afterFirstSwitch = duelReducer(state, switchTurn())
+    expect(afterFirstSwitch.cards['c1']!.attributes.isStunned).toBe(true)
+    expect(afterFirstSwitch.cards['c2']!.attributes.isStunned).toBe(false)
+
+    const afterSecondSwitch = duelReducer(afterFirstSwitch, switchTurn())
+    expect(afterSecondSwitch.cards['c1']!.attributes.isStunned).toBe(false)
+  })
 })
 
 describe('PLAY_CARD', () => {
@@ -355,6 +394,15 @@ describe('PLAY_CARD', () => {
     )
 
     expect(result.players['player2']).toEqual(state.players['player2'])
+  })
+
+  test('stuns a played character by default', () => {
+    const result = duelReducer(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'z1' }),
+    )
+
+    expect(result.cards['z1']!.attributes.isStunned).toBe(true)
   })
 })
 
@@ -488,14 +536,14 @@ describe('ATTACK_CARD', () => {
     )
 
     expect(result.cards['z1']!.didAct).toBe(true)
-    expect(result.cards['h1']!.attributes.life).toBe(2)
+    expect(result.cards['h1']!.attributes.life).toBe(3)
   })
 
   test('destroys defender when damage exceeds life', () => {
     const state = makeTestDuel({
       cards: {
         z1: createCardInstance('zombie', 'z1'),
-        z2: createCardInstance('zombie', 'z2'),
+        z2: createCardInstance('zombie', 'z2', { life: 1 }),
       },
       players: {
         player1: {

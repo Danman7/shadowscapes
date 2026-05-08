@@ -261,6 +261,8 @@ export const DuelView: React.FC = () => {
         }
       }
 
+      if (!isActiveBoard) return undefined
+
       return () => {
         dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
       }

@@ -56,7 +56,6 @@ export const goToEndOfTurn: CaseReducer<Duel> = (state) => {
 export const switchTurn: CaseReducer<Duel> = (state) => {
   for (const card of Object.values(state.cards)) {
     card.didAct = false
-    card.attributes.isStunned = false
   }
 
   state.playerOrder = [state.playerOrder[1], state.playerOrder[0]]
@@ -67,6 +66,13 @@ export const switchTurn: CaseReducer<Duel> = (state) => {
 
   const newActiveId = state.playerOrder[0]
   const newActivePlayer = state.players[newActiveId]
+
+  for (const cardId of newActivePlayer.board) {
+    const card = state.cards[cardId]
+    if (!card) continue
+    card.attributes.isStunned = false
+  }
+
   drawCards(newActivePlayer)
 
   state.logs.push(

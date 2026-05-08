@@ -36,8 +36,8 @@ export const MOCK_DUEL_SETUP: CreateDuelParams = [
 export const MOCK_DUEL = createDuel(MOCK_DUEL_SETUP)
 
 export const GAME_DUEL = createDuel([
-  { id: 'player1', name: 'Garrett', deck: PLAYER_1_GAME_DECK },
-  { id: 'player2', name: 'Constantine', deck: PLAYER_2_GAME_DECK },
+  { id: 'player1', name: 'Constantine', deck: PLAYER_1_GAME_DECK },
+  { id: 'player2', name: 'Garrett', deck: PLAYER_2_GAME_DECK },
 ])
 
 export const MOCK_LOGS: string[] = [
