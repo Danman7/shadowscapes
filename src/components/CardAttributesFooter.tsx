@@ -3,14 +3,21 @@ import { FaRegEyeSlash } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
 import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
-import { CARD_ATTRIBUTE_KEYS } from 'src/components/cardAttributeKeys'
+import {
+  CARD_ATTRIBUTE_KEYS,
+  type CardAttributeKey,
+} from 'src/components/cardAttributeKeys'
 import type { CardAttributes, CardType } from 'src/game-engine'
 
-type FooterAttributeKey = Exclude<keyof CardAttributes, 'cost' | 'life'>
+type FooterAttributeKey = Exclude<CardAttributeKey, 'cost' | 'life'>
 
 interface FooterAttributeConfig {
   shouldRender: (attributes: CardAttributes, type: CardType) => boolean
   renderBadge: (attributes: CardAttributes) => React.ReactNode
+}
+
+const getEffectiveStrength = (attributes: CardAttributes): number => {
+  return (attributes.strength ?? 0) + (attributes.nextAttackStrengthBonus ?? 0)
 }
 
 const CARD_FOOTER_ATTRIBUTE_MAP: Record<
@@ -20,14 +27,14 @@ const CARD_FOOTER_ATTRIBUTE_MAP: Record<
   strength: {
     shouldRender: ({ strength }, type) =>
       type === 'Character' && strength !== undefined,
-    renderBadge: ({ isStunned, strength }) =>
-      isStunned ? (
+    renderBadge: (attributes) =>
+      attributes.isStunned ? (
         <div className="badge">
           <GiStarSwirl />
         </div>
       ) : (
         <div className="badge">
-          <FaHandFist /> {strength}
+          <FaHandFist /> {getEffectiveStrength(attributes)}
         </div>
       ),
   },

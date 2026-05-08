@@ -83,7 +83,7 @@ export const messages = {
     haunt: {
       name: 'Haunt',
       description:
-        'While on board, if this card has charges, it deals {damage} damage to any character played by the opponent and consumes a charge.',
+        'When Haunt defeats a character, gain 1 charge. Spend 1 charge: Haunt gains +1 strength for its next attack.',
       flavor:
         'These haunts who inhabit the bodies of my brethren... they must all be killed. -- The apparition of Brother Murus',
     },

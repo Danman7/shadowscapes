@@ -2,7 +2,7 @@ import {
   CARD_BASES,
   INITIAL_DUEL_STATE,
   PLACEHOLDER_PLAYER,
-  SECOND_PLAYER_COIN_BONUS,
+  PLAYER_2_STARTING_COIN_BONUS,
 } from 'src/game-engine/constants'
 import { getOpponentId } from 'src/game-engine/utils/gameQueries'
 import type {
@@ -76,7 +76,7 @@ export const createDuel = (playerSetups: CreateDuelParams): Duel => {
     startingPlayerId,
   )
 
-  players[inactivePlayerId]!.coins += SECOND_PLAYER_COIN_BONUS
+  players[inactivePlayerId]!.coins += PLAYER_2_STARTING_COIN_BONUS
 
   return {
     ...INITIAL_DUEL_STATE,

@@ -315,88 +315,6 @@ const onPlayEffects: Partial<Record<string, CardEffect>> = {
   yoraSkull: yoraSkullEffect,
 }
 
-const applyHauntReactiveEffect = (
-  state: Duel,
-  playerId: PlayerId,
-  cardInstanceId: string,
-): Duel => {
-  const opponentId = getOpponentId(state.playerOrder, playerId)
-  const opponent = state.players[opponentId]
-
-  const hauntsWithCharges = getCardsInStack(
-    opponent.board,
-    state.cards,
-    (card) => {
-      return card.base.id === 'haunt' && (card.attributes.charges ?? 0) > 0
-    },
-  )
-
-  if (hauntsWithCharges.length === 0) return state
-
-  const playedCard = state.cards[cardInstanceId]
-  if (!playedCard || playedCard.attributes.life === undefined) return state
-
-  const newCards = { ...state.cards }
-
-  for (const hauntId of hauntsWithCharges) {
-    const hauntCard = newCards[hauntId]
-    if (!hauntCard) continue
-
-    newCards[hauntId] = {
-      ...hauntCard,
-      attributes: {
-        ...hauntCard.attributes,
-        charges: Math.max(0, (hauntCard.attributes.charges ?? 0) - 1),
-      },
-    }
-  }
-
-  const damage = hauntsWithCharges.length * balancing.HAUNT_DAMAGE_ON_PLAY
-  const newLife = playedCard.attributes.life - damage
-
-  if (newLife <= 0) {
-    newCards[cardInstanceId] = {
-      ...playedCard,
-      attributes: { ...playedCard.attributes, life: 0 },
-    }
-
-    const nextState = {
-      ...state,
-      cards: newCards,
-    }
-
-    addLog(
-      nextState,
-      formatString(messages.cardEffects.hauntReactDefeats, {
-        count: hauntsWithCharges.length,
-        cardName: playedCard.base.name,
-      }),
-    )
-
-    return nextState
-  }
-
-  newCards[cardInstanceId] = {
-    ...playedCard,
-    attributes: { ...playedCard.attributes, life: newLife },
-  }
-  const nextState = {
-    ...state,
-    cards: newCards,
-  }
-
-  addLog(
-    nextState,
-    formatString(messages.cardEffects.hauntReactDamage, {
-      count: hauntsWithCharges.length,
-      cardName: playedCard.base.name,
-      damage,
-    }),
-  )
-
-  return nextState
-}
-
 const applyBurrickAttackEffect = (
   state: Duel,
   prevState: Duel,
@@ -542,7 +460,6 @@ export function applyCardEffects(
     const effect = onPlayEffects[card.base.id]
     let result = effect ? effect(state, playerId, cardInstanceId) : state
 
-    result = applyHauntReactiveEffect(result, playerId, cardInstanceId)
     result = applyMarkanderReactiveEffect(result, playerId, cardInstanceId)
 
     return result

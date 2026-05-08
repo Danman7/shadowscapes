@@ -5,6 +5,7 @@ import {
   INITIAL_DUEL_STATE,
   INITIAL_PLAYER_COINS,
   PLACEHOLDER_PLAYER,
+  PLAYER_2_INITIAL_HAND,
   SECOND_PLAYER_COIN_BONUS,
 } from 'src/game-engine/constants'
 import {
@@ -12,6 +13,7 @@ import {
   PLAYER_2_TEST_DECK,
 } from 'src/game-engine/constants/testDecks'
 import {
+  applyFlashBomb,
   attackCard,
   attackPlayer,
   duelReducer,
@@ -111,7 +113,7 @@ describe('START_INITIAL_DRAW', () => {
       INITIAL_CARDS_TO_DRAW,
     )
     expect(result.players[result.playerOrder[1]].hand).toHaveLength(
-      INITIAL_CARDS_TO_DRAW,
+      PLAYER_2_INITIAL_HAND,
     )
     expect(result.phase).toBe('initial-draw')
   })
@@ -215,7 +217,7 @@ describe('SWITCH_TURN', () => {
     expect(playerOrder[1]).toBe('player2')
   })
 
-  test('draws one card for the new active player', () => {
+  test('skips draw on second player first turn', () => {
     const state = makeTestDuel({
       cards: {
         c1: createCardInstance('cook', 'c1'),
@@ -236,8 +238,8 @@ describe('SWITCH_TURN', () => {
 
     const result = duelReducer(state, switchTurn())
 
-    expect(result.players['player2'].hand).toHaveLength(2)
-    expect(result.players['player2'].deck).toHaveLength(1)
+    expect(result.players['player2'].hand).toHaveLength(1)
+    expect(result.players['player2'].deck).toHaveLength(2)
   })
 
   test('resets didAct flags on all cards', () => {
@@ -328,6 +330,53 @@ describe('SWITCH_TURN', () => {
 
     const afterSecondSwitch = duelReducer(afterFirstSwitch, switchTurn())
     expect(afterSecondSwitch.cards['c1']!.attributes.isStunned).toBe(false)
+  })
+
+  test('flash bomb stun skips the target full next turn', () => {
+    const state = makeTestDuel({
+      playerOrder: ['player1', 'player2'],
+      pendingInstant: 'FLASH_BOMB',
+      cards: {
+        a1: createCardInstance('zombie', 'a1'),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['a1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['t1'],
+        },
+      },
+    })
+
+    const afterFlashBomb = duelReducer(
+      state,
+      applyFlashBomb({ targetCardInstanceId: 't1' }),
+    )
+    expect(afterFlashBomb.cards['t1']!.attributes.isStunned).toBe(true)
+    expect(afterFlashBomb.cards['t1']!.attributes.stunnedTurnsRemaining).toBe(1)
+
+    const onTargetTurn = duelReducer(afterFlashBomb, switchTurn())
+    expect(onTargetTurn.playerOrder[0]).toBe('player2')
+    expect(onTargetTurn.cards['t1']!.attributes.isStunned).toBe(true)
+    expect(onTargetTurn.cards['t1']!.attributes.stunnedTurnsRemaining).toBe(0)
+
+    const attackWhileStunned = duelReducer(
+      onTargetTurn,
+      attackCard({ attackerId: 't1', defenderId: 'a1' }),
+    )
+    expect(attackWhileStunned.cards['a1']!.attributes.life).toBe(2)
+
+    const backToPlayer1 = duelReducer(onTargetTurn, switchTurn())
+    const nextTargetTurn = duelReducer(backToPlayer1, switchTurn())
+    expect(nextTargetTurn.cards['t1']!.attributes.isStunned).toBe(false)
   })
 })
 

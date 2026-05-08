@@ -513,297 +513,13 @@ describe('Zombie effect', () => {
   })
 })
 
-describe('Haunt reactive effect', () => {
-  test('deals fixed damage to the played card', () => {
+describe('Haunt ability effect', () => {
+  test('does not damage cards when opponent plays a character', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
         '1': createCardInstance('templeGuard', '1'),
         '2': createCardInstance('haunt', '2'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['1']!.attributes.life).toBe(3)
-    expect(result.players['player1'].board).toContain('1')
-  })
-
-  test('damages the played card when haunt damage does not exceed its life', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('zombie', '1'),
-        '2': createCardInstance('haunt', '2'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.players['player1'].board).toContain('1')
-    expect(result.players['player1'].discard).not.toContain('1')
-    expect(result.cards['1']!.attributes.life).toBe(1)
-  })
-
-  test('multiple haunts deal cumulative damage', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('templeGuard', '1'),
-        '2': createCardInstance('haunt', '2'),
-        '3': createCardInstance('haunt', '3'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2', '3'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['1']!.attributes.life).toBe(3)
-  })
-
-  test('ignores haunt strength and applies fixed damage per haunt', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('templeGuard', '1'),
-        '2': createCardInstance('haunt', '2', { strength: 3 }),
-        '3': createCardInstance('haunt', '3'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2', '3'],
-          discard: [],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['1']!.attributes.life).toBe(3)
-    expect(result.players['player1'].board).toContain('1')
-  })
-
-  test('does not damage summoned cards from zombie effect', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('zombie', '1'),
-        '2': createCardInstance('zombie', '2'),
-        '3': createCardInstance('haunt', '3'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: ['2'],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['3'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['2']!.attributes.life).toBe(2)
-    expect(result.players['player1'].board).toContain('2')
-  })
-
-  test('does not damage summoned cards from novice effect', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('novice', '1'),
-        '2': createCardInstance('novice', '2'),
-        '3': createCardInstance('templeGuard', '3'),
-        '4': createCardInstance('haunt', '4'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1', '2'],
-          board: ['3'],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['4'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['2']!.attributes.life).toBe(2)
-    expect(result.players['player1'].board).toContain('2')
-  })
-
-  test('does not react to instant cards', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('bookOfAsh', '1'),
-        '2': createCardInstance('haunt', '2'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.players['player1'].discard).toContain('1')
-  })
-
-  test('reduces haunt charges by 1 when reacting', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('templeGuard', '1'),
-        '2': createCardInstance('haunt', '2'),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          hand: ['1'],
-          board: [],
-          deck: [],
-          discard: [],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-          board: ['2'],
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      playCard({ playerId: 'player1', cardInstanceId: '1' }),
-    )
-
-    expect(result.cards['2']!.attributes.charges).toBe(0)
-  })
-
-  test('does not react when charges is 0', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        '1': createCardInstance('templeGuard', '1'),
-        '2': createCardInstance('haunt', '2', { charges: 0 }),
       },
       players: {
         player1: {
@@ -831,6 +547,137 @@ describe('Haunt reactive effect', () => {
 
     expect(result.cards['1']!.attributes.life).toBe(4)
     expect(result.players['player1'].board).toContain('1')
+  })
+
+  test('gains 1 charge when haunt defeats a character', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        h1: createCardInstance('haunt', 'h1', { charges: 0 }),
+        z1: createCardInstance('zombie', 'z1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['h1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['z1'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'h1', defenderId: 'z1' }),
+    )
+
+    expect(result.cards['h1']!.attributes.charges).toBe(1)
+    expect(result.players['player2'].discard).toContain('z1')
+  })
+
+  test('does not gain charge if haunt does not defeat the target', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        h1: createCardInstance('haunt', 'h1', { charges: 0 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['h1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['t1'],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'h1', defenderId: 't1' }),
+    )
+
+    expect(result.cards['h1']!.attributes.charges).toBe(0)
+  })
+
+  test('spends 1 charge and arms +1 strength for next attack', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        h1: createCardInstance('haunt', 'h1', { charges: 1 }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['h1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      activateCharacterAbility({ cardInstanceId: 'h1' }),
+    )
+
+    expect(result.cards['h1']!.attributes.charges).toBe(0)
+    expect(result.cards['h1']!.attributes.nextAttackStrengthBonus).toBe(1)
+  })
+
+  test('applies +1 strength on next attack and then removes the bonus', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        h1: createCardInstance('haunt', 'h1', {
+          charges: 0,
+          nextAttackStrengthBonus: 1,
+        }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['h1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['t1'],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'h1', defenderId: 't1' }),
+    )
+
+    expect(result.cards['t1']!.attributes.life).toBe(1)
+    expect(
+      result.cards['h1']!.attributes.nextAttackStrengthBonus,
+    ).toBeUndefined()
   })
 })
 
@@ -1114,7 +961,7 @@ describe("Mystic's Soul effect", () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['2']!.attributes.charges).toBe(2)
+    expect(result.cards['2']!.attributes.charges).toBe(1)
     expect(result.cards['3']!.attributes.charges).toBe(2)
     expect(result.cards['4']!.attributes.charges).toBeUndefined()
     expect(result.players['player1'].discard).toContain('1')
@@ -1152,8 +999,8 @@ describe("Mystic's Soul effect", () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['2']!.attributes.charges).toBe(2)
-    expect(result.cards['3']!.attributes.charges).toBe(1)
+    expect(result.cards['2']!.attributes.charges).toBe(1)
+    expect(result.cards['3']!.attributes.charges).toBe(0)
   })
 
   test('does nothing when no board cards have charges', () => {
@@ -1658,7 +1505,7 @@ describe('Haunt does not react to instant cards without strength', () => {
       playCard({ playerId: 'player1', cardInstanceId: '1' }),
     )
 
-    expect(result.cards['2']!.attributes.charges).toBe(1)
+    expect(result.cards['2']!.attributes.charges).toBe(0)
   })
 })
 

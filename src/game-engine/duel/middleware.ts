@@ -61,6 +61,34 @@ export const cardEffectsMiddleware: Middleware<object, { duel: Duel }> =
         return result
       }
 
+      const canUseHauntAbility =
+        activePlayer.board.includes(clickedCardId) &&
+        clickedCard?.base.id === 'haunt' &&
+        clickedCard.didAct !== true &&
+        clickedCard.attributes.isStunned !== true &&
+        (clickedCard.attributes.charges ?? 0) > 0
+
+      if (canUseHauntAbility) {
+        const updatedDuel: Duel = {
+          ...currentDuel,
+          cards: {
+            ...currentDuel.cards,
+            [clickedCardId]: {
+              ...clickedCard,
+              attributes: {
+                ...clickedCard.attributes,
+                charges: (clickedCard.attributes.charges ?? 0) - 1,
+                nextAttackStrengthBonus:
+                  (clickedCard.attributes.nextAttackStrengthBonus ?? 0) + 1,
+              },
+            },
+          },
+        }
+
+        next(_applyEffects(updatedDuel))
+        return result
+      }
+
       const pendingCharacterAbility = currentDuel.pendingCharacterAbility
       if (
         pendingCharacterAbility !== null &&

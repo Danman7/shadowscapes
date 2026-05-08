@@ -23,8 +23,12 @@ export const PLAYER_1_GAME_DECK: CardBaseId[] = [
   'zombie',
   'haunt',
   'haunt',
+  'burrick',
+  'burrick',
   'mysticsSoul',
   'speedPotion',
+  'cook',
+  'flashBomb',
 ]
 
 export const PLAYER_2_GAME_DECK: CardBaseId[] = [
@@ -33,5 +37,8 @@ export const PLAYER_2_GAME_DECK: CardBaseId[] = [
   'templeGuard',
   'templeGuard',
   'yoraSkull',
+  'markander',
   'speedPotion',
+  'cook',
+  'flashBomb',
 ]

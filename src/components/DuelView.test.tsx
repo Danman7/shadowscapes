@@ -14,7 +14,6 @@ import {
   MOCK_DUEL,
   MOCK_DUEL as preloadedState,
   MOCK_DUEL_SETUP,
-  SECOND_PLAYER_COIN_BONUS,
 } from 'src/game-engine'
 import {
   activateCharacterAbility,
@@ -49,10 +48,7 @@ test('displays player info in game view', () => {
 
   expect(getByText(preloadedState.players.player1.name)).toBeInTheDocument()
   expect(getByText(preloadedState.players.player2.name)).toBeInTheDocument()
-  expect(getAllByText(INITIAL_PLAYER_COINS)).toHaveLength(1)
-  expect(
-    getByText(INITIAL_PLAYER_COINS + SECOND_PLAYER_COIN_BONUS),
-  ).toBeInTheDocument()
+  expect(getAllByText(INITIAL_PLAYER_COINS)).toHaveLength(2)
 })
 
 test('renders deck and discard piles for both players', () => {

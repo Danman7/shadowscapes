@@ -18,13 +18,11 @@ export const HAUNT_ATTRIBUTES: CardAttributes = {
   cost: 3,
   life: 4,
   strength: 2,
-  charges: 1,
+  charges: 0,
 }
 
-export const HAUNT_DAMAGE_ON_PLAY = 1
-
 export const MYSTICS_SOUL_ATTRIBUTES: CardAttributes = {
-  cost: 3,
+  cost: 2,
 }
 export const MYSTICS_SOUL_BONUS_CHARGES = 1
 

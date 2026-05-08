@@ -39,7 +39,9 @@ export interface CardAttributes {
   cost: number
   life?: number
   strength?: number
+  nextAttackStrengthBonus?: number
   charges?: number
+  stunnedTurnsRemaining?: number
   hasHaste?: boolean
   isHidden?: boolean
   isStunned?: boolean

@@ -42,6 +42,10 @@ export const applyFlashBomb: CaseReducer<
   state.pendingInstant = null
   state.pendingCharacterAbility = null
   card.attributes.isStunned = true
+  card.attributes.stunnedTurnsRemaining = Math.max(
+    card.attributes.stunnedTurnsRemaining ?? 0,
+    1,
+  )
   card.didAct = true
 
   state.logs.push(

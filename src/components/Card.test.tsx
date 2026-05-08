@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import { Card } from 'src/components'
 import type { CardInstance } from 'src/game-engine'
 import { CARD_BASES, createCardInstance } from 'src/game-engine'
+import { messages } from 'src/i18n'
 
 let mockCharacterCard: CardInstance
 let mockInstantCard: CardInstance
@@ -88,4 +89,21 @@ test('renders exhausted board character sideways with reduced opacity', () => {
   const cardElement = getByTestId('card')
   expect(cardElement).toHaveClass('rotate-90')
   expect(cardElement).toHaveClass('opacity-50')
+})
+
+test('renders boosted effective strength when next attack bonus is active', () => {
+  const hauntCard = createCardInstance('haunt')
+  const cardWithBonus = {
+    ...hauntCard,
+    attributes: {
+      ...hauntCard.attributes,
+      nextAttackStrengthBonus: 1,
+    },
+  }
+
+  const { getByText } = render(<Card card={cardWithBonus} />)
+
+  expect(
+    getByText(`3 - ${messages.ui.strengthDescription}`),
+  ).toBeInTheDocument()
 })

@@ -1,4 +1,7 @@
-import { CARD_ATTRIBUTE_KEYS } from 'src/components/cardAttributeKeys'
+import {
+  CARD_ATTRIBUTE_KEYS,
+  type CardAttributeKey,
+} from 'src/components/cardAttributeKeys'
 import type { CardAttributes } from 'src/game-engine'
 import { formatString, messages } from 'src/i18n'
 
@@ -8,7 +11,11 @@ interface CardAttributeConfig {
   renderValue: (attributes: CardAttributes) => React.ReactNode
 }
 
-const CARD_ATTRIBUTE_MAP: Record<keyof CardAttributes, CardAttributeConfig> = {
+const getEffectiveStrength = (attributes: CardAttributes): number => {
+  return (attributes.strength ?? 0) + (attributes.nextAttackStrengthBonus ?? 0)
+}
+
+const CARD_ATTRIBUTE_MAP: Record<CardAttributeKey, CardAttributeConfig> = {
   cost: {
     label: messages.ui.cost,
     shouldRender: () => true,
@@ -23,8 +30,8 @@ const CARD_ATTRIBUTE_MAP: Record<keyof CardAttributes, CardAttributeConfig> = {
   strength: {
     label: messages.ui.strength,
     shouldRender: ({ strength }) => strength !== undefined,
-    renderValue: ({ strength }) =>
-      `${strength} - ${messages.ui.strengthDescription}`,
+    renderValue: (attributes) =>
+      `${getEffectiveStrength(attributes)} - ${messages.ui.strengthDescription}`,
   },
   charges: {
     label: messages.ui.charges,

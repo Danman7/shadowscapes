@@ -103,9 +103,16 @@ export const attackCard: CaseReducer<
 
   attacker.didAct = true
 
-  const defenderNewLife =
-    defender.attributes.life - attacker.attributes.strength
+  const attackStrength =
+    attacker.attributes.strength +
+    (attacker.attributes.nextAttackStrengthBonus ?? 0)
+
+  const defenderNewLife = defender.attributes.life - attackStrength
   const isDefenderDefeated = defenderNewLife <= 0
+
+  if ((attacker.attributes.nextAttackStrengthBonus ?? 0) > 0) {
+    attacker.attributes.nextAttackStrengthBonus = undefined
+  }
 
   if (isDefenderDefeated) {
     state.cards[defenderId] = resetCharacterAttributes(defender)
@@ -115,6 +122,10 @@ export const attackCard: CaseReducer<
       (id) => id !== defenderId,
     )
     inactivePlayer.discard.push(defenderId)
+
+    if (attacker.base.id === 'haunt') {
+      attacker.attributes.charges = (attacker.attributes.charges ?? 0) + 1
+    }
   } else {
     defender.attributes.life = defenderNewLife
   }
@@ -128,7 +139,7 @@ export const attackCard: CaseReducer<
       : formatString(messages.reducer.attackCardDamage, {
           attackerName: attacker.base.name,
           defenderName: defender.base.name,
-          damage: attacker.attributes.strength,
+          damage: attackStrength,
         }),
   )
 }
@@ -143,6 +154,10 @@ export const attackPlayer: CaseReducer<
   if (!attacker || attacker.attributes.isStunned) return
 
   attacker.didAct = true
+
+  if ((attacker.attributes.nextAttackStrengthBonus ?? 0) > 0) {
+    attacker.attributes.nextAttackStrengthBonus = undefined
+  }
 
   const inactiveId = state.playerOrder[1]
   const inactivePlayer = state.players[inactiveId]
