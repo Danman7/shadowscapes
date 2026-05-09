@@ -1,13 +1,14 @@
 Name,Cost,Life,Strength,Ability,Charges,Faction,Categories,Type,Is Elite?
 Zombie,1,2,1,"On play, summon all Zombies from your discard pile.",,Chaos,Undead,Character,
-Burrick,2,3,1,"During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.",1,Chaos,Beast,Character,
-Guardian Statue,2,3,2,"This card can't attack. Whenever an enemy character attacks this card, it retaliates.",,Chaos,Elemental,Character,
-Haunt,3,4,2,"When Haunt defeats a character, gain 1 charge. Spend 1 charge: Haunt gains +1 strength for its next attack.",0,Chaos,"Undead, Hammerite",Character,
+Burrick,3,3,1,"During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.",1,Chaos,Beast,Character,
+Mines Guardian,2,3,1,,,Chaos,Undead,Character,
+Guardian Statue,2,3,2,,,Chaos,Elemental,Character,
+Haunt,4,4,2,"When Haunt defeats a character, gain 1 charge. Spend 1 charge: Haunt gains +1 strength for its next attack.",0,Chaos,"Undead, Hammerite",Character,
 Mystic's Soul,2,,,All allied characters on board gain 1 charge.,,Chaos,Artifact,Instant,Yes
 Book of Ash,4,,,Create and summon a copy of a common undead from your discard pile.,,Chaos,"Necromancer, Artifact",Instant,Yes
 Novice,1,2,1,"On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.",,Order,Hammerite,Character,
-Elevated Acolyte,2,3,1,"While alone on the board, it gains haste and +1 strength.",,Order,Hammerite,Character,
-Temple Guard,3,4,2,Gain 1 life on play if you control fewer cards than your foe.,,Order,Hammerite,Character,
+Elevated Acolyte,2,3,1,"While alone on the board, it gains haste. If opponent has cards on board, also gain +1 strength.",,Order,Hammerite,Character,
+Temple Guard,4,4,2,Gain 1 life on play if you control fewer cards than your foe.,,Order,Hammerite,Character,
 Sachelman,5,4,1,"On play, give 1 life to all Hammerites you control with less life than this card.",,Order,"Hammerite, Brother",Character,Yes
 Saint Yora's Skull,3,,,Give 1 life to all Hammerites you control.,,Order,"Hammerite, Artifact",Instant,Yes
 Markander,5,4,1,"Loose a charge each time a Hammerite is played. At 0 charges, summon this card to the board.",5,Order,"Hammerite, High, Priest",Character,Yes

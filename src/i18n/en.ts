@@ -125,7 +125,8 @@ export const messages = {
     },
     elevatedAcolyte: {
       name: 'Elevated Acolyte',
-      description: 'While alone on the board, it gains haste and +1 strength.',
+      description:
+        'While alone on the board, it gains haste. If opponent has cards on board, also gain +1 strength.',
       flavor:
         'He will endure a standard three-year contract of service, at the end of which he will be considered for indoctrination as an Elevated Acolyte. -- Brother Sachelman',
     },

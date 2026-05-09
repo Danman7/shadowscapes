@@ -1763,7 +1763,7 @@ describe('Guardian Statue retaliation effect', () => {
 })
 
 describe('Elevated Acolyte on-play solo bonus', () => {
-  test('gains haste and +1 strength when played alone', () => {
+  test('gains haste when played alone', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
@@ -1784,6 +1784,42 @@ describe('Elevated Acolyte on-play solo bonus', () => {
           id: 'player2',
           name: 'Bob',
           board: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'e1' }),
+    )
+
+    expect(result.cards['e1']!.attributes.hasHaste).toBe(true)
+    expect(result.cards['e1']!.attributes.strength).toBe(1)
+    expect(result.cards['e1']!.attributes.isStunned).toBe(false)
+  })
+
+  test('gains haste and +1 strength when played alone when opponent has cards on board', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        e1: createCardInstance('elevatedAcolyte', 'e1'),
+        z1: createCardInstance('zombie', 'z1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          hand: ['e1'],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['z1'],
         },
       },
     })

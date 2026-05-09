@@ -191,6 +191,48 @@ const noviceEffect: CardEffect = (state, playerId, cardInstanceId) => {
   return nextState
 }
 
+const acolyteEffect: CardEffect = (state, playerId, cardInstanceId) => {
+  const player = state.players[playerId]
+  const aliveAlliedCharacters = getCardsInStack(
+    player.board,
+    state.cards,
+    (card) => {
+      return card.base.type === 'Character' && (card.attributes.life ?? 0) > 0
+    },
+  )
+
+  const shouldGainBuff =
+    aliveAlliedCharacters.length === 1 &&
+    aliveAlliedCharacters[0] === cardInstanceId
+
+  if (!shouldGainBuff) return state
+
+  const card = state.cards[cardInstanceId]
+  if (!card || card.attributes.strength === undefined) return state
+
+  const opponentId = getOpponentId(state.playerOrder, playerId)
+  const opponent = state.players[opponentId]
+  const updatedStrength: number = opponent.board.length
+    ? card.attributes.strength + 1
+    : card.attributes.strength
+
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [cardInstanceId]: {
+        ...card,
+        attributes: {
+          ...card.attributes,
+          hasHaste: true,
+          isStunned: false,
+          strength: updatedStrength,
+        },
+      },
+    },
+  }
+}
+
 const sachelmanEffect: CardEffect = (state, playerId, cardInstanceId) => {
   const player = state.players[playerId]
   const playedCard = state.cards[cardInstanceId]
@@ -333,41 +375,7 @@ const onPlayEffects: Partial<Record<string, CardEffect>> = {
   cook: cookEffect,
   zombie: zombieEffect,
   novice: noviceEffect,
-  elevatedAcolyte: (state, playerId, cardInstanceId) => {
-    const player = state.players[playerId]
-    const aliveAlliedCharacters = getCardsInStack(
-      player.board,
-      state.cards,
-      (card) => {
-        return card.base.type === 'Character' && (card.attributes.life ?? 0) > 0
-      },
-    )
-
-    const shouldGainBuff =
-      aliveAlliedCharacters.length === 1 &&
-      aliveAlliedCharacters[0] === cardInstanceId
-
-    if (!shouldGainBuff) return state
-
-    const card = state.cards[cardInstanceId]
-    if (!card || card.attributes.strength === undefined) return state
-
-    return {
-      ...state,
-      cards: {
-        ...state.cards,
-        [cardInstanceId]: {
-          ...card,
-          attributes: {
-            ...card.attributes,
-            hasHaste: true,
-            isStunned: false,
-            strength: card.attributes.strength + 1,
-          },
-        },
-      },
-    }
-  },
+  elevatedAcolyte: acolyteEffect,
   sachelman: sachelmanEffect,
   mysticsSoul: mysticsSoulEffect,
   templeGuard: templeGuardEffect,
