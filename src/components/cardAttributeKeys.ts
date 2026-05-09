@@ -6,6 +6,8 @@ export const CARD_ATTRIBUTE_KEYS = [
   'strength',
   'charges',
   'hasHaste',
+  'cannotAttack',
+  'retaliates',
   'isStunned',
   'isHidden',
 ] as const satisfies ReadonlyArray<keyof CardAttributes>

@@ -1694,3 +1694,255 @@ describe('applyCardEffects PLAY_CARD with missing card instance', () => {
     )
   })
 })
+
+describe('Guardian Statue retaliation effect', () => {
+  test('damages attacker when guardian statue is attacked', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      cards: {
+        a1: createCardInstance('haunt', 'a1'),
+        g1: createCardInstance('guardianStatue', 'g1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['a1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['g1'],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'a1', defenderId: 'g1' }),
+    )
+
+    expect(result.cards['a1']!.attributes.life).toBe(2)
+  })
+
+  test('defeats attacker when retaliation damage is lethal', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      cards: {
+        z1: createCardInstance('zombie', 'z1', { life: 2 }),
+        g1: createCardInstance('guardianStatue', 'g1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['z1'],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['g1'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'z1', defenderId: 'g1' }),
+    )
+
+    expect(result.players['player1'].board).not.toContain('z1')
+    expect(result.players['player1'].discard).toContain('z1')
+  })
+})
+
+describe('Elevated Acolyte on-play solo bonus', () => {
+  test('gains haste and +1 strength when played alone', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        e1: createCardInstance('elevatedAcolyte', 'e1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          hand: ['e1'],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'e1' }),
+    )
+
+    expect(result.cards['e1']!.attributes.hasHaste).toBe(true)
+    expect(result.cards['e1']!.attributes.strength).toBe(2)
+    expect(result.cards['e1']!.attributes.isStunned).toBe(false)
+  })
+
+  test('does not gain bonus when another allied character is already on board', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        e1: createCardInstance('elevatedAcolyte', 'e1'),
+        z1: createCardInstance('zombie', 'z1', { life: 2 }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          hand: ['e1'],
+          board: ['z1'],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'e1' }),
+    )
+
+    expect(result.cards['e1']!.attributes.hasHaste).toBeUndefined()
+    expect(result.cards['e1']!.attributes.strength).toBe(1)
+    expect(result.cards['e1']!.attributes.isStunned).toBe(true)
+  })
+
+  test('keeps gained bonus after another ally appears later', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        e1: createCardInstance('elevatedAcolyte', 'e1', {
+          hasHaste: true,
+          isStunned: false,
+          strength: 2,
+        }),
+        z1: createCardInstance('zombie', 'z1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          hand: ['z1'],
+          board: ['e1'],
+          deck: [],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      playCard({ playerId: 'player1', cardInstanceId: 'z1' }),
+    )
+
+    expect(result.cards['e1']!.attributes.hasHaste).toBe(true)
+    expect(result.cards['e1']!.attributes.strength).toBe(2)
+    expect(result.cards['e1']!.attributes.isStunned).toBe(false)
+  })
+})
+
+describe('Mines Guardian final attack effect', () => {
+  test('damages attacker when mines guardian is defeated by normal attack', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      cards: {
+        a1: createCardInstance('haunt', 'a1', { life: 4 }),
+        m1: createCardInstance('minesGuardian', 'm1', { life: 1 }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['a1'],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['m1'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'a1', defenderId: 'm1' }),
+    )
+
+    expect(result.cards['a1']!.attributes.life).toBe(3)
+  })
+
+  test('does not trigger when attack source is an ability', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      cards: {
+        b1: createCardInstance('burrick', 'b1', { life: 3, charges: 1 }),
+        m1: createCardInstance('minesGuardian', 'm1', { life: 1 }),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['b1'],
+          discard: [],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['m1'],
+          discard: [],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({
+        attackerId: 'b1',
+        defenderId: 'm1',
+        source: 'burrick-ability',
+      }),
+    )
+
+    expect(result.cards['b1']!.attributes.life).toBe(3)
+  })
+})

@@ -64,6 +64,8 @@ export const messages = {
     stunnedDescription: 'Cannot act this turn.',
     hidden: 'Hidden',
     hiddenDescription: 'Cannot be targeted. Can attack the player directly.',
+    cannotAttack: 'This character cannot attack.',
+    retaliates: 'This character hits back when attacked.',
   },
 
   cards: {
@@ -79,6 +81,19 @@ export const messages = {
         'During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.',
       flavor:
         'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
+    },
+    minesGuardian: {
+      name: 'Mines Guardian',
+      description:
+        'When defeated, this card attacks the last enemy that attacked it before being discarded.',
+      flavor:
+        "The Hammers don't venture into these lower mine levels becausethey're reputed to be haunted.",
+    },
+    guardianStatue: {
+      name: 'Guardian Statue',
+      description: '',
+      flavor:
+        "He upon whom the gaze of the Guardians falls, he shall be destroyed. -- Words edged in stone at the entrance to the Mystic's Heart chamber",
     },
     haunt: {
       name: 'Haunt',
@@ -107,6 +122,12 @@ export const messages = {
         'On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.',
       flavor:
         'This novice has been instructed in the rules and strictures of the Order and has sworn his warrants to be silent in his vigils.',
+    },
+    elevatedAcolyte: {
+      name: 'Elevated Acolyte',
+      description: 'While alone on the board, it gains haste and +1 strength.',
+      flavor:
+        'He will endure a standard three-year contract of service, at the end of which he will be considered for indoctrination as an Elevated Acolyte. -- Brother Sachelman',
     },
     templeGuard: {
       name: 'Temple Guard',

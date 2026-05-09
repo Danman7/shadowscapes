@@ -6,7 +6,7 @@ import type { CardAttributes } from 'src/game-engine'
 import { formatString, messages } from 'src/i18n'
 
 interface CardAttributeConfig {
-  label: string
+  label?: string
   shouldRender: (attributes: CardAttributes) => boolean
   renderValue: (attributes: CardAttributes) => React.ReactNode
 }
@@ -43,6 +43,14 @@ const CARD_ATTRIBUTE_MAP: Record<CardAttributeKey, CardAttributeConfig> = {
     shouldRender: ({ hasHaste }) => hasHaste === true,
     renderValue: () => messages.ui.hasteDescription,
   },
+  cannotAttack: {
+    shouldRender: ({ cannotAttack }) => cannotAttack === true,
+    renderValue: () => messages.ui.cannotAttack,
+  },
+  retaliates: {
+    shouldRender: ({ retaliates }) => retaliates === true,
+    renderValue: () => messages.ui.retaliates,
+  },
   isStunned: {
     label: messages.ui.stunned,
     shouldRender: ({ isStunned }) => isStunned === true,
@@ -65,6 +73,10 @@ export const CardAttributesDetails: React.FC<{
           CARD_ATTRIBUTE_MAP[attributeKey]
 
         if (!shouldRender(attributes)) return null
+
+        if (!label) {
+          return <p key={attributeKey}>{renderValue(attributes)}</p>
+        }
 
         return (
           <p key={attributeKey}>

@@ -15,6 +15,16 @@ export const BURRICK_TEXT: CardText = {
   flavor: messages.cards.burrick.flavor,
 }
 
+export const GUARDIAN_STATUE_TEXT: CardText = {
+  description: messages.cards.guardianStatue.description,
+  flavor: messages.cards.guardianStatue.flavor,
+}
+
+export const MINES_GUARDIAN_TEXT: CardText = {
+  description: '',
+  flavor: messages.cards.minesGuardian.flavor,
+}
+
 export const HAUNT_TEXT: CardText = {
   description: messages.cards.haunt.description,
   flavor: messages.cards.haunt.flavor,
@@ -35,6 +45,11 @@ export const BOOK_OF_ASH_TEXT: CardText = {
 export const NOVICE_TEXT: CardText = {
   description: messages.cards.novice.description,
   flavor: messages.cards.novice.flavor,
+}
+
+export const ELEVATED_ACOLYTE_TEXT: CardText = {
+  description: messages.cards.elevatedAcolyte.description,
+  flavor: messages.cards.elevatedAcolyte.flavor,
 }
 
 export const TEMPLE_GUARD_TEXT: CardText = {

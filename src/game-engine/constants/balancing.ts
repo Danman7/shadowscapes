@@ -8,14 +8,28 @@ export const ZOMBIE_ATTRIBUTES: CardAttributes = {
 }
 
 export const BURRICK_ATTRIBUTES: CardAttributes = {
-  cost: 2,
+  cost: 3,
   life: 3,
   strength: 1,
   charges: 1,
 }
 
+export const MINES_GUARDIAN_ATTRIBUTES: CardAttributes = {
+  cost: 2,
+  life: 3,
+  strength: 1,
+}
+
+export const GUARDIAN_STATUE_ATTRIBUTES: CardAttributes = {
+  cost: 2,
+  life: 3,
+  strength: 2,
+  cannotAttack: true,
+  retaliates: true,
+}
+
 export const HAUNT_ATTRIBUTES: CardAttributes = {
-  cost: 3,
+  cost: 4,
   life: 4,
   strength: 2,
   charges: 0,
@@ -38,8 +52,14 @@ export const NOVICE_ATTRIBUTES: CardAttributes = {
   strength: 1,
 }
 
+export const ELEVATED_ACOLYTE_ATTRIBUTES = {
+  cost: 2,
+  life: 3,
+  strength: 1,
+}
+
 export const TEMPLE_GUARD_ATTRIBUTES: CardAttributes = {
-  cost: 3,
+  cost: 4,
   life: 4,
   strength: 2,
 }

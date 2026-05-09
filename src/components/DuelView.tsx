@@ -274,6 +274,7 @@ export const DuelView: React.FC = () => {
       const cardInstance = activeBoard.find((c) => c.id === cardId)
       if (
         !cardInstance ||
+        cardInstance.attributes.cannotAttack === true ||
         cardInstance.didAct ||
         cardInstance.attributes.isStunned
       )

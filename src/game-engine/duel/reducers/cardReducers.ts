@@ -101,6 +101,8 @@ export const attackCard: CaseReducer<
   )
     return
 
+  if (attacker.attributes.cannotAttack === true) return
+
   attacker.didAct = true
 
   const attackStrength =
@@ -152,6 +154,7 @@ export const attackPlayer: CaseReducer<
   const attacker = state.cards[attackerId]
 
   if (!attacker || attacker.attributes.isStunned) return
+  if (attacker.attributes.cannotAttack === true) return
 
   attacker.didAct = true
 

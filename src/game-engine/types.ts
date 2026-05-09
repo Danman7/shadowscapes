@@ -13,12 +13,14 @@ export type CardCategory =
   | 'Brother'
   | 'Beast'
   | 'Equipment'
+  | 'Elemental'
 
 export type CardBaseId =
   | 'zombie'
   | 'haunt'
   | 'cook'
   | 'novice'
+  | 'elevatedAcolyte'
   | 'templeGuard'
   | 'sachelman'
   | 'yoraSkull'
@@ -29,6 +31,8 @@ export type CardBaseId =
   | 'mysticsSoul'
   | 'speedPotion'
   | 'flashBomb'
+  | 'guardianStatue'
+  | 'minesGuardian'
 
 export interface CardText {
   description: string
@@ -43,6 +47,8 @@ export interface CardAttributes {
   charges?: number
   stunnedTurnsRemaining?: number
   hasHaste?: boolean
+  cannotAttack?: boolean
+  retaliates?: boolean
   isHidden?: boolean
   isStunned?: boolean
 }

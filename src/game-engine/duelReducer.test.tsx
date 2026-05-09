@@ -649,6 +649,39 @@ describe('ATTACK_CARD', () => {
     expect(result.players['player1'].board).toContain('z1')
     expect(result.players['player1'].discard).not.toContain('z1')
   })
+
+  test('guardian statue cannot attack characters', () => {
+    const state = makeTestDuel({
+      cards: {
+        g1: createCardInstance('guardianStatue', 'g1'),
+        z1: createCardInstance('zombie', 'z1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['g1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['z1'],
+        },
+      },
+    })
+
+    const result = duelReducer(
+      state,
+      attackCard({ attackerId: 'g1', defenderId: 'z1' }),
+    )
+
+    expect(result.cards['g1']!.didAct).toBe(false)
+    expect(result.cards['z1']!.attributes.life).toBe(
+      state.cards['z1']!.attributes.life,
+    )
+  })
 })
 
 describe('ATTACK_PLAYER', () => {
@@ -699,6 +732,31 @@ describe('ATTACK_PLAYER', () => {
     const result = duelReducer(state, attackPlayer({ attackerId: 'z1' }))
 
     expect(result.players['player2'].coins).toBe(0)
+  })
+
+  test('guardian statue cannot attack player', () => {
+    const state = makeTestDuel({
+      cards: { g1: createCardInstance('guardianStatue', 'g1') },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['g1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          coins: 5,
+        },
+      },
+    })
+
+    const result = duelReducer(state, attackPlayer({ attackerId: 'g1' }))
+
+    expect(result.cards['g1']!.didAct).toBe(false)
+    expect(result.players['player2'].coins).toBe(5)
   })
 })
 

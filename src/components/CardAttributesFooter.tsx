@@ -2,6 +2,8 @@ import { BsLightningFill } from 'react-icons/bs'
 import { FaRegEyeSlash } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
 import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
+import { PiArrowsClockwiseFill } from 'react-icons/pi'
+import { TbSwordOff } from 'react-icons/tb'
 
 import {
   CARD_ATTRIBUTE_KEYS,
@@ -51,6 +53,22 @@ const CARD_FOOTER_ATTRIBUTE_MAP: Record<
     renderBadge: () => (
       <div className="badge">
         <GiWingfoot />
+      </div>
+    ),
+  },
+  cannotAttack: {
+    shouldRender: ({ cannotAttack }) => cannotAttack === true,
+    renderBadge: () => (
+      <div className="badge">
+        <TbSwordOff />
+      </div>
+    ),
+  },
+  retaliates: {
+    shouldRender: ({ retaliates }) => retaliates === true,
+    renderBadge: () => (
+      <div className="badge">
+        <PiArrowsClockwiseFill />
       </div>
     ),
   },

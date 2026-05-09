@@ -1,15 +1,17 @@
-Name,Cost,Life,Strength,Ability,Idea,Approx. Value,Charges,Faction,Categories,Type,Is Elite?
-Zombie,1,2,1,"On play, summon all Zombies from your discard pile.","Keep returning to play, winning trough steady numbers and potential boosts.","1 for 1 coin, 3 for 2 coins if the second one resurrects the first.",,Chaos,Undead,Character,
-Burrick,2,3,1,"During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.",Ranged anti-swarm.,"2 for 2, potentially 5 for 2 if they get to trigger ability on 3 cards.",1,Chaos,Beast,Character,
-Haunt,3,4,2,"When Haunt defeats a character, gain 1 charge. Spend 1 charge: Haunt gains +1 strength for its next attack.",Low-level durable fighter.,"3 life for 3 coins, deals 2 damage, so potential 4 damage if they attack once and ability activates. 6 if they attack twice.",0,Chaos,"Undead, Hammerite",Character,
-Mystic's Soul,2,,,All allied characters on board gain 1 charge.,Reset charges based play.,+2 charges potential if 2 such cards on board.,,Chaos,Artifact,Instant,Yes
-Book of Ash,4,,,Create and summon a copy of a common undead from your discard pile.,"Play into undead theme. Boos zombies, get extra Haung","For 4 coins you can get to summon 3 Zombies potential, or an extra Haunt",,Chaos,"Necromancer, Artifact",Instant,Yes
-Novice,1,2,1,"On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.",Swarm if supported.,"1 for 1, 2 for 1 if ability activates.",,Order,Hammerite,Character,
-Temple Guard,3,4,2,Gain 1 life on play if you control fewer cards than your foe.,Low-level durable fighter with defensive buff.,"3 for 3, 4 for 3 if less cards on board.",,Order,Hammerite,Character,
-Sachelman,5,4,1,"On play, give 1 life to all Hammerites you control with less life than this card.",Prolong multiple Hammerites’ stay on board.,"3 for 5 if alone, but potentially 6 for 5 if 3 other Hammerites on board.",,Order,"Hammerite, Brother",Character,Yes
-Saint Yora's Skull,3,,,Give 1 life to all Hammerites you control.,"Mass boost, depending on which cards are on board and in hand.","Potential 5-7 for 5 coins, depending on what you have.",,Order,"Hammerite, Artifact",Instant,Yes
-Markander,5,4,1,"Loose a charge each time a Hammerite is played. At 0 charges, summon this card to the board.",Passive thinning.,3 for 0 if ability activates,5,Order,"Hammerite, High, Priest",Character,Yes
-Downwinder,2,3,1,Steal a coin when attacking the enemy player.,,,,Shadow,Thief,Character,
-Cook,2,1,1,"On play, draw a card.",Thinning.,"1 for 1, but you get to thin.",,Neutral,Household,Character,
-Speed Potion,1,,,Chose a card from your hand. It gains haste.,Preparation when ahead.,Utility.,,Neutral,Equipment,Instant,
-Flash Bomb,2,,,Stun target character on board.,Control.,Utility.,,Neutral,Equipment,Instant,
+Name,Cost,Life,Strength,Ability,Charges,Faction,Categories,Type,Is Elite?
+Zombie,1,2,1,"On play, summon all Zombies from your discard pile.",,Chaos,Undead,Character,
+Burrick,2,3,1,"During your turn, if this card has charges, it can skip attacking and consume a charge to hit a target and its adjacent cards.",1,Chaos,Beast,Character,
+Guardian Statue,2,3,2,"This card can't attack. Whenever an enemy character attacks this card, it retaliates.",,Chaos,Elemental,Character,
+Haunt,3,4,2,"When Haunt defeats a character, gain 1 charge. Spend 1 charge: Haunt gains +1 strength for its next attack.",0,Chaos,"Undead, Hammerite",Character,
+Mystic's Soul,2,,,All allied characters on board gain 1 charge.,,Chaos,Artifact,Instant,Yes
+Book of Ash,4,,,Create and summon a copy of a common undead from your discard pile.,,Chaos,"Necromancer, Artifact",Instant,Yes
+Novice,1,2,1,"On play, summon all Novices, not in your discard, if you have a stronger Hammerite on board.",,Order,Hammerite,Character,
+Elevated Acolyte,2,3,1,"While alone on the board, it gains haste and +1 strength.",,Order,Hammerite,Character,
+Temple Guard,3,4,2,Gain 1 life on play if you control fewer cards than your foe.,,Order,Hammerite,Character,
+Sachelman,5,4,1,"On play, give 1 life to all Hammerites you control with less life than this card.",,Order,"Hammerite, Brother",Character,Yes
+Saint Yora's Skull,3,,,Give 1 life to all Hammerites you control.,,Order,"Hammerite, Artifact",Instant,Yes
+Markander,5,4,1,"Loose a charge each time a Hammerite is played. At 0 charges, summon this card to the board.",5,Order,"Hammerite, High, Priest",Character,Yes
+Downwinder,2,3,1,Steal a coin when attacking the enemy player.,,Shadow,Thief,Character,
+Cook,2,1,1,"On play, draw a card.",,Neutral,Household,Character,
+Speed Potion,1,,,Chose a card from your hand. It gains haste.,,Neutral,Equipment,Instant,
+Flash Bomb,2,,,Stun target character on board.,,Neutral,Equipment,Instant,

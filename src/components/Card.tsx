@@ -1,4 +1,4 @@
-import { PiArrowsClockwiseFill } from 'react-icons/pi'
+import { GiFlowerStar } from 'react-icons/gi'
 
 import { CardAttributesDetails } from 'src/components/CardAttributesDetails'
 import { CardAttributesFooter } from 'src/components/CardAttributesFooter'
@@ -62,7 +62,7 @@ export const Card: React.FC<{
           {type === 'Character' && life !== undefined ? (
             <>{life}</>
           ) : (
-            <PiArrowsClockwiseFill />
+            <GiFlowerStar />
           )}
         </div>
       </div>
