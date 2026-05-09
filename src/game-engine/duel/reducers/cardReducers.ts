@@ -33,7 +33,12 @@ export const playCard: CaseReducer<
   )
 
   if (card.base.type === 'Instant') {
-    state.pendingInstant = getPendingInstant(card, player.hand, state)
+    state.pendingInstant = getPendingInstant(
+      card,
+      player.hand,
+      player.discard,
+      state,
+    )
     player.discard.push(cardInstanceId)
     return
   }
@@ -105,9 +110,19 @@ export const attackCard: CaseReducer<
 
   attacker.didAct = true
 
+  const hauntBonusDamage =
+    attacker.base.id === 'haunt' && (attacker.attributes.charges ?? 0) > 0
+      ? 1
+      : 0
+
+  if (hauntBonusDamage > 0) {
+    attacker.attributes.charges = (attacker.attributes.charges ?? 0) - 1
+  }
+
   const attackStrength =
     attacker.attributes.strength +
-    (attacker.attributes.nextAttackStrengthBonus ?? 0)
+    (attacker.attributes.nextAttackStrengthBonus ?? 0) +
+    hauntBonusDamage
 
   const defenderNewLife = defender.attributes.life - attackStrength
   const isDefenderDefeated = defenderNewLife <= 0

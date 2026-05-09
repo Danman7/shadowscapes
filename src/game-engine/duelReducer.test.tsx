@@ -13,6 +13,7 @@ import {
   PLAYER_2_TEST_DECK,
 } from 'src/game-engine/constants/testDecks'
 import {
+  applyBookOfAsh,
   applyFlashBomb,
   attackCard,
   attackPlayer,
@@ -430,6 +431,7 @@ describe('PLAY_CARD', () => {
     expect(result.players['player1'].hand).toEqual(['z1'])
     expect(result.players['player1'].board).toEqual([])
     expect(result.players['player1'].discard).toEqual(['b1'])
+    expect(result.pendingInstant).toBe('BOOK_OF_ASH')
     expect(result.players['player1'].coins).toBe(
       state.players['player1'].coins - bookOfAsh.attributes.cost,
     )
@@ -452,6 +454,79 @@ describe('PLAY_CARD', () => {
     )
 
     expect(result.cards['z1']!.attributes.isStunned).toBe(true)
+  })
+})
+
+describe('APPLY_BOOK_OF_ASH', () => {
+  test('summons a fresh copy and triggers zombie on-play from discard', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      pendingInstant: 'BOOK_OF_ASH',
+      cards: {
+        b1: createCardInstance('bookOfAsh', 'b1'),
+        z1: createCardInstance('zombie', 'z1'),
+        z2: createCardInstance('zombie', 'z2'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: [],
+          discard: ['b1', 'z1', 'z2'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+        },
+      },
+    })
+
+    const result = duelReducer(
+      state,
+      applyBookOfAsh({ targetCardInstanceId: 'z1' }),
+    )
+
+    expect(result.pendingInstant).toBeNull()
+    expect(result.players['player1'].discard).toEqual(['b1'])
+    expect(result.players['player1'].board).toContain('z1')
+    expect(result.players['player1'].board).toContain('z2')
+    expect(result.players['player1'].board).toHaveLength(3)
+  })
+
+  test('is lost when elite target is selected', () => {
+    const state = makeTestDuel({
+      phase: 'turn-end',
+      pendingInstant: 'BOOK_OF_ASH',
+      cards: {
+        b1: createCardInstance('bookOfAsh', 'b1'),
+        s1: createCardInstance('sachelman', 's1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: [],
+          discard: ['b1', 's1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+        },
+      },
+    })
+
+    const result = duelReducer(
+      state,
+      applyBookOfAsh({ targetCardInstanceId: 's1' }),
+    )
+
+    expect(result.pendingInstant).toBeNull()
+    expect(result.players['player1'].board).toEqual([])
+    expect(result.players['player1'].discard).toEqual(['b1', 's1'])
   })
 })
 

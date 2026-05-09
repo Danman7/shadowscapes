@@ -35,6 +35,7 @@ export const hasCardInStack = (
 export const getPendingInstant = (
   card: CardInstance,
   hand: string[],
+  _discard: string[],
   state: Readonly<Duel>,
 ): PendingInstant | null => {
   if (
@@ -51,5 +52,6 @@ export const getPendingInstant = (
     })
   )
     return 'FLASH_BOMB'
+  if (card.base.id === 'bookOfAsh') return 'BOOK_OF_ASH'
   return null
 }

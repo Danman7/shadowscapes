@@ -4,6 +4,7 @@ export {
   activateCharacterAbility,
   attackCard,
   attackPlayer,
+  applyBookOfAsh,
   applyFlashBomb,
   applySpeedPotion,
   duelReducer,

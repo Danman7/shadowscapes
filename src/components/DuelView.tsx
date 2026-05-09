@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react'
 import {
   Board,
   Button,
+  DiscardPileDialog,
   FaceDownPile,
   Hand,
   Logs,
@@ -13,6 +14,7 @@ import {
   useActivePlayer,
   useActivePlayerBoard,
   useActivePlayerCoins,
+  useActivePlayerDiscard,
   useActivePlayerHand,
   useDuelPhase,
   useGameDispatch,
@@ -28,6 +30,7 @@ import {
 import type { CardInstance, Phase, Player } from 'src/game-engine'
 import {
   activateCharacterAbility,
+  applyBookOfAsh,
   applyFlashBomb,
   applySpeedPotion,
   attackCard,
@@ -36,6 +39,7 @@ import {
   goToRedraw,
   playCard,
   redrawCard,
+  setPendingInstant,
   skipRedraw,
   startFirstPlayerTurn,
   startInitialDraw,
@@ -162,6 +166,7 @@ export const DuelView: React.FC = () => {
   }, [activePlayer.playerReady, dispatch, inactivePlayer.playerReady, phase])
 
   const activeHand = useActivePlayerHand()
+  const activeDiscard = useActivePlayerDiscard()
   const inactiveHand = useInactivePlayerHand()
   const activeBoard = useActivePlayerBoard()
   const inactiveBoard = useInactivePlayerBoard()
@@ -177,6 +182,26 @@ export const DuelView: React.FC = () => {
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
   const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
   const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
+  const discardCards = activeDiscard
+
+  const isBookOfAshPending = pendingInstant === 'BOOK_OF_ASH'
+
+  const isBookOfAshSelectable = (card: CardInstance): boolean => {
+    return card.base.isElite !== true
+  }
+
+  const onCloseDiscardDialog = (): void => {
+    dispatch(setPendingInstant({ pendingInstant: null }))
+  }
+
+  const onSelectDiscardCard = (cardId: string): void => {
+    if (!isBookOfAshPending) return
+
+    const card = discardCards.find((discardCard) => discardCard.id === cardId)
+    if (!card || !isBookOfAshSelectable(card)) return
+
+    dispatch(applyBookOfAsh({ targetCardInstanceId: cardId }))
+  }
 
   useEffect(() => {
     if (phase === 'player-turn') {
@@ -403,6 +428,17 @@ export const DuelView: React.FC = () => {
       <section className="col-3 row-5">
         <FaceDownPile count={activeDeckCount} label={messages.ui.deck} />
       </section>
+
+      <DiscardPileDialog
+        isOpen={isBookOfAshPending}
+        cards={discardCards}
+        title={messages.cards.bookOfAsh.name}
+        closeLabel={messages.ui.close}
+        noValidTargetsLabel={messages.ui.noValidTargets}
+        isCardSelectable={isBookOfAshSelectable}
+        onSelectCard={onSelectDiscardCard}
+        onClose={onCloseDiscardDialog}
+      />
     </div>
   )
 }

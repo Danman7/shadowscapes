@@ -37,6 +37,7 @@ const duelSlice = createSlice({
     setPendingInstant: instantReducers.setPendingInstant,
     applySpeedPotion: instantReducers.applySpeedPotion,
     applyFlashBomb: instantReducers.applyFlashBomb,
+    applyBookOfAsh: instantReducers.applyBookOfAsh,
     _applyEffects: (_state: Duel, action: { payload: Duel }) => action.payload,
   },
 })
@@ -59,6 +60,7 @@ export const {
   setPendingInstant,
   applySpeedPotion,
   applyFlashBomb,
+  applyBookOfAsh,
   _applyEffects,
 } = duelSlice.actions
 

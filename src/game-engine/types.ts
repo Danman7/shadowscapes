@@ -94,7 +94,7 @@ export type Phase =
   | 'player-turn'
   | 'turn-end'
 
-export type PendingInstant = 'SPEED_POTION' | 'FLASH_BOMB'
+export type PendingInstant = 'SPEED_POTION' | 'FLASH_BOMB' | 'BOOK_OF_ASH'
 
 export interface PendingCharacterAbility {
   sourceCardInstanceId: CardInstanceId

@@ -60,6 +60,10 @@ const selectActivePlayerBoard = makeSelectPlayerCards(
   selectActivePlayerId,
   'board',
 )
+const selectActivePlayerDiscard = makeSelectPlayerCards(
+  selectActivePlayerId,
+  'discard',
+)
 const selectInactivePlayerHand = makeSelectPlayerCards(
   selectInactivePlayerId,
   'hand',
@@ -84,6 +88,9 @@ export const useActivePlayerHand = (): CardInstance[] =>
 
 export const useActivePlayerBoard = (): CardInstance[] =>
   useAppSelector(selectActivePlayerBoard)
+
+export const useActivePlayerDiscard = (): CardInstance[] =>
+  useAppSelector(selectActivePlayerDiscard)
 
 export const useInactivePlayerHand = (): CardInstance[] =>
   useAppSelector(selectInactivePlayerHand)

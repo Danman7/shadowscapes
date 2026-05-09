@@ -7,6 +7,7 @@ export {
   useActivePlayer,
   useActivePlayerBoard,
   useActivePlayerCoins,
+  useActivePlayerDiscard,
   useActivePlayerHand,
   useDuelPhase,
   useInactivePlayer,

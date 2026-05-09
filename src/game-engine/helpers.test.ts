@@ -131,6 +131,7 @@ describe('getPendingInstant', () => {
       zombie2: createCardInstance('zombie', 'zombie2'),
       speedPotion1: createCardInstance('speedPotion', 'speedPotion1'),
       flashBomb1: createCardInstance('flashBomb', 'flashBomb1'),
+      bookOfAsh1: createCardInstance('bookOfAsh', 'bookOfAsh1'),
     },
     players: {
       player1: {
@@ -150,19 +151,21 @@ describe('getPendingInstant', () => {
   test('returns SPEED_POTION when speed potion played with characters in hand', () => {
     const card = baseState.cards['speedPotion1']
 
-    expect(getPendingInstant(card, ['zombie1'], baseState)).toBe('SPEED_POTION')
+    expect(getPendingInstant(card, ['zombie1'], [], baseState)).toBe(
+      'SPEED_POTION',
+    )
   })
 
   test('returns null for speed potion when no characters in hand', () => {
     const card = baseState.cards['speedPotion1']
 
-    expect(getPendingInstant(card, [], baseState)).toBeNull()
+    expect(getPendingInstant(card, [], [], baseState)).toBeNull()
   })
 
   test('returns FLASH_BOMB when flash bomb played with cards on board', () => {
     const card = baseState.cards['flashBomb1']
 
-    expect(getPendingInstant(card, [], baseState)).toBe('FLASH_BOMB')
+    expect(getPendingInstant(card, [], [], baseState)).toBe('FLASH_BOMB')
   })
 
   test('returns null for flash bomb when no cards on board', () => {
@@ -175,13 +178,21 @@ describe('getPendingInstant', () => {
       },
     }
 
-    expect(getPendingInstant(card, [], emptyBoardState)).toBeNull()
+    expect(getPendingInstant(card, [], [], emptyBoardState)).toBeNull()
+  })
+
+  test('returns BOOK_OF_ASH when book of ash is played', () => {
+    const card = baseState.cards['bookOfAsh1']
+
+    expect(getPendingInstant(card, [], ['zombie1'], baseState)).toBe(
+      'BOOK_OF_ASH',
+    )
   })
 
   test('returns null for non-instant cards', () => {
     const card = baseState.cards['zombie1']
 
-    expect(getPendingInstant(card, ['zombie1'], baseState)).toBeNull()
+    expect(getPendingInstant(card, ['zombie1'], [], baseState)).toBeNull()
   })
 })
 

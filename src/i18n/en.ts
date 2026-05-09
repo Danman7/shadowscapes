@@ -41,6 +41,7 @@ export const messages = {
 
   ui: {
     logs: 'Logs',
+    close: 'Close',
     skipRedraw: 'Skip redraw',
     waitingForOpponent: 'Waiting for opponent...',
     pass: 'Pass',
@@ -64,6 +65,7 @@ export const messages = {
     stunnedDescription: 'Cannot act this turn.',
     hidden: 'Hidden',
     hiddenDescription: 'Cannot be targeted. Can attack the player directly.',
+    noValidTargets: 'No valid targets available.',
     cannotAttack: 'This character cannot attack.',
     retaliates: 'This character hits back when attacked.',
   },

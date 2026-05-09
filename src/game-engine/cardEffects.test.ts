@@ -613,44 +613,11 @@ describe('Haunt ability effect', () => {
     expect(result.cards['h1']!.attributes.charges).toBe(0)
   })
 
-  test('spends 1 charge and arms +1 strength for next attack', () => {
+  test('consumes 1 charge and deals +1 damage when attacking', () => {
     const state = makeTestDuel({
       phase: 'player-turn',
       cards: {
         h1: createCardInstance('haunt', 'h1', { charges: 1 }),
-      },
-      players: {
-        player1: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player1',
-          name: 'Alice',
-          board: ['h1'],
-        },
-        player2: {
-          ...PLACEHOLDER_PLAYER,
-          id: 'player2',
-          name: 'Bob',
-        },
-      },
-    })
-
-    const result = dispatchWithEffects(
-      state,
-      activateCharacterAbility({ cardInstanceId: 'h1' }),
-    )
-
-    expect(result.cards['h1']!.attributes.charges).toBe(0)
-    expect(result.cards['h1']!.attributes.nextAttackStrengthBonus).toBe(1)
-  })
-
-  test('applies +1 strength on next attack and then removes the bonus', () => {
-    const state = makeTestDuel({
-      phase: 'player-turn',
-      cards: {
-        h1: createCardInstance('haunt', 'h1', {
-          charges: 0,
-          nextAttackStrengthBonus: 1,
-        }),
         t1: createCardInstance('templeGuard', 't1'),
       },
       players: {
@@ -674,10 +641,40 @@ describe('Haunt ability effect', () => {
       attackCard({ attackerId: 'h1', defenderId: 't1' }),
     )
 
+    expect(result.cards['h1']!.attributes.charges).toBe(0)
     expect(result.cards['t1']!.attributes.life).toBe(1)
-    expect(
-      result.cards['h1']!.attributes.nextAttackStrengthBonus,
-    ).toBeUndefined()
+  })
+
+  test('does not consume charge or add bonus when no charges are available', () => {
+    const state = makeTestDuel({
+      phase: 'player-turn',
+      cards: {
+        h1: createCardInstance('haunt', 'h1', { charges: 0 }),
+        t1: createCardInstance('templeGuard', 't1'),
+      },
+      players: {
+        player1: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player1',
+          name: 'Alice',
+          board: ['h1'],
+        },
+        player2: {
+          ...PLACEHOLDER_PLAYER,
+          id: 'player2',
+          name: 'Bob',
+          board: ['t1'],
+        },
+      },
+    })
+
+    const result = dispatchWithEffects(
+      state,
+      attackCard({ attackerId: 'h1', defenderId: 't1' }),
+    )
+
+    expect(result.cards['h1']!.attributes.charges).toBe(0)
+    expect(result.cards['t1']!.attributes.life).toBe(2)
   })
 })
 

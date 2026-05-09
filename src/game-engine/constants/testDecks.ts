@@ -23,26 +23,24 @@ export const PLAYER_1_GAME_DECK: CardBaseId[] = [
   'zombie',
   'haunt',
   'haunt',
-  'burrick',
-  'burrick',
   'guardianStatue',
   'guardianStatue',
   'mysticsSoul',
   'speedPotion',
   'cook',
   'flashBomb',
+  'bookOfAsh',
 ]
 
 export const PLAYER_2_GAME_DECK: CardBaseId[] = [
   'novice',
   'novice',
   'templeGuard',
-  'templeGuard',
-  'elevatedAcolyte',
   'elevatedAcolyte',
   'yoraSkull',
   'markander',
   'speedPotion',
   'cook',
   'flashBomb',
+  'sachelman',
 ]

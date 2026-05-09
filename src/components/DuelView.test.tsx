@@ -17,11 +17,13 @@ import {
 } from 'src/game-engine'
 import {
   activateCharacterAbility,
+  applyBookOfAsh,
   attackCard,
   attackPlayer,
   goToRedraw,
   playCard,
   redrawCard,
+  setPendingInstant,
   skipRedraw,
   startInitialDraw,
   switchTurn,
@@ -1093,5 +1095,103 @@ describe('Player turn card interactions', () => {
         }),
       )
     }
+  })
+})
+
+describe('Book of Ash discard dialog', () => {
+  test('shows discard cards including zombies when BOOK_OF_ASH is pending', () => {
+    const activePlayerId = preloadedState.playerOrder[0]
+
+    const stateWithPendingBookOfAsh = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      pendingInstant: 'BOOK_OF_ASH' as const,
+      cards: {
+        b1: createCardInstance('bookOfAsh', 'b1'),
+        z1: createCardInstance('zombie', 'z1'),
+        z2: createCardInstance('zombie', 'z2'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...preloadedState.players[activePlayerId],
+          hand: [],
+          board: [],
+          deck: [],
+          discard: ['b1', 'z1', 'z2'],
+        },
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
+          hand: [],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+      },
+    }
+
+    const { getByLabelText } = renderGameContext(<DuelView />, {
+      preloadedState: stateWithPendingBookOfAsh,
+    })
+
+    expect(getByLabelText('select-discard-card-z1')).toBeInTheDocument()
+    expect(getByLabelText('select-discard-card-z2')).toBeInTheDocument()
+  })
+
+  test('opens when BOOK_OF_ASH is pending and allows selecting non-elite discard card', () => {
+    const dispatchSpy = vi.fn()
+    vi.spyOn(GameContext, 'useGameDispatch').mockReturnValue(dispatchSpy)
+
+    const activePlayerId = preloadedState.playerOrder[0]
+
+    const stateWithPendingBookOfAsh = {
+      ...preloadedState,
+      phase: 'turn-end' as const,
+      pendingInstant: 'BOOK_OF_ASH' as const,
+      cards: {
+        b1: createCardInstance('bookOfAsh', 'b1'),
+        z1: createCardInstance('zombie', 'z1'),
+        s1: createCardInstance('sachelman', 's1'),
+      },
+      players: {
+        ...preloadedState.players,
+        [activePlayerId]: {
+          ...preloadedState.players[activePlayerId],
+          hand: [],
+          board: [],
+          deck: [],
+          discard: ['b1', 'z1', 's1'],
+        },
+        [preloadedState.playerOrder[1]]: {
+          ...preloadedState.players[preloadedState.playerOrder[1]],
+          hand: [],
+          board: [],
+          deck: [],
+          discard: [],
+        },
+      },
+    }
+
+    const { getByTestId, getByLabelText, getByRole } = renderGameContext(
+      <DuelView />,
+      {
+        preloadedState: stateWithPendingBookOfAsh,
+      },
+    )
+
+    expect(getByTestId('discard-pile-dialog')).toBeInTheDocument()
+
+    fireEvent.click(getByLabelText('select-discard-card-z1'))
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      applyBookOfAsh({ targetCardInstanceId: 'z1' }),
+    )
+
+    dispatchSpy.mockClear()
+    fireEvent.click(getByRole('button', { name: messages.ui.close }))
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      setPendingInstant({ pendingInstant: null }),
+    )
   })
 })
