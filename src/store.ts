@@ -1,9 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { cardEffectsMiddleware } from 'src/game-engine/duel/middleware'
-import { duelReducer } from 'src/game-engine/duel/slice'
-import type { Duel } from 'src/game-engine/types'
+import { cardEffectsMiddleware, duelReducer } from 'src/game-engine/duel'
+import type { Duel } from 'src/game-engine'
 
 export const makeStore = (preloadedDuelState?: Partial<Duel>) =>
   configureStore({

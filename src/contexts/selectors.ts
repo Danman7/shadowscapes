@@ -26,6 +26,9 @@ const selectInactivePlayerId = createSelector(
   (order) => order[1],
 )
 
+const selectPlayer = (state: RootState, playerId: PlayerId): Player =>
+  state.duel.players[playerId]
+
 const selectActivePlayer = createSelector(
   selectPlayers,
   selectActivePlayerId,
@@ -73,10 +76,11 @@ const selectInactivePlayerBoard = makeSelectPlayerCards(
   'board',
 )
 
-export const useDuelPhase = (): Phase => useAppSelector((s) => s.duel.phase)
+export const useDuelPhase = (): Phase =>
+  useAppSelector((state) => state.duel.phase)
 
 export const usePlayer = (playerId: PlayerId): Player =>
-  useAppSelector((s) => s.duel.players[playerId])
+  useAppSelector((state) => selectPlayer(state, playerId))
 
 export const useActivePlayer = (): Player => useAppSelector(selectActivePlayer)
 
@@ -106,10 +110,11 @@ export const usePlayerDiscardCount = (playerId: PlayerId): number =>
 
 export const useActivePlayerCoins = (): number => useActivePlayer().coins
 
-export const useLogs = (): string[] => useAppSelector((s) => s.duel.logs)
+export const useLogs = (): string[] =>
+  useAppSelector((state) => state.duel.logs)
 
 export const usePendingInstant = (): PendingInstant | null =>
-  useAppSelector((s) => s.duel.pendingInstant)
+  useAppSelector((state) => state.duel.pendingInstant)
 
 export const usePendingCharacterAbility = (): PendingCharacterAbility | null =>
-  useAppSelector((s) => s.duel.pendingCharacterAbility)
+  useAppSelector((state) => state.duel.pendingCharacterAbility)

@@ -8,7 +8,7 @@ import { TbSwordOff } from 'react-icons/tb'
 import {
   CARD_ATTRIBUTE_KEYS,
   type CardAttributeKey,
-} from 'src/components/cardAttributeKeys'
+} from 'src/components/Card/cardAttributeKeys'
 import type { CardAttributes, CardType } from 'src/game-engine'
 
 type FooterAttributeKey = Exclude<CardAttributeKey, 'cost' | 'life'>

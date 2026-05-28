@@ -9,10 +9,6 @@ import {
   SECOND_PLAYER_COIN_BONUS,
 } from 'src/game-engine/constants'
 import {
-  PLAYER_1_TEST_DECK,
-  PLAYER_2_TEST_DECK,
-} from 'src/game-engine/constants/testDecks'
-import {
   applyBookOfAsh,
   applyFlashBomb,
   attackCard,
@@ -27,7 +23,11 @@ import {
   startInitialDraw,
   switchTurn,
 } from 'src/game-engine/duel'
-import { makeTestDuel } from 'src/game-engine/mocks'
+import {
+  makeTestDuel,
+  PLAYER_1_TEST_DECK,
+  PLAYER_2_TEST_DECK,
+} from 'src/game-engine/testing'
 import { formatString, messages } from 'src/i18n'
 
 test('initial state has intro phase', () => {

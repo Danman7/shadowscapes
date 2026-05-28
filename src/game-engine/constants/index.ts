@@ -12,7 +12,3 @@ export {
   PLACEHOLDER_PLAYER,
 } from 'src/game-engine/constants/duelParams'
 export * as balancing from 'src/game-engine/constants/balancing'
-export {
-  PLAYER_1_TEST_DECK,
-  PLAYER_2_TEST_DECK,
-} from 'src/game-engine/constants/testDecks'

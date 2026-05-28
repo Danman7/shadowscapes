@@ -1,6 +1,4 @@
 export {
-  _cleanupDefeatedCharacters,
-  _applyEffects,
   activateCharacterAbility,
   attackCard,
   attackPlayer,
@@ -20,3 +18,4 @@ export {
   startInitialDraw,
   switchTurn,
 } from 'src/game-engine/duel/slice'
+export { cardEffectsMiddleware } from 'src/game-engine/duel/middleware'

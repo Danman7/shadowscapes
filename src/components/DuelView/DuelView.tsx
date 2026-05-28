@@ -9,7 +9,7 @@ import {
   Logs,
   PlayerBadge,
 } from 'src/components'
-import { useScopedSelection } from 'src/components/useScopedSelection'
+import { useScopedSelection } from 'src/components/DuelView/useScopedSelection'
 import {
   useActivePlayer,
   useActivePlayerBoard,

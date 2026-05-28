@@ -1,7 +1,7 @@
 import { GiFlowerStar } from 'react-icons/gi'
 
-import { CardAttributesDetails } from 'src/components/CardAttributesDetails'
-import { CardAttributesFooter } from 'src/components/CardAttributesFooter'
+import { CardAttributesDetails } from 'src/components/Card/CardAttributesDetails'
+import { CardAttributesFooter } from 'src/components/Card/CardAttributesFooter'
 import type { CardInstance } from 'src/game-engine'
 import { FACTION_BORDER_COLORS } from 'src/game-engine'
 import { messages } from 'src/i18n'

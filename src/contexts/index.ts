@@ -18,5 +18,5 @@ export {
   usePendingInstant,
   usePlayerDeckCount,
   usePlayerDiscardCount,
-} from 'src/contexts/playerSelectors'
+} from 'src/contexts/selectors'
 export { renderGameContext } from 'src/contexts/renderGameContext'

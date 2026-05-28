@@ -13,10 +13,8 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from 'src/contexts'
-import {
-  CARD_BASES,
-  MIXED_STACKS_DUEL as preloadedState,
-} from 'src/game-engine'
+import { CARD_BASES } from 'src/game-engine'
+import { MIXED_STACKS_DUEL as preloadedState } from 'src/game-engine/testing'
 
 describe('useDuelPhase', () => {
   test('returns current phase from game state', () => {

@@ -10,10 +10,6 @@ import {
   createDuel,
   INITIAL_CARDS_TO_DRAW,
   INITIAL_PLAYER_COINS,
-  MIXED_STACKS_DUEL,
-  MOCK_DUEL,
-  MOCK_DUEL as preloadedState,
-  MOCK_DUEL_SETUP,
 } from 'src/game-engine'
 import {
   activateCharacterAbility,
@@ -28,6 +24,12 @@ import {
   startInitialDraw,
   switchTurn,
 } from 'src/game-engine/duel'
+import {
+  MIXED_STACKS_DUEL,
+  MOCK_DUEL,
+  MOCK_DUEL as preloadedState,
+  MOCK_DUEL_SETUP,
+} from 'src/game-engine/testing'
 import { formatString, messages } from 'src/i18n'
 
 afterEach(() => {

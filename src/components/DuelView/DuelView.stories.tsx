@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { DuelView } from 'src/components'
 import { GameProvider } from 'src/contexts'
-import { GAME_DUEL, MIXED_STACKS_DUEL } from 'src/game-engine'
+import { GAME_DUEL, MIXED_STACKS_DUEL } from 'src/game-engine/testing'
 
 const meta: Meta<typeof DuelView> = {
   title: 'Duel/DuelView',

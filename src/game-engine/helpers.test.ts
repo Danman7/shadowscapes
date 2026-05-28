@@ -13,7 +13,11 @@ import {
   updateCard,
   updatePlayers,
 } from 'src/game-engine/utils'
-import { makeTestDuel, MOCK_DUEL, MOCK_DUEL_SETUP } from 'src/game-engine/mocks'
+import {
+  makeTestDuel,
+  MOCK_DUEL,
+  MOCK_DUEL_SETUP,
+} from 'src/game-engine/testing'
 import type { Duel } from 'src/game-engine/types'
 
 const zombieBase = CARD_BASES['zombie']

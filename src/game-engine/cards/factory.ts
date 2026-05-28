@@ -4,7 +4,7 @@ import {
   PLACEHOLDER_PLAYER,
   PLAYER_2_STARTING_COIN_BONUS,
 } from 'src/game-engine/constants'
-import { getOpponentId } from 'src/game-engine/utils/gameQueries'
+import { getOpponentId } from 'src/game-engine/utils'
 import type {
   CardBaseId,
   Duel,

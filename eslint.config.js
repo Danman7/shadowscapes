@@ -6,6 +6,18 @@ import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort'
 import tseslint from 'typescript-eslint'
 import prettierConfig from 'eslint-config-prettier'
 
+const absoluteSrcImportsOnly = {
+  group: ['./**', '../**'],
+  message: 'Use src/… absolute imports within src/.',
+}
+
+const noRestrictedImports = (patterns = []) => [
+  'error',
+  {
+    patterns: [absoluteSrcImportsOnly, ...patterns],
+  },
+]
+
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   {
@@ -87,17 +99,38 @@ export default [
   {
     files: ['src/**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': [
-        'error',
+      'no-restricted-imports': noRestrictedImports(),
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/components/Card/**',
+      'src/components/DuelView/**',
+      'src/game-engine/cards/**',
+      'src/game-engine/constants/**',
+      'src/game-engine/duel/**',
+      'src/game-engine/mocks/**',
+      'src/game-engine/testing.ts',
+      'src/game-engine/utils/**',
+    ],
+    rules: {
+      'no-restricted-imports': noRestrictedImports([
         {
-          patterns: [
-            {
-              group: ['./**', '../**'],
-              message: 'Use src/… absolute imports within src/.',
-            },
+          group: [
+            'src/components/Card/*',
+            'src/components/DuelView/*',
+            'src/game-engine/cards/*',
+            'src/game-engine/constants/*',
+            'src/game-engine/duel/*',
+            'src/game-engine/duel/reducers/*',
+            'src/game-engine/mocks',
+            'src/game-engine/mocks/*',
+            'src/game-engine/utils/*',
           ],
+          message: 'Import from the owning module barrel instead.',
         },
-      ],
+      ]),
     },
   },
   {

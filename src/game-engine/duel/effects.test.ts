@@ -7,7 +7,7 @@ import {
   switchTurn,
 } from 'src/game-engine/duel'
 import { createCardInstance } from 'src/game-engine/cards'
-import { makeTestDuel } from 'src/game-engine/mocks'
+import { makeTestDuel } from 'src/game-engine/testing'
 import type { Duel } from 'src/game-engine/types'
 import { makeStore } from 'src/store'
 

@@ -1,7 +1,7 @@
 import {
   CARD_ATTRIBUTE_KEYS,
   type CardAttributeKey,
-} from 'src/components/cardAttributeKeys'
+} from 'src/components/Card/cardAttributeKeys'
 import type { CardAttributes } from 'src/game-engine'
 import { formatString, messages } from 'src/i18n'
 
