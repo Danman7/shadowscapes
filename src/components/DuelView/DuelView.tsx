@@ -1,14 +1,18 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import {
   Board,
   Button,
-  DiscardPileDialog,
   FaceDownPile,
   Hand,
   Logs,
   PlayerBadge,
 } from 'src/components'
+import { DiscardTargetDialog } from 'src/components/DuelView/DiscardTargetDialog'
+import { PhaseButton } from 'src/components/DuelView/PhaseButton'
+import { useAttackAnimation } from 'src/components/DuelView/useAttackAnimation'
+import { useCardClickHandlers } from 'src/components/DuelView/useCardClickHandlers'
+import { useDuelAutoTransitions } from 'src/components/DuelView/useDuelAutoTransitions'
 import { useScopedSelection } from 'src/components/DuelView/useScopedSelection'
 import {
   useActivePlayer,
@@ -17,7 +21,6 @@ import {
   useActivePlayerDiscard,
   useActivePlayerHand,
   useDuelPhase,
-  useGameDispatch,
   useInactivePlayer,
   useInactivePlayerBoard,
   useInactivePlayerHand,
@@ -27,316 +30,54 @@ import {
   usePlayerDeckCount,
   usePlayerDiscardCount,
 } from 'src/contexts'
-import type { CardInstance, Phase, Player } from 'src/game-engine'
-import {
-  activateCharacterAbility,
-  applyBookOfAsh,
-  applyFlashBomb,
-  applySpeedPotion,
-  attackCard,
-  attackPlayer,
-  goToEndOfTurn,
-  goToRedraw,
-  playCard,
-  redrawCard,
-  setPendingInstant,
-  skipRedraw,
-  startFirstPlayerTurn,
-  startInitialDraw,
-  switchTurn,
-} from 'src/game-engine/duel'
 import { messages } from 'src/i18n'
 
-const ATTACK_ANIMATION_MS = 350
-
-const PhaseButton: React.FC<{
-  phase: Phase
-  activePlayer: Player
-  activeBoard: CardInstance[]
-  onTurnEnd: () => void
-}> = ({ phase, activePlayer, activeBoard, onTurnEnd }) => {
-  const dispatch = useGameDispatch()
-  const { playerReady } = activePlayer
-
-  let phaseButtonLabel: ReactNode = null
-  let phaseButtonOnClick: (() => void) | undefined = undefined
-
-  switch (phase) {
-    case 'redraw':
-      phaseButtonLabel = !playerReady
-        ? messages.ui.skipRedraw
-        : messages.ui.waitingForOpponent
-
-      phaseButtonOnClick = !playerReady
-        ? () => dispatch(skipRedraw({ playerId: activePlayer.id }))
-        : undefined
-      break
-
-    case 'player-turn':
-      phaseButtonLabel = messages.ui.pass
-      phaseButtonOnClick = () => {
-        const allStunned =
-          activeBoard.length > 0 &&
-          activeBoard.every((c) => c.attributes.isStunned)
-        if (activeBoard.length === 0 || allStunned) {
-          dispatch(switchTurn())
-        } else {
-          dispatch(goToEndOfTurn())
-        }
-      }
-      break
-
-    case 'turn-end':
-      phaseButtonLabel = messages.ui.endTurn
-      phaseButtonOnClick = () => {
-        onTurnEnd()
-        dispatch(switchTurn())
-      }
-      break
-
-    default:
-      phaseButtonLabel = ''
-      phaseButtonOnClick = undefined
-      break
-  }
-
-  return (
-    phaseButtonLabel && (
-      <div className="w-1/3 flex place-content-end">
-        <Button
-          className="animate-slide-right"
-          onClick={phaseButtonOnClick}
-          data-testid="phase-button"
-        >
-          {phaseButtonLabel}
-        </Button>
-      </div>
-    )
-  )
-}
-
 export const DuelView: React.FC = () => {
-  const dispatch = useGameDispatch()
   const phase = useDuelPhase()
   const activePlayer = useActivePlayer()
   const inactivePlayer = useInactivePlayer()
   const activePlayerCoins = useActivePlayerCoins()
   const logs = useLogs()
   const [areLogsVisible, setAreLogsVisible] = useState(false)
-  const [attackingCardId, setAttackingCardId] = useState<string | null>(null)
-  const attackAnimationTimeoutRef = useRef<number | null>(null)
   const pendingCharacterAbility = usePendingCharacterAbility()
   const pendingInstant = usePendingInstant()
-  const selectedAttackerSelection = useScopedSelection(
-    phase === 'turn-end' ? `${phase}:${activePlayer.id}` : null,
-  )
-
-  const triggerAttackAnimation = (attackerId: string): void => {
-    setAttackingCardId(attackerId)
-
-    if (attackAnimationTimeoutRef.current !== null) {
-      window.clearTimeout(attackAnimationTimeoutRef.current)
-    }
-
-    attackAnimationTimeoutRef.current = window.setTimeout(() => {
-      setAttackingCardId(null)
-      attackAnimationTimeoutRef.current = null
-    }, ATTACK_ANIMATION_MS)
-  }
-
-  useEffect(() => {
-    if (phase === 'intro') dispatch(startInitialDraw())
-    if (phase === 'initial-draw') dispatch(goToRedraw())
-  }, [dispatch, phase])
-
-  useEffect(() => {
-    if (phase === 'redraw') {
-      dispatch(skipRedraw({ playerId: inactivePlayer.id }))
-    }
-  }, [dispatch, inactivePlayer.id, phase])
-
-  useEffect(() => {
-    if (
-      phase === 'redraw' &&
-      activePlayer.playerReady &&
-      inactivePlayer.playerReady
-    ) {
-      dispatch(startFirstPlayerTurn())
-    }
-  }, [activePlayer.playerReady, dispatch, inactivePlayer.playerReady, phase])
-
   const activeHand = useActivePlayerHand()
   const activeDiscard = useActivePlayerDiscard()
   const inactiveHand = useInactivePlayerHand()
   const activeBoard = useActivePlayerBoard()
   const inactiveBoard = useInactivePlayerBoard()
-
-  useEffect(() => {
-    return () => {
-      if (attackAnimationTimeoutRef.current !== null)
-        window.clearTimeout(attackAnimationTimeoutRef.current)
-    }
-  }, [])
-
   const activeDeckCount = usePlayerDeckCount(activePlayer.id)
   const activeDiscardCount = usePlayerDiscardCount(activePlayer.id)
   const inactiveDeckCount = usePlayerDeckCount(inactivePlayer.id)
   const inactiveDiscardCount = usePlayerDiscardCount(inactivePlayer.id)
-  const discardCards = activeDiscard
+  const selectedAttackerSelection = useScopedSelection(
+    phase === 'turn-end' ? `${phase}:${activePlayer.id}` : null,
+  )
+  const { attackingCardId, triggerAttackAnimation } = useAttackAnimation()
 
-  const isBookOfAshPending = pendingInstant === 'BOOK_OF_ASH'
+  useDuelAutoTransitions({
+    phase,
+    activePlayer,
+    inactivePlayer,
+    activeHandCount: activeHand.length,
+    activeDeckCount,
+    activeBoard,
+    inactiveBoardCount: inactiveBoard.length,
+    pendingInstant,
+  })
 
-  const isBookOfAshSelectable = (card: CardInstance): boolean => {
-    return card.base.isElite !== true
-  }
-
-  const onCloseDiscardDialog = (): void => {
-    dispatch(setPendingInstant({ pendingInstant: null }))
-  }
-
-  const onSelectDiscardCard = (cardId: string): void => {
-    if (!isBookOfAshPending) return
-
-    const card = discardCards.find((discardCard) => discardCard.id === cardId)
-    if (!card || !isBookOfAshSelectable(card)) return
-
-    dispatch(applyBookOfAsh({ targetCardInstanceId: cardId }))
-  }
-
-  useEffect(() => {
-    if (phase === 'player-turn') {
-      if (activeHand.length === 0 && activeDeckCount === 0) {
-        dispatch(goToEndOfTurn())
-      }
-    }
-  }, [dispatch, phase, activeHand.length, activeDeckCount])
-
-  useEffect(() => {
-    if (phase === 'turn-end') {
-      const allActiveCardsActed = activeBoard.every(
-        (card) => card.didAct || card.attributes.isStunned,
-      )
-
-      if (pendingInstant !== null) return
-
-      if (activeBoard.length === 0) {
-        dispatch(switchTurn())
-      } else if (inactiveBoard.length === 0) {
-        if (allActiveCardsActed) {
-          dispatch(switchTurn())
-        }
-      } else if (allActiveCardsActed) {
-        dispatch(switchTurn())
-      }
-    }
-  }, [dispatch, phase, activeBoard, inactiveBoard.length, pendingInstant])
-
-  const getOnCardClick = (cardId: string): (() => void) | undefined => {
-    if (phase === 'redraw') {
-      if (activePlayer.playerReady) return undefined
-
-      return () => {
-        dispatch(
-          redrawCard({ playerId: activePlayer.id, cardInstanceId: cardId }),
-        )
-      }
-    }
-
-    if (phase === 'turn-end' && pendingInstant === 'SPEED_POTION') {
-      const cardInstance = activeHand.find((c) => c.id === cardId)
-      if (!cardInstance) return undefined
-      if (cardInstance.base.type !== 'Character') return undefined
-
-      return () => {
-        dispatch(applySpeedPotion({ targetCardInstanceId: cardId }))
-      }
-    }
-
-    if (phase === 'player-turn') {
-      const cardInstance = activeHand.find((c) => c.id === cardId)
-      if (!cardInstance) return undefined
-
-      if (cardInstance.attributes.cost > activePlayerCoins) return undefined
-
-      return () => {
-        dispatch(
-          playCard({ playerId: activePlayer.id, cardInstanceId: cardId }),
-        )
-      }
-    }
-
-    return undefined
-  }
-
-  const getOnBoardCardClick = (
-    cardId: string,
-    isActiveBoard: boolean,
-  ): (() => void) | undefined => {
-    if (pendingInstant === 'FLASH_BOMB') {
-      return () => {
-        dispatch(applyFlashBomb({ targetCardInstanceId: cardId }))
-      }
-    }
-
-    if (phase === 'player-turn') {
-      if (!isActiveBoard && pendingCharacterAbility !== null) {
-        return () => {
-          triggerAttackAnimation(pendingCharacterAbility.sourceCardInstanceId)
-          dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
-        }
-      }
-
-      if (!isActiveBoard) return undefined
-
-      return () => {
-        dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
-      }
-    }
-
-    if (phase !== 'turn-end') return undefined
-
-    if (isActiveBoard) {
-      const cardInstance = activeBoard.find((c) => c.id === cardId)
-      if (
-        !cardInstance ||
-        cardInstance.attributes.cannotAttack === true ||
-        cardInstance.didAct ||
-        cardInstance.attributes.isStunned
-      )
-        return undefined
-
-      if (inactiveBoard.length === 0) {
-        return () => {
-          triggerAttackAnimation(cardId)
-          dispatch(attackPlayer({ attackerId: cardId }))
-        }
-      }
-
-      return () => {
-        selectedAttackerSelection.select(cardId)
-      }
-    } else {
-      const selectedAttackerId = selectedAttackerSelection.selectedId
-      if (selectedAttackerId === null) return undefined
-
-      const selectedCard = activeBoard.find((c) => c.id === selectedAttackerId)
-      if (!selectedCard || selectedCard.didAct) return undefined
-
-      const cardInstance = inactiveBoard.find((c) => c.id === cardId)
-      if (!cardInstance) return undefined
-
-      return () => {
-        triggerAttackAnimation(selectedAttackerId)
-        dispatch(
-          attackCard({
-            attackerId: selectedAttackerId,
-            defenderId: cardId,
-          }),
-        )
-        selectedAttackerSelection.clear()
-      }
-    }
-  }
+  const { getOnCardClick, getOnBoardCardClick } = useCardClickHandlers({
+    phase,
+    activePlayer,
+    activePlayerCoins,
+    activeHand,
+    activeBoard,
+    inactiveBoard,
+    pendingCharacterAbility,
+    pendingInstant,
+    selectedAttackerSelection,
+    triggerAttackAnimation,
+  })
 
   return (
     <div
@@ -429,15 +170,9 @@ export const DuelView: React.FC = () => {
         <FaceDownPile count={activeDeckCount} label={messages.ui.deck} />
       </section>
 
-      <DiscardPileDialog
-        isOpen={isBookOfAshPending}
-        cards={discardCards}
-        title={messages.cards.bookOfAsh.name}
-        closeLabel={messages.ui.close}
-        noValidTargetsLabel={messages.ui.noValidTargets}
-        isCardSelectable={isBookOfAshSelectable}
-        onSelectCard={onSelectDiscardCard}
-        onClose={onCloseDiscardDialog}
+      <DiscardTargetDialog
+        cards={activeDiscard}
+        pendingInstant={pendingInstant}
       />
     </div>
   )
