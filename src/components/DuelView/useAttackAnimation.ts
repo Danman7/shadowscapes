@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 
+import type { AttackAnimationRequest } from 'src/components/DuelView/attackAnimation'
+
 const ATTACK_ANIMATION_MS = 350
 
 export const useAttackAnimation = (): {
   attackingCardId: string | null
-  triggerAttackAnimation: (attackerId: string) => void
+  requestAttackAnimation: (request: AttackAnimationRequest) => void
 } => {
   const [attackingCardId, setAttackingCardId] = useState<string | null>(null)
   const attackAnimationTimeoutRef = useRef<number | null>(null)
 
-  const triggerAttackAnimation = (attackerId: string): void => {
+  const requestAttackAnimation = ({
+    attackerId,
+  }: AttackAnimationRequest): void => {
     setAttackingCardId(attackerId)
 
     if (attackAnimationTimeoutRef.current !== null) {
@@ -29,5 +33,5 @@ export const useAttackAnimation = (): {
     }
   }, [])
 
-  return { attackingCardId, triggerAttackAnimation }
+  return { attackingCardId, requestAttackAnimation }
 }

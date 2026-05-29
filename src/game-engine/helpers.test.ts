@@ -1,317 +1,232 @@
-import { CARD_BASES, INITIAL_DUEL_STATE } from 'src/game-engine/constants'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+
 import {
   type AttributeOverride,
   createCardInstance,
   createDuel,
 } from 'src/game-engine/cards'
+import { CARD_BASES, INITIAL_DUEL_STATE } from 'src/game-engine/constants'
 import {
+  addLog,
+  drawCards,
   getCardsInStack,
-  hasCardInStack,
   getOpponentId,
   getPendingInstant,
+  hasCardInStack,
+  resetCharacterAttributes,
   resetPlayersReady,
   updateCard,
   updatePlayers,
 } from 'src/game-engine/utils'
 import {
-  makeTestDuel,
-  MOCK_DUEL,
+  makeTestCard,
+  makeTestCards,
+  makeTestDuelState,
+  makeTestPlayer,
   MOCK_DUEL_SETUP,
 } from 'src/game-engine/testing'
-import type { Duel } from 'src/game-engine/types'
 
-const zombieBase = CARD_BASES['zombie']
-
-describe('createCardInstance', () => {
-  test('creates a card instance from card base', () => {
-    const instance = createCardInstance('zombie')
-
-    expect(instance.id).toBeDefined()
-    expect(instance.base).toEqual(zombieBase)
-    expect(instance.didAct).toBe(false)
-    expect(instance.attributes).toEqual(zombieBase.attributes)
-  })
-
-  test('creates a card instance with predefined id', () => {
-    const customId = 'zombie-1'
-    const instance = createCardInstance('zombie', customId)
-
-    expect(instance.id).toBe(customId)
-  })
-
-  test('creates a card instance with attribute overrides', () => {
-    const customId = 'zombie-1'
-    const customAttributes: AttributeOverride = {
-      strength: 5,
-      cost: 3,
-    }
-    const instance = createCardInstance('zombie', customId, customAttributes)
-
-    expect(instance.id).toBe(customId)
-    expect(instance.attributes.strength).toBe(customAttributes.strength)
-    expect(instance.attributes.cost).toBe(customAttributes.cost)
-    expect(instance.base.attributes.strength).toBe(
-      zombieBase.attributes.strength,
-    )
-  })
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
-describe('createDuel', () => {
-  test('creates a duel with correct player setups', () => {
-    const duelSetup = createDuel(MOCK_DUEL_SETUP)
+describe('card instances', () => {
+  test('creates mutable card instances from immutable card bases', () => {
+    const attributes: AttributeOverride = { cost: 3, strength: 5 }
+    const instance = createCardInstance('zombie', 'zombie-1', attributes)
 
-    expect(duelSetup.playerOrder).toHaveLength(2)
-
-    MOCK_DUEL_SETUP.forEach((playerSetup) => {
-      const player = duelSetup.players[playerSetup.id]
-
-      expect(player.name).toBe(playerSetup.name)
-      expect(player.deck).toHaveLength(playerSetup.deck.length)
-      expect(duelSetup.playerOrder).toContain(playerSetup.id)
-
-      playerSetup.deck.forEach((baseId) => {
-        expect(Object.values(duelSetup.cards)).toContainEqual(
-          expect.objectContaining({ base: CARD_BASES[baseId] }),
-        )
-      })
+    expect(instance).toEqual(
+      expect.objectContaining({
+        id: 'zombie-1',
+        base: CARD_BASES['zombie'],
+        didAct: false,
+      }),
+    )
+    expect(instance.attributes).toEqual({
+      ...CARD_BASES['zombie'].attributes,
+      ...attributes,
     })
+    expect(CARD_BASES['zombie'].attributes.strength).not.toBe(
+      attributes.strength,
+    )
   })
 })
 
-describe('getOpponentId', () => {
-  const playerOrder = MOCK_DUEL.playerOrder
+describe('duel factory', () => {
+  test('creates players, card instances, starting order, and deck logs', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.1)
 
-  test('returns the opponent player id', () => {
-    expect(getOpponentId(playerOrder, playerOrder[0])).toBe(playerOrder[1])
-    expect(getOpponentId(playerOrder, playerOrder[1])).toBe(playerOrder[0])
+    const duel = createDuel(MOCK_DUEL_SETUP)
+
+    expect(duel.phase).toBe(INITIAL_DUEL_STATE.phase)
+    expect(duel.playerOrder).toEqual(['player1', 'player2'])
+    expect(duel.players['player1'].deck).toHaveLength(
+      MOCK_DUEL_SETUP[0].deck.length,
+    )
+    expect(duel.players['player2'].deck).toHaveLength(
+      MOCK_DUEL_SETUP[1].deck.length,
+    )
+    expect(Object.values(duel.cards).map((card) => card.base.id)).toEqual(
+      expect.arrayContaining([...MOCK_DUEL_SETUP[0].deck]),
+    )
+    expect(duel.logs).toHaveLength(2)
   })
 })
 
-describe('stack queries', () => {
-  const cards = {
-    zombie1: createCardInstance('zombie', 'zombie1'),
-    haunt1: createCardInstance('haunt', 'haunt1'),
-    speedPotion1: createCardInstance('speedPotion', 'speedPotion1'),
-  }
+describe('game queries', () => {
+  const cards = makeTestCards(
+    makeTestCard('zombie', 'zombie1'),
+    makeTestCard('haunt', 'haunt1'),
+    makeTestCard('speedPotion', 'speedPotion1'),
+    makeTestCard('flashBomb', 'flashBomb1'),
+    makeTestCard('bookOfAsh', 'bookOfAsh1'),
+  )
 
-  test('getCardsInStack returns matching cards by predicate', () => {
-    const result = getCardsInStack(
-      ['zombie1', 'haunt1', 'missing'],
+  test('gets opponent from either side of player order', () => {
+    expect(getOpponentId(['player1', 'player2'], 'player1')).toBe('player2')
+    expect(getOpponentId(['player1', 'player2'], 'player2')).toBe('player1')
+  })
+
+  test('filters stack ids by existing matching cards', () => {
+    const characterIds = getCardsInStack(
+      ['zombie1', 'speedPotion1', 'missing'],
       cards,
-      (card) => {
-        return card.base.type === 'Character'
-      },
+      (card) => card.base.type === 'Character',
     )
 
-    expect(result).toEqual(['zombie1', 'haunt1'])
-  })
-
-  test('hasCardInStack returns true when at least one card matches', () => {
-    const result = hasCardInStack(
-      ['speedPotion1', 'zombie1'],
-      cards,
-      (card) => {
+    expect(characterIds).toEqual(['zombie1'])
+    expect(
+      hasCardInStack(['speedPotion1', 'zombie1'], cards, (card) => {
         return card.base.id === 'zombie'
-      },
-    )
-
-    expect(result).toBe(true)
+      }),
+    ).toBe(true)
+    expect(
+      hasCardInStack(['speedPotion1'], cards, (card) => {
+        return card.base.type === 'Character'
+      }),
+    ).toBe(false)
   })
 
-  test('hasCardInStack returns false when no cards match', () => {
-    const result = hasCardInStack(['speedPotion1'], cards, (card) => {
-      return card.base.type === 'Character'
-    })
+  test.each([
+    {
+      cardId: 'speedPotion1',
+      hand: ['zombie1'],
+      player2Board: [],
+      expected: 'SPEED_POTION',
+    },
+    {
+      cardId: 'speedPotion1',
+      hand: [],
+      player2Board: [],
+      expected: null,
+    },
+    {
+      cardId: 'flashBomb1',
+      hand: [],
+      player2Board: ['zombie1'],
+      expected: 'FLASH_BOMB',
+    },
+    {
+      cardId: 'flashBomb1',
+      hand: [],
+      player2Board: [],
+      expected: null,
+    },
+    {
+      cardId: 'bookOfAsh1',
+      hand: [],
+      player2Board: [],
+      expected: 'BOOK_OF_ASH',
+    },
+    {
+      cardId: 'zombie1',
+      hand: ['zombie1'],
+      player2Board: [],
+      expected: null,
+    },
+  ] as const)(
+    'gets pending instant for $cardId with available targets',
+    ({ cardId, hand, player2Board, expected }) => {
+      const state = makeTestDuelState({
+        cards,
+        player1: { hand: [...hand] },
+        player2: { board: [...player2Board] },
+      })
 
-    expect(result).toBe(false)
-  })
+      expect(getPendingInstant(cards[cardId], [...hand], [], state)).toBe(
+        expected,
+      )
+    },
+  )
 })
 
-describe('getPendingInstant', () => {
-  const baseState: Duel = {
-    ...INITIAL_DUEL_STATE,
-    cards: {
-      zombie1: createCardInstance('zombie', 'zombie1'),
-      zombie2: createCardInstance('zombie', 'zombie2'),
-      speedPotion1: createCardInstance('speedPotion', 'speedPotion1'),
-      flashBomb1: createCardInstance('flashBomb', 'flashBomb1'),
-      bookOfAsh1: createCardInstance('bookOfAsh', 'bookOfAsh1'),
-    },
-    players: {
-      player1: {
-        ...MOCK_DUEL.players[MOCK_DUEL.playerOrder[0]],
-        hand: ['zombie1'],
-        board: [],
-      },
-      player2: {
-        ...MOCK_DUEL.players[MOCK_DUEL.playerOrder[1]],
-        hand: [],
-        board: ['zombie2'],
-      },
-    },
-    playerOrder: ['player1', 'player2'],
-  }
+describe('state utilities', () => {
+  test('draws cards from deck to hand up to the requested amount', () => {
+    const player = makeTestPlayer('player1', {
+      hand: ['hand1'],
+      deck: ['deck1', 'deck2'],
+    })
 
-  test('returns SPEED_POTION when speed potion played with characters in hand', () => {
-    const card = baseState.cards['speedPotion1']
+    drawCards(player, 3)
 
-    expect(getPendingInstant(card, ['zombie1'], [], baseState)).toBe(
-      'SPEED_POTION',
-    )
+    expect(player.hand).toEqual(['hand1', 'deck1', 'deck2'])
+    expect(player.deck).toEqual([])
   })
 
-  test('returns null for speed potion when no characters in hand', () => {
-    const card = baseState.cards['speedPotion1']
+  test('resets mutable character attributes to their base values', () => {
+    const woundedZombie = makeTestCard('zombie', 'z1', {
+      attributes: { life: 0, hasHaste: true },
+      didAct: true,
+    })
 
-    expect(getPendingInstant(card, [], [], baseState)).toBeNull()
+    expect(resetCharacterAttributes(woundedZombie)).toEqual({
+      ...woundedZombie,
+      attributes: CARD_BASES['zombie'].attributes,
+    })
   })
 
-  test('returns FLASH_BOMB when flash bomb played with cards on board', () => {
-    const card = baseState.cards['flashBomb1']
+  test('leaves instant card attributes unchanged when reset is requested', () => {
+    const speedPotion = makeTestCard('speedPotion', 's1')
 
-    expect(getPendingInstant(card, [], [], baseState)).toBe('FLASH_BOMB')
+    expect(resetCharacterAttributes(speedPotion)).toBe(speedPotion)
   })
 
-  test('returns null for flash bomb when no cards on board', () => {
-    const card = baseState.cards['flashBomb1']
-    const emptyBoardState: Duel = {
-      ...baseState,
-      players: {
-        player1: { ...baseState.players['player1'], board: [] },
-        player2: { ...baseState.players['player2'], board: [] },
-      },
+  test('updates targeted players and cards without changing other entries', () => {
+    const players = {
+      player1: makeTestPlayer('player1'),
+      player2: makeTestPlayer('player2'),
     }
-
-    expect(getPendingInstant(card, [], [], emptyBoardState)).toBeNull()
-  })
-
-  test('returns BOOK_OF_ASH when book of ash is played', () => {
-    const card = baseState.cards['bookOfAsh1']
-
-    expect(getPendingInstant(card, [], ['zombie1'], baseState)).toBe(
-      'BOOK_OF_ASH',
+    const cards = makeTestCards(
+      makeTestCard('zombie', 'z1'),
+      makeTestCard('haunt', 'h1'),
     )
+
+    const updatedPlayers = updatePlayers(players, 'player1', (player) => ({
+      ...player,
+      coins: 99,
+    }))
+    const updatedCards = updateCard(cards, 'z1', (card) => ({
+      ...card,
+      didAct: true,
+    }))
+
+    expect(updatedPlayers['player1'].coins).toBe(99)
+    expect(updatedPlayers['player2']).toEqual(players['player2'])
+    expect(updatedCards['z1'].didAct).toBe(true)
+    expect(updatedCards['h1']).toEqual(cards['h1'])
   })
 
-  test('returns null for non-instant cards', () => {
-    const card = baseState.cards['zombie1']
-
-    expect(getPendingInstant(card, ['zombie1'], [], baseState)).toBeNull()
-  })
-})
-
-describe('resetPlayersReady', () => {
-  test('resets playerReady status', () => {
-    const state = { ...MOCK_DUEL }
-
-    MOCK_DUEL.playerOrder.forEach((playerId) => {
-      state.players[playerId].playerReady = true
+  test('resets all players ready and appends logs through state helpers', () => {
+    const state = makeTestDuelState({
+      player1: { playerReady: true },
+      player2: { playerReady: true },
     })
-
-    expect(state.players[MOCK_DUEL.playerOrder[0]].playerReady).toBe(true)
-    expect(state.players[MOCK_DUEL.playerOrder[1]].playerReady).toBe(true)
 
     resetPlayersReady(state)
+    addLog(state, 'A quiet footstep.')
 
-    expect(state.players[MOCK_DUEL.playerOrder[0]].playerReady).toBe(false)
-    expect(state.players[MOCK_DUEL.playerOrder[1]].playerReady).toBe(false)
-  })
-})
-
-describe('updatePlayers', () => {
-  const players = MOCK_DUEL.players
-  const playerId = MOCK_DUEL.playerOrder[0]
-
-  test('applies updater to the specified player', () => {
-    const result = updatePlayers(players, playerId, (p) => ({
-      ...p,
-      coins: 99,
-    }))
-
-    expect(result[playerId].coins).toBe(99)
-  })
-
-  test('does not modify other players', () => {
-    const otherPlayerId = MOCK_DUEL.playerOrder[1]
-
-    const result = updatePlayers(players, playerId, (p) => ({
-      ...p,
-      coins: 99,
-    }))
-
-    expect(result[otherPlayerId]).toEqual(players[otherPlayerId])
-  })
-})
-
-describe('updateCard', () => {
-  const cards = {
-    card1: createCardInstance('zombie', 'card1'),
-    card2: createCardInstance('zombie', 'card2'),
-  }
-
-  test('applies updater to the specified card', () => {
-    const result = updateCard(cards, 'card1', (c) => ({ ...c, didAct: true }))
-
-    expect(result['card1'].didAct).toBe(true)
-  })
-
-  test('does not modify other cards', () => {
-    const result = updateCard(cards, 'card1', (c) => ({ ...c, didAct: true }))
-
-    expect(result['card2']).toEqual(cards['card2'])
-  })
-
-  test('can update card attributes', () => {
-    const result = updateCard(cards, 'card1', (c) => ({
-      ...c,
-      attributes: { ...c.attributes, isStunned: true },
-    }))
-
-    expect(result['card1'].attributes.isStunned).toBe(true)
-  })
-})
-
-describe('makeTestDuel', () => {
-  test('creates a duel with default players and intro phase', () => {
-    const duel = makeTestDuel()
-
-    expect(duel.phase).toBe('intro')
-    expect(duel.playerOrder).toEqual(['player1', 'player2'])
-    expect(duel.players['player1'].name).toBe('Alice')
-    expect(duel.players['player2'].name).toBe('Bob')
-    expect(duel.logs).toEqual([])
-    expect(duel.cards).toEqual({})
-  })
-
-  test('applies overrides to the default duel', () => {
-    const card = createCardInstance('zombie', 'z1')
-    const duel = makeTestDuel({
-      phase: 'player-turn',
-      cards: { z1: card },
-    })
-
-    expect(duel.phase).toBe('player-turn')
-    expect(duel.cards['z1']).toEqual(card)
-    expect(duel.players['player1'].name).toBe('Alice')
-  })
-
-  test('overrides players completely when provided', () => {
-    const duel = makeTestDuel({
-      players: {
-        player1: {
-          ...MOCK_DUEL.players[MOCK_DUEL.playerOrder[0]],
-          id: 'player1',
-          name: 'Custom',
-        },
-        player2: {
-          ...MOCK_DUEL.players[MOCK_DUEL.playerOrder[1]],
-          id: 'player2',
-          name: 'Other',
-        },
-      },
-    })
-
-    expect(duel.players['player1'].name).toBe('Custom')
-    expect(duel.players['player2'].name).toBe('Other')
+    expect(state.players['player1'].playerReady).toBe(false)
+    expect(state.players['player2'].playerReady).toBe(false)
+    expect(state.logs).toEqual(['A quiet footstep.'])
   })
 })

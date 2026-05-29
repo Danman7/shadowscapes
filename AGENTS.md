@@ -30,8 +30,8 @@ Shadowscapes is a Bun + React TypeScript project for a small dueling card-game U
 - Run the placeholder app/server only when explicitly needed: `bun dev`
 - Build production output: `bun build`
 - Run production server: `bun start`
-- Run tests: `bun test`
-- Run coverage: `bun test:coverage`
+- Run tests: `bun run test`
+- Run coverage: `bun run test:coverage`
 - Run lint, Prettier check, ESLint, and TypeScript check: `bun lint`
 - Run Storybook: `bun run storybook`
 - Export current card data: `bun export:cards`

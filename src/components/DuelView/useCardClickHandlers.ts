@@ -1,11 +1,4 @@
 import { useGameDispatch } from 'src/contexts'
-import type {
-  CardInstance,
-  PendingCharacterAbility,
-  PendingInstant,
-  Phase,
-  Player,
-} from 'src/game-engine'
 import {
   activateCharacterAbility,
   applyFlashBomb,
@@ -15,8 +8,28 @@ import {
   playCard,
   redrawCard,
 } from 'src/game-engine/duel'
+import type {
+  CardInstance,
+  PendingCharacterAbility,
+  PendingInstant,
+  Phase,
+  Player,
+} from 'src/game-engine'
 
+import type { AttackAnimationRequest } from 'src/components/DuelView/attackAnimation'
+import {
+  type BoardCardClickCommand,
+  getBoardCardClickCommand,
+  getHandCardClickCommand,
+  type HandCardClickCommand,
+} from 'src/components/DuelView/cardClickActions'
 import type { ScopedSelectionController } from 'src/components/DuelView/useScopedSelection'
+
+const getAnimationRequest = (
+  command: BoardCardClickCommand,
+): AttackAnimationRequest | undefined => {
+  return 'animationRequest' in command ? command.animationRequest : undefined
+}
 
 export const useCardClickHandlers = ({
   phase,
@@ -28,7 +41,7 @@ export const useCardClickHandlers = ({
   pendingCharacterAbility,
   pendingInstant,
   selectedAttackerSelection,
-  triggerAttackAnimation,
+  requestAttackAnimation,
 }: {
   phase: Phase
   activePlayer: Player
@@ -39,7 +52,7 @@ export const useCardClickHandlers = ({
   pendingCharacterAbility: PendingCharacterAbility | null
   pendingInstant: PendingInstant | null
   selectedAttackerSelection: ScopedSelectionController
-  triggerAttackAnimation: (attackerId: string) => void
+  requestAttackAnimation: (request: AttackAnimationRequest) => void
 }): {
   getOnCardClick: (cardId: string) => (() => void) | undefined
   getOnBoardCardClick: (
@@ -49,111 +62,108 @@ export const useCardClickHandlers = ({
 } => {
   const dispatch = useGameDispatch()
 
+  const executeHandCommand = (command: HandCardClickCommand): void => {
+    switch (command.type) {
+      case 'redraw-card':
+        dispatch(
+          redrawCard({
+            playerId: command.playerId,
+            cardInstanceId: command.cardInstanceId,
+          }),
+        )
+        return
+
+      case 'apply-speed-potion':
+        dispatch(
+          applySpeedPotion({
+            targetCardInstanceId: command.targetCardInstanceId,
+          }),
+        )
+        return
+
+      case 'play-card':
+        dispatch(
+          playCard({
+            playerId: command.playerId,
+            cardInstanceId: command.cardInstanceId,
+          }),
+        )
+        return
+    }
+  }
+
+  const executeBoardCommand = (command: BoardCardClickCommand): void => {
+    const animationRequest = getAnimationRequest(command)
+    if (animationRequest !== undefined) requestAttackAnimation(animationRequest)
+
+    switch (command.type) {
+      case 'apply-flash-bomb':
+        dispatch(
+          applyFlashBomb({
+            targetCardInstanceId: command.targetCardInstanceId,
+          }),
+        )
+        return
+
+      case 'activate-character-ability':
+        dispatch(
+          activateCharacterAbility({ cardInstanceId: command.cardInstanceId }),
+        )
+        return
+
+      case 'attack-player':
+        dispatch(attackPlayer({ attackerId: command.attackerId }))
+        return
+
+      case 'select-attacker':
+        selectedAttackerSelection.select(command.attackerId)
+        return
+
+      case 'attack-card':
+        dispatch(
+          attackCard({
+            attackerId: command.attackerId,
+            defenderId: command.defenderId,
+          }),
+        )
+        selectedAttackerSelection.clear()
+        return
+    }
+  }
+
   const getOnCardClick = (cardId: string): (() => void) | undefined => {
-    if (phase === 'redraw') {
-      if (activePlayer.playerReady) return undefined
+    const command = getHandCardClickCommand({
+      cardId,
+      phase,
+      activePlayer,
+      activePlayerCoins,
+      activeHand,
+      pendingInstant,
+    })
 
-      return () => {
-        dispatch(
-          redrawCard({ playerId: activePlayer.id, cardInstanceId: cardId }),
-        )
-      }
-    }
+    if (command === undefined) return undefined
 
-    if (phase === 'turn-end' && pendingInstant === 'SPEED_POTION') {
-      const cardInstance = activeHand.find((c) => c.id === cardId)
-      if (!cardInstance) return undefined
-      if (cardInstance.base.type !== 'Character') return undefined
-
-      return () => {
-        dispatch(applySpeedPotion({ targetCardInstanceId: cardId }))
-      }
-    }
-
-    if (phase === 'player-turn') {
-      const cardInstance = activeHand.find((c) => c.id === cardId)
-      if (!cardInstance) return undefined
-
-      if (cardInstance.attributes.cost > activePlayerCoins) return undefined
-
-      return () => {
-        dispatch(
-          playCard({ playerId: activePlayer.id, cardInstanceId: cardId }),
-        )
-      }
-    }
-
-    return undefined
+    return () => executeHandCommand(command)
   }
 
   const getOnBoardCardClick = (
     cardId: string,
     isActiveBoard: boolean,
   ): (() => void) | undefined => {
-    if (pendingInstant === 'FLASH_BOMB') {
-      return () => {
-        dispatch(applyFlashBomb({ targetCardInstanceId: cardId }))
-      }
-    }
+    const command = getBoardCardClickCommand({
+      cardId,
+      isActiveBoard,
+      phase,
+      activeBoard,
+      inactiveBoard,
+      pendingCharacterAbility,
+      pendingInstant,
+      selectedAttackerId: selectedAttackerSelection.selectedId,
+    })
 
-    if (phase === 'player-turn') {
-      if (!isActiveBoard && pendingCharacterAbility !== null) {
-        return () => {
-          triggerAttackAnimation(pendingCharacterAbility.sourceCardInstanceId)
-          dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
-        }
-      }
+    if (command === undefined) return undefined
 
-      if (!isActiveBoard) return undefined
-
-      return () => {
-        dispatch(activateCharacterAbility({ cardInstanceId: cardId }))
-      }
-    }
-
-    if (phase !== 'turn-end') return undefined
-
-    if (isActiveBoard) {
-      const cardInstance = activeBoard.find((c) => c.id === cardId)
-      if (
-        !cardInstance ||
-        cardInstance.attributes.cannotAttack === true ||
-        cardInstance.didAct ||
-        cardInstance.attributes.isStunned
-      )
-        return undefined
-
-      if (inactiveBoard.length === 0) {
-        return () => {
-          triggerAttackAnimation(cardId)
-          dispatch(attackPlayer({ attackerId: cardId }))
-        }
-      }
-
-      return () => {
-        selectedAttackerSelection.select(cardId)
-      }
-    }
-
-    const selectedAttackerId = selectedAttackerSelection.selectedId
-    if (selectedAttackerId === null) return undefined
-
-    const selectedCard = activeBoard.find((c) => c.id === selectedAttackerId)
-    if (!selectedCard || selectedCard.didAct) return undefined
-
-    const cardInstance = inactiveBoard.find((c) => c.id === cardId)
-    if (!cardInstance) return undefined
-
-    return () => {
-      triggerAttackAnimation(selectedAttackerId)
-      dispatch(
-        attackCard({
-          attackerId: selectedAttackerId,
-          defenderId: cardId,
-        }),
-      )
-      selectedAttackerSelection.clear()
-    }
+    return () => executeBoardCommand(command)
   }
 
   return { getOnCardClick, getOnBoardCardClick }

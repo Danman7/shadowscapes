@@ -1,7 +1,4 @@
-import {
-  INITIAL_DUEL_STATE,
-  PLACEHOLDER_PLAYER,
-} from 'src/game-engine/constants'
+import { INITIAL_DUEL_STATE } from 'src/game-engine/constants'
 import {
   PLAYER_1_GAME_DECK,
   PLAYER_1_TEST_DECK,
@@ -13,8 +10,16 @@ import {
   createDuel,
   type CreateDuelParams,
 } from 'src/game-engine/cards'
-import type { Duel, Player, PlayerSetup } from 'src/game-engine/types'
+import { makeTestDuelState } from 'src/game-engine/mocks/builders'
+import type { Duel, PlayerSetup } from 'src/game-engine/types'
 import { formatString, messages } from 'src/i18n'
+
+export {
+  makeTestCard,
+  makeTestCards,
+  makeTestDuelState,
+  makeTestPlayer,
+} from 'src/game-engine/mocks/builders'
 export const MOCK_PLAYER_1_SETUP: PlayerSetup = {
   id: 'player1',
   name: 'Constantine',
@@ -97,11 +102,6 @@ export const MIXED_STACKS_DUEL: Duel = {
 }
 
 export const makeTestDuel = (overrides: Partial<Duel> = {}): Duel => ({
-  ...INITIAL_DUEL_STATE,
-  playerOrder: ['player1', 'player2'],
-  players: {
-    player1: { ...PLACEHOLDER_PLAYER, id: 'player1', name: 'Alice' } as Player,
-    player2: { ...PLACEHOLDER_PLAYER, id: 'player2', name: 'Bob' } as Player,
-  },
+  ...makeTestDuelState(),
   ...overrides,
 })

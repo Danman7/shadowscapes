@@ -53,7 +53,7 @@ export const DuelView: React.FC = () => {
   const selectedAttackerSelection = useScopedSelection(
     phase === 'turn-end' ? `${phase}:${activePlayer.id}` : null,
   )
-  const { attackingCardId, triggerAttackAnimation } = useAttackAnimation()
+  const { attackingCardId, requestAttackAnimation } = useAttackAnimation()
 
   useDuelAutoTransitions({
     phase,
@@ -76,7 +76,7 @@ export const DuelView: React.FC = () => {
     pendingCharacterAbility,
     pendingInstant,
     selectedAttackerSelection,
-    triggerAttackAnimation,
+    requestAttackAnimation,
   })
 
   return (

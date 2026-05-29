@@ -1,86 +1,19 @@
-import {
-  CARD_ATTRIBUTE_KEYS,
-  type CardAttributeKey,
-} from 'src/components/Card/cardAttributeKeys'
+import { getCardAttributeDetails } from 'src/components/Card/cardAttributeModels'
 import type { CardAttributes } from 'src/game-engine'
-import { formatString, messages } from 'src/i18n'
-
-interface CardAttributeConfig {
-  label?: string
-  shouldRender: (attributes: CardAttributes) => boolean
-  renderValue: (attributes: CardAttributes) => React.ReactNode
-}
-
-const getEffectiveStrength = (attributes: CardAttributes): number => {
-  return (attributes.strength ?? 0) + (attributes.nextAttackStrengthBonus ?? 0)
-}
-
-const CARD_ATTRIBUTE_MAP: Record<CardAttributeKey, CardAttributeConfig> = {
-  cost: {
-    label: messages.ui.cost,
-    shouldRender: () => true,
-    renderValue: ({ cost }) =>
-      `${formatString(messages.ui.amountOfCoins, { coins: cost })}.`,
-  },
-  life: {
-    label: messages.ui.remainingLife,
-    shouldRender: ({ life }) => life !== undefined,
-    renderValue: ({ life }) => life,
-  },
-  strength: {
-    label: messages.ui.strength,
-    shouldRender: ({ strength }) => strength !== undefined,
-    renderValue: (attributes) =>
-      `${getEffectiveStrength(attributes)} - ${messages.ui.strengthDescription}`,
-  },
-  charges: {
-    label: messages.ui.charges,
-    shouldRender: ({ charges }) => charges !== undefined,
-    renderValue: ({ charges }) => charges,
-  },
-  hasHaste: {
-    label: messages.ui.haste,
-    shouldRender: ({ hasHaste }) => hasHaste === true,
-    renderValue: () => messages.ui.hasteDescription,
-  },
-  cannotAttack: {
-    shouldRender: ({ cannotAttack }) => cannotAttack === true,
-    renderValue: () => messages.ui.cannotAttack,
-  },
-  retaliates: {
-    shouldRender: ({ retaliates }) => retaliates === true,
-    renderValue: () => messages.ui.retaliates,
-  },
-  isStunned: {
-    label: messages.ui.stunned,
-    shouldRender: ({ isStunned }) => isStunned === true,
-    renderValue: () => messages.ui.stunnedDescription,
-  },
-  isHidden: {
-    label: messages.ui.hidden,
-    shouldRender: ({ isHidden }) => isHidden === true,
-    renderValue: () => messages.ui.hiddenDescription,
-  },
-}
 
 export const CardAttributesDetails: React.FC<{
   attributes: CardAttributes
 }> = ({ attributes }) => {
   return (
     <>
-      {CARD_ATTRIBUTE_KEYS.map((attributeKey) => {
-        const { label, shouldRender, renderValue } =
-          CARD_ATTRIBUTE_MAP[attributeKey]
-
-        if (!shouldRender(attributes)) return null
-
+      {getCardAttributeDetails(attributes).map(({ key, label, value }) => {
         if (!label) {
-          return <p key={attributeKey}>{renderValue(attributes)}</p>
+          return <p key={key}>{value}</p>
         }
 
         return (
-          <p key={attributeKey}>
-            <strong>{label}:</strong> {renderValue(attributes)}
+          <p key={key}>
+            <strong>{label}:</strong> {value}
           </p>
         )
       })}
