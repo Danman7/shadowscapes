@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
+import { IoMdClose } from 'react-icons/io'
 
-import { Button } from 'src/components/Button'
 import { Card } from 'src/components/Card'
 import type { CardInstance } from 'src/game-engine'
 
@@ -52,21 +52,27 @@ export const DiscardPileDialog: React.FC<DiscardPileDialogProps> = ({
   return (
     <dialog
       ref={dialogRef}
-      className="m-auto rounded-xl border border-neutral-700 bg-neutral-900 text-neutral-100 p-4 w-[min(960px,95vw)]"
+      className="box m-auto w-[min(760px,calc(100vw-2rem))] max-h-[min(80vh,720px)] p-3 text-foreground shadow-xl animate-fade-in-scale backdrop:bg-background/70"
       onCancel={(event) => {
         event.preventDefault()
         onClose()
       }}
       data-testid="discard-pile-dialog"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <Button isSecondary onClick={onClose}>
-          {closeLabel}
-        </Button>
+      <div className="relative font-bold py-1 pr-8">
+        <h2>{title}</h2>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-0 top-1 cursor-pointer text-2xl leading-none hover:text-primary"
+          aria-label={closeLabel}
+        >
+          <IoMdClose />
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[70vh] overflow-auto pr-1">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(13.75rem,13.75rem))] justify-start gap-2 max-h-[min(62vh,36rem)] overflow-auto pt-2">
         {cards.map((card) => {
           const selectable = isCardSelectable(card)
 
@@ -76,7 +82,9 @@ export const DiscardPileDialog: React.FC<DiscardPileDialogProps> = ({
               type="button"
               onClick={() => onSelectCard(card.id)}
               disabled={!selectable}
-              className={selectable ? '' : 'opacity-60 cursor-not-allowed'}
+              className={`w-55 rounded-2xl text-left transition-opacity ${
+                selectable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+              }`}
               aria-label={`select-discard-card-${card.id}`}
             >
               <Card card={card} isOnBoard isClickable={selectable} />
@@ -86,7 +94,7 @@ export const DiscardPileDialog: React.FC<DiscardPileDialogProps> = ({
       </div>
 
       {!hasSelectableCards && (
-        <p className="mt-3 text-sm text-neutral-300">{noValidTargetsLabel}</p>
+        <p className="mt-3 text-sm text-foreground/70">{noValidTargetsLabel}</p>
       )}
     </dialog>
   )

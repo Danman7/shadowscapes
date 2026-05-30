@@ -5,13 +5,6 @@ import { AnimatedNumber } from 'src/components'
 describe('AnimatedNumber', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-
-    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
-      callback(performance.now())
-      return 0
-    })
-
-    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -71,16 +64,38 @@ describe('AnimatedNumber', () => {
     expect(getByText('8')).toBeInTheDocument()
   })
 
-  test('replaces previous floating delta when value changes again before timeout', () => {
-    const { getByText, queryByText, rerender } = render(
-      <AnimatedNumber value={1} />,
-    )
+  test('stacks floating deltas when value changes again before timeout', () => {
+    const { getAllByText, rerender } = render(<AnimatedNumber value={1} />)
 
     rerender(<AnimatedNumber value={4} />)
-    expect(getByText('+3')).toBeInTheDocument()
+    expect(getAllByText('+3')).toHaveLength(1)
 
-    rerender(<AnimatedNumber value={6} />)
-    expect(getByText('+2')).toBeInTheDocument()
-    expect(queryByText('+3')).not.toBeInTheDocument()
+    rerender(<AnimatedNumber value={7} />)
+    expect(getAllByText('+3')).toHaveLength(2)
+  })
+
+  test('removes each stacked floating delta after its own timeout', () => {
+    const { queryAllByText, rerender } = render(<AnimatedNumber value={1} />)
+
+    rerender(<AnimatedNumber value={4} />)
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+
+    rerender(<AnimatedNumber value={7} />)
+    expect(queryAllByText('+3')).toHaveLength(2)
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+
+    expect(queryAllByText('+3')).toHaveLength(1)
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+
+    expect(queryAllByText('+3')).toHaveLength(0)
   })
 })

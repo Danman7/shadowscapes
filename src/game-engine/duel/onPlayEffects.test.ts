@@ -1,12 +1,9 @@
 import type { UnknownAction } from '@reduxjs/toolkit'
 
-import { applyCardEffects } from 'src/game-engine/duel/effects'
-import {
-  applyMarkanderReactiveEffect,
-  applyOnPlayEffects,
-} from 'src/game-engine/duel/effects/onPlayEffects'
 import { CARD_BASES } from 'src/game-engine/constants'
 import { attackCard, playCard, switchTurn } from 'src/game-engine/duel'
+import { applyCardEffects } from 'src/game-engine/duel/effects'
+import { applyOnPlayEffects } from 'src/game-engine/duel/effects/onPlayEffects'
 import {
   makeTestCard,
   makeTestDuel,
