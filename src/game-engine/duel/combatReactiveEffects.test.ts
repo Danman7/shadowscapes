@@ -730,7 +730,9 @@ describe('Mines Guardian final attack effect', () => {
 
     expect(result.players['player1'].board).toEqual([])
     expect(result.players['player1'].discard).toEqual(['z1'])
-    expect(result.cards['z1']!.attributes).toEqual(CARD_BASES['zombie'].attributes)
+    expect(result.cards['z1']!.attributes).toEqual(
+      CARD_BASES['zombie'].attributes,
+    )
   })
 
   test('damages attacker when mines guardian is defeated by normal attack', () => {
