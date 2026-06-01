@@ -1,4 +1,7 @@
+import { motion } from 'motion/react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+
+import { FLOATING_NUMBER_VARIANTS } from 'src/components/animation'
 
 interface FloatingDelta {
   id: number
@@ -68,13 +71,17 @@ export const AnimatedNumber: React.FC<{
   return (
     <span className="relative inline-flex items-center justify-center">
       {floatingDeltas.map((floatingDelta) => (
-        <span
+        <motion.span
           key={floatingDelta.id}
-          className="absolute pointer-events-none whitespace-nowrap animate-float-number text-shadow-3xs text-foreground! font-extrabold text-shadow-background"
+          variants={FLOATING_NUMBER_VARIANTS}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 2, ease: 'easeOut' }}
+          className="absolute pointer-events-none whitespace-nowrap text-shadow-3xs text-foreground! font-extrabold text-shadow-background"
           style={{ bottom: `${floatingDelta.offset * 1.15}rem` }}
         >
           {floatingDelta.value}
-        </span>
+        </motion.span>
       ))}
 
       <span>{value}</span>

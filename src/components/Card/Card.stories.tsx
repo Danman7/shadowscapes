@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { useMemo, useState } from 'react'
 
-import { Card } from 'src/components'
+import { Button, Card } from 'src/components'
 import { CARD_BASES, createCardInstance } from 'src/game-engine'
 
 const meta: Meta<typeof Card> = {
@@ -17,6 +18,43 @@ const meta: Meta<typeof Card> = {
 
 export default meta
 type Story = StoryObj<typeof Card>
+
+const FeedbackCardStory: React.FC = () => {
+  const [life, setLife] = useState(3)
+  const [charges, setCharges] = useState(2)
+  const card = useMemo(
+    () =>
+      createCardInstance('haunt', 'feedback-haunt', {
+        charges,
+        life,
+      }),
+    [charges, life],
+  )
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <Card card={card} isOnBoard />
+
+      <div className="flex-list">
+        <Button onClick={() => setLife((currentLife) => currentLife - 1)}>
+          Damage
+        </Button>
+        <Button onClick={() => setLife((currentLife) => currentLife + 1)}>
+          Heal
+        </Button>
+        <Button
+          onClick={() =>
+            setCharges((currentCharges) =>
+              currentCharges === 0 ? 2 : currentCharges - 1,
+            )
+          }
+        >
+          Charge
+        </Button>
+      </div>
+    </div>
+  )
+}
 
 export const AllCardsGallery: Story = {
   render: () => (
@@ -66,4 +104,8 @@ export const IsHidden: Story = {
   args: {
     card: createCardInstance('templeGuard', undefined, { isHidden: true }),
   },
+}
+
+export const Feedback: Story = {
+  render: () => <FeedbackCardStory />,
 }

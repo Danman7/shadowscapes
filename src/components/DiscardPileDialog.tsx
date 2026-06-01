@@ -1,6 +1,11 @@
+import { motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { IoMdClose } from 'react-icons/io'
 
+import {
+  FADE_IN_SCALE_VARIANTS,
+  QUICK_TRANSITION,
+} from 'src/components/animation'
 import { Card } from 'src/components/Card'
 import type { CardInstance } from 'src/game-engine'
 
@@ -50,9 +55,13 @@ export const DiscardPileDialog: React.FC<DiscardPileDialogProps> = ({
   const hasSelectableCards = cards.some((card) => isCardSelectable(card))
 
   return (
-    <dialog
+    <motion.dialog
       ref={dialogRef}
-      className="box m-auto w-[min(760px,calc(100vw-2rem))] max-h-[min(80vh,720px)] p-3 text-foreground shadow-xl animate-fade-in-scale backdrop:bg-background/70"
+      variants={FADE_IN_SCALE_VARIANTS}
+      initial="initial"
+      animate={isOpen ? 'animate' : 'exit'}
+      transition={QUICK_TRANSITION}
+      className="box m-auto w-[min(760px,calc(100vw-2rem))] max-h-[min(80vh,720px)] p-3 text-foreground shadow-xl backdrop:bg-background/70"
       onCancel={(event) => {
         event.preventDefault()
         onClose()
@@ -96,6 +105,6 @@ export const DiscardPileDialog: React.FC<DiscardPileDialogProps> = ({
       {!hasSelectableCards && (
         <p className="mt-3 text-sm text-foreground/70">{noValidTargetsLabel}</p>
       )}
-    </dialog>
+    </motion.dialog>
   )
 }

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { FaceDownPile } from 'src/components'
+import { createCardInstance } from 'src/game-engine'
 
 const meta: Meta<typeof FaceDownPile> = {
   title: 'Duel/FaceDownPile',
@@ -23,6 +24,18 @@ export const Default: Story = {}
 export const Flipped: Story = {
   args: {
     flipped: true,
+  },
+}
+
+export const WithCardAnchors: Story = {
+  args: {
+    cards: [
+      createCardInstance('zombie', 'pile-1'),
+      createCardInstance('haunt', 'pile-2'),
+      createCardInstance('templeGuard', 'pile-3'),
+      createCardInstance('downwinder', 'pile-4'),
+    ],
+    count: undefined,
   },
 }
 

@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import { BsLightningFill } from 'react-icons/bs'
 import { FaRegEyeSlash } from 'react-icons/fa'
 import { FaHandFist } from 'react-icons/fa6'
@@ -5,6 +6,7 @@ import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 import { PiArrowsClockwiseFill } from 'react-icons/pi'
 import { TbSwordOff } from 'react-icons/tb'
 
+import { CHARGE_BADGE_VARIANTS } from 'src/components/animation'
 import {
   type CardFooterBadge,
   getCardFooterBadges,
@@ -46,16 +48,31 @@ const renderBadgeContent = (badge: CardFooterBadge): React.ReactNode => {
 
 export const CardAttributesFooter: React.FC<{
   attributes: CardAttributes
+  chargeAnimationKey?: number
   type: CardType
-}> = ({ attributes, type }) => {
+}> = ({ attributes, chargeAnimationKey = 0, type }) => {
   return (
     <div className="flex justify-between items-center pt-1">
       <div className="flex-list">
         {getCardFooterBadges(attributes, type).map((badge) => {
+          const shouldAnimateCharges =
+            badge.kind === 'charges' && chargeAnimationKey > 0
+
           return (
-            <div key={badge.key}>
+            <motion.div
+              key={
+                shouldAnimateCharges
+                  ? `${badge.key}-${chargeAnimationKey}`
+                  : badge.key
+              }
+              variants={
+                shouldAnimateCharges ? CHARGE_BADGE_VARIANTS : undefined
+              }
+              initial={shouldAnimateCharges ? 'initial' : false}
+              animate={shouldAnimateCharges ? 'animate' : undefined}
+            >
               <div className="badge">{renderBadgeContent(badge)}</div>
-            </div>
+            </motion.div>
           )
         })}
       </div>

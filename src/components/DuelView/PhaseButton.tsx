@@ -1,6 +1,11 @@
+import { motion } from 'motion/react'
 import { type ReactNode } from 'react'
 
 import { Button } from 'src/components'
+import {
+  QUICK_TRANSITION,
+  SLIDE_RIGHT_VARIANTS,
+} from 'src/components/animation'
 import { useGameDispatch } from 'src/contexts'
 import type { CardInstance, Phase, Player } from 'src/game-engine'
 import { goToEndOfTurn, skipRedraw, switchTurn } from 'src/game-engine/duel'
@@ -60,13 +65,17 @@ export const PhaseButton: React.FC<{
   return (
     phaseButtonLabel && (
       <div className="w-1/3 flex place-content-end">
-        <Button
-          className="animate-slide-right"
-          onClick={phaseButtonOnClick}
-          data-testid="phase-button"
+        <motion.div
+          variants={SLIDE_RIGHT_VARIANTS}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={QUICK_TRANSITION}
         >
-          {phaseButtonLabel}
-        </Button>
+          <Button onClick={phaseButtonOnClick} data-testid="phase-button">
+            {phaseButtonLabel}
+          </Button>
+        </motion.div>
       </div>
     )
   )

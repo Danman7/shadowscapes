@@ -3,9 +3,16 @@ import type { ReactNode } from 'react'
 export const Button: React.FC<{
   children: ReactNode
   className?: string
+  'data-testid'?: string
   onClick?: () => void
   isSecondary?: boolean
-}> = ({ children, className, onClick, isSecondary = false }) => {
+}> = ({
+  children,
+  className,
+  'data-testid': dataTestId,
+  onClick,
+  isSecondary = false,
+}) => {
   const buttonBase =
     'inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-md active:shadow-lg uppercase'
 
@@ -18,6 +25,7 @@ export const Button: React.FC<{
       onClick={onClick}
       className={`${buttonBase} ${buttonStyle} ${className}`}
       disabled={!onClick}
+      data-testid={dataTestId}
     >
       {children}
     </button>

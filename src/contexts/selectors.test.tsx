@@ -12,6 +12,7 @@ import {
   useInactivePlayerHand,
   usePlayerDeckCount,
   usePlayerDiscardCount,
+  usePlayerStackCards,
 } from 'src/contexts'
 import { CARD_BASES } from 'src/game-engine'
 import { MIXED_STACKS_DUEL as preloadedState } from 'src/game-engine/testing'
@@ -176,5 +177,23 @@ describe('usePlayerDiscardCount', () => {
     expect(
       getByText(preloadedState.players['player1'].discard.length.toString()),
     ).toBeInTheDocument
+  })
+})
+
+describe('usePlayerStackCards', () => {
+  test('returns cards for any player stack', () => {
+    const TestComponent = () => {
+      const cards = usePlayerStackCards('player1', 'deck')
+
+      return <div>{cards.map((card) => card.id).join(',')}</div>
+    }
+
+    const { getByText } = renderGameContext(<TestComponent />, {
+      preloadedState,
+    })
+
+    expect(
+      getByText(preloadedState.players['player1'].deck.join(',')),
+    ).toBeInTheDocument()
   })
 })

@@ -1,6 +1,8 @@
+import { motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { IoMdClose } from 'react-icons/io'
 
+import { QUICK_TRANSITION, SLIDE_LEFT_VARIANTS } from 'src/components/animation'
 import { messages } from 'src/i18n'
 
 export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
@@ -18,7 +20,14 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
   if (!logs.length) return null
 
   return (
-    <div className="box z-50 shadow-xl p-2 max-w-80 relative animate-slide-left">
+    <motion.div
+      variants={SLIDE_LEFT_VARIANTS}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={QUICK_TRANSITION}
+      className="box z-50 shadow-xl p-2 max-w-80 relative"
+    >
       <div className="font-bold py-1">
         {messages.ui.logs}
         <IoMdClose
@@ -37,6 +46,6 @@ export const Logs: React.FC<{ logs: string[]; onClose: () => void }> = ({
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }

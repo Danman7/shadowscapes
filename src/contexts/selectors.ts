@@ -51,7 +51,11 @@ const makeSelectPlayerCards = (
     selectPlayerId,
     (cards, players, playerId) => {
       const player = players[playerId]
-      return player[stack].map((id: string) => cards[id]!)
+      return player[stack].flatMap((id: string) => {
+        const card = cards[id]
+
+        return card === undefined ? [] : [card]
+      })
     },
   )
 
@@ -74,6 +78,18 @@ const selectInactivePlayerHand = makeSelectPlayerCards(
 const selectInactivePlayerBoard = makeSelectPlayerCards(
   selectInactivePlayerId,
   'board',
+)
+const selectActivePlayerDeck = makeSelectPlayerCards(
+  selectActivePlayerId,
+  'deck',
+)
+const selectInactivePlayerDeck = makeSelectPlayerCards(
+  selectInactivePlayerId,
+  'deck',
+)
+const selectInactivePlayerDiscard = makeSelectPlayerCards(
+  selectInactivePlayerId,
+  'discard',
 )
 
 export const useDuelPhase = (): Phase =>
@@ -101,6 +117,29 @@ export const useInactivePlayerHand = (): CardInstance[] =>
 
 export const useInactivePlayerBoard = (): CardInstance[] =>
   useAppSelector(selectInactivePlayerBoard)
+
+export const useActivePlayerDeck = (): CardInstance[] =>
+  useAppSelector(selectActivePlayerDeck)
+
+export const useInactivePlayerDeck = (): CardInstance[] =>
+  useAppSelector(selectInactivePlayerDeck)
+
+export const useInactivePlayerDiscard = (): CardInstance[] =>
+  useAppSelector(selectInactivePlayerDiscard)
+
+export const usePlayerStackCards = (
+  playerId: PlayerId,
+  stack: Stack,
+): CardInstance[] =>
+  useAppSelector((state) => {
+    const player = state.duel.players[playerId]
+
+    return player[stack].flatMap((id) => {
+      const card = state.duel.cards[id]
+
+      return card === undefined ? [] : [card]
+    })
+  })
 
 export const usePlayerDeckCount = (playerId: PlayerId): number =>
   usePlayer(playerId).deck.length
