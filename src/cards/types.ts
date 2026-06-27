@@ -6,14 +6,30 @@ export const ranks = ['common', 'elite'] as const
 
 type Rank = (typeof ranks)[number]
 
-export const categories = ['hammerite', 'undead'] as const
+export const categories = [
+  'hammerite',
+  'undead',
+  'necromancer',
+  'artifact',
+] as const
 
 type Category = (typeof categories)[number]
 
-export interface CardBase {
+export interface SharedCardBase {
   name: string
   cost: number
   faction: Faction
   rank: Rank
-  categories: Category[]
+  categories: readonly Category[]
 }
+
+export type InstanceCardBase = SharedCardBase & {
+  type: 'instance'
+}
+
+export type CharacterCardBase = SharedCardBase & {
+  type: 'character'
+  life: number
+}
+
+export type CardBase = InstanceCardBase | CharacterCardBase
