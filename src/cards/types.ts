@@ -1,6 +1,6 @@
 export const factions = ['order', 'chaos', 'shadow', 'neutral'] as const
 
-type Faction = (typeof factions)[number]
+export type Faction = (typeof factions)[number]
 
 export const ranks = ['common', 'elite'] as const
 
