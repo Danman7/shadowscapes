@@ -46,7 +46,7 @@
 }
 
 @utility card {
-  @apply aspect-5/7 w-48 rounded-lg shadow-lg;
+  @apply aspect-5/7 w-52 rounded-lg shadow-lg;
 }
 
 @utility coin {

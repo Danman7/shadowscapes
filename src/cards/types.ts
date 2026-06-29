@@ -15,21 +15,25 @@ export const categories = [
 
 type Category = (typeof categories)[number]
 
-export interface SharedCardBase {
-  name: string
+export interface SharedCardBase<TBaseId extends string = string> {
+  baseId: TBaseId
   cost: number
   faction: Faction
   rank: Rank
   categories: readonly Category[]
 }
 
-export type InstanceCardBase = SharedCardBase & {
-  type: 'instance'
-}
+export type InstanceCardBase<TBaseId extends string = string> =
+  SharedCardBase<TBaseId> & {
+    type: 'instance'
+  }
 
-export type CharacterCardBase = SharedCardBase & {
-  type: 'character'
-  life: number
-}
+export type CharacterCardBase<TBaseId extends string = string> =
+  SharedCardBase<TBaseId> & {
+    type: 'character'
+    life: number
+  }
 
-export type CardBase = InstanceCardBase | CharacterCardBase
+export type CardBase<TBaseId extends string = string> =
+  | InstanceCardBase<TBaseId>
+  | CharacterCardBase<TBaseId>

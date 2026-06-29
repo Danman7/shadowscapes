@@ -1,6 +1,9 @@
 // src/cards/bases/index.ts
 import { chaosBases } from './chaosBases'
 import { orderBases } from './orderBases'
+import type { CardBase } from '../types'
+
+export * from './orderConstants'
 
 export const cardBases = {
   ...orderBases,
@@ -8,6 +11,7 @@ export const cardBases = {
 } as const
 
 export type CardBaseId = keyof typeof cardBases
+export type KnownCardBase = CardBase<CardBaseId>
 
 export const cardBaseIds = Object.keys(cardBases) as CardBaseId[]
 

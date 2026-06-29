@@ -1,10 +1,9 @@
 // src/cards/bases/chaosBases.ts
-import type { CardBase } from '../types'
+import { defineCardBases } from './defineCardBases'
 
-export const chaosBases = {
+export const chaosBases = defineCardBases({
   zombie: {
     type: 'character',
-    name: 'Zombie',
     faction: 'chaos',
     categories: ['undead'],
     rank: 'common',
@@ -13,7 +12,6 @@ export const chaosBases = {
   },
   haunt: {
     type: 'character',
-    name: 'Haunt',
     faction: 'chaos',
     categories: ['undead'],
     rank: 'common',
@@ -22,10 +20,9 @@ export const chaosBases = {
   },
   bookOfAsh: {
     type: 'instance',
-    name: 'Book of Ash',
     faction: 'chaos',
     categories: ['necromancer', 'artifact'],
     rank: 'elite',
     cost: 3,
   },
-} as const satisfies Record<string, CardBase>
+})

@@ -1,9 +1,8 @@
-import type { CardBase } from '../types'
+import { defineCardBases } from './defineCardBases'
 
-export const orderBases = {
+export const orderBases = defineCardBases({
   novice: {
     type: 'character',
-    name: 'Novice',
     faction: 'order',
     categories: ['hammerite'],
     rank: 'common',
@@ -12,7 +11,6 @@ export const orderBases = {
   },
   templeGuard: {
     type: 'character',
-    name: 'Temple Guard',
     faction: 'order',
     categories: ['hammerite'],
     rank: 'common',
@@ -21,10 +19,9 @@ export const orderBases = {
   },
   yoraSkull: {
     type: 'instance',
-    name: "st. Yora's Skull",
     faction: 'order',
     categories: ['hammerite', 'artifact'],
     rank: 'elite',
     cost: 3,
   },
-} as const satisfies Record<string, CardBase>
+})
