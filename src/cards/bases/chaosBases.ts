@@ -13,7 +13,7 @@ export const chaosBases = defineCardBases({
   haunt: {
     type: 'character',
     faction: 'chaos',
-    categories: ['undead'],
+    categories: ['undead', 'hammerite'],
     rank: 'common',
     cost: 3,
     life: 3,

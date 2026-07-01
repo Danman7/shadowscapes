@@ -4,6 +4,7 @@ import { Card } from './Card'
 import { CardBack } from './CardBack'
 import { cardBases } from '../../bases'
 import { cardsText } from '../../../l10n'
+import { joinWithSpace } from '../../../shared/utils'
 
 const getStatValue = (container: HTMLElement, label: string) => {
   const term = within(container).getByText(label)
@@ -25,7 +26,9 @@ test('renders a character card', () => {
     name: `${cardText.name} card`,
   })
 
-  expect(cardElement).toHaveTextContent('Gain 1 life')
+  expect(cardElement).toHaveTextContent(joinWithSpace(card.categories))
+  expect(cardElement).toHaveTextContent(cardText.description)
+  expect(cardElement).toHaveTextContent(cardText.flavor)
   expect(getStatValue(cardElement, 'Cost')).toHaveTextContent(String(card.cost))
   expect(getStatValue(cardElement, 'Life')).toHaveTextContent(String(card.life))
 })

@@ -9,6 +9,14 @@ export const orderBases = defineCardBases({
     cost: 1,
     life: 1,
   },
+  acolyte: {
+    type: 'character',
+    faction: 'order',
+    categories: ['hammerite'],
+    rank: 'common',
+    cost: 2,
+    life: 2,
+  },
   templeGuard: {
     type: 'character',
     faction: 'order',
