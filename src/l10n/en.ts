@@ -12,6 +12,13 @@ type CardMessage = {
   flavor: string
 }
 
+export const messages = {
+  ui: {
+    deckLabel: 'Deck',
+    discardLabel: 'Disc.',
+  },
+} satisfies Record<string, Record<string, string>>
+
 export const cardsText = {
   cards: {
     zombie: {

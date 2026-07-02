@@ -1,4 +1,5 @@
 import { Card, CardBack, getCardBase } from '../../../cards'
+import { messages } from '../../../l10n/en'
 import { useDuelState } from '../../hooks'
 import type { CardInstanceId } from '../../types'
 import { FaceDownStack } from './FaceDownStack'
@@ -29,7 +30,7 @@ export const DuelTable = () => {
       >
         {inactivePlayer.discard.length > 0 && (
           <FaceDownStack
-            label="Discard"
+            label={messages.ui.discardLabel}
             amount={inactivePlayer.discard.length}
           />
         )}
@@ -49,7 +50,10 @@ export const DuelTable = () => {
         data-testid="inactive-deck"
       >
         {inactivePlayer.deck.length > 0 && (
-          <FaceDownStack label="Deck" amount={inactivePlayer.deck.length} />
+          <FaceDownStack
+            label={messages.ui.deckLabel}
+            amount={inactivePlayer.deck.length}
+          />
         )}
       </section>
 
@@ -79,7 +83,7 @@ export const DuelTable = () => {
       >
         {activePlayer.discard.length > 0 && (
           <FaceDownStack
-            label="Discard"
+            label={messages.ui.discardLabel}
             amount={activePlayer.discard.length}
           />
         )}
@@ -97,7 +101,10 @@ export const DuelTable = () => {
         data-testid="active-deck"
       >
         {activePlayer.deck.length > 0 && (
-          <FaceDownStack label="Deck" amount={activePlayer.deck.length} />
+          <FaceDownStack
+            label={messages.ui.deckLabel}
+            amount={activePlayer.deck.length}
+          />
         )}
       </section>
     </div>

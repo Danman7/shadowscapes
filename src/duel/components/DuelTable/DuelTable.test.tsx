@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 
+import { messages } from '../../../l10n/en'
 import { setupMockedDuel } from '../../../user'
 import { DuelProvider } from '../DuelProvider/DuelProvider'
 import { DuelTable } from './DuelTable'
@@ -66,21 +67,35 @@ test('renders cards in the correct player stacks', () => {
   ).not.toBeInTheDocument()
 
   expect(
-    within(screen.getByTestId('active-deck')).getByText('Deck 2'),
+    within(screen.getByTestId('active-deck')).getByText(
+      `${messages.ui.deckLabel} 2`,
+    ),
   ).toBeInTheDocument()
   expect(
-    within(screen.getByTestId('inactive-deck')).getByText('Deck 1'),
+    within(screen.getByTestId('inactive-deck')).getByText(
+      `${messages.ui.deckLabel} 1`,
+    ),
   ).toBeInTheDocument()
   expect(
-    within(screen.getByTestId('active-discard')).getByText('Discard 1'),
+    within(screen.getByTestId('active-discard')).getByText(
+      `${messages.ui.discardLabel} 1`,
+    ),
   ).toBeInTheDocument()
   expect(
-    within(screen.getByTestId('inactive-discard')).getByText('Discard 2'),
+    within(screen.getByTestId('inactive-discard')).getByText(
+      `${messages.ui.discardLabel} 2`,
+    ),
   ).toBeInTheDocument()
 })
 
 test('does not render empty decks or discard piles', () => {
   renderDuelTable()
 
-  expect(screen.queryByText(/^(Deck|Discard) \d+$/)).not.toBeInTheDocument()
+  expect(
+    screen.queryByText(
+      new RegExp(
+        `^(${messages.ui.deckLabel}|${messages.ui.discardLabel.replace('.', '\\.')}) \\d+$`,
+      ),
+    ),
+  ).not.toBeInTheDocument()
 })
