@@ -45,6 +45,10 @@
   --color-line: color-mix(in oklch, var(--foreground) 10%, transparent);
 }
 
+@utility paper {
+  @apply rounded shadow-lg bg-surface py-2 px-4 border border-line;
+}
+
 @utility card {
   @apply aspect-5/7 w-52 rounded-lg shadow-lg;
 }

@@ -1,23 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { CardBack } from './CardBack'
+import { FaceDownStack } from './FaceDownStack'
 
 const meta = {
-  title: 'Cards/CardBack',
-  component: CardBack,
+  title: 'Duel/FaceDownStack',
+  component: FaceDownStack,
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof CardBack>
+  args: {
+    label: 'Deck',
+    amount: 10,
+  },
+} satisfies Meta<typeof FaceDownStack>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
-
-export const Small: Story = {
-  args: {
-    isSmall: true,
-  },
-}

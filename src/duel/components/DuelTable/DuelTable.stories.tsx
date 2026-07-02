@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react'
 
-import { DuelView } from './DuelTable';
+import { DuelView } from './DuelTable'
 
 const meta = {
-  title: 'Components/Duel Table',
+  title: 'Duel/Duel Table',
   component: DuelView,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof DuelView>;
+} satisfies Meta<typeof DuelView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const EmptyTemplate: Story = {};
+export const EmptyTemplate: Story = {}
