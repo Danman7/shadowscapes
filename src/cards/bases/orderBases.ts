@@ -1,9 +1,8 @@
 import { defineCardBases } from './defineCardBases'
 
-export const orderBases = defineCardBases({
+export const orderBases = defineCardBases('order', {
   novice: {
     type: 'character',
-    faction: 'order',
     categories: ['hammerite'],
     rank: 'common',
     cost: 1,
@@ -11,7 +10,6 @@ export const orderBases = defineCardBases({
   },
   acolyte: {
     type: 'character',
-    faction: 'order',
     categories: ['hammerite'],
     rank: 'common',
     cost: 2,
@@ -19,7 +17,6 @@ export const orderBases = defineCardBases({
   },
   templeGuard: {
     type: 'character',
-    faction: 'order',
     categories: ['hammerite'],
     rank: 'common',
     cost: 3,
@@ -27,7 +24,6 @@ export const orderBases = defineCardBases({
   },
   yoraSkull: {
     type: 'instance',
-    faction: 'order',
     categories: ['hammerite', 'artifact'],
     rank: 'elite',
     cost: 3,

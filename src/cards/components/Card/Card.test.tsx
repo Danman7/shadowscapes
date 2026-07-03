@@ -33,6 +33,22 @@ test('renders a character card', () => {
   expect(getStatValue(cardElement, 'Life')).toHaveTextContent(String(card.life))
 })
 
+test('renders a character card with charges', () => {
+  const card = cardBases['burrick']
+
+  render(<Card card={card} />)
+
+  const cardText = cardsText.cards[card.baseId]
+
+  const cardElement = screen.getByRole('article', {
+    name: `${cardText.name} card`,
+  })
+
+  expect(getStatValue(cardElement, 'Charges')).toHaveTextContent(
+    String(card.charges),
+  )
+})
+
 test('renders a card back', () => {
   render(<CardBack />)
 

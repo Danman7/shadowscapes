@@ -28,6 +28,14 @@ export const cardsText = {
         "The zombie's antipathy for all living creatures is both it's strength and weakness. -- Journals of Morgan, declared anathema by the Smith-in-Exile.",
     },
 
+    burrick: {
+      name: 'Burrick',
+      description:
+        "On attacking, if the Burrick has a charge, also damage the target's adjacent cards. On passing, gain a charge.",
+      flavor:
+        'The reinforced walls and steel door have been duly installed about your counting room, but I must warn you that we cannot guarantee them against burrick tunnelling.',
+    },
+
     haunt: {
       name: 'Haunt',
       description:

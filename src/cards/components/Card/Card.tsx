@@ -7,15 +7,18 @@ import {
 import type { CardBaseId } from '../../bases'
 import type { CardBase } from '../../types'
 import { isCharacter } from '../../utils'
+import { BsFillLightningChargeFill } from 'react-icons/bs'
 
 export interface CardProps {
   card: CardBase<CardBaseId>
 }
 
 export const Card = ({ card }: CardProps) => {
-  const cardText = cardsText.cards[card.baseId]
+  const { categories, faction, baseId, cost } = card
+
+  const cardText = cardsText.cards[baseId]
   const isCardCharacter = isCharacter(card)
-  const borderColor = factionBorderColorClassNames[card.faction]
+  const borderColor = factionBorderColorClassNames[faction]
 
   return (
     <article
@@ -25,13 +28,9 @@ export const Card = ({ card }: CardProps) => {
       {/* Header */}
       <div className="flex shrink-0 justify-between gap-2">
         <div>
-          <div className="capitalize text-sm">
-            {joinWithSpace(card.categories)}
-          </div>
+          <div className="capitalize text-sm">{joinWithSpace(categories)}</div>
 
-          <h2
-            className={`font-bold ${factionTextColorClassNames[card.faction]}`}
-          >
+          <h2 className={`font-bold ${factionTextColorClassNames[faction]}`}>
             {cardText.name}
           </h2>
         </div>
@@ -56,9 +55,18 @@ export const Card = ({ card }: CardProps) => {
       <hr className={`${borderColor}`} />
 
       {/* Footer */}
-      <dl className="flex shrink-0 gap-2 items-center justify-between">
+      <dl className="flex shrink-0 gap-2 items-center">
         <dt className="sr-only">Cost</dt>
-        <dd className="coin">{card.cost}</dd>
+        <dd className="coin">{cost}</dd>
+
+        {isCardCharacter && card.charges && (
+          <>
+            <dt className="sr-only">Charges</dt>
+            <dd className="flex items-center gap-1">
+              <BsFillLightningChargeFill /> {card.charges}
+            </dd>
+          </>
+        )}
       </dl>
     </article>
   )

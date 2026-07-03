@@ -1,18 +1,24 @@
 // src/cards/bases/chaosBases.ts
 import { defineCardBases } from './defineCardBases'
 
-export const chaosBases = defineCardBases({
+export const chaosBases = defineCardBases('chaos', {
   zombie: {
     type: 'character',
-    faction: 'chaos',
     categories: ['undead'],
     rank: 'common',
     cost: 1,
     life: 1,
   },
+  burrick: {
+    type: 'character',
+    categories: ['beast'],
+    rank: 'common',
+    cost: 2,
+    life: 2,
+    charges: 1,
+  },
   haunt: {
     type: 'character',
-    faction: 'chaos',
     categories: ['undead', 'hammerite'],
     rank: 'common',
     cost: 3,
@@ -20,7 +26,6 @@ export const chaosBases = defineCardBases({
   },
   bookOfAsh: {
     type: 'instance',
-    faction: 'chaos',
     categories: ['necromancer', 'artifact'],
     rank: 'elite',
     cost: 3,

@@ -13,7 +13,15 @@ import type { User } from './types'
 export const mockOrderUser: User = {
   id: 'user1',
   name: 'Bafford',
-  activeDeck: ['novice', 'novice', 'templeGuard', 'templeGuard', 'yoraSkull'],
+  activeDeck: [
+    'novice',
+    'novice',
+    'templeGuard',
+    'templeGuard',
+    'acolyte',
+    'acolyte',
+    'yoraSkull',
+  ],
 }
 
 export const mockChaosUser: User = {

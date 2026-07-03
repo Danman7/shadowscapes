@@ -11,6 +11,7 @@ export const categories = [
   'undead',
   'necromancer',
   'artifact',
+  'beast',
 ] as const
 
 type Category = (typeof categories)[number]
@@ -32,6 +33,7 @@ export type CharacterCardBase<TBaseId extends string = string> =
   SharedCardBase<TBaseId> & {
     type: 'character'
     life: number
+    charges?: number
   }
 
 export type CardBase<TBaseId extends string = string> =
