@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 
 import { messages } from '../../../l10n/en'
-import { setupMockedDuel } from '../../../user'
+import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../../user'
 import { DuelProvider } from '../DuelProvider/DuelProvider'
 import { DuelTable } from './DuelTable'
 
@@ -14,13 +14,11 @@ const renderDuelTable = (
     </DuelProvider>,
   )
 
-test('renders the duel table grid', () => {
+test('renders the player names', () => {
   renderDuelTable()
 
-  expect(screen.getByTestId('duel-table')).toHaveClass(
-    'grid-cols-[100px_minmax(0,2fr)_100px]',
-    'grid-rows-[140px_1fr_50px_1fr_140px]',
-  )
+  expect(screen.getByText(mockOrderUser.name)).toBeInTheDocument()
+  expect(screen.getByText(mockChaosUser.name)).toBeInTheDocument()
 })
 
 test('renders cards in the correct player stacks', () => {

@@ -80,14 +80,14 @@ export const setupMockedDuel = (
 ): DuelState => {
   const cards: Record<string, CardInstance> = {}
   const activePlayer = createMockedPlayer(
-    'active-player',
-    'Active Player',
+    mockOrderUser.id,
+    mockOrderUser.name,
     options.activePlayer ?? {},
     cards,
   )
   const inactivePlayer = createMockedPlayer(
-    'inactive-player',
-    'Inactive Player',
+    mockChaosUser.id,
+    mockChaosUser.name,
     options.inactivePlayer ?? {},
     cards,
   )

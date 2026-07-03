@@ -2,11 +2,16 @@ import { DuelPlayer } from '../../types'
 
 interface PlayerBadgeProps {
   player: DuelPlayer
+  className?: string
   isActive?: boolean
 }
 
-export const PlayerBadge = ({ player, isActive }: PlayerBadgeProps) => (
-  <div className="flex items-center gap-2 paper">
+export const PlayerBadge = ({
+  player,
+  className = '',
+  isActive,
+}: PlayerBadgeProps) => (
+  <div className={`paper z-40 flex items-center gap-2 ${className}`}>
     {isActive && (
       <span className="relative flex size-4">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>

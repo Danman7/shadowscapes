@@ -3,6 +3,7 @@ import { messages } from '../../../l10n/en'
 import { useDuelState } from '../../hooks'
 import type { CardInstanceId } from '../../types'
 import { FaceDownStack } from './FaceDownStack'
+import { PlayerBadge } from './PlayerBadge'
 
 export const DuelTable = () => {
   const { cards, playerOrder, players } = useDuelState()
@@ -18,11 +19,15 @@ export const DuelTable = () => {
 
   return (
     <div
-      className="grid h-screen gap-2
+      className="grid relative h-screen gap-2
         grid-cols-[100px_minmax(0,2fr)_100px]
         grid-rows-[140px_1fr_50px_1fr_140px] overflow-hidden"
       data-testid="duel-table"
     >
+      <PlayerBadge
+        player={inactivePlayer}
+        className="absolute top-2 left-1/2 -translate-x-1/2"
+      />
       {/* Row 1: inactive discard / hand / deck */}
       <section
         className="col-1 row-1 grid place-items-center"
@@ -107,6 +112,12 @@ export const DuelTable = () => {
           />
         )}
       </section>
+
+      <PlayerBadge
+        player={activePlayer}
+        isActive
+        className="absolute bottom-2 left-1/2 -translate-x-1/2"
+      />
     </div>
   )
 }
