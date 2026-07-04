@@ -5,6 +5,7 @@ import {
   yoraIndirectBuff,
 } from '../cards/bases/orderConstants'
 import type { CardBaseId } from '../cards/bases'
+import type { Phase } from '../duel/types'
 
 type CardMessage = {
   name: string
@@ -17,7 +18,17 @@ export const messages = {
     deckLabel: 'Deck',
     discardLabel: 'Disc.',
   },
-} satisfies Record<string, Record<string, string>>
+  phase: {
+    setup: 'Setup phase',
+    draw: 'Draw phase',
+    play: 'Play phase',
+    act: 'Act phase',
+    refresh: 'Refresh phase',
+  },
+} satisfies {
+  ui: Record<string, string>
+  phase: Record<Phase, string>
+}
 
 export const cardsText = {
   cards: {

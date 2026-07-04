@@ -13,7 +13,7 @@ export const DuelTable = () => {
   usePlayersInitialDraw()
   usePlayersDraw()
 
-  const { cards, playerOrder, players } = useDuelState()
+  const { cards, phase, playerOrder, players } = useDuelState()
   const activePlayer = players[playerOrder[0]]
   const inactivePlayer = players[playerOrder[1]]
 
@@ -78,7 +78,11 @@ export const DuelTable = () => {
       </section>
 
       {/* Row 3: center bar, UI and buttons */}
-      <section className="col-[1/4] w-full px-2 row-3 flex justify-between place-items-center"></section>
+      <section className="col-[1/4] w-full px-2 row-3 flex justify-between place-items-center">
+        <p className="text-sm font-bold tracking-wide" aria-live="polite">
+          {messages.phase[phase]}
+        </p>
+      </section>
 
       {/* Row 4: active board full width */}
       <section
