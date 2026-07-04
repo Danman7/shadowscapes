@@ -1,28 +1,42 @@
-import { Card, CardBack, getCardBase } from '../../../cards'
+import { CardBack } from '../../../cards'
 import { messages } from '../../../l10n/en'
+import { Button } from '../../../shared/components'
 import {
+  useDuelDispatch,
   useDuelState,
+  usePlayTurnCompletion,
   usePlayersDraw,
   usePlayersInitialDraw,
 } from '../../hooks'
-import type { CardInstanceId } from '../../types'
+import { passPlayTurn, playCard } from '../../state'
+import type { CardInstance } from '../../types'
+import { canCardBePlayed } from '../../utils'
 import { FaceDownStack } from './FaceDownStack'
 import { PlayerBadge } from './PlayerBadge'
+import { renderFaceUpCards } from './renderFaceUpCards'
 
 export const DuelTable = () => {
   usePlayersInitialDraw()
   usePlayersDraw()
+  usePlayTurnCompletion()
 
-  const { cards, phase, playerOrder, players } = useDuelState()
+  const dispatch = useDuelDispatch()
+  const duelState = useDuelState()
+  const { cards, phase, playerOrder, players } = duelState
   const activePlayer = players[playerOrder[0]]
   const inactivePlayer = players[playerOrder[1]]
 
-  const renderFaceUpCards = (cardIds: CardInstanceId[]) =>
-    cardIds.map((cardId) => {
-      const card = cards[cardId]
+  const getPlayableHandCardOnClick = (card: CardInstance) => {
+    const payload = {
+      playerId: activePlayer.id,
+      cardInstanceId: card.id,
+      cardBaseId: card.baseId,
+    }
 
-      return <Card key={card.id} card={getCardBase(card.baseId)} />
-    })
+    if (!canCardBePlayed({ state: duelState, ...payload })) return undefined
+
+    return () => dispatch(playCard(payload))
+  }
 
   return (
     <div
@@ -74,7 +88,7 @@ export const DuelTable = () => {
         className="col-[1/4] row-2 justify-center items-end flex gap-2 overflow-hidden"
         data-testid="inactive-board"
       >
-        {renderFaceUpCards(inactivePlayer.board)}
+        {renderFaceUpCards({ cardIds: inactivePlayer.board, cards })}
       </section>
 
       {/* Row 3: center bar, UI and buttons */}
@@ -82,6 +96,13 @@ export const DuelTable = () => {
         <p className="text-sm font-bold tracking-wide" aria-live="polite">
           {messages.phase[phase]}
         </p>
+
+        {phase === 'play' && !activePlayer.hasActedThisPhase && (
+          <Button
+            label={messages.ui.passLabel}
+            onClick={() => dispatch(passPlayTurn())}
+          />
+        )}
       </section>
 
       {/* Row 4: active board full width */}
@@ -89,7 +110,7 @@ export const DuelTable = () => {
         className="col-[1/4] row-4 flex justify-center gap-2 overflow-hidden"
         data-testid="active-board"
       >
-        {renderFaceUpCards(activePlayer.board)}
+        {renderFaceUpCards({ cardIds: activePlayer.board, cards })}
       </section>
 
       {/* Row 5: active discard / hand / deck */}
@@ -109,7 +130,11 @@ export const DuelTable = () => {
         className="player-hand player-hand--active col-2 row-5"
         data-testid="active-hand"
       >
-        {renderFaceUpCards(activePlayer.hand)}
+        {renderFaceUpCards({
+          cardIds: activePlayer.hand,
+          cards,
+          getOnClick: getPlayableHandCardOnClick,
+        })}
       </section>
 
       <section

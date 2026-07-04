@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 
 import { messages } from '../../../l10n/en'
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../../user'
@@ -17,10 +17,19 @@ const renderDuelTable = (
   )
 
 const DuelStateProbe = () => {
-  const { phase } = useDuelState()
+  const { phase, playerOrder } = useDuelState()
 
-  return <output data-testid="duel-phase">{phase}</output>
+  return (
+    <>
+      <output data-testid="duel-phase">{phase}</output>
+      <output data-testid="active-player-id">{playerOrder[0]}</output>
+    </>
+  )
 }
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 test('renders the player names', () => {
   renderDuelTable()
@@ -57,7 +66,7 @@ test('renders cards in the correct player stacks', () => {
   )
 
   expect(
-    within(screen.getByTestId('active-hand')).getByRole('article', {
+    within(screen.getByTestId('active-hand')).getByRole('button', {
       name: 'Novice card',
     }),
   ).toBeInTheDocument()
@@ -125,7 +134,7 @@ test('draws initial hands, completes the draw phase, and enters play', () => {
 
   expect(screen.getByTestId('duel-phase')).toHaveTextContent('play')
   expect(
-    within(screen.getByTestId('active-hand')).getAllByRole('article'),
+    within(screen.getByTestId('active-hand')).getAllByRole('button'),
   ).toHaveLength(4)
   expect(
     within(screen.getByTestId('inactive-hand')).getAllByRole('article'),
@@ -140,4 +149,107 @@ test('draws initial hands, completes the draw phase, and enters play', () => {
       `${messages.ui.deckLabel} 1`,
     ),
   ).toBeInTheDocument()
+})
+
+test('only makes affordable active-hand cards playable', () => {
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: { coins: 1, hand: ['novice', 'templeGuard'] },
+      phase: 'play',
+    }),
+  )
+
+  const activeHand = within(screen.getByTestId('active-hand'))
+  const playableCard = activeHand.getByRole('button', { name: 'Novice card' })
+
+  expect(playableCard).toHaveClass('card-glow--primary')
+  expect(
+    activeHand.getByRole('article', { name: 'Temple Guard card' }),
+  ).not.toHaveClass('card-glow')
+  expect(screen.getByRole('button', { name: messages.ui.passLabel })).toBeVisible()
+})
+
+test('pays for a character, keeps it on board, and hands over after one second', () => {
+  vi.useFakeTimers()
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 1, hand: 'novice' },
+    phase: 'play',
+  })
+  const firstPlayerId = initialState.playerOrder[0]
+
+  renderDuelTable(initialState)
+
+  fireEvent.click(screen.getByRole('button', { name: 'Novice card' }))
+
+  expect(
+    within(screen.getByTestId('active-board')).getByRole('article', {
+      name: 'Novice card',
+    }),
+  ).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+
+  act(() => vi.advanceTimersByTime(999))
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+
+  act(() => vi.advanceTimersByTime(1))
+
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    initialState.playerOrder[1],
+  )
+  expect(
+    within(screen.getByTestId('inactive-board')).getByRole('article', {
+      name: 'Novice card',
+    }),
+  ).toBeInTheDocument()
+})
+
+test('shows an instance briefly, then discards it while handing over', () => {
+  vi.useFakeTimers()
+
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: { coins: 3, hand: 'yoraSkull' },
+      phase: 'play',
+    }),
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: "Saint Yora's Skull card" }))
+
+  expect(
+    within(screen.getByTestId('active-board')).getByText("Saint Yora's Skull"),
+  ).toBeInTheDocument()
+
+  act(() => vi.advanceTimersByTime(1000))
+
+  expect(
+    within(screen.getByTestId('inactive-board')).queryByText(
+      "Saint Yora's Skull",
+    ),
+  ).toBeNull()
+  expect(
+    within(screen.getByTestId('inactive-discard')).getByText(
+      `${messages.ui.discardLabel} 1`,
+    ),
+  ).toBeInTheDocument()
+})
+
+test('passes both turns and enters act with the first player active', () => {
+  vi.useFakeTimers()
+  const initialState = setupMockedDuel({ phase: 'play' })
+  const firstPlayerId = initialState.playerOrder[0]
+
+  renderDuelTable(initialState)
+
+  fireEvent.click(screen.getByRole('button', { name: messages.ui.passLabel }))
+  act(() => vi.advanceTimersByTime(1000))
+
+  expect(screen.getByRole('button', { name: messages.ui.passLabel })).toBeVisible()
+
+  fireEvent.click(screen.getByRole('button', { name: messages.ui.passLabel }))
+  act(() => vi.advanceTimersByTime(1000))
+
+  expect(screen.getByTestId('duel-phase')).toHaveTextContent('act')
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
 })

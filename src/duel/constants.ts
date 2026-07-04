@@ -6,10 +6,12 @@ export const INITIAL_DUAL_STATE: DuelState = {
   playerOrder: ['', ''],
   players: {},
   cards: {},
+  pendingPlayedCardId: null,
 }
 
 export const INITIAL_PLAYER_COINS = 30
 export const INITIAL_CARDS_DRAWN = 3
+export const AUTOMATED_ACTION_DELAY_MS = 1000
 
 export const EMPTY_PLAYER: DuelPlayer = {
   id: '',

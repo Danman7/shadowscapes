@@ -1,8 +1,12 @@
 import { useEffect } from 'react'
 
 import { AppDispatch, useAppDispatch, useAppSelector } from '../redux'
-import { INITIAL_CARDS_DRAWN } from './constants'
-import { drawForPlayers, drawInitialHands } from './state'
+import { AUTOMATED_ACTION_DELAY_MS, INITIAL_CARDS_DRAWN } from './constants'
+import {
+  completePlayTurn,
+  drawForPlayers,
+  drawInitialHands,
+} from './state'
 import { DuelState } from './types'
 
 export const useDuelState = (): DuelState =>
@@ -32,4 +36,21 @@ export const usePlayersDraw = () => {
       dispatch(drawForPlayers())
     }
   }, [dispatch, phase])
+}
+
+export const usePlayTurnCompletion = () => {
+  const dispatch = useDuelDispatch()
+  const { phase, playerOrder, players } = useDuelState()
+  const activePlayerId = playerOrder[0]
+  const hasActivePlayerActed = players[activePlayerId]?.hasActedThisPhase
+
+  useEffect(() => {
+    if (phase !== 'play' || !hasActivePlayerActed) return
+
+    const timeoutId = window.setTimeout(() => {
+      dispatch(completePlayTurn())
+    }, AUTOMATED_ACTION_DELAY_MS)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [activePlayerId, dispatch, hasActivePlayerActed, phase])
 }

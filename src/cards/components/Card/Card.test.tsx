@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { Card } from './Card'
 import { CardBack } from './CardBack'
@@ -47,6 +47,37 @@ test('renders a character card with charges', () => {
   expect(getStatValue(cardElement, 'Charges')).toHaveTextContent(
     String(card.charges),
   )
+})
+
+test('makes a card glow and activates it with pointer or keyboard input', () => {
+  const onClick = vi.fn()
+
+  render(<Card card={cardBases['novice']} onClick={onClick} />)
+
+  const cardElement = screen.getByRole('button', { name: 'Novice card' })
+
+  expect(cardElement).toHaveClass('card-glow', 'card-glow--primary')
+  expect(cardElement).toHaveAttribute('tabindex', '0')
+
+  fireEvent.keyDown(cardElement, { key: 'Escape' })
+  expect(onClick).not.toHaveBeenCalled()
+
+  fireEvent.click(cardElement)
+  fireEvent.keyDown(cardElement, { key: 'Enter' })
+  fireEvent.keyDown(cardElement, { key: ' ' })
+
+  expect(onClick).toHaveBeenCalledTimes(3)
+})
+
+test('keeps a card non-interactive when onClick is undefined', () => {
+  render(<Card card={cardBases['novice']} />)
+
+  const cardElement = screen.getByRole('article', { name: 'Novice card' })
+
+  fireEvent.keyDown(cardElement, { key: 'Enter' })
+
+  expect(cardElement).not.toHaveClass('card-glow')
+  expect(cardElement).not.toHaveAttribute('tabindex')
 })
 
 test('renders a card back', () => {

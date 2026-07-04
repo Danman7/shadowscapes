@@ -38,3 +38,9 @@ export const Instance: Story = {
     card: cardBases['bookOfAsh'],
   },
 }
+
+export const Playable: Story = {
+  args: {
+    onClick: () => undefined,
+  },
+}

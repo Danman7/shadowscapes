@@ -111,5 +111,6 @@ export const setupMockedDuel = (
       [inactivePlayer.id]: inactivePlayer,
     },
     cards,
+    pendingPlayedCardId: null,
   }
 }

@@ -17,6 +17,7 @@ export const messages = {
   ui: {
     deckLabel: 'Deck',
     discardLabel: 'Disc.',
+    passLabel: 'Pass',
   },
   phase: {
     setup: 'Setup phase',

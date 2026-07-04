@@ -36,4 +36,5 @@ export interface DuelState {
   playerOrder: [PlayerId, PlayerId]
   players: Record<PlayerId, DuelPlayer>
   cards: Record<CardInstanceId, CardInstance>
+  pendingPlayedCardId: CardInstanceId | null
 }

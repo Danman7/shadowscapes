@@ -11,9 +11,10 @@ import { BsFillLightningChargeFill } from 'react-icons/bs'
 
 export interface CardProps {
   card: CardBase<CardBaseId>
+  onClick?: () => void
 }
 
-export const Card = ({ card }: CardProps) => {
+export const Card = ({ card, onClick }: CardProps) => {
   const { categories, faction, baseId, cost } = card
 
   const cardText = cardsText.cards[baseId]
@@ -23,7 +24,16 @@ export const Card = ({ card }: CardProps) => {
   return (
     <article
       aria-label={`${cardText.name} card`}
-      className={`card flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor}`}
+      className={`card flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''}`}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
+
+        event.preventDefault()
+        onClick()
+      }}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       {/* Header */}
       <div className="flex shrink-0 justify-between gap-2">

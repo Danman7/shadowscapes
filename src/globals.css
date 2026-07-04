@@ -53,6 +53,18 @@
   @apply aspect-5/7 w-52 shrink-0 rounded-lg shadow-lg;
 }
 
+@utility card-glow {
+  @apply outline-2 outline-offset-2;
+  outline-color: var(--card-glow-color);
+  filter: drop-shadow(
+    0 0 0.5rem color-mix(in oklch, var(--card-glow-color) 60%, transparent)
+  );
+}
+
+@utility card-glow--primary {
+  --card-glow-color: var(--primary);
+}
+
 @layer components {
   .player-hand {
     @apply relative flex justify-center overflow-visible;

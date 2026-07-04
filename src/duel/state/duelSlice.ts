@@ -1,12 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getCardBase } from '../../cards'
 import {
   INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
   INITIAL_DUAL_STATE as initialState,
 } from '../constants'
 import type { CardInstance, DuelPlayer, DuelState } from '../types'
-import { createCardInstance, shuffle } from '../utils'
-import { InitiateDuelPayload } from './duelStateTypes'
+import {
+  canActivePlayerPass,
+  canActivePlayTurnComplete,
+  canCardBePlayed,
+  createCardInstance,
+  haveBothPlayersActed,
+  isPendingPlayedCardAnInstance,
+  shuffle,
+} from '../utils'
+import type { InitiateDuelPayload, PlayCardPayload } from './duelStateTypes'
 
 const drawCards = (
   state: DuelState,
@@ -95,10 +104,68 @@ export const duelSlice = createSlice({
       })
       state.phase = 'play'
     },
+    playCard: (state, action: PayloadAction<PlayCardPayload>) => {
+      if (!canCardBePlayed({ state, ...action.payload })) return
+
+      const { playerId, cardInstanceId, cardBaseId } = action.payload
+      const player = state.players[playerId]
+      const card = state.cards[cardInstanceId]
+      const cardIndex = player.hand.indexOf(cardInstanceId)
+
+      player.coins -= getCardBase(cardBaseId).cost
+      player.hand.splice(cardIndex, 1)
+      player.board.push(cardInstanceId)
+      player.hasActedThisPhase = true
+      card.stack = 'board'
+      state.pendingPlayedCardId = cardInstanceId
+    },
+    passPlayTurn: (state) => {
+      if (!canActivePlayerPass(state)) return
+
+      const activePlayer = state.players[state.playerOrder[0]]
+
+      activePlayer.hasActedThisPhase = true
+    },
+    completePlayTurn: (state) => {
+      if (!canActivePlayTurnComplete(state)) return
+
+      const activePlayer = state.players[state.playerOrder[0]]
+      const pendingCardId = state.pendingPlayedCardId
+
+      if (pendingCardId && isPendingPlayedCardAnInstance(state, activePlayer.id)) {
+        const pendingCard = state.cards[pendingCardId]
+        const cardIndex = activePlayer.board.indexOf(pendingCardId)
+
+        if (cardIndex !== -1) {
+          activePlayer.board.splice(cardIndex, 1)
+          activePlayer.discard.push(pendingCardId)
+          pendingCard.stack = 'discard'
+        }
+      }
+
+      state.pendingPlayedCardId = null
+
+      const bothPlayersActed = haveBothPlayersActed(state)
+
+      state.playerOrder = [state.playerOrder[1], state.playerOrder[0]]
+
+      if (bothPlayersActed) {
+        state.phase = 'act'
+        state.playerOrder.forEach((playerId) => {
+          state.players[playerId].hasActedThisPhase = false
+        })
+      }
+    },
   },
 })
 
-export const { drawForPlayers, drawInitialHands, initiateDuelFromUsers } =
-  duelSlice.actions
+export const {
+  completePlayTurn,
+  drawForPlayers,
+  drawInitialHands,
+  initiateDuelFromUsers,
+  passPlayTurn,
+  playCard,
+} = duelSlice.actions
 
 export const duelReducer = duelSlice.reducer
