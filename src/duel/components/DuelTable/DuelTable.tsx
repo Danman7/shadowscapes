@@ -49,7 +49,7 @@ export const DuelTable = () => {
       </section>
 
       <section
-        className="col-2 row-1 relative flex justify-center gap-2 overflow-hidden"
+        className="player-hand player-hand--inactive col-2 row-1"
         data-testid="inactive-hand"
       >
         {inactivePlayer.hand.map((cardId) => (
@@ -102,7 +102,7 @@ export const DuelTable = () => {
       </section>
 
       <section
-        className="col-2 row-5 relative flex justify-center gap-2 overflow-hidden"
+        className="player-hand player-hand--active col-2 row-5"
         data-testid="active-hand"
       >
         {renderFaceUpCards(activePlayer.hand)}

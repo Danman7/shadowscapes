@@ -50,7 +50,33 @@
 }
 
 @utility card {
-  @apply aspect-5/7 w-52 rounded-lg shadow-lg;
+  @apply aspect-5/7 w-52 shrink-0 rounded-lg shadow-lg;
+}
+
+@layer components {
+  .player-hand {
+    @apply relative flex justify-center overflow-visible;
+  }
+
+  .player-hand > .card + .card {
+    @apply -ml-12;
+  }
+
+  .player-hand--inactive {
+    @apply items-end;
+  }
+
+  .player-hand--active {
+    @apply items-start;
+  }
+
+  .player-hand--active > .card {
+    @apply relative transition-[translate,box-shadow] duration-200 ease-out;
+  }
+
+  .player-hand--active > .card:hover {
+    @apply z-45 translate-y-[calc(-100%+8.75rem)] shadow-2xl shadow-black/60;
+  }
 }
 
 @utility coin {
