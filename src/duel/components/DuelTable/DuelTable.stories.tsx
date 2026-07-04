@@ -22,6 +22,7 @@ const everyStackState = setupMockedDuel({
     board: 'bookOfAsh',
     discard: 'zombie',
   },
+  phase: 'play',
 })
 
 const meta = {

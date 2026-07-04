@@ -4,6 +4,7 @@ import type {
   CardInstance,
   DuelPlayer,
   DuelState,
+  Phase,
   PlayerId,
   Stack,
 } from '../duel/types'
@@ -46,6 +47,7 @@ export interface MockedDuelPlayerOptions {
 export interface SetupMockedDuelOptions {
   activePlayer?: MockedDuelPlayerOptions
   inactivePlayer?: MockedDuelPlayerOptions
+  phase?: Phase
 }
 
 const normalizeStack = (stack?: MockedStack): readonly CardBaseId[] => {
@@ -102,7 +104,7 @@ export const setupMockedDuel = (
 
   return {
     round: 0,
-    phase: 'setup',
+    phase: options.phase ?? 'setup',
     playerOrder: [activePlayer.id, inactivePlayer.id],
     players: {
       [activePlayer.id]: activePlayer,
