@@ -33,6 +33,12 @@ export const CardsGallery: Story = {
 
 export const Character: Story = {}
 
+export const Compact: Story = {
+  args: {
+    isCompact: true,
+  },
+}
+
 export const Instance: Story = {
   args: {
     card: cardBases['bookOfAsh'],

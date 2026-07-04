@@ -49,6 +49,23 @@ test('renders a character card with charges', () => {
   )
 })
 
+test('renders a compact card with its effect and an accessible inspection target', () => {
+  const card = cardBases['templeGuard']
+  const cardText = cardsText.cards[card.baseId]
+
+  render(<Card card={card} isCompact />)
+
+  const cardElement = screen.getByRole('article', {
+    name: `${cardText.name} card`,
+  })
+
+  expect(cardElement).toHaveClass('card-compact')
+  expect(cardElement).toHaveAttribute('tabindex', '0')
+  expect(cardElement).toHaveTextContent(cardText.description)
+  expect(cardElement).not.toHaveTextContent(cardText.flavor)
+  expect(cardElement).not.toHaveTextContent(joinWithSpace(card.categories))
+})
+
 test('makes a card glow and activates it with pointer or keyboard input', () => {
   const onClick = vi.fn()
 

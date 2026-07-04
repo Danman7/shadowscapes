@@ -85,10 +85,14 @@ export const DuelTable = () => {
 
       {/* Row 2: inactive board full width */}
       <section
-        className="col-[1/4] row-2 justify-center items-end flex gap-2 overflow-hidden"
+        className="col-[1/4] row-2 justify-center items-end flex gap-2"
         data-testid="inactive-board"
       >
-        {renderFaceUpCards({ cardIds: inactivePlayer.board, cards })}
+        {renderFaceUpCards({
+          cardIds: inactivePlayer.board,
+          cards,
+          isCompact: true,
+        })}
       </section>
 
       {/* Row 3: center bar, UI and buttons */}
@@ -107,10 +111,14 @@ export const DuelTable = () => {
 
       {/* Row 4: active board full width */}
       <section
-        className="col-[1/4] row-4 flex justify-center gap-2 overflow-hidden"
+        className="col-[1/4] row-4 flex justify-center gap-2"
         data-testid="active-board"
       >
-        {renderFaceUpCards({ cardIds: activePlayer.board, cards })}
+        {renderFaceUpCards({
+          cardIds: activePlayer.board,
+          cards,
+          isCompact: true,
+        })}
       </section>
 
       {/* Row 5: active discard / hand / deck */}

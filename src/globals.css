@@ -53,6 +53,10 @@
   @apply aspect-5/7 w-52 shrink-0 rounded-lg shadow-lg;
 }
 
+@utility card-compact {
+  @apply h-44 w-40 rounded-lg shadow-lg;
+}
+
 @utility card-glow {
   @apply outline-2 outline-offset-2;
   outline-color: var(--card-glow-color);

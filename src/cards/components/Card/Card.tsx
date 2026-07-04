@@ -11,20 +11,21 @@ import { BsFillLightningChargeFill } from 'react-icons/bs'
 
 export interface CardProps {
   card: CardBase<CardBaseId>
+  isCompact?: boolean
   onClick?: () => void
 }
 
-export const Card = ({ card, onClick }: CardProps) => {
+export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
   const { categories, faction, baseId, cost } = card
 
   const cardText = cardsText.cards[baseId]
   const isCardCharacter = isCharacter(card)
   const borderColor = factionBorderColorClassNames[faction]
 
-  return (
+  const cardElement = (
     <article
       aria-label={`${cardText.name} card`}
-      className={`card flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''}`}
+      className={`${isCompact ? 'card-compact' : 'card'} flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''}`}
       onClick={onClick}
       onKeyDown={(event) => {
         if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
@@ -33,14 +34,20 @@ export const Card = ({ card, onClick }: CardProps) => {
         onClick()
       }}
       role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      tabIndex={onClick || isCompact ? 0 : undefined}
     >
       {/* Header */}
       <div className="flex shrink-0 justify-between gap-2">
         <div>
-          <div className="capitalize text-sm">{joinWithSpace(categories)}</div>
+          {!isCompact && (
+            <div className="capitalize text-sm">
+              {joinWithSpace(categories)}
+            </div>
+          )}
 
-          <h2 className={`font-bold ${factionTextColorClassNames[faction]}`}>
+          <h2
+            className={`${isCompact ? 'text-sm leading-tight' : ''} font-bold ${factionTextColorClassNames[faction]}`}
+          >
             {cardText.name}
           </h2>
         </div>
@@ -56,10 +63,18 @@ export const Card = ({ card, onClick }: CardProps) => {
       <hr className={`${borderColor}`} />
 
       {/* Body */}
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto leading-snug">
-        <p>{cardText.description}</p>
+      <div
+        className={`flex min-h-0 flex-1 flex-col gap-2 leading-snug ${isCompact ? 'overflow-hidden text-sm' : 'overflow-y-auto'}`}
+      >
+        <p className={isCompact ? 'line-clamp-4' : undefined}>
+          {cardText.description}
+        </p>
 
-        <p className="text-sm italic text-foreground/80">{cardText.flavor}</p>
+        {!isCompact && (
+          <p className="text-sm italic text-foreground/80">
+            {cardText.flavor}
+          </p>
+        )}
       </div>
 
       <hr className={`${borderColor}`} />
@@ -79,5 +94,20 @@ export const Card = ({ card, onClick }: CardProps) => {
         )}
       </dl>
     </article>
+  )
+
+  if (!isCompact) return cardElement
+
+  return (
+    <div className="board-card group relative shrink-0">
+      {cardElement}
+
+      <div
+        aria-hidden="true"
+        className="board-card__preview pointer-events-none absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+      >
+        <Card card={card} />
+      </div>
+    </div>
   )
 }

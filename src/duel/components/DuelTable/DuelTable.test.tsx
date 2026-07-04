@@ -112,6 +112,32 @@ test('renders cards in the correct player stacks', () => {
   ).toBeInTheDocument()
 })
 
+test('uses compact cards on the board and full cards in the active hand', () => {
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: { hand: 'novice', board: 'templeGuard' },
+      inactivePlayer: { board: 'haunt' },
+      phase: 'play',
+    }),
+  )
+
+  const activeBoardCard = within(
+    screen.getByTestId('active-board'),
+  ).getByRole('article', { name: 'Temple Guard card' })
+  const inactiveBoardCard = within(
+    screen.getByTestId('inactive-board'),
+  ).getByRole('article', { name: 'Haunt card' })
+  const handCard = within(screen.getByTestId('active-hand')).getByRole(
+    'button',
+    { name: 'Novice card' },
+  )
+
+  expect(activeBoardCard).toHaveClass('card-compact')
+  expect(inactiveBoardCard).toHaveClass('card-compact')
+  expect(handCard).toHaveClass('card')
+  expect(handCard).not.toHaveClass('card-compact')
+})
+
 test('does not render empty decks or discard piles', () => {
   renderDuelTable()
 
@@ -217,7 +243,9 @@ test('shows an instance briefly, then discards it while handing over', () => {
   fireEvent.click(screen.getByRole('button', { name: "Saint Yora's Skull card" }))
 
   expect(
-    within(screen.getByTestId('active-board')).getByText("Saint Yora's Skull"),
+    within(screen.getByTestId('active-board')).getByRole('article', {
+      name: "Saint Yora's Skull card",
+    }),
   ).toBeInTheDocument()
 
   act(() => vi.advanceTimersByTime(1000))
