@@ -1,13 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { useState } from 'react'
 
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../../user'
+import { duelReducer, initiateDuelFromUsers } from '../../state'
 import { DuelProvider } from '../DuelProvider/DuelProvider'
 import { DuelTable } from './DuelTable'
-
-const initialState = setupMockedDuel({
-  activePlayer: { deck: mockOrderUser.activeDeck },
-  inactivePlayer: { deck: mockChaosUser.activeDeck },
-})
 
 const everyStackState = setupMockedDuel({
   activePlayer: {
@@ -37,12 +34,23 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const InitialState: Story = {
-  render: () => (
+const InitialDuel = () => {
+  const [initialState] = useState(() =>
+    duelReducer(
+      undefined,
+      initiateDuelFromUsers([mockOrderUser, mockChaosUser]),
+    ),
+  )
+
+  return (
     <DuelProvider preloadedState={initialState}>
       <DuelTable />
     </DuelProvider>
-  ),
+  )
+}
+
+export const InitialState: Story = {
+  render: () => <InitialDuel />,
 }
 
 export const EveryStack: Story = {

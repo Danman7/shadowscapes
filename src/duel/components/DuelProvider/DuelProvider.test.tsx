@@ -58,9 +58,10 @@ test('provides a duel dispatch that updates consumers', () => {
 
   fireEvent.click(screen.getByRole('button', { name: 'Initiate duel' }))
 
-  expect(screen.getByTestId('players')).toHaveTextContent(
+  expect([
     `${mockOrderUser.id},${mockChaosUser.id}`,
-  )
+    `${mockChaosUser.id},${mockOrderUser.id}`,
+  ]).toContain(screen.getByTestId('players').textContent)
 })
 
 test('creates isolated state for each provider', () => {

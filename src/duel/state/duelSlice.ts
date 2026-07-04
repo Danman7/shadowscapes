@@ -5,7 +5,7 @@ import {
   INITIAL_DUAL_STATE as initialState,
 } from '../constants'
 import type { CardInstance, DuelPlayer, DuelState } from '../types'
-import { createCardInstance } from '../utils'
+import { createCardInstance, shuffle } from '../utils'
 import { InitiateDuelPayload } from './duelStateTypes'
 
 const drawCards = (
@@ -34,6 +34,10 @@ export const duelSlice = createSlice({
       const users = action.payload
       const players: Record<string, DuelPlayer> = {}
       const cards: Record<string, CardInstance> = {}
+      const playerOrder: DuelState['playerOrder'] =
+        Math.random() < 0.5
+          ? [users[0].id, users[1].id]
+          : [users[1].id, users[0].id]
 
       users.forEach((user) => {
         const deck = user.activeDeck.map((baseId) => {
@@ -49,7 +53,7 @@ export const duelSlice = createSlice({
           name: user.name,
           coins: INITIAL_PLAYER_COINS,
           income: 0,
-          deck,
+          deck: shuffle(deck),
           hand: [],
           board: [],
           discard: [],
@@ -59,7 +63,7 @@ export const duelSlice = createSlice({
 
       return {
         ...initialState,
-        playerOrder: [users[0].id, users[1].id],
+        playerOrder,
         players,
         cards,
       }

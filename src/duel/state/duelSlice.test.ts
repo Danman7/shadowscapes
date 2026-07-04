@@ -10,6 +10,7 @@ import {
 beforeEach(() => {
   let id = 0
 
+  vi.spyOn(Math, 'random').mockReturnValue(0)
   vi.spyOn(crypto, 'randomUUID').mockImplementation(
     (): `${string}-${string}-${string}-${string}-${string}` =>
       `00000000-0000-4000-8000-${String(++id).padStart(12, '0')}`,
@@ -51,6 +52,17 @@ test('initiates duel players from two users', () => {
   })
 })
 
+test('selects the active player with a coin toss', () => {
+  vi.mocked(Math.random).mockReturnValueOnce(0.5)
+
+  const state = duelReducer(
+    undefined,
+    initiateDuelFromUsers([mockOrderUser, mockChaosUser]),
+  )
+
+  expect(state.playerOrder).toEqual([mockChaosUser.id, mockOrderUser.id])
+})
+
 test('creates each user deck as card instances in the duel state', () => {
   const state = duelReducer(
     undefined,
@@ -65,7 +77,9 @@ test('creates each user deck as card instances in the duel state', () => {
     )
 
     expect(deckCards).toHaveLength(user.activeDeck.length)
-    expect(deckCards.map((card) => card.baseId)).toEqual(user.activeDeck)
+    expect(deckCards.map((card) => card.baseId).sort()).toEqual(
+      [...user.activeDeck].sort(),
+    )
     expect(deckCards).toEqual(
       expect.arrayContaining(
         user.activeDeck.map((baseId) =>
@@ -78,6 +92,22 @@ test('creates each user deck as card instances in the duel state', () => {
   expect(Object.keys(state.cards)).toHaveLength(
     mockOrderUser.activeDeck.length + mockChaosUser.activeDeck.length,
   )
+})
+
+test('shuffles each player deck', () => {
+  const users = [mockOrderUser, mockChaosUser]
+  const state = duelReducer(
+    undefined,
+    initiateDuelFromUsers([mockOrderUser, mockChaosUser]),
+  )
+
+  users.forEach((user) => {
+    const shuffledBaseIds = state.players[user.id].deck.map(
+      (cardId) => state.cards[cardId].baseId,
+    )
+
+    expect(shuffledBaseIds).not.toEqual(user.activeDeck)
+  })
 })
 
 test('draws each initial hand and moves to the draw phase', () => {
