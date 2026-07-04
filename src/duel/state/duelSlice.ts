@@ -1,11 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
+  INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
   INITIAL_DUAL_STATE as initialState,
 } from '../constants'
 import type { CardInstance, DuelPlayer, DuelState } from '../types'
 import { createCardInstance } from '../utils'
 import { InitiateDuelPayload } from './duelStateTypes'
+
+const drawCards = (
+  state: DuelState,
+  playerId: string,
+  amount: number,
+) => {
+  const player = state.players[playerId]
+  const drawnCardIds = player.deck.splice(0, amount)
+
+  drawnCardIds.forEach((cardId) => {
+    state.cards[cardId].stack = 'hand'
+  })
+  player.hand.push(...drawnCardIds)
+}
 
 export const duelSlice = createSlice({
   name: 'duel',
@@ -49,9 +64,37 @@ export const duelSlice = createSlice({
         cards,
       }
     },
+    drawInitialHands: (state) => {
+      if (
+        state.phase !== 'setup' ||
+        !state.playerOrder.every(
+          (playerId) =>
+            state.players[playerId].hand.length < INITIAL_CARDS_DRAWN,
+        )
+      ) {
+        return
+      }
+
+      state.playerOrder.forEach((playerId) => {
+        const cardsNeeded =
+          INITIAL_CARDS_DRAWN - state.players[playerId].hand.length
+
+        drawCards(state, playerId, cardsNeeded)
+      })
+      state.phase = 'draw'
+    },
+    drawForPlayers: (state) => {
+      if (state.phase !== 'draw') return
+
+      state.playerOrder.forEach((playerId) => {
+        drawCards(state, playerId, 1)
+      })
+      state.phase = 'play'
+    },
   },
 })
 
-export const { initiateDuelFromUsers } = duelSlice.actions
+export const { drawForPlayers, drawInitialHands, initiateDuelFromUsers } =
+  duelSlice.actions
 
 export const duelReducer = duelSlice.reducer

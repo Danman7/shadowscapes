@@ -62,7 +62,7 @@ export const Card = ({ card }: CardProps) => {
         {isCardCharacter && card.charges && (
           <>
             <dt className="sr-only">Charges</dt>
-            <dd className="flex items-center gap-1">
+            <dd className="flex items-center">
               <BsFillLightningChargeFill /> {card.charges}
             </dd>
           </>

@@ -47,7 +47,7 @@ export const cardsText = {
     bookOfAsh: {
       name: 'Book of Ash',
       description:
-        'Select a discarded common character and create a 1 life copy of it.',
+        'Select a discarded character and summon a 1-life copy of it.',
       flavor:
         "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
     },

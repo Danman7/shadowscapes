@@ -9,7 +9,7 @@ export const INITIAL_DUAL_STATE: DuelState = {
 }
 
 export const INITIAL_PLAYER_COINS = 30
-export const INITIAL_CARDS_DRAWN = 4
+export const INITIAL_CARDS_DRAWN = 3
 
 export const EMPTY_PLAYER: DuelPlayer = {
   id: '',

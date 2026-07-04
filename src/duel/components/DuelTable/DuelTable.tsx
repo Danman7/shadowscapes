@@ -1,11 +1,18 @@
 import { Card, CardBack, getCardBase } from '../../../cards'
 import { messages } from '../../../l10n/en'
-import { useDuelState } from '../../hooks'
+import {
+  useDuelState,
+  usePlayersDraw,
+  usePlayersInitialDraw,
+} from '../../hooks'
 import type { CardInstanceId } from '../../types'
 import { FaceDownStack } from './FaceDownStack'
 import { PlayerBadge } from './PlayerBadge'
 
 export const DuelTable = () => {
+  usePlayersInitialDraw()
+  usePlayersDraw()
+
   const { cards, playerOrder, players } = useDuelState()
   const activePlayer = players[playerOrder[0]]
   const inactivePlayer = players[playerOrder[1]]
