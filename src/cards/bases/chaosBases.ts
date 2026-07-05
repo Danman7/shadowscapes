@@ -23,6 +23,7 @@ export const chaosBases = defineCardBases('chaos', {
     rank: 'common',
     cost: 3,
     life: 3,
+    strength: 2,
   },
   bookOfAsh: {
     type: 'instance',

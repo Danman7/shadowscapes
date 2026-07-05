@@ -31,6 +31,21 @@ test('renders a character card', () => {
   expect(cardElement).toHaveTextContent(cardText.flavor)
   expect(getStatValue(cardElement, 'Cost')).toHaveTextContent(String(card.cost))
   expect(getStatValue(cardElement, 'Life')).toHaveTextContent(String(card.life))
+  expect(getStatValue(cardElement, 'Strength')).toHaveTextContent('2')
+})
+
+test('renders default and runtime character strength', () => {
+  const { rerender } = render(<Card card={cardBases['novice']} />)
+
+  expect(
+    getStatValue(screen.getByRole('article', { name: 'Novice card' }), 'Strength'),
+  ).toHaveTextContent('1')
+
+  rerender(<Card card={{ ...cardBases['novice'], strength: 4 }} />)
+
+  expect(
+    getStatValue(screen.getByRole('article', { name: 'Novice card' }), 'Strength'),
+  ).toHaveTextContent('4')
 })
 
 test('renders a character card with charges', () => {
@@ -50,12 +65,10 @@ test('renders a character card with charges', () => {
 })
 
 test('renders a stunned character card', () => {
-  const card = {
-    ...cardBases['templeGuard'],
-    turnsStunned: 2,
-  }
+  const card = cardBases['templeGuard']
+  const turnsStunned = 2
 
-  render(<Card card={card} />)
+  render(<Card card={{ ...card, turnsStunned }} />)
 
   const cardElement = screen.getByRole('article', {
     name: `${cardsText.cards[card.baseId].name} card`,
@@ -63,7 +76,7 @@ test('renders a stunned character card', () => {
 
   expect(cardElement).toHaveClass('opacity-70')
   expect(getStatValue(cardElement, 'Stunned')).toHaveTextContent(
-    String(card.turnsStunned),
+    String(turnsStunned),
   )
 })
 

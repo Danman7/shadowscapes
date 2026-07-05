@@ -1,15 +1,24 @@
-import { INITIAL_CARDS_DRAWN, INITIAL_PLAYER_COINS } from '../constants'
+import {
+  DEFAULT_CHARACTER_STRENGTH,
+  INCOME_PER_TURN,
+  INITIAL_CARDS_DRAWN,
+  INITIAL_PLAYER_COINS,
+} from '../constants'
 import {
   mockChaosUser,
   mockOrderUser,
   setupMockedDuel,
 } from '../../user/mocks'
 import {
+  attackCharacter,
+  completeActTurn,
   completePlayTurn,
+  completeRefresh,
   drawForPlayers,
   drawInitialHands,
   duelReducer,
   initiateDuelFromUsers,
+  passActTurn,
   passPlayTurn,
   playCard,
 } from './duelSlice'
@@ -399,4 +408,271 @@ test('ignores play-turn actions outside their valid state', () => {
   ).toEqual(state)
   expect(duelReducer(state, passPlayTurn())).toEqual(state)
   expect(duelReducer(state, completePlayTurn())).toEqual(state)
+})
+
+test('stuns a character when it enters the board', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: 'novice' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardId = initialState.players[playerId].hand[0]
+  const state = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId: cardId, cardBaseId: 'novice' }),
+  )
+  const card = state.cards[cardId]
+
+  expect(card).toMatchObject({
+    type: 'character',
+    stack: 'board',
+    turnsStunned: 1,
+    didAct: false,
+  })
+})
+
+test('reduces stun once at the start of each owner play turn', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    inactivePlayer: { board: 'haunt' },
+    phase: 'draw',
+  })
+  const [firstPlayerId, secondPlayerId] = initialState.playerOrder
+  const firstCardId = initialState.players[firstPlayerId].board[0]
+  const secondCardId = initialState.players[secondPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (
+    preparedState.cards[firstCardId].type !== 'character' ||
+    preparedState.cards[secondCardId].type !== 'character'
+  ) {
+    throw new Error('Expected character instances')
+  }
+
+  preparedState.cards[firstCardId].turnsStunned = 2
+  preparedState.cards[secondCardId].turnsStunned = 1
+
+  const firstPlayState = duelReducer(preparedState, drawForPlayers())
+  expect(firstPlayState.cards[firstCardId]).toMatchObject({ turnsStunned: 1 })
+  expect(firstPlayState.cards[secondCardId]).toMatchObject({ turnsStunned: 1 })
+
+  const secondPlayState = duelReducer(
+    duelReducer(firstPlayState, passPlayTurn()),
+    completePlayTurn(),
+  )
+  expect(secondPlayState.cards[secondCardId]).toMatchObject({ turnsStunned: 0 })
+})
+
+test('deals strength damage, permits stunned defenders, and marks the attacker', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'templeGuard' },
+    inactivePlayer: { board: 'haunt' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const defenderId = initialState.players[defenderPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (preparedState.cards[defenderId].type !== 'character') {
+    throw new Error('Expected a character defender')
+  }
+  preparedState.cards[defenderId].turnsStunned = 2
+
+  const state = duelReducer(
+    preparedState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+
+  expect(state.cards[attackerId]).toMatchObject({ didAct: true, strength: 2 })
+  expect(state.cards[defenderId]).toMatchObject({ life: 1, turnsStunned: 2 })
+})
+
+test('rejects stunned, repeated, wrong-player, and non-character attacks', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: ['novice', 'yoraSkull'] },
+    inactivePlayer: { board: ['haunt', 'bookOfAsh'] },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const [attackerId, instanceAttackerId] =
+    initialState.players[attackerPlayerId].board
+  const [defenderId, instanceDefenderId] =
+    initialState.players[defenderPlayerId].board
+  const stunnedState = structuredClone(initialState)
+
+  if (stunnedState.cards[attackerId].type !== 'character') {
+    throw new Error('Expected a character attacker')
+  }
+  stunnedState.cards[attackerId].turnsStunned = 1
+
+  expect(
+    duelReducer(stunnedState, attackCharacter({ attackerId, defenderId })),
+  ).toEqual(stunnedState)
+  expect(
+    duelReducer(
+      initialState,
+      attackCharacter({ attackerId: defenderId, defenderId: attackerId }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      attackCharacter({ attackerId: instanceAttackerId, defenderId }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      attackCharacter({ attackerId, defenderId: instanceDefenderId }),
+    ),
+  ).toEqual(initialState)
+
+  const attackedState = duelReducer(
+    initialState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+  expect(
+    duelReducer(
+      attackedState,
+      attackCharacter({ attackerId, defenderId }),
+    ),
+  ).toEqual(attackedState)
+})
+
+test('discards defeated characters and restores all base combat stats', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'templeGuard' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const defenderId = initialState.players[defenderPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (preparedState.cards[defenderId].type !== 'character') {
+    throw new Error('Expected a character defender')
+  }
+  Object.assign(preparedState.cards[defenderId], {
+    cost: 9,
+    life: 1,
+    strength: 7,
+    turnsStunned: 3,
+    didAct: true,
+  })
+
+  const state = duelReducer(
+    preparedState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+
+  expect(state.players[defenderPlayerId].board).toEqual([])
+  expect(state.players[defenderPlayerId].discard).toEqual([defenderId])
+  expect(state.cards[defenderId]).toMatchObject({
+    stack: 'discard',
+    cost: 1,
+    life: 1,
+    strength: DEFAULT_CHARACTER_STRENGTH,
+    turnsStunned: 0,
+    didAct: false,
+  })
+})
+
+test('hands act control to the second player before entering refresh', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [firstPlayerId, secondPlayerId] = initialState.playerOrder
+
+  const firstPassed = duelReducer(initialState, passActTurn())
+  const secondTurn = duelReducer(firstPassed, completeActTurn())
+
+  expect(secondTurn.phase).toBe('act')
+  expect(secondTurn.actPlayerId).toBe(secondPlayerId)
+  expect(secondTurn.playerOrder).toEqual([secondPlayerId, firstPlayerId])
+
+  const secondPassed = duelReducer(secondTurn, passActTurn())
+  const refreshState = duelReducer(secondPassed, completeActTurn())
+
+  expect(refreshState.phase).toBe('refresh')
+  expect(refreshState.actPlayerId).toBeNull()
+  expect(refreshState.playerOrder).toEqual([secondPlayerId, firstPlayerId])
+})
+
+test('ignores act pass and completion without a valid acting player', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    phase: 'act',
+  })
+  const missingActorState = { ...initialState, actPlayerId: null }
+
+  expect(duelReducer(missingActorState, passActTurn())).toEqual(
+    missingActorState,
+  )
+  expect(duelReducer(missingActorState, completeActTurn())).toEqual(
+    missingActorState,
+  )
+
+  expect(duelReducer(initialState, completeActTurn())).toEqual(initialState)
+
+  const alreadyPassedState = structuredClone(initialState)
+  const actingPlayerId = alreadyPassedState.actPlayerId
+
+  if (!actingPlayerId) throw new Error('Expected an acting player')
+
+  alreadyPassedState.players[actingPlayerId].hasActedThisPhase = true
+  expect(duelReducer(alreadyPassedState, passActTurn())).toEqual(
+    alreadyPassedState,
+  )
+})
+
+test('refreshes stats and income, keeps the rotated initiative, then draws for both players', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      coins: 2,
+      income: 1,
+      board: ['novice', 'yoraSkull'],
+      deck: 'acolyte',
+    },
+    inactivePlayer: { coins: 3, income: 0, board: 'zombie', deck: 'haunt' },
+    phase: 'refresh',
+  })
+  const [firstPlayerId, secondPlayerId] = initialState.playerOrder
+  const firstCardId = initialState.players[firstPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (preparedState.cards[firstCardId].type !== 'character') {
+    throw new Error('Expected a character')
+  }
+  preparedState.cards[firstCardId].didAct = true
+  preparedState.cards[firstCardId].turnsStunned = 2
+
+  const refreshedState = duelReducer(preparedState, completeRefresh())
+
+  expect(refreshedState).toMatchObject({
+    round: 1,
+    phase: 'draw',
+    playerOrder: [firstPlayerId, secondPlayerId],
+  })
+  expect(refreshedState.players[firstPlayerId].coins).toBe(2 + INCOME_PER_TURN)
+  expect(refreshedState.players[secondPlayerId].coins).toBe(3)
+  expect(refreshedState.cards[firstCardId]).toMatchObject({
+    didAct: false,
+    turnsStunned: 2,
+  })
+
+  const drawnState = duelReducer(refreshedState, drawForPlayers())
+
+  expect(drawnState.phase).toBe('play')
+  expect(drawnState.players[firstPlayerId].hand).toHaveLength(1)
+  expect(drawnState.players[secondPlayerId].hand).toHaveLength(1)
+})
+
+test('ignores refresh completion outside the refresh phase', () => {
+  const state = setupMockedDuel({ phase: 'act' })
+
+  expect(duelReducer(state, completeRefresh())).toEqual(state)
 })

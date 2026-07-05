@@ -11,12 +11,27 @@ export const phases = ['setup', 'draw', 'play', 'act', 'refresh'] as const
 
 export type Phase = (typeof phases)[number]
 
-export interface CardInstance {
+interface SharedCardInstance {
   id: CardInstanceId
   baseId: CardBaseId
   ownerId: PlayerId
   stack: Stack
+  cost: number
 }
+
+export interface InstanceCardInstance extends SharedCardInstance {
+  type: 'instance'
+}
+
+export interface CharacterCardInstance extends SharedCardInstance {
+  type: 'character'
+  life: number
+  strength: number
+  turnsStunned: number
+  didAct: boolean
+}
+
+export type CardInstance = InstanceCardInstance | CharacterCardInstance
 
 export interface DuelPlayer {
   id: PlayerId
@@ -37,4 +52,5 @@ export interface DuelState {
   players: Record<PlayerId, DuelPlayer>
   cards: Record<CardInstanceId, CardInstance>
   pendingPlayedCardId: CardInstanceId | null
+  actPlayerId: PlayerId | null
 }

@@ -112,5 +112,6 @@ export const setupMockedDuel = (
     },
     cards,
     pendingPlayedCardId: null,
+    actPlayerId: options.phase === 'act' ? activePlayer.id : null,
   }
 }

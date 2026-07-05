@@ -17,12 +17,13 @@ const renderDuelTable = (
   )
 
 const DuelStateProbe = () => {
-  const { phase, playerOrder } = useDuelState()
+  const { actPlayerId, phase, playerOrder } = useDuelState()
 
   return (
     <>
       <output data-testid="duel-phase">{phase}</output>
       <output data-testid="active-player-id">{playerOrder[0]}</output>
+      <output data-testid="act-player-id">{actPlayerId}</output>
     </>
   )
 }
@@ -279,5 +280,110 @@ test('passes both turns and enters act with the first player active', () => {
 
   expect(screen.getByTestId('duel-phase')).toHaveTextContent('act')
   expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+  expect(screen.getByTestId('act-player-id')).toHaveTextContent(firstPlayerId)
   expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
+})
+
+test('selects a bottom attacker, animates upward, then deals damage', () => {
+  vi.useFakeTimers()
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: { board: 'novice' },
+      inactivePlayer: { board: 'haunt' },
+      phase: 'act',
+    }),
+  )
+
+  const activeBoard = within(screen.getByTestId('active-board'))
+  const inactiveBoard = within(screen.getByTestId('inactive-board'))
+
+  fireEvent.click(activeBoard.getByRole('button', { name: 'Novice card' }))
+  const defender = inactiveBoard.getByRole('button', { name: 'Haunt card' })
+  fireEvent.click(defender)
+
+  expect(
+    activeBoard
+      .getByRole('article', { name: 'Novice card' })
+      .closest('.board-card'),
+  ).toHaveClass('card-attack-up')
+  expect(
+    within(defender).getByText('Life').nextElementSibling,
+  ).toHaveTextContent('3')
+
+  act(() => vi.advanceTimersByTime(200))
+
+  expect(
+    within(
+      inactiveBoard.getByRole('article', { name: 'Haunt card' }),
+    ).getByText('Life').nextElementSibling,
+  ).toHaveTextContent('2')
+})
+
+test('moves the second acting player to the bottom and animates upward', () => {
+  vi.useFakeTimers()
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const secondPlayerId = initialState.playerOrder[1]
+
+  renderDuelTable(initialState)
+
+  fireEvent.click(screen.getByRole('button', { name: messages.ui.passLabel }))
+  act(() => vi.advanceTimersByTime(1000))
+
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    secondPlayerId,
+  )
+
+  const activeBoard = within(screen.getByTestId('active-board'))
+  const inactiveBoard = within(screen.getByTestId('inactive-board'))
+
+  fireEvent.click(activeBoard.getByRole('button', { name: 'Zombie card' }))
+  fireEvent.click(inactiveBoard.getByRole('button', { name: 'Novice card' }))
+
+  expect(
+    activeBoard
+      .getByRole('article', { name: 'Zombie card' })
+      .closest('.board-card'),
+  ).toHaveClass('card-attack-up')
+
+  act(() => vi.advanceTimersByTime(200))
+
+  expect(
+    within(screen.getByTestId('inactive-discard')).getByText(
+      `${messages.ui.discardLabel} 1`,
+    ),
+  ).toBeInTheDocument()
+})
+
+test('automatically hands over an act turn when every character is stunned', () => {
+  vi.useFakeTimers()
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [firstPlayerId, secondPlayerId] = initialState.playerOrder
+  const cardId = initialState.players[firstPlayerId].board[0]
+
+  if (initialState.cards[cardId].type !== 'character') {
+    throw new Error('Expected a character')
+  }
+  initialState.cards[cardId].turnsStunned = 1
+
+  renderDuelTable(initialState)
+
+  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
+  expect(screen.getByTestId('act-player-id')).toHaveTextContent(firstPlayerId)
+
+  act(() => vi.advanceTimersByTime(999))
+  expect(screen.getByTestId('act-player-id')).toHaveTextContent(firstPlayerId)
+
+  act(() => vi.advanceTimersByTime(1))
+  expect(screen.getByTestId('act-player-id')).toHaveTextContent(secondPlayerId)
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    secondPlayerId,
+  )
 })

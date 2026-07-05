@@ -21,6 +21,7 @@ export const orderBases = defineCardBases('order', {
     rank: 'common',
     cost: 3,
     life: 3,
+    strength: 2,
   },
   yoraSkull: {
     type: 'instance',

@@ -8,28 +8,48 @@ import type { CardBaseId } from '../../bases'
 import type { CardBase } from '../../types'
 import { isCharacter } from '../../utils'
 import { BsFillLightningChargeFill } from 'react-icons/bs'
+import { FaFistRaised } from 'react-icons/fa'
 import { GiStarSwirl } from 'react-icons/gi'
 
+export type DisplayCard = CardBase<CardBaseId> & {
+  turnsStunned?: number
+}
+
 export interface CardProps {
-  card: CardBase<CardBaseId>
+  card: DisplayCard
   isCompact?: boolean
+  className?: string
+  isSelected?: boolean
   onClick?: () => void
 }
 
-export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
-  const { categories, faction, baseId, cost } = card
+export const Card = ({
+  card,
+  isCompact = false,
+  className = '',
+  isSelected = false,
+  onClick,
+}: CardProps) => {
+  const { categories, faction, baseId } = card
 
   const cardText = cardsText.cards[baseId]
   const isCardCharacter = isCharacter(card)
   const hasCharges = isCardCharacter && card.charges
-  const isStunned =
-    isCardCharacter && card.turnsStunned && card.turnsStunned > 0
+  const cost = card.cost
+  const life = isCardCharacter ? card.life : undefined
+  const strength = isCardCharacter
+    ? (card.strength ?? 1)
+    : undefined
+  const turnsStunned = isCardCharacter
+    ? (card.turnsStunned ?? 0)
+    : 0
+  const isStunned = turnsStunned > 0
   const borderColor = factionBorderColorClassNames[faction]
 
   const cardElement = (
     <article
       aria-label={`${cardText.name} card`}
-      className={`${isCompact ? 'card-compact' : 'card'} flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''} ${isStunned ? 'opacity-70' : ''}`}
+      className={`${isCompact ? 'card-compact' : 'card'} flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''} ${isSelected ? 'card-glow card-glow--selected' : ''} ${isStunned ? 'opacity-70' : ''} ${isCompact ? '' : className}`}
       onClick={onClick}
       onKeyDown={(event) => {
         if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
@@ -59,7 +79,7 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
         {isCardCharacter && (
           <dl>
             <dt className="sr-only">Life</dt>
-            <dd className="text-xl font-bold">{card.life}</dd>
+            <dd className="text-xl font-bold">{life}</dd>
           </dl>
         )}
       </div>
@@ -86,6 +106,15 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
         <dt className="sr-only">Cost</dt>
         <dd className="coin">{cost}</dd>
 
+        {isCardCharacter && (
+          <>
+            <dt className="sr-only">Strength</dt>
+            <dd className="flex items-center">
+              <FaFistRaised /> {strength}
+            </dd>
+          </>
+        )}
+
         {hasCharges && (
           <>
             <dt className="sr-only">Charges</dt>
@@ -99,7 +128,7 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
           <>
             <dt className="sr-only">Stunned</dt>
             <dd className="flex items-center">
-              <GiStarSwirl /> {card.turnsStunned}
+              <GiStarSwirl /> {turnsStunned}
             </dd>
           </>
         )}
@@ -110,7 +139,7 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
   if (!isCompact) return cardElement
 
   return (
-    <div className="board-card group relative shrink-0">
+    <div className={`board-card group relative shrink-0 ${className}`}>
       {cardElement}
 
       <div

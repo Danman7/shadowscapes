@@ -1,34 +1,48 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getCardBase } from '../../cards'
 import {
+  INCOME_PER_TURN,
   INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
   INITIAL_DUAL_STATE as initialState,
 } from '../constants'
-import type { CardInstance, DuelPlayer, DuelState } from '../types'
+import type {
+  CardInstance,
+  CharacterCardInstance,
+  DuelPlayer,
+  DuelState,
+} from '../types'
 import {
+  canActPlayerPass,
+  canActTurnComplete,
   canActivePlayerPass,
   canActivePlayTurnComplete,
   canCardBePlayed,
+  canCharacterAttack,
   createCardInstance,
+  decrementStun,
   haveBothPlayersActed,
+  isCharacterInstance,
   isPendingPlayedCardAnInstance,
+  moveCard,
   shuffle,
 } from '../utils'
-import type { InitiateDuelPayload, PlayCardPayload } from './duelStateTypes'
+import type {
+  AttackCharacterPayload,
+  InitiateDuelPayload,
+  PlayCardPayload,
+} from './duelStateTypes'
 
-const drawCards = (
+const decrementPlayerCharactersStun = (
   state: DuelState,
   playerId: string,
-  amount: number,
 ) => {
   const player = state.players[playerId]
-  const drawnCardIds = player.deck.splice(0, amount)
 
-  drawnCardIds.forEach((cardId) => {
-    state.cards[cardId].stack = 'hand'
+  player.board.forEach((cardId) => {
+    const card = state.cards[cardId]
+
+    if (isCharacterInstance(card)) decrementStun(card)
   })
-  player.hand.push(...drawnCardIds)
 }
 
 export const duelSlice = createSlice({
@@ -75,6 +89,7 @@ export const duelSlice = createSlice({
         playerOrder,
         players,
         cards,
+        actPlayerId: null,
       }
     },
     drawInitialHands: (state) => {
@@ -92,7 +107,13 @@ export const duelSlice = createSlice({
         const cardsNeeded =
           INITIAL_CARDS_DRAWN - state.players[playerId].hand.length
 
-        drawCards(state, playerId, cardsNeeded)
+        moveCard({
+          state,
+          playerId,
+          from: 'deck',
+          to: 'hand',
+          amount: cardsNeeded,
+        })
       })
       state.phase = 'draw'
     },
@@ -100,23 +121,27 @@ export const duelSlice = createSlice({
       if (state.phase !== 'draw') return
 
       state.playerOrder.forEach((playerId) => {
-        drawCards(state, playerId, 1)
+        moveCard({ state, playerId, from: 'deck', to: 'hand' })
       })
+      decrementPlayerCharactersStun(state, state.playerOrder[0])
       state.phase = 'play'
     },
     playCard: (state, action: PayloadAction<PlayCardPayload>) => {
       if (!canCardBePlayed({ state, ...action.payload })) return
 
-      const { playerId, cardInstanceId, cardBaseId } = action.payload
+      const { playerId, cardInstanceId } = action.payload
       const player = state.players[playerId]
       const card = state.cards[cardInstanceId]
-      const cardIndex = player.hand.indexOf(cardInstanceId)
 
-      player.coins -= getCardBase(cardBaseId).cost
-      player.hand.splice(cardIndex, 1)
-      player.board.push(cardInstanceId)
+      player.coins -= card.cost
+      moveCard({
+        state,
+        playerId,
+        cardId: cardInstanceId,
+        from: 'hand',
+        to: 'board',
+      })
       player.hasActedThisPhase = true
-      card.stack = 'board'
       state.pendingPlayedCardId = cardInstanceId
     },
     passPlayTurn: (state) => {
@@ -133,14 +158,13 @@ export const duelSlice = createSlice({
       const pendingCardId = state.pendingPlayedCardId
 
       if (pendingCardId && isPendingPlayedCardAnInstance(state, activePlayer.id)) {
-        const pendingCard = state.cards[pendingCardId]
-        const cardIndex = activePlayer.board.indexOf(pendingCardId)
-
-        if (cardIndex !== -1) {
-          activePlayer.board.splice(cardIndex, 1)
-          activePlayer.discard.push(pendingCardId)
-          pendingCard.stack = 'discard'
-        }
+        moveCard({
+          state,
+          playerId: activePlayer.id,
+          cardId: pendingCardId,
+          from: 'board',
+          to: 'discard',
+        })
       }
 
       state.pendingPlayedCardId = null
@@ -151,19 +175,96 @@ export const duelSlice = createSlice({
 
       if (bothPlayersActed) {
         state.phase = 'act'
+        state.actPlayerId = state.playerOrder[0]
         state.playerOrder.forEach((playerId) => {
           state.players[playerId].hasActedThisPhase = false
         })
+      } else {
+        decrementPlayerCharactersStun(state, state.playerOrder[0])
       }
+    },
+    attackCharacter: (
+      state,
+      action: PayloadAction<AttackCharacterPayload>,
+    ) => {
+      if (!canCharacterAttack(state, action.payload)) return
+
+      const attacker = state.cards[
+        action.payload.attackerId
+      ] as CharacterCardInstance
+      const defender = state.cards[
+        action.payload.defenderId
+      ] as CharacterCardInstance
+
+      attacker.didAct = true
+      defender.life -= attacker.strength
+
+      if (defender.life <= 0) {
+        moveCard({
+          state,
+          playerId: defender.ownerId,
+          cardId: defender.id,
+          from: 'board',
+          to: 'discard',
+        })
+      }
+    },
+    passActTurn: (state) => {
+      if (!state.actPlayerId || !canActPlayerPass(state)) return
+
+      state.players[state.actPlayerId].hasActedThisPhase = true
+    },
+    completeActTurn: (state) => {
+      if (!state.actPlayerId || !canActTurnComplete(state)) return
+
+      const completingPlayerId = state.actPlayerId
+      state.players[completingPlayerId].hasActedThisPhase = true
+
+      const nextPlayerId = state.playerOrder.find(
+        (playerId) => !state.players[playerId].hasActedThisPhase,
+      )
+
+      if (nextPlayerId) {
+        state.playerOrder = [nextPlayerId, completingPlayerId]
+        state.actPlayerId = nextPlayerId
+        return
+      }
+
+      state.actPlayerId = null
+      state.phase = 'refresh'
+    },
+    completeRefresh: (state) => {
+      if (state.phase !== 'refresh') return
+
+      state.round += 1
+
+      state.playerOrder.forEach((playerId) => {
+        const player = state.players[playerId]
+
+        player.hasActedThisPhase = false
+        if (player.income > 0) player.coins += INCOME_PER_TURN
+
+        player.board.forEach((cardId) => {
+          const card = state.cards[cardId]
+
+          if (card.type === 'character') card.didAct = false
+        })
+      })
+
+      state.phase = 'draw'
     },
   },
 })
 
 export const {
+  attackCharacter,
+  completeActTurn,
   completePlayTurn,
+  completeRefresh,
   drawForPlayers,
   drawInitialHands,
   initiateDuelFromUsers,
+  passActTurn,
   passPlayTurn,
   playCard,
 } = duelSlice.actions

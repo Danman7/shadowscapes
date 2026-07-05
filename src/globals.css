@@ -69,6 +69,27 @@
   --card-glow-color: var(--primary);
 }
 
+@utility card-glow--selected {
+  --card-glow-color: var(--gold);
+}
+
+@keyframes card-attack-up {
+  50% {
+    transform: translateY(-1rem);
+  }
+}
+
+.card-attack-up {
+  z-index: 40;
+  animation: card-attack-up 200ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-attack-up {
+    animation: none;
+  }
+}
+
 @layer components {
   .player-hand {
     @apply relative flex justify-center overflow-visible;

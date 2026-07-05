@@ -1,42 +1,37 @@
 import { CardBack } from '../../../cards'
 import { messages } from '../../../l10n/en'
-import { Button } from '../../../shared/components'
 import {
-  useDuelDispatch,
+  useActTurnCompletion,
   useDuelState,
   usePlayTurnCompletion,
   usePlayersDraw,
   usePlayersInitialDraw,
+  useRefreshCompletion,
 } from '../../hooks'
-import { passPlayTurn, playCard } from '../../state'
-import type { CardInstance } from '../../types'
-import { canCardBePlayed } from '../../utils'
+import { CardInstance } from './CardInstance'
+import { CombatInteractionProvider } from './CombatInteractionProvider'
 import { FaceDownStack } from './FaceDownStack'
+import { PhaseButton } from './PhaseButton'
 import { PlayerBadge } from './PlayerBadge'
-import { renderFaceUpCards } from './renderFaceUpCards'
 
-export const DuelTable = () => {
+export const DuelTable = () => (
+  <CombatInteractionProvider>
+    <DuelTableContent />
+  </CombatInteractionProvider>
+)
+
+const DuelTableContent = () => {
   usePlayersInitialDraw()
   usePlayersDraw()
   usePlayTurnCompletion()
+  useActTurnCompletion()
+  useRefreshCompletion()
 
-  const dispatch = useDuelDispatch()
   const duelState = useDuelState()
-  const { cards, phase, playerOrder, players } = duelState
+  const { actPlayerId, cards, phase, playerOrder, players } = duelState
   const activePlayer = players[playerOrder[0]]
   const inactivePlayer = players[playerOrder[1]]
-
-  const getPlayableHandCardOnClick = (card: CardInstance) => {
-    const payload = {
-      playerId: activePlayer.id,
-      cardInstanceId: card.id,
-      cardBaseId: card.baseId,
-    }
-
-    if (!canCardBePlayed({ state: duelState, ...payload })) return undefined
-
-    return () => dispatch(playCard(payload))
-  }
+  const isActPhase = phase === 'act'
 
   return (
     <div
@@ -47,6 +42,7 @@ export const DuelTable = () => {
     >
       <PlayerBadge
         player={inactivePlayer}
+        isActive={isActPhase && actPlayerId === inactivePlayer.id}
         className="absolute top-2 left-1/2 -translate-x-1/2"
       />
       {/* Row 1: inactive discard / hand / deck */}
@@ -88,11 +84,9 @@ export const DuelTable = () => {
         className="col-[1/4] row-2 justify-center items-end flex gap-2"
         data-testid="inactive-board"
       >
-        {renderFaceUpCards({
-          cardIds: inactivePlayer.board,
-          cards,
-          isCompact: true,
-        })}
+        {inactivePlayer.board.map((cardId) => (
+          <CardInstance key={cardId} instance={cards[cardId]} />
+        ))}
       </section>
 
       {/* Row 3: center bar, UI and buttons */}
@@ -101,12 +95,7 @@ export const DuelTable = () => {
           {messages.phase[phase]}
         </p>
 
-        {phase === 'play' && !activePlayer.hasActedThisPhase && (
-          <Button
-            label={messages.ui.passLabel}
-            onClick={() => dispatch(passPlayTurn())}
-          />
-        )}
+        <PhaseButton />
       </section>
 
       {/* Row 4: active board full width */}
@@ -114,11 +103,9 @@ export const DuelTable = () => {
         className="col-[1/4] row-4 flex justify-center gap-2"
         data-testid="active-board"
       >
-        {renderFaceUpCards({
-          cardIds: activePlayer.board,
-          cards,
-          isCompact: true,
-        })}
+        {activePlayer.board.map((cardId) => (
+          <CardInstance key={cardId} instance={cards[cardId]} />
+        ))}
       </section>
 
       {/* Row 5: active discard / hand / deck */}
@@ -138,11 +125,9 @@ export const DuelTable = () => {
         className="player-hand player-hand--active col-2 row-5"
         data-testid="active-hand"
       >
-        {renderFaceUpCards({
-          cardIds: activePlayer.hand,
-          cards,
-          getOnClick: getPlayableHandCardOnClick,
-        })}
+        {activePlayer.hand.map((cardId) => (
+          <CardInstance key={cardId} instance={cards[cardId]} />
+        ))}
       </section>
 
       <section
@@ -159,7 +144,7 @@ export const DuelTable = () => {
 
       <PlayerBadge
         player={activePlayer}
-        isActive
+        isActive={!isActPhase || actPlayerId === activePlayer.id}
         className="absolute bottom-2 left-1/2 -translate-x-1/2"
       />
     </div>

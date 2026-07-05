@@ -9,3 +9,8 @@ export interface PlayCardPayload {
   cardInstanceId: CardInstanceId
   cardBaseId: CardBaseId
 }
+
+export interface AttackCharacterPayload {
+  attackerId: CardInstanceId
+  defenderId: CardInstanceId
+}
