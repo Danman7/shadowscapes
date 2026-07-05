@@ -49,6 +49,24 @@ test('renders a character card with charges', () => {
   )
 })
 
+test('renders a stunned character card', () => {
+  const card = {
+    ...cardBases['templeGuard'],
+    turnsStunned: 2,
+  }
+
+  render(<Card card={card} />)
+
+  const cardElement = screen.getByRole('article', {
+    name: `${cardsText.cards[card.baseId].name} card`,
+  })
+
+  expect(cardElement).toHaveClass('opacity-70')
+  expect(getStatValue(cardElement, 'Stunned')).toHaveTextContent(
+    String(card.turnsStunned),
+  )
+})
+
 test('renders a compact card with its effect and an accessible inspection target', () => {
   const card = cardBases['templeGuard']
   const cardText = cardsText.cards[card.baseId]

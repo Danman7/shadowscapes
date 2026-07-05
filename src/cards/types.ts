@@ -34,6 +34,7 @@ export type CharacterCardBase<TBaseId extends string = string> =
     type: 'character'
     life: number
     charges?: number
+    turnsStunned?: number
   }
 
 export type CardBase<TBaseId extends string = string> =

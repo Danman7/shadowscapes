@@ -50,3 +50,12 @@ export const Playable: Story = {
     onClick: () => undefined,
   },
 }
+
+export const Stunned: Story = {
+  args: {
+    card: {
+      ...cardBases['templeGuard'],
+      turnsStunned: 1,
+    },
+  },
+}

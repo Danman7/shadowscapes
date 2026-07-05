@@ -8,6 +8,7 @@ import type { CardBaseId } from '../../bases'
 import type { CardBase } from '../../types'
 import { isCharacter } from '../../utils'
 import { BsFillLightningChargeFill } from 'react-icons/bs'
+import { GiStarSwirl } from 'react-icons/gi'
 
 export interface CardProps {
   card: CardBase<CardBaseId>
@@ -20,12 +21,15 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
 
   const cardText = cardsText.cards[baseId]
   const isCardCharacter = isCharacter(card)
+  const hasCharges = isCardCharacter && card.charges
+  const isStunned =
+    isCardCharacter && card.turnsStunned && card.turnsStunned > 0
   const borderColor = factionBorderColorClassNames[faction]
 
   const cardElement = (
     <article
       aria-label={`${cardText.name} card`}
-      className={`${isCompact ? 'card-compact' : 'card'} flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''}`}
+      className={`${isCompact ? 'card-compact' : 'card'} flex flex-col gap-2 overflow-hidden border-2 bg-surface p-2 ${borderColor} ${onClick ? 'card-glow card-glow--primary cursor-pointer' : ''} ${isStunned ? 'opacity-70' : ''}`}
       onClick={onClick}
       onKeyDown={(event) => {
         if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
@@ -71,9 +75,7 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
         </p>
 
         {!isCompact && (
-          <p className="text-sm italic text-foreground/80">
-            {cardText.flavor}
-          </p>
+          <p className="text-sm italic text-foreground/80">{cardText.flavor}</p>
         )}
       </div>
 
@@ -84,11 +86,20 @@ export const Card = ({ card, isCompact = false, onClick }: CardProps) => {
         <dt className="sr-only">Cost</dt>
         <dd className="coin">{cost}</dd>
 
-        {isCardCharacter && card.charges && (
+        {hasCharges && (
           <>
             <dt className="sr-only">Charges</dt>
             <dd className="flex items-center">
               <BsFillLightningChargeFill /> {card.charges}
+            </dd>
+          </>
+        )}
+
+        {isStunned && (
+          <>
+            <dt className="sr-only">Stunned</dt>
+            <dd className="flex items-center">
+              <GiStarSwirl /> {card.turnsStunned}
             </dd>
           </>
         )}
