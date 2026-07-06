@@ -1,5 +1,5 @@
 import type { CharacterCardInstance } from '../../types'
 
-export const decrementStun = (character: CharacterCardInstance) => {
+export const reduceTurnsStunned = (character: CharacterCardInstance) => {
   if (character.turnsStunned > 0) character.turnsStunned -= 1
 }

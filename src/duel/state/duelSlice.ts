@@ -17,10 +17,10 @@ import {
   canCardBePlayed,
   canCharacterAttack,
   createCardInstance,
-  decrementStun,
   haveBothPlayersActed,
   isCharacterInstance,
   moveCard,
+  reduceTurnsStunned,
   shuffle,
 } from '../utils'
 import type {
@@ -35,7 +35,7 @@ const decrementPlayerCharactersStun = (state: DuelState, playerId: string) => {
   player.board.forEach((cardId) => {
     const card = state.cards[cardId]
 
-    if (isCharacterInstance(card)) decrementStun(card)
+    if (isCharacterInstance(card)) reduceTurnsStunned(card)
   })
 }
 

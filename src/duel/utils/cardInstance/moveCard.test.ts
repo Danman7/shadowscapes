@@ -1,7 +1,7 @@
 import { setupMockedDuel } from '../../../user'
 import type { CharacterCardInstance } from '../../types'
-import { decrementStun } from './decrementStun'
 import { moveCard } from './moveCard'
+import { reduceTurnsStunned } from './reduceTurnsStunned'
 
 test('moves one card by default and supports moving an amount', () => {
   const state = setupMockedDuel({
@@ -165,10 +165,10 @@ test('decrements positive stun without going below zero', () => {
   if (card.type !== 'character') throw new Error('Expected a character')
 
   card.turnsStunned = 2
-  decrementStun(card)
+  reduceTurnsStunned(card)
   expect(card.turnsStunned).toBe(1)
 
   card.turnsStunned = 0
-  decrementStun(card)
+  reduceTurnsStunned(card)
   expect(card.turnsStunned).toBe(0)
 })
