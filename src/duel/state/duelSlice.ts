@@ -14,15 +14,12 @@ import type {
 import {
   canActPlayerPass,
   canActTurnComplete,
-  canActivePlayerPass,
-  canActivePlayTurnComplete,
   canCardBePlayed,
   canCharacterAttack,
   createCardInstance,
   decrementStun,
   haveBothPlayersActed,
   isCharacterInstance,
-  isPendingPlayedCardAnInstance,
   moveCard,
   shuffle,
 } from '../utils'
@@ -32,10 +29,7 @@ import type {
   PlayCardPayload,
 } from './duelStateTypes'
 
-const decrementPlayerCharactersStun = (
-  state: DuelState,
-  playerId: string,
-) => {
+const decrementPlayerCharactersStun = (state: DuelState, playerId: string) => {
   const player = state.players[playerId]
 
   player.board.forEach((cardId) => {
@@ -145,19 +139,15 @@ export const duelSlice = createSlice({
       state.pendingPlayedCardId = cardInstanceId
     },
     passPlayTurn: (state) => {
-      if (!canActivePlayerPass(state)) return
-
       const activePlayer = state.players[state.playerOrder[0]]
 
       activePlayer.hasActedThisPhase = true
     },
     completePlayTurn: (state) => {
-      if (!canActivePlayTurnComplete(state)) return
-
       const activePlayer = state.players[state.playerOrder[0]]
       const pendingCardId = state.pendingPlayedCardId
 
-      if (pendingCardId && isPendingPlayedCardAnInstance(state, activePlayer.id)) {
+      if (pendingCardId && state.cards[pendingCardId].type === 'instance') {
         moveCard({
           state,
           playerId: activePlayer.id,
@@ -183,10 +173,7 @@ export const duelSlice = createSlice({
         decrementPlayerCharactersStun(state, state.playerOrder[0])
       }
     },
-    attackCharacter: (
-      state,
-      action: PayloadAction<AttackCharacterPayload>,
-    ) => {
+    attackCharacter: (state, action: PayloadAction<AttackCharacterPayload>) => {
       if (!canCharacterAttack(state, action.payload)) return
 
       const attacker = state.cards[

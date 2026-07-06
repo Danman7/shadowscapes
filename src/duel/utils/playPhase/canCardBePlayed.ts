@@ -18,13 +18,13 @@ export const canCardBePlayed = ({
 
   return Boolean(
     playerId === state.playerOrder[0] &&
-      player &&
-      !player.hasActedThisPhase &&
-      card &&
-      card.ownerId === playerId &&
-      card.baseId === cardBaseId &&
-      card.stack === 'hand' &&
-      player.hand.includes(cardInstanceId) &&
-      player.coins >= card.cost,
+    player &&
+    !player.hasActedThisPhase &&
+    card &&
+    card.ownerId === playerId &&
+    card.baseId === cardBaseId &&
+    card.stack === 'hand' &&
+    player.hand.includes(cardInstanceId) &&
+    player.coins >= card.cost,
   )
 }

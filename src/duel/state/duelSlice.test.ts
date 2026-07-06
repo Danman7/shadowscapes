@@ -4,11 +4,7 @@ import {
   INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
 } from '../constants'
-import {
-  mockChaosUser,
-  mockOrderUser,
-  setupMockedDuel,
-} from '../../user/mocks'
+import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
   attackCharacter,
   completeActTurn,
@@ -395,21 +391,6 @@ test('rejects unaffordable, inactive-player, mismatched, and repeated plays', ()
   ).toEqual(playedState)
 })
 
-test('ignores play-turn actions outside their valid state', () => {
-  const state = setupMockedDuel({ activePlayer: { hand: 'novice' } })
-  const playerId = state.playerOrder[0]
-  const cardInstanceId = state.players[playerId].hand[0]
-
-  expect(
-    duelReducer(
-      state,
-      playCard({ playerId, cardInstanceId, cardBaseId: 'novice' }),
-    ),
-  ).toEqual(state)
-  expect(duelReducer(state, passPlayTurn())).toEqual(state)
-  expect(duelReducer(state, completePlayTurn())).toEqual(state)
-})
-
 test('stuns a character when it enters the board', () => {
   const initialState = setupMockedDuel({
     activePlayer: { hand: 'novice' },
@@ -533,10 +514,7 @@ test('rejects stunned, repeated, wrong-player, and non-character attacks', () =>
     attackCharacter({ attackerId, defenderId }),
   )
   expect(
-    duelReducer(
-      attackedState,
-      attackCharacter({ attackerId, defenderId }),
-    ),
+    duelReducer(attackedState, attackCharacter({ attackerId, defenderId })),
   ).toEqual(attackedState)
 })
 

@@ -1,13 +1,10 @@
-export const shuffle = <T>(items: readonly T[]): T[] => {
-  const shuffledItems = [...items]
-
-  for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1))
-    const itemAtIndex = shuffledItems[index]
-
-    shuffledItems[index] = shuffledItems[randomIndex]
-    shuffledItems[randomIndex] = itemAtIndex
+export const shuffle = <T>(array: T[]): T[] => {
+  for (let i = array.length - 1; i >= 0; i--) {
+    const newPosition = Math.floor((i + 1) * Math.random())
+    const temp = array[newPosition]
+    array[newPosition] = array[i]
+    array[i] = temp
   }
 
-  return shuffledItems
+  return array
 }
