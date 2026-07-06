@@ -6,6 +6,7 @@ import {
 } from '../constants'
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
+  adjustCharacterLife,
   attackCharacter,
   completeActTurn,
   completePlayTurn,
@@ -17,6 +18,8 @@ import {
   passActTurn,
   passPlayTurn,
   playCard,
+  summonAllCopies,
+  summonCard,
 } from './duelSlice'
 
 beforeEach(() => {
@@ -410,6 +413,138 @@ test('stuns a character when it enters the board', () => {
     turnsStunned: 1,
     didAct: false,
   })
+})
+
+test('summons a character for free without consuming the play turn', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 7, hand: 'novice' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardId = initialState.players[playerId].hand[0]
+  const state = duelReducer(
+    initialState,
+    summonCard({ playerId, cardInstanceId: cardId, from: 'hand' }),
+  )
+
+  expect(state.players[playerId]).toMatchObject({
+    coins: 7,
+    hand: [],
+    board: [cardId],
+    hasActedThisPhase: false,
+  })
+  expect(state.cards[cardId]).toMatchObject({
+    stack: 'board',
+    turnsStunned: 1,
+  })
+  expect(state.pendingPlayedCardId).toBeNull()
+})
+
+test('summons every matching character copy in source order', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      hand: ['novice', 'acolyte', 'novice', 'yoraSkull', 'novice'],
+      board: 'templeGuard',
+    },
+  })
+  const playerId = initialState.playerOrder[0]
+  const player = initialState.players[playerId]
+  const existingBoardId = player.board[0]
+  const noviceIds = player.hand.filter(
+    (cardId) => initialState.cards[cardId].baseId === 'novice',
+  )
+  const remainingHandIds = player.hand.filter(
+    (cardId) => initialState.cards[cardId].baseId !== 'novice',
+  )
+  const state = duelReducer(
+    initialState,
+    summonAllCopies({ playerId, cardBaseId: 'novice', from: 'hand' }),
+  )
+
+  expect(state.players[playerId].board).toEqual([
+    existingBoardId,
+    ...noviceIds,
+  ])
+  expect(state.players[playerId].hand).toEqual(remainingHandIds)
+  noviceIds.forEach((cardId) => {
+    expect(state.cards[cardId]).toMatchObject({
+      stack: 'board',
+      turnsStunned: 1,
+    })
+  })
+})
+
+test('ignores summoning all copies for a missing player', () => {
+  const initialState = setupMockedDuel()
+
+  expect(
+    duelReducer(
+      initialState,
+      summonAllCopies({
+        playerId: 'missing',
+        cardBaseId: 'novice',
+        from: 'hand',
+      }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('rejects summons with an invalid source, owner, or instance card', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: ['novice', 'yoraSkull'] },
+  })
+  const [playerId, otherPlayerId] = initialState.playerOrder
+  const [noviceId, instanceId] = initialState.players[playerId].hand
+
+  expect(
+    duelReducer(
+      initialState,
+      summonCard({ playerId, cardInstanceId: noviceId, from: 'discard' }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      summonCard({
+        playerId: otherPlayerId,
+        cardInstanceId: noviceId,
+        from: 'hand',
+      }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      summonCard({ playerId, cardInstanceId: instanceId, from: 'hand' }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('adjusts life only for a character currently on its owner board', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: 'novice', board: 'templeGuard' },
+  })
+  const playerId = initialState.playerOrder[0]
+  const handCardId = initialState.players[playerId].hand[0]
+  const boardCardId = initialState.players[playerId].board[0]
+  const adjustedState = duelReducer(
+    initialState,
+    adjustCharacterLife({ cardInstanceId: boardCardId, amount: 2 }),
+  )
+
+  expect(adjustedState.cards[boardCardId]).toMatchObject({ life: 5 })
+  expect(
+    duelReducer(
+      initialState,
+      adjustCharacterLife({ cardInstanceId: handCardId, amount: 2 }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      adjustCharacterLife({ cardInstanceId: 'missing', amount: 2 }),
+    ),
+  ).toEqual(initialState)
 })
 
 test('reduces stun once at the start of each owner play turn', () => {

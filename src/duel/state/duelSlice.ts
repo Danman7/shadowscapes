@@ -24,9 +24,12 @@ import {
   shuffle,
 } from '../utils'
 import type {
+  AdjustCharacterLifePayload,
   AttackCharacterPayload,
   InitiateDuelPayload,
   PlayCardPayload,
+  SummonAllCopiesPayload,
+  SummonCardPayload,
 } from './duelStateTypes'
 
 const decrementPlayerCharactersStun = (state: DuelState, playerId: string) => {
@@ -138,6 +141,56 @@ export const duelSlice = createSlice({
       player.hasActedThisPhase = true
       state.pendingPlayedCardId = cardInstanceId
     },
+    summonCard: (state, action: PayloadAction<SummonCardPayload>) => {
+      const { playerId, cardInstanceId, from } = action.payload
+      const card = state.cards[cardInstanceId]
+
+      if (!isCharacterInstance(card)) return
+
+      moveCard({
+        state,
+        playerId,
+        cardId: cardInstanceId,
+        from,
+        to: 'board',
+      })
+    },
+    summonAllCopies: (
+      state,
+      action: PayloadAction<SummonAllCopiesPayload>,
+    ) => {
+      const { playerId, cardBaseId, from } = action.payload
+      const player = state.players[playerId]
+
+      if (!player) return
+
+      const matchingCardIds = player[from].filter((cardId) => {
+        const card = state.cards[cardId]
+
+        return isCharacterInstance(card) && card.baseId === cardBaseId
+      })
+
+      matchingCardIds.forEach((cardId) => {
+        moveCard({ state, playerId, cardId, from, to: 'board' })
+      })
+    },
+    adjustCharacterLife: (
+      state,
+      action: PayloadAction<AdjustCharacterLifePayload>,
+    ) => {
+      const card = state.cards[action.payload.cardInstanceId]
+      const player = card ? state.players[card.ownerId] : undefined
+
+      if (
+        !isCharacterInstance(card) ||
+        card.stack !== 'board' ||
+        !player?.board.includes(card.id)
+      ) {
+        return
+      }
+
+      card.life += action.payload.amount
+    },
     passPlayTurn: (state) => {
       const activePlayer = state.players[state.playerOrder[0]]
 
@@ -244,6 +297,7 @@ export const duelSlice = createSlice({
 })
 
 export const {
+  adjustCharacterLife,
   attackCharacter,
   completeActTurn,
   completePlayTurn,
@@ -254,6 +308,8 @@ export const {
   passActTurn,
   passPlayTurn,
   playCard,
+  summonAllCopies,
+  summonCard,
 } = duelSlice.actions
 
 export const duelReducer = duelSlice.reducer
