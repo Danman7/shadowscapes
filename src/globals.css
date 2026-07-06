@@ -96,7 +96,7 @@
   }
 
   .player-hand > .card + .card {
-    @apply -ml-12;
+    @apply -ml-14;
   }
 
   .player-hand--inactive {
@@ -112,7 +112,7 @@
   }
 
   .player-hand--active > .card:hover {
-    @apply z-45 translate-y-[calc(-100%+8.75rem)] shadow-2xl shadow-black/60;
+    @apply z-45 translate-y-[calc(-100%+7.5rem)] shadow-2xl shadow-black/60;
   }
 }
 

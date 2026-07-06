@@ -37,7 +37,7 @@ const DuelTableContent = () => {
     <div
       className="grid relative h-screen gap-2
         grid-cols-[100px_minmax(0,2fr)_100px]
-        grid-rows-[140px_1fr_50px_1fr_140px] overflow-hidden"
+        grid-rows-[120px_1fr_50px_1fr_120px] overflow-hidden"
       data-testid="duel-table"
     >
       <PlayerBadge
