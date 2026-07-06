@@ -33,3 +33,16 @@ export interface AdjustCharacterLifePayload {
   cardInstanceId: CardInstanceId
   amount: number
 }
+
+export interface AdjustPlayerIncomePayload {
+  playerId: PlayerId
+  amount: number
+}
+
+export interface DrawCardPayload {
+  playerId: PlayerId
+}
+
+export interface ResolvePendingPlayedCardPayload {
+  cardInstanceId: CardInstanceId
+}

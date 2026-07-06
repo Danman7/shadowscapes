@@ -25,6 +25,7 @@ export const orderBases = defineCardBases('order', {
   },
   yoraSkull: {
     type: 'instance',
+    target: 'allied-character',
     categories: ['hammerite', 'artifact'],
     rank: 'elite',
     cost: 3,

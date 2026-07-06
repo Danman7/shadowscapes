@@ -27,6 +27,7 @@ export interface SharedCardBase<TBaseId extends string = string> {
 export type InstanceCardBase<TBaseId extends string = string> =
   SharedCardBase<TBaseId> & {
     type: 'instance'
+    target?: 'allied-character'
   }
 
 export type CharacterCardBase<TBaseId extends string = string> =

@@ -7,6 +7,7 @@ import {
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
   adjustCharacterLife,
+  adjustPlayerIncome,
   attackCharacter,
   completeActTurn,
   completePlayTurn,
@@ -18,6 +19,7 @@ import {
   passActTurn,
   passPlayTurn,
   playCard,
+  resolvePendingPlayedCard,
   summonAllCopies,
   summonCard,
 } from './duelSlice'
@@ -250,14 +252,14 @@ test('plays a character with explicit player, instance, and base identity', () =
 
 test('discards an instance when its play turn completes', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'yoraSkull' },
+    activePlayer: { coins: 3, hand: 'bookOfAsh' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
   const cardInstanceId = initialState.players[playerId].hand[0]
   const playedState = duelReducer(
     initialState,
-    playCard({ playerId, cardInstanceId, cardBaseId: 'yoraSkull' }),
+    playCard({ playerId, cardInstanceId, cardBaseId: 'bookOfAsh' }),
   )
 
   expect(playedState.players[playerId].board).toEqual([cardInstanceId])
@@ -272,16 +274,37 @@ test('discards an instance when its play turn completes', () => {
   expect(completedState.cards[cardInstanceId].stack).toBe('discard')
 })
 
+test('does not play a targeted instance without a valid board target', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 3, hand: 'yoraSkull' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].hand[0]
+  const state = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId, cardBaseId: 'yoraSkull' }),
+  )
+
+  expect(state.players[playerId]).toMatchObject({
+    coins: 3,
+    hand: [cardInstanceId],
+    board: [],
+    hasActedThisPhase: false,
+  })
+  expect(state.pendingPlayedCardId).toBeNull()
+})
+
 test('does not discard a pending instance missing from the player board', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { hand: 'yoraSkull' },
+    activePlayer: { hand: 'bookOfAsh' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
   const cardInstanceId = initialState.players[playerId].hand[0]
   const playedState = duelReducer(
     initialState,
-    playCard({ playerId, cardInstanceId, cardBaseId: 'yoraSkull' }),
+    playCard({ playerId, cardInstanceId, cardBaseId: 'bookOfAsh' }),
   )
   const inconsistentState = structuredClone(playedState)
 
@@ -292,6 +315,36 @@ test('does not discard a pending instance missing from the player board', () => 
   expect(completedState.cards[cardInstanceId].stack).toBe('board')
   expect(completedState.players[playerId].discard).toEqual([])
   expect(completedState.pendingPlayedCardId).toBeNull()
+})
+
+test('does not resolve a non-pending card or a pending character', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: ['bookOfAsh', 'novice'] },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const [instanceId, characterId] = initialState.players[playerId].board
+  const nonPendingState = structuredClone(initialState)
+
+  nonPendingState.pendingPlayedCardId = instanceId
+
+  expect(
+    duelReducer(
+      nonPendingState,
+      resolvePendingPlayedCard({ cardInstanceId: characterId }),
+    ),
+  ).toEqual(nonPendingState)
+
+  const pendingCharacterState = structuredClone(initialState)
+
+  pendingCharacterState.pendingPlayedCardId = characterId
+
+  expect(
+    duelReducer(
+      pendingCharacterState,
+      resolvePendingPlayedCard({ cardInstanceId: characterId }),
+    ),
+  ).toEqual(pendingCharacterState)
 })
 
 test('passes a play turn and hands control to the other player', () => {
@@ -545,6 +598,18 @@ test('adjusts life only for a character currently on its owner board', () => {
       adjustCharacterLife({ cardInstanceId: 'missing', amount: 2 }),
     ),
   ).toEqual(initialState)
+})
+
+test('does not adjust income for a missing player', () => {
+  const initialState = setupMockedDuel()
+  const stateBeforeAction = structuredClone(initialState)
+
+  expect(
+    duelReducer(
+      initialState,
+      adjustPlayerIncome({ playerId: 'missing-player', amount: 1 }),
+    ),
+  ).toEqual(stateBeforeAction)
 })
 
 test('reduces stun once at the start of each owner play turn', () => {

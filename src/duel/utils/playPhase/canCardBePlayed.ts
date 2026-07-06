@@ -1,5 +1,6 @@
 import type { PlayCardPayload } from '../../state/duelStateTypes'
 import type { DuelState } from '../../types'
+import { hasCardEffectTarget } from './cardEffectTarget'
 
 interface CanCardBePlayedOptions extends PlayCardPayload {
   state: DuelState
@@ -25,6 +26,7 @@ export const canCardBePlayed = ({
     card.baseId === cardBaseId &&
     card.stack === 'hand' &&
     player.hand.includes(cardInstanceId) &&
-    player.coins >= card.cost,
+    player.coins >= card.cost &&
+    hasCardEffectTarget(state, cardBaseId, playerId),
   )
 }

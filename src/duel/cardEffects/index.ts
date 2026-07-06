@@ -5,6 +5,7 @@ import { orderEffects } from './orderEffects'
 export * from './actionEffectsMiddleware'
 export * from './onPlayEffect'
 export * from './orderEffects'
+export * from './targetedCardEffect'
 
 export const cardEffectsMiddleware =
   createActionEffectsMiddleware<CardEffectsState>(orderEffects)

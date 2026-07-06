@@ -18,6 +18,7 @@ import {
   canCharacterAttack,
   createCardInstance,
   haveBothPlayersActed,
+  isAwaitingCardEffectTarget,
   isCharacterInstance,
   moveCard,
   reduceTurnsStunned,
@@ -25,9 +26,12 @@ import {
 } from '../utils'
 import type {
   AdjustCharacterLifePayload,
+  AdjustPlayerIncomePayload,
   AttackCharacterPayload,
+  DrawCardPayload,
   InitiateDuelPayload,
   PlayCardPayload,
+  ResolvePendingPlayedCardPayload,
   SummonAllCopiesPayload,
   SummonCardPayload,
 } from './duelStateTypes'
@@ -191,12 +195,57 @@ export const duelSlice = createSlice({
 
       card.life += action.payload.amount
     },
+    adjustPlayerIncome: (
+      state,
+      action: PayloadAction<AdjustPlayerIncomePayload>,
+    ) => {
+      const player = state.players[action.payload.playerId]
+
+      if (!player) return
+
+      player.income += action.payload.amount
+    },
+    drawCard: (state, action: PayloadAction<DrawCardPayload>) => {
+      if (!state.players[action.payload.playerId]) return
+
+      moveCard({
+        state,
+        playerId: action.payload.playerId,
+        from: 'deck',
+        to: 'hand',
+      })
+    },
+    resolvePendingPlayedCard: (
+      state,
+      action: PayloadAction<ResolvePendingPlayedCardPayload>,
+    ) => {
+      const cardInstanceId = action.payload.cardInstanceId
+      const card = state.cards[cardInstanceId]
+
+      if (
+        state.pendingPlayedCardId !== cardInstanceId ||
+        card?.type !== 'instance'
+      ) {
+        return
+      }
+
+      moveCard({
+        state,
+        playerId: card.ownerId,
+        cardId: cardInstanceId,
+        from: 'board',
+        to: 'discard',
+      })
+      state.pendingPlayedCardId = null
+    },
     passPlayTurn: (state) => {
       const activePlayer = state.players[state.playerOrder[0]]
 
       activePlayer.hasActedThisPhase = true
     },
     completePlayTurn: (state) => {
+      if (isAwaitingCardEffectTarget(state)) return
+
       const activePlayer = state.players[state.playerOrder[0]]
       const pendingCardId = state.pendingPlayedCardId
 
@@ -298,16 +347,19 @@ export const duelSlice = createSlice({
 
 export const {
   adjustCharacterLife,
+  adjustPlayerIncome,
   attackCharacter,
   completeActTurn,
   completePlayTurn,
   completeRefresh,
   drawForPlayers,
+  drawCard,
   drawInitialHands,
   initiateDuelFromUsers,
   passActTurn,
   passPlayTurn,
   playCard,
+  resolvePendingPlayedCard,
   summonAllCopies,
   summonCard,
 } = duelSlice.actions

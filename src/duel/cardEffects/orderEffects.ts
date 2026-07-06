@@ -1,10 +1,18 @@
-import { templeGuardOutnumberedLifeBuff } from '../../cards/bases/orderConstants'
+import {
+  acolyteGainIncome,
+  templeGuardOutnumberedLifeBuff,
+  yoraDirectBuff,
+  yoraIndirectBuff,
+} from '../../cards/bases/orderConstants'
 import {
   adjustCharacterLife,
+  adjustPlayerIncome,
+  drawCard,
   summonAllCopies,
 } from '../state/duelSlice'
 import { isCharacterInstance } from '../utils'
 import { createOnPlayCardEffect } from './onPlayEffect'
+import { createTargetedCardEffect } from './targetedCardEffect'
 
 const noviceOnPlay = createOnPlayCardEffect(
   'novice',
@@ -56,4 +64,69 @@ const templeGuardOnPlay = createOnPlayCardEffect(
   },
 )
 
-export const orderEffects = [noviceOnPlay, templeGuardOnPlay] as const
+const acolyteOnPlay = createOnPlayCardEffect(
+  'acolyte',
+  ({ cardInstanceId, dispatch, getState, playerId }) => {
+    const player = getState().duel.players[playerId]
+
+    if (!player?.board.includes(cardInstanceId)) return
+
+    if (player.board.length === 1) {
+      dispatch(drawCard({ playerId }))
+      return
+    }
+
+    dispatch(adjustPlayerIncome({ playerId, amount: acolyteGainIncome }))
+  },
+)
+
+const yoraSkullTargetedEffect = createTargetedCardEffect(
+  'yoraSkull',
+  ({ cardInstanceId, dispatch, getState, targetCardInstanceId }) => {
+    const state = getState().duel
+    const skull = state.cards[cardInstanceId]
+    const target = state.cards[targetCardInstanceId]
+    const player = skull ? state.players[skull.ownerId] : undefined
+    const opponentId = state.playerOrder.find((id) => id !== skull?.ownerId)
+    const opponent = opponentId ? state.players[opponentId] : undefined
+
+    if (!player || !opponent || !isCharacterInstance(target)) return
+
+    dispatch(
+      adjustCharacterLife({
+        cardInstanceId: targetCardInstanceId,
+        amount: yoraDirectBuff,
+      }),
+    )
+
+    const alliedBoard = player.board.filter((id) => id !== cardInstanceId)
+
+    if (opponent.board.length <= alliedBoard.length) return
+
+    const targetIndex = alliedBoard.indexOf(targetCardInstanceId)
+    const adjacentCardIds = [
+      alliedBoard[targetIndex - 1],
+      alliedBoard[targetIndex + 1],
+    ]
+
+    adjacentCardIds.forEach((adjacentCardId) => {
+      const adjacentCard = state.cards[adjacentCardId]
+
+      if (!isCharacterInstance(adjacentCard)) return
+
+      dispatch(
+        adjustCharacterLife({
+          cardInstanceId: adjacentCardId,
+          amount: yoraIndirectBuff,
+        }),
+      )
+    })
+  },
+)
+
+export const orderEffects = [
+  noviceOnPlay,
+  templeGuardOnPlay,
+  acolyteOnPlay,
+  yoraSkullTargetedEffect,
+] as const

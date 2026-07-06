@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { selectCardEffectTarget } from '../cardEffects/targetedCardEffect'
 import { ATTACK_ANIMATION_DELAY_MS } from '../constants'
 import { attackCharacter } from '../state'
 import type { CardInstance, CardInstanceId } from '../types'
-import { isCharacterInstance } from '../utils'
+import { canCardBeEffectTarget, isCharacterInstance } from '../utils'
 import { useDuelDispatch } from './useDuelDispatch'
 import { useDuelState } from './useDuelState'
 
@@ -14,7 +15,8 @@ interface PendingAttack {
 
 export const useCombatCardInteractions = () => {
   const dispatch = useDuelDispatch()
-  const { actPlayerId, phase, players } = useDuelState()
+  const duelState = useDuelState()
+  const { actPlayerId, pendingPlayedCardId, phase, players } = duelState
   const [selectedAttackerId, setSelectedAttackerId] =
     useState<CardInstanceId | null>(null)
   const [pendingAttack, setPendingAttack] = useState<PendingAttack | null>(null)
@@ -42,6 +44,13 @@ export const useCombatCardInteractions = () => {
 
   const getBoardCardOnClick = useCallback(
     (card: CardInstance) => {
+      if (phase === 'play') {
+        if (!canCardBeEffectTarget(duelState, card.id)) return undefined
+
+        return () =>
+          dispatch(selectCardEffectTarget({ targetCardInstanceId: card.id }))
+      }
+
       if (phase !== 'act' || !actPlayerId || pendingAttack) return undefined
 
       if (card.ownerId === actPlayerId) {
@@ -69,6 +78,8 @@ export const useCombatCardInteractions = () => {
     },
     [
       actPlayerId,
+      dispatch,
+      duelState,
       pendingAttack,
       phase,
       players,
@@ -86,8 +97,10 @@ export const useCombatCardInteractions = () => {
   )
 
   const isCardSelected = useCallback(
-    (card: CardInstance) => card.id === selectedAttackerId,
-    [selectedAttackerId],
+    (card: CardInstance) =>
+      card.id === selectedAttackerId ||
+      (phase === 'play' && card.id === pendingPlayedCardId),
+    [pendingPlayedCardId, phase, selectedAttackerId],
   )
   const clearSelection = useCallback(() => setSelectedAttackerId(null), [])
 

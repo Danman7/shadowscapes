@@ -233,12 +233,12 @@ test('pays for a character, keeps it on board, and hands over after one second',
   ).toBeInTheDocument()
 })
 
-test('shows an instance briefly, then discards it while handing over', () => {
+test('keeps a targeted instance pending until its board target is selected', () => {
   vi.useFakeTimers()
 
   renderDuelTable(
     setupMockedDuel({
-      activePlayer: { coins: 3, hand: 'yoraSkull' },
+      activePlayer: { coins: 3, hand: 'yoraSkull', board: 'novice' },
       phase: 'play',
     }),
   )
@@ -250,6 +250,26 @@ test('shows an instance briefly, then discards it while handing over', () => {
       name: "Saint Yora's Skull card",
     }),
   ).toBeInTheDocument()
+
+  act(() => vi.advanceTimersByTime(1000))
+
+  expect(
+    within(screen.getByTestId('active-board')).getByRole('article', {
+      name: "Saint Yora's Skull card",
+    }),
+  ).toBeInTheDocument()
+
+  fireEvent.click(
+    within(screen.getByTestId('active-board')).getByRole('button', {
+      name: 'Novice card',
+    }),
+  )
+
+  expect(
+    within(screen.getByTestId('active-board')).queryByText(
+      "Saint Yora's Skull",
+    ),
+  ).toBeNull()
 
   act(() => vi.advanceTimersByTime(1000))
 
