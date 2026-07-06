@@ -28,7 +28,7 @@ const DuelTableContent = () => {
   useRefreshCompletion()
 
   const duelState = useDuelState()
-  const { actPlayerId, cards, phase, playerOrder, players } = duelState
+  const { actPlayerId, cards, phase, playerOrder, players, round } = duelState
   const activePlayer = players[playerOrder[0]]
   const inactivePlayer = players[playerOrder[1]]
   const isActPhase = phase === 'act'
@@ -92,7 +92,7 @@ const DuelTableContent = () => {
       {/* Row 3: center bar, UI and buttons */}
       <section className="col-[1/4] w-full px-2 row-3 flex justify-between place-items-center">
         <p className="text-sm font-bold tracking-wide" aria-live="polite">
-          {messages.phase[phase]}
+          Round {round + 1}: {messages.phase[phase]}
         </p>
 
         <PhaseButton />

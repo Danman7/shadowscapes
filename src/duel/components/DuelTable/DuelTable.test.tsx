@@ -39,10 +39,12 @@ test('renders the player names', () => {
   expect(screen.getByText(mockChaosUser.name)).toBeInTheDocument()
 })
 
-test('renders the current phase in the center bar', () => {
+test('renders the current round and phase in the center bar', () => {
   renderDuelTable({ ...setupMockedDuel(), phase: 'act' })
 
-  expect(screen.getByText(messages.phase.act)).toBeInTheDocument()
+  expect(
+    screen.getByText(`Round 1: ${messages.phase.act}`),
+  ).toBeInTheDocument()
 })
 
 test('renders cards in the correct player stacks', () => {
