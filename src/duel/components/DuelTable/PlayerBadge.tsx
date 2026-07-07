@@ -19,6 +19,16 @@ export const PlayerBadge = ({
       </span>
     )}
     <span className="font-bold tracking-wide">{player.name}</span>{' '}
-    <div className="coin">{player.coins}</div>
+    <dl className="flex shrink-0 gap-2 items-center">
+      <dt className="sr-only">Coins</dt>
+      <dd className="coin">{player.coins}</dd>
+
+      {player.income && (
+        <>
+          <dt className="sr-only">Income</dt>
+          <dd className="flex items-center">+{player.income}</dd>
+        </>
+      )}
+    </dl>
   </div>
 )

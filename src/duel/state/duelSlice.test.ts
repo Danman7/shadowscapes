@@ -12,6 +12,7 @@ import {
   completeActTurn,
   completePlayTurn,
   completeRefresh,
+  drawCard,
   drawForPlayers,
   drawInitialHands,
   duelReducer,
@@ -209,6 +210,17 @@ test('does not draw for players outside the draw phase', () => {
   expect(duelReducer(state, drawForPlayers())).toEqual(stateBeforeAction)
 })
 
+test('does not draw a card for a missing player', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { deck: 'novice' },
+  })
+  const stateBeforeAction = structuredClone(initialState)
+
+  expect(duelReducer(initialState, drawCard({ playerId: 'missing' }))).toEqual(
+    stateBeforeAction,
+  )
+})
+
 test('plays a character with explicit player, instance, and base identity', () => {
   const initialState = setupMockedDuel({
     activePlayer: { coins: 2, hand: 'novice' },
@@ -293,6 +305,24 @@ test('does not play a targeted instance without a valid board target', () => {
     hasActedThisPhase: false,
   })
   expect(state.pendingPlayedCardId).toBeNull()
+})
+
+test('does not complete a play turn while awaiting a card effect target', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 3, hand: 'yoraSkull', board: 'novice' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].hand[0]
+  const playedState = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId, cardBaseId: 'yoraSkull' }),
+  )
+  const stateBeforeAction = structuredClone(playedState)
+
+  expect(duelReducer(playedState, completePlayTurn())).toEqual(
+    stateBeforeAction,
+  )
 })
 
 test('does not discard a pending instance missing from the player board', () => {

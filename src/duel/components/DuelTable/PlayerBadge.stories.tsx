@@ -25,3 +25,12 @@ export const Active: Story = {
     isActive: true,
   },
 }
+
+export const WithIncome: Story = {
+  args: {
+    player: {
+      ...mockOrderPlayer,
+      income: 5,
+    },
+  },
+}
