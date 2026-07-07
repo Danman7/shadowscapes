@@ -5,6 +5,7 @@ import {
   passActTurn,
   playCard,
 } from '../state'
+import { selectCardEffectTarget } from './targetedCardEffect'
 
 test('Zombie summons the last discarded Zombie for free on play', () => {
   const initialState = setupMockedDuel({
@@ -69,6 +70,56 @@ test('Zombie safely skips its summon without a discarded Zombie', () => {
   })
 })
 
+test('Book of Ash summons a one-life copy of a selected discarded character', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      coins: 3,
+      hand: 'bookOfAsh',
+      discard: 'haunt',
+    },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const bookId = initialState.players[playerId].hand[0]
+  const sourceCardInstanceId = initialState.players[playerId].discard[0]
+  const store = createAppStore(initialState)
+
+  store.dispatch(
+    playCard({
+      playerId,
+      cardInstanceId: bookId,
+      cardBaseId: 'bookOfAsh',
+    }),
+  )
+
+  expect(store.getState().duel.pendingPlayedCardId).toBe(bookId)
+
+  store.dispatch(
+    selectCardEffectTarget({ targetCardInstanceId: sourceCardInstanceId }),
+  )
+
+  const state = store.getState().duel
+  const copyId = state.players[playerId].board[0]
+
+  expect(copyId).not.toBe(sourceCardInstanceId)
+  expect(state.players[playerId]).toMatchObject({
+    board: [copyId],
+    discard: [sourceCardInstanceId, bookId],
+  })
+  expect(state.cards[sourceCardInstanceId]).toMatchObject({
+    baseId: 'haunt',
+    stack: 'discard',
+  })
+  expect(state.cards[copyId]).toMatchObject({
+    baseId: 'haunt',
+    life: 1,
+    stack: 'board',
+    turnsStunned: 1,
+  })
+  expect(state.cards[bookId]).toMatchObject({ stack: 'discard' })
+  expect(state.pendingPlayedCardId).toBeNull()
+})
+
 test("Burrick spends a charge to damage the target's adjacent cards", () => {
   const initialState = setupMockedDuel({
     activePlayer: { board: 'burrick' },
@@ -94,6 +145,29 @@ test("Burrick spends a charge to damage the target's adjacent cards", () => {
   expect(state.players[defenderPlayerId]).toMatchObject({
     board: [defenderId],
     discard: [leftZombieId, rightZombieId],
+  })
+})
+
+test('Burrick ignores adjacent non-character cards', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    inactivePlayer: { board: ['zombie', 'haunt', 'bookOfAsh'] },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const [leftZombieId, defenderId, bookId] =
+    initialState.players[defenderPlayerId].board
+  const store = createAppStore(initialState)
+
+  store.dispatch(attackCharacter({ attackerId, defenderId }))
+
+  const state = store.getState().duel
+
+  expect(state.cards[leftZombieId]).toMatchObject({ stack: 'discard' })
+  expect(state.cards[bookId]).toMatchObject({
+    baseId: 'bookOfAsh',
+    stack: 'board',
   })
 })
 

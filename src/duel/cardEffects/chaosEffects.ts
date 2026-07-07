@@ -2,6 +2,7 @@ import {
   adjustCharacterCharges,
   attackCharacter,
   damageCharacter,
+  summonCardCopy,
   summonCard,
 } from '../state/duelSlice'
 import {
@@ -14,6 +15,7 @@ import type { ActionEffectRegistration } from './actionEffectsMiddleware'
 import { createActPassCardEffect } from './actPassEffect'
 import type { CardEffectsState } from './onPlayEffect'
 import { createOnPlayCardEffect } from './onPlayEffect'
+import { createTargetedCardEffect } from './targetedCardEffect'
 
 const getLastDiscardedZombieId = (
   state: DuelState,
@@ -43,6 +45,25 @@ const zombieOnPlay = createOnPlayCardEffect(
 
     dispatch(
       summonCard({ playerId, cardInstanceId: zombieId, from: 'discard' }),
+    )
+  },
+)
+
+const bookOfAshTargetedEffect = createTargetedCardEffect(
+  'bookOfAsh',
+  ({ cardInstanceId, dispatch, getState, targetCardInstanceId }) => {
+    const state = getState().duel
+    const book = state.cards[cardInstanceId]
+    const target = state.cards[targetCardInstanceId]
+
+    if (!book || !isCharacterInstance(target)) return
+
+    dispatch(
+      summonCardCopy({
+        playerId: book.ownerId,
+        sourceCardInstanceId: targetCardInstanceId,
+        life: 1,
+      }),
     )
   },
 )
@@ -105,6 +126,7 @@ const burrickPassEffect = createActPassCardEffect(
 
 export const chaosEffects = [
   zombieOnPlay,
+  bookOfAshTargetedEffect,
   burrickAttackEffect,
   burrickPassEffect,
 ] as const

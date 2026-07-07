@@ -87,6 +87,31 @@ test('resets a character when moving it to discard', () => {
   })
 })
 
+test('resets a charged character when moving it to discard', () => {
+  const state = setupMockedDuel({ activePlayer: { board: 'burrick' } })
+  const playerId = state.playerOrder[0]
+  const cardId = state.players[playerId].board[0]
+  const card = state.cards[cardId]
+
+  if (card.type !== 'character') throw new Error('Expected a character')
+
+  card.charges = 0
+
+  expect(
+    moveCard({
+      state,
+      playerId,
+      cardId,
+      from: 'board',
+      to: 'discard',
+    }),
+  ).toEqual([cardId])
+  expect(card).toMatchObject({
+    stack: 'discard',
+    charges: 1,
+  })
+})
+
 test('rejects missing cards, missing players, and ownership mismatches', () => {
   const state = setupMockedDuel({ activePlayer: { hand: 'novice' } })
   const [playerId, otherPlayerId] = state.playerOrder

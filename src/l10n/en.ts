@@ -15,6 +15,7 @@ type CardMessage = {
 
 export const messages = {
   ui: {
+    closeLabel: 'Close',
     deckLabel: 'Deck',
     discardLabel: 'Disc.',
     passLabel: 'Pass',

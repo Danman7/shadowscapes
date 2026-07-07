@@ -6,12 +6,14 @@ import {
 } from '../constants'
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
+  adjustCharacterCharges,
   adjustCharacterLife,
   adjustPlayerIncome,
   attackCharacter,
   completeActTurn,
   completePlayTurn,
   completeRefresh,
+  damageCharacter,
   drawCard,
   drawForPlayers,
   drawInitialHands,
@@ -23,6 +25,7 @@ import {
   resolvePendingPlayedCard,
   summonAllCopies,
   summonCard,
+  summonCardCopy,
 } from './duelSlice'
 
 beforeEach(() => {
@@ -262,28 +265,25 @@ test('plays a character with explicit player, instance, and base identity', () =
   expect(completedState.phase).toBe('play')
 })
 
-test('discards an instance when its play turn completes', () => {
+test('does not play Book of Ash without a discarded character target', () => {
   const initialState = setupMockedDuel({
     activePlayer: { coins: 3, hand: 'bookOfAsh' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
   const cardInstanceId = initialState.players[playerId].hand[0]
-  const playedState = duelReducer(
+  const state = duelReducer(
     initialState,
     playCard({ playerId, cardInstanceId, cardBaseId: 'bookOfAsh' }),
   )
 
-  expect(playedState.players[playerId].board).toEqual([cardInstanceId])
-
-  const completedState = duelReducer(playedState, completePlayTurn())
-
-  expect(completedState.players[playerId]).toMatchObject({
-    coins: 0,
+  expect(state.players[playerId]).toMatchObject({
+    coins: 3,
+    hand: [cardInstanceId],
     board: [],
-    discard: [cardInstanceId],
+    hasActedThisPhase: false,
   })
-  expect(completedState.cards[cardInstanceId].stack).toBe('discard')
+  expect(state.pendingPlayedCardId).toBeNull()
 })
 
 test('does not play a targeted instance without a valid board target', () => {
@@ -325,9 +325,45 @@ test('does not complete a play turn while awaiting a card effect target', () => 
   )
 })
 
-test('does not discard a pending instance missing from the player board', () => {
+test('does not complete a play turn while awaiting a discarded character target', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { hand: 'bookOfAsh' },
+    activePlayer: { coins: 3, hand: 'bookOfAsh', discard: 'haunt' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].hand[0]
+  const playedState = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId, cardBaseId: 'bookOfAsh' }),
+  )
+  const stateBeforeAction = structuredClone(playedState)
+
+  expect(duelReducer(playedState, completePlayTurn())).toEqual(
+    stateBeforeAction,
+  )
+})
+
+test('clears a stale pending instance while completing play', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'bookOfAsh', hasActedThisPhase: true },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].board[0]
+  const staleState = structuredClone(initialState)
+
+  staleState.pendingPlayedCardId = cardInstanceId
+  staleState.cards[cardInstanceId].stack = 'discard'
+
+  const state = duelReducer(staleState, completePlayTurn())
+
+  expect(state.pendingPlayedCardId).toBeNull()
+  expect(state.cards[cardInstanceId].stack).toBe('discard')
+})
+
+test('does not discard a resolving instance missing from the player board', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 3, hand: 'bookOfAsh', discard: 'haunt' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
@@ -340,10 +376,15 @@ test('does not discard a pending instance missing from the player board', () => 
 
   inconsistentState.players[playerId].board = []
 
-  const completedState = duelReducer(inconsistentState, completePlayTurn())
+  const completedState = duelReducer(
+    inconsistentState,
+    resolvePendingPlayedCard({ cardInstanceId }),
+  )
 
   expect(completedState.cards[cardInstanceId].stack).toBe('board')
-  expect(completedState.players[playerId].discard).toEqual([])
+  expect(completedState.players[playerId].discard).toEqual(
+    initialState.players[playerId].discard,
+  )
   expect(completedState.pendingPlayedCardId).toBeNull()
 })
 
@@ -572,6 +613,81 @@ test('ignores summoning all copies for a missing player', () => {
   ).toEqual(initialState)
 })
 
+test('summons a one-life copy of a discarded character', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { discard: 'haunt' },
+  })
+  const playerId = initialState.playerOrder[0]
+  const sourceCardInstanceId = initialState.players[playerId].discard[0]
+  const state = duelReducer(
+    initialState,
+    summonCardCopy({ playerId, sourceCardInstanceId, life: 1 }),
+  )
+  const copyId = state.players[playerId].board[0]
+
+  expect(copyId).not.toBe(sourceCardInstanceId)
+  expect(state.players[playerId].discard).toEqual([sourceCardInstanceId])
+  expect(state.cards[sourceCardInstanceId]).toMatchObject({
+    baseId: 'haunt',
+    stack: 'discard',
+  })
+  expect(state.cards[copyId]).toMatchObject({
+    baseId: 'haunt',
+    ownerId: playerId,
+    stack: 'board',
+    life: 1,
+    turnsStunned: 1,
+  })
+})
+
+test('rejects card copies from missing, invalid, or non-discard sources', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: 'novice', discard: ['bookOfAsh', 'haunt'] },
+    inactivePlayer: { discard: 'haunt' },
+  })
+  const [playerId, otherPlayerId] = initialState.playerOrder
+  const handCardId = initialState.players[playerId].hand[0]
+  const [instanceCardId, validDiscardId] = initialState.players[playerId].discard
+  const opponentDiscardId = initialState.players[otherPlayerId].discard[0]
+
+  expect(
+    duelReducer(
+      initialState,
+      summonCardCopy({ playerId, sourceCardInstanceId: handCardId, life: 1 }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      summonCardCopy({
+        playerId,
+        sourceCardInstanceId: instanceCardId,
+        life: 1,
+      }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      summonCardCopy({
+        playerId,
+        sourceCardInstanceId: opponentDiscardId,
+        life: 1,
+      }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      summonCardCopy({
+        playerId,
+        sourceCardInstanceId: validDiscardId,
+        life: 0,
+      }),
+    ),
+  ).toEqual(initialState)
+})
+
 test('rejects summons with an invalid source, owner, or instance card', () => {
   const initialState = setupMockedDuel({
     activePlayer: { hand: ['novice', 'yoraSkull'] },
@@ -626,6 +742,49 @@ test('adjusts life only for a character currently on its owner board', () => {
     duelReducer(
       initialState,
       adjustCharacterLife({ cardInstanceId: 'missing', amount: 2 }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('does not damage invalid or non-positive character targets', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: 'novice', board: 'templeGuard' },
+  })
+  const playerId = initialState.playerOrder[0]
+  const handCardId = initialState.players[playerId].hand[0]
+  const boardCardId = initialState.players[playerId].board[0]
+
+  expect(
+    duelReducer(
+      initialState,
+      damageCharacter({ cardInstanceId: handCardId, amount: 1 }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      damageCharacter({ cardInstanceId: boardCardId, amount: 0 }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('adjusts charges only for a character currently on its owner board', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: 'burrick', board: 'burrick' },
+  })
+  const playerId = initialState.playerOrder[0]
+  const handCardId = initialState.players[playerId].hand[0]
+  const boardCardId = initialState.players[playerId].board[0]
+  const adjustedState = duelReducer(
+    initialState,
+    adjustCharacterCharges({ cardInstanceId: boardCardId, amount: -1 }),
+  )
+
+  expect(adjustedState.cards[boardCardId]).toMatchObject({ charges: 0 })
+  expect(
+    duelReducer(
+      initialState,
+      adjustCharacterCharges({ cardInstanceId: handCardId, amount: -1 }),
     ),
   ).toEqual(initialState)
 })

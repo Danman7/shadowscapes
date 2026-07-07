@@ -29,6 +29,12 @@ export interface SummonAllCopiesPayload {
   from: SummonSourceStack
 }
 
+export interface SummonCardCopyPayload {
+  playerId: PlayerId
+  sourceCardInstanceId: CardInstanceId
+  life: number
+}
+
 export interface AdjustCharacterLifePayload {
   cardInstanceId: CardInstanceId
   amount: number

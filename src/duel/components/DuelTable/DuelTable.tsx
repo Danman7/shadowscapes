@@ -9,6 +9,7 @@ import {
   useRefreshCompletion,
 } from '../../hooks'
 import { CardInstance } from './CardInstance'
+import { BookOfAshTargetModal } from './BookOfAshTargetModal'
 import { CombatInteractionProvider } from './CombatInteractionProvider'
 import { FaceDownStack } from './FaceDownStack'
 import { PhaseButton } from './PhaseButton'
@@ -147,6 +148,8 @@ const DuelTableContent = () => {
         isActive={!isActPhase || actPlayerId === activePlayer.id}
         className="absolute bottom-2 left-1/2 -translate-x-1/2"
       />
+
+      <BookOfAshTargetModal />
     </div>
   )
 }

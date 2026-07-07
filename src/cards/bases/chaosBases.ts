@@ -27,6 +27,7 @@ export const chaosBases = defineCardBases('chaos', {
   },
   bookOfAsh: {
     type: 'instance',
+    target: 'discarded-character',
     categories: ['necromancer', 'artifact'],
     rank: 'elite',
     cost: 3,

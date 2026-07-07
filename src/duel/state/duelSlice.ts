@@ -37,6 +37,7 @@ import type {
   PlayCardPayload,
   ResolvePendingPlayedCardPayload,
   SummonAllCopiesPayload,
+  SummonCardCopyPayload,
   SummonCardPayload,
 } from './duelStateTypes'
 
@@ -218,6 +219,34 @@ export const duelSlice = createSlice({
       matchingCardIds.forEach((cardId) => {
         moveCard({ state, playerId, cardId, from, to: 'board' })
       })
+    },
+    summonCardCopy: (
+      state,
+      action: PayloadAction<SummonCardCopyPayload>,
+    ) => {
+      const { playerId, sourceCardInstanceId, life } = action.payload
+      const player = state.players[playerId]
+      const source = state.cards[sourceCardInstanceId]
+
+      if (
+        !player ||
+        !isCharacterInstance(source) ||
+        source.ownerId !== playerId ||
+        source.stack !== 'discard' ||
+        !player.discard.includes(sourceCardInstanceId) ||
+        life <= 0
+      ) {
+        return
+      }
+
+      const copy = createCardInstance(source.baseId, playerId, 'board')
+
+      if (!isCharacterInstance(copy)) return
+
+      copy.life = life
+      copy.turnsStunned += 1
+      state.cards[copy.id] = copy
+      player.board.push(copy.id)
     },
     adjustCharacterLife: (
       state,
@@ -429,6 +458,7 @@ export const {
   resolvePendingPlayedCard,
   summonAllCopies,
   summonCard,
+  summonCardCopy,
 } = duelSlice.actions
 
 export const duelReducer = duelSlice.reducer

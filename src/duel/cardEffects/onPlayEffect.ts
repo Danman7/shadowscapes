@@ -5,6 +5,7 @@ import {
   playCard,
   summonAllCopies,
   summonCard,
+  summonCardCopy,
 } from '../state/duelSlice'
 import type { CardInstanceId, DuelState, PlayerId } from '../types'
 import type {
@@ -27,7 +28,8 @@ type OnPlayEffect = (context: OnPlayEffectContext) => void
 const isBoardEntryAction = (action: UnknownAction) =>
   playCard.match(action) ||
   summonCard.match(action) ||
-  summonAllCopies.match(action)
+  summonAllCopies.match(action) ||
+  summonCardCopy.match(action)
 
 export const getNewBoardCardIds = (
   context: ActionEffectContext<CardEffectsState>,
@@ -46,6 +48,7 @@ export const getNewBoardCardIds = (
   const newCardIds = player.board.filter((cardId) => !previousBoard.has(cardId))
 
   if (summonAllCopies.match(action)) return newCardIds
+  if (summonCardCopy.match(action)) return newCardIds
 
   return newCardIds.filter(
     (cardId) => cardId === action.payload.cardInstanceId,

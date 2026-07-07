@@ -23,6 +23,10 @@ export const hasCardEffectTarget = (
       return player.board.some((cardId) =>
         isCharacterInstance(state.cards[cardId]),
       )
+    case 'discarded-character':
+      return player.discard.some((cardId) =>
+        isCharacterInstance(state.cards[cardId]),
+      )
     default:
       return true
   }
@@ -51,8 +55,7 @@ export const canCardBeEffectTarget = (
     state.phase !== 'play' ||
     !pendingCard ||
     pendingCard.stack !== 'board' ||
-    !targetCard ||
-    targetCard.stack !== 'board'
+    !targetCard
   ) {
     return false
   }
@@ -60,9 +63,21 @@ export const canCardBeEffectTarget = (
   switch (getCardTarget(pendingCard.baseId)) {
     case 'allied-character':
       return (
+        targetCard.stack === 'board' &&
         targetCard.ownerId === pendingCard.ownerId &&
         isCharacterInstance(targetCard)
       )
+    case 'discarded-character': {
+      const player = state.players[pendingCard.ownerId]
+
+      return Boolean(
+        player &&
+          targetCard.stack === 'discard' &&
+          targetCard.ownerId === pendingCard.ownerId &&
+          player.discard.includes(targetCardInstanceId) &&
+          isCharacterInstance(targetCard),
+      )
+    }
     default:
       return false
   }

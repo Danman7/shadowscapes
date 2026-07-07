@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 
+import { messages } from '../../../l10n/en'
 import { setupMockedDuel } from '../../../user'
 import { useDuelState } from '../../hooks'
 import { DuelProvider } from '../DuelProvider/DuelProvider'
@@ -107,6 +108,54 @@ test('Temple Guard keeps its base life when the post-play boards are tied', () =
   fireEvent.click(screen.getByRole('button', { name: 'Temple Guard card' }))
 
   expect(getActiveBoardCardLife('Temple Guard card')).toHaveTextContent('3')
+})
+
+test('Book of Ash prompts for a discarded character and summons a one-life copy', () => {
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: {
+        coins: 3,
+        hand: 'bookOfAsh',
+        discard: ['haunt', 'zombie'],
+      },
+      phase: 'play',
+    }),
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Book of Ash card' }))
+
+  const dialog = screen.getByRole('dialog', { name: 'Book of Ash' })
+
+  expect(
+    within(dialog).queryByRole('button', { name: messages.ui.closeLabel }),
+  ).not.toBeInTheDocument()
+
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Haunt card' }))
+
+  expect(screen.queryByRole('dialog', { name: 'Book of Ash' })).toBeNull()
+  expect(getActiveBoardCardLife('Haunt card')).toHaveTextContent('1')
+  expect(
+    within(screen.getByTestId('active-discard')).getByText(
+      `${messages.ui.discardLabel} 3`,
+    ),
+  ).toBeInTheDocument()
+})
+
+test('Book of Ash target modal stays hidden without discarded characters', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      board: 'bookOfAsh',
+      discard: 'bookOfAsh',
+    },
+    phase: 'play',
+  })
+  const playerId = state.playerOrder[0]
+
+  state.pendingPlayedCardId = state.players[playerId].board[0]
+
+  renderDuelTable(state)
+
+  expect(screen.queryByRole('dialog', { name: 'Book of Ash' })).toBeNull()
 })
 
 const getActiveBoardCardLife = (cardName: string) => {

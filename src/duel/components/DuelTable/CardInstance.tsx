@@ -1,5 +1,4 @@
-import { Card, getCardBase } from '../../../cards'
-import type { DisplayCard } from '../../../cards'
+import { Card } from '../../../cards'
 import {
   useCombatInteraction,
   useDuelDispatch,
@@ -8,28 +7,10 @@ import {
 import { playCard } from '../../state'
 import type { CardInstance as CardInstanceType } from '../../types'
 import { canCardBePlayed } from '../../utils'
+import { getDisplayCardFromInstance } from './getDisplayCardFromInstance'
 
 interface CardInstanceProps {
   instance: CardInstanceType
-}
-
-const populateCardFromInstance = (
-  instance: CardInstanceType,
-): DisplayCard => {
-  const base = getCardBase(instance.baseId)
-
-  if (instance.type === 'character' && base.type === 'character') {
-    return {
-      ...base,
-      cost: instance.cost,
-      life: instance.life,
-      strength: instance.strength,
-      charges: instance.charges,
-      turnsStunned: instance.turnsStunned,
-    }
-  }
-
-  return { ...base, cost: instance.cost }
 }
 
 export const CardInstance = ({ instance }: CardInstanceProps) => {
@@ -37,7 +18,7 @@ export const CardInstance = ({ instance }: CardInstanceProps) => {
   const duelState = useDuelState()
   const combatInteraction = useCombatInteraction()
   const isOnBoard = instance.stack === 'board'
-  const card = populateCardFromInstance(instance)
+  const card = getDisplayCardFromInstance(instance)
 
   const getOnClick = () => {
     if (isOnBoard) {
