@@ -2,7 +2,12 @@ import { getCardBase, isCharacter } from '../../cards'
 import type { CardBaseId } from '../../cards/bases'
 import { generateUuid } from '../../shared/utils'
 import { DEFAULT_CHARACTER_STRENGTH } from '../constants'
-import type { CardInstance, PlayerId, Stack } from '../types'
+import type {
+  CardInstance,
+  CharacterCardInstance,
+  PlayerId,
+  Stack,
+} from '../types'
 
 export const createCardInstance = (
   baseId: CardBaseId,
@@ -20,7 +25,7 @@ export const createCardInstance = (
 
   if (!isCharacter(base)) return { ...shared, type: 'instance' }
 
-  return {
+  const character: CharacterCardInstance = {
     ...shared,
     type: 'character',
     life: base.life,
@@ -28,4 +33,8 @@ export const createCardInstance = (
     turnsStunned: 0,
     didAct: false,
   }
+
+  if (base.charges !== undefined) character.charges = base.charges
+
+  return character
 }

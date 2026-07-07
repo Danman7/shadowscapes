@@ -23,7 +23,7 @@ export const PlayerBadge = ({
       <dt className="sr-only">Coins</dt>
       <dd className="coin">{player.coins}</dd>
 
-      {player.income && (
+      {player.income > 0 && (
         <>
           <dt className="sr-only">Income</dt>
           <dd className="flex items-center">+{player.income}</dd>

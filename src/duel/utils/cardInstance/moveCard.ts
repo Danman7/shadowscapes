@@ -43,6 +43,11 @@ const updateCharacterForStack = (
   card.cost = base.cost
   card.life = base.life
   card.strength = base.strength ?? DEFAULT_CHARACTER_STRENGTH
+  if (base.charges === undefined) {
+    delete card.charges
+  } else {
+    card.charges = base.charges
+  }
   card.turnsStunned = 0
   card.didAct = false
 }

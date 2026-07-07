@@ -27,6 +27,7 @@ export interface CharacterCardInstance extends SharedCardInstance {
   type: 'character'
   life: number
   strength: number
+  charges?: number
   turnsStunned: number
   didAct: boolean
 }

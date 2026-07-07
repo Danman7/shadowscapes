@@ -699,6 +699,32 @@ test('deals strength damage, permits stunned defenders, and marks the attacker',
   expect(state.cards[defenderId]).toMatchObject({ life: 1, turnsStunned: 2 })
 })
 
+test('Haunt damages a damaged attacker before it can deal combat damage', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'templeGuard' },
+    inactivePlayer: { board: 'haunt' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const defenderId = initialState.players[defenderPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (preparedState.cards[attackerId].type !== 'character') {
+    throw new Error('Expected a character attacker')
+  }
+  preparedState.cards[attackerId].life = 1
+
+  const state = duelReducer(
+    preparedState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+
+  expect(state.players[attackerPlayerId].board).toEqual([])
+  expect(state.players[attackerPlayerId].discard).toEqual([attackerId])
+  expect(state.cards[defenderId]).toMatchObject({ life: 3, stack: 'board' })
+})
+
 test('rejects stunned, repeated, wrong-player, and non-character attacks', () => {
   const initialState = setupMockedDuel({
     activePlayer: { board: ['novice', 'yoraSkull'] },

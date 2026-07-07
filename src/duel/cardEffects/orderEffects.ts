@@ -10,7 +10,7 @@ import {
   drawCard,
   summonAllCopies,
 } from '../state/duelSlice'
-import { isCharacterInstance } from '../utils'
+import { getAdjacentBoardCardIds, isCharacterInstance } from '../utils'
 import { createOnPlayCardEffect } from './onPlayEffect'
 import { createTargetedCardEffect } from './targetedCardEffect'
 
@@ -103,24 +103,25 @@ const yoraSkullTargetedEffect = createTargetedCardEffect(
 
     if (opponent.board.length <= alliedBoard.length) return
 
-    const targetIndex = alliedBoard.indexOf(targetCardInstanceId)
-    const adjacentCardIds = [
-      alliedBoard[targetIndex - 1],
-      alliedBoard[targetIndex + 1],
-    ]
+    getAdjacentBoardCardIds(state, targetCardInstanceId).forEach(
+      (adjacentCardId) => {
+        const adjacentCard = state.cards[adjacentCardId]
 
-    adjacentCardIds.forEach((adjacentCardId) => {
-      const adjacentCard = state.cards[adjacentCardId]
+        if (
+          !isCharacterInstance(adjacentCard) ||
+          adjacentCard.ownerId !== player.id
+        ) {
+          return
+        }
 
-      if (!isCharacterInstance(adjacentCard)) return
-
-      dispatch(
-        adjustCharacterLife({
-          cardInstanceId: adjacentCardId,
-          amount: yoraIndirectBuff,
-        }),
-      )
-    })
+        dispatch(
+          adjustCharacterLife({
+            cardInstanceId: adjacentCardId,
+            amount: yoraIndirectBuff,
+          }),
+        )
+      },
+    )
   },
 )
 

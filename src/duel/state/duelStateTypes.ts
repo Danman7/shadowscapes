@@ -34,6 +34,16 @@ export interface AdjustCharacterLifePayload {
   amount: number
 }
 
+export interface AdjustCharacterChargesPayload {
+  cardInstanceId: CardInstanceId
+  amount: number
+}
+
+export interface DamageCharacterPayload {
+  cardInstanceId: CardInstanceId
+  amount: number
+}
+
 export interface AdjustPlayerIncomePayload {
   playerId: PlayerId
   amount: number

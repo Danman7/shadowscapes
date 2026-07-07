@@ -24,6 +24,7 @@ const populateCardFromInstance = (
       cost: instance.cost,
       life: instance.life,
       strength: instance.strength,
+      charges: instance.charges,
       turnsStunned: instance.turnsStunned,
     }
   }

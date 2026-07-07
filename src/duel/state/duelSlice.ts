@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getCardBase } from '../../cards'
 import {
   INCOME_PER_TURN,
   INITIAL_CARDS_DRAWN,
@@ -7,6 +8,7 @@ import {
 } from '../constants'
 import type {
   CardInstance,
+  CardInstanceId,
   CharacterCardInstance,
   DuelPlayer,
   DuelState,
@@ -25,9 +27,11 @@ import {
   shuffle,
 } from '../utils'
 import type {
+  AdjustCharacterChargesPayload,
   AdjustCharacterLifePayload,
   AdjustPlayerIncomePayload,
   AttackCharacterPayload,
+  DamageCharacterPayload,
   DrawCardPayload,
   InitiateDuelPayload,
   PlayCardPayload,
@@ -43,6 +47,43 @@ const decrementPlayerCharactersStun = (state: DuelState, playerId: string) => {
     const card = state.cards[cardId]
 
     if (isCharacterInstance(card)) reduceTurnsStunned(card)
+  })
+}
+
+const isDamagedCharacter = (card: CharacterCardInstance): boolean => {
+  const base = getCardBase(card.baseId)
+
+  return base.type === 'character' && card.life < base.life
+}
+
+const damageCharacterById = (
+  state: DuelState,
+  cardInstanceId: CardInstanceId,
+  amount: number,
+) => {
+  if (amount <= 0) return
+
+  const card = state.cards[cardInstanceId]
+  const player = card ? state.players[card.ownerId] : undefined
+
+  if (
+    !isCharacterInstance(card) ||
+    card.stack !== 'board' ||
+    !player?.board.includes(card.id)
+  ) {
+    return
+  }
+
+  card.life -= amount
+
+  if (card.life > 0) return
+
+  moveCard({
+    state,
+    playerId: card.ownerId,
+    cardId: card.id,
+    from: 'board',
+    to: 'discard',
   })
 }
 
@@ -195,6 +236,33 @@ export const duelSlice = createSlice({
 
       card.life += action.payload.amount
     },
+    adjustCharacterCharges: (
+      state,
+      action: PayloadAction<AdjustCharacterChargesPayload>,
+    ) => {
+      const card = state.cards[action.payload.cardInstanceId]
+      const player = card ? state.players[card.ownerId] : undefined
+
+      if (
+        !isCharacterInstance(card) ||
+        card.stack !== 'board' ||
+        !player?.board.includes(card.id)
+      ) {
+        return
+      }
+
+      card.charges = Math.max(0, (card.charges ?? 0) + action.payload.amount)
+    },
+    damageCharacter: (
+      state,
+      action: PayloadAction<DamageCharacterPayload>,
+    ) => {
+      damageCharacterById(
+        state,
+        action.payload.cardInstanceId,
+        action.payload.amount,
+      )
+    },
     adjustPlayerIncome: (
       state,
       action: PayloadAction<AdjustPlayerIncomePayload>,
@@ -286,17 +354,14 @@ export const duelSlice = createSlice({
       ] as CharacterCardInstance
 
       attacker.didAct = true
-      defender.life -= attacker.strength
 
-      if (defender.life <= 0) {
-        moveCard({
-          state,
-          playerId: defender.ownerId,
-          cardId: defender.id,
-          from: 'board',
-          to: 'discard',
-        })
+      if (defender.baseId === 'haunt' && isDamagedCharacter(attacker)) {
+        damageCharacterById(state, attacker.id, defender.strength)
+
+        if (attacker.stack !== 'board') return
       }
+
+      damageCharacterById(state, defender.id, attacker.strength)
     },
     passActTurn: (state) => {
       if (!state.actPlayerId || !canActPlayerPass(state)) return
@@ -346,6 +411,7 @@ export const duelSlice = createSlice({
 })
 
 export const {
+  adjustCharacterCharges,
   adjustCharacterLife,
   adjustPlayerIncome,
   attackCharacter,
@@ -353,6 +419,7 @@ export const {
   completePlayTurn,
   completeRefresh,
   drawForPlayers,
+  damageCharacter,
   drawCard,
   drawInitialHands,
   initiateDuelFromUsers,

@@ -13,6 +13,12 @@ test('displays the player name, coins and income', () => {
   expect(screen.getByText(`+${income}`)).toBeInTheDocument()
 })
 
+test('does not display income when it is zero', () => {
+  render(<PlayerBadge player={mockOrderPlayer} />)
+
+  expect(screen.queryByText('0')).not.toBeInTheDocument()
+})
+
 test('displays the active-player indicator only when active', () => {
   const { container, rerender } = render(
     <PlayerBadge player={mockOrderPlayer} isActive />,
