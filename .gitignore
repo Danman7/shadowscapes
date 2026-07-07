@@ -2,6 +2,7 @@ node_modules
 dist
 storybook-static
 coverage
+cards.csv
 .DS_Store
 *.local
 .env
