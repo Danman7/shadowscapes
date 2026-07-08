@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "export:cards": "bun scripts/exportCardsCsv.ts",
+    "simulate:duels": "bun scripts/runRandomAiDuels.ts",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint . --max-warnings=0",
     "lint": "bun run typecheck && bun run eslint",

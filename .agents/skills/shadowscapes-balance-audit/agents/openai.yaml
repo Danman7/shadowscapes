@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadowscapes Balance Audit"
+  short_description: "Review Shadowscapes simulation balance artifacts"
+  default_prompt: "Use $shadowscapes-balance-audit to review README, cards.csv, simulation JSON logs, and an aggregate Markdown report."
