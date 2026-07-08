@@ -10,6 +10,7 @@ import type {
   CardInstance,
   CardInstanceId,
   CharacterCardInstance,
+  DuelMode,
   DuelPlayer,
   DuelState,
 } from '../types'
@@ -34,6 +35,7 @@ import type {
   DamageCharacterPayload,
   DrawCardPayload,
   InitiateDuelPayload,
+  InitiateSoloRandomAiDuelPayload,
   PlayCardPayload,
   ResolvePendingPlayedCardPayload,
   SummonAllCopiesPayload,
@@ -55,6 +57,49 @@ const isDamagedCharacter = (card: CharacterCardInstance): boolean => {
   const base = getCardBase(card.baseId)
 
   return base.type === 'character' && card.life < base.life
+}
+
+const createDuelStateFromUsers = (
+  users: InitiateDuelPayload,
+  mode: DuelMode,
+): DuelState => {
+  const players: Record<string, DuelPlayer> = {}
+  const cards: Record<string, CardInstance> = {}
+  const playerOrder: DuelState['playerOrder'] =
+    Math.random() < 0.5
+      ? [users[0].id, users[1].id]
+      : [users[1].id, users[0].id]
+
+  users.forEach((user) => {
+    const deck = user.activeDeck.map((baseId) => {
+      const card = createCardInstance(baseId, user.id, 'deck')
+
+      cards[card.id] = card
+
+      return card.id
+    })
+
+    players[user.id] = {
+      id: user.id,
+      name: user.name,
+      coins: INITIAL_PLAYER_COINS,
+      income: 0,
+      deck: shuffle(deck),
+      hand: [],
+      board: [],
+      discard: [],
+      hasActedThisPhase: false,
+    }
+  })
+
+  return {
+    ...initialState,
+    mode,
+    playerOrder,
+    players,
+    cards,
+    actPlayerId: null,
+  }
 }
 
 const damageCharacterById = (
@@ -96,45 +141,17 @@ export const duelSlice = createSlice({
     initiateDuelFromUsers: (
       _state,
       action: PayloadAction<InitiateDuelPayload>,
-    ): DuelState => {
-      const users = action.payload
-      const players: Record<string, DuelPlayer> = {}
-      const cards: Record<string, CardInstance> = {}
-      const playerOrder: DuelState['playerOrder'] =
-        Math.random() < 0.5
-          ? [users[0].id, users[1].id]
-          : [users[1].id, users[0].id]
-
-      users.forEach((user) => {
-        const deck = user.activeDeck.map((baseId) => {
-          const card = createCardInstance(baseId, user.id, 'deck')
-
-          cards[card.id] = card
-
-          return card.id
-        })
-
-        players[user.id] = {
-          id: user.id,
-          name: user.name,
-          coins: INITIAL_PLAYER_COINS,
-          income: 0,
-          deck: shuffle(deck),
-          hand: [],
-          board: [],
-          discard: [],
-          hasActedThisPhase: false,
-        }
-      })
-
-      return {
-        ...initialState,
-        playerOrder,
-        players,
-        cards,
-        actPlayerId: null,
-      }
-    },
+    ): DuelState =>
+      createDuelStateFromUsers(action.payload, { type: 'hot-seat' }),
+    initiateSoloRandomAiDuel: (
+      _state,
+      action: PayloadAction<InitiateSoloRandomAiDuelPayload>,
+    ): DuelState =>
+      createDuelStateFromUsers([action.payload.human, action.payload.ai], {
+        type: 'solo-random-ai',
+        humanPlayerId: action.payload.human.id,
+        aiPlayerId: action.payload.ai.id,
+      }),
     drawInitialHands: (state) => {
       if (
         state.phase !== 'setup' ||
@@ -452,6 +469,7 @@ export const {
   drawCard,
   drawInitialHands,
   initiateDuelFromUsers,
+  initiateSoloRandomAiDuel,
   passActTurn,
   passPlayTurn,
   playCard,

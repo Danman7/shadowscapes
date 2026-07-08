@@ -1,7 +1,11 @@
 import { configureStore, createAction } from '@reduxjs/toolkit'
 
 import { setupMockedDuel } from '../../user'
-import { duelReducer, summonAllCopies, summonCard } from '../state'
+import { duelReducer, passActTurn, summonAllCopies, summonCard } from '../state'
+import {
+  createActPassCardEffect,
+  getPassedActCharacterIds,
+} from './actPassEffect'
 import {
   createActionEffectsMiddleware,
   type ActionEffectRegistration,
@@ -130,6 +134,88 @@ test('treats a newly added player as having an empty previous board', () => {
       getState: () => ({ duel }),
     }),
   ).toEqual(expectedCardIds)
+})
+
+test('act-pass helpers reject unrelated and unpassable actions', () => {
+  const duel = setupMockedDuel({ activePlayer: { board: 'burrick' } })
+  const context = {
+    action: { type: 'unrelated' },
+    previousState: { duel },
+    state: { duel },
+    dispatch: vi.fn(),
+    getState: () => ({ duel }),
+  }
+
+  expect(getPassedActCharacterIds(context)).toEqual([])
+
+  const unpassableDuel = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    phase: 'play',
+  })
+
+  expect(
+    getPassedActCharacterIds({
+      ...context,
+      action: passActTurn(),
+      previousState: { duel: unpassableDuel },
+      state: { duel: unpassableDuel },
+      getState: () => ({ duel: unpassableDuel }),
+    }),
+  ).toEqual([])
+})
+
+test('act-pass helpers require the reducer to mark the actor as passed', () => {
+  const previousDuel = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    phase: 'act',
+  })
+  const stateDuel = structuredClone(previousDuel)
+
+  expect(
+    getPassedActCharacterIds({
+      action: passActTurn(),
+      previousState: { duel: previousDuel },
+      state: { duel: stateDuel },
+      dispatch: vi.fn(),
+      getState: () => ({ duel: stateDuel }),
+    }),
+  ).toEqual([])
+})
+
+test('act-pass helpers reject when the post-pass actor is missing', () => {
+  const previousDuel = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    phase: 'act',
+  })
+  const playerId = previousDuel.playerOrder[0]
+  const stateDuel = structuredClone(previousDuel)
+
+  delete stateDuel.players[playerId]
+
+  expect(
+    getPassedActCharacterIds({
+      action: passActTurn(),
+      previousState: { duel: previousDuel },
+      state: { duel: stateDuel },
+      dispatch: vi.fn(),
+      getState: () => ({ duel: stateDuel }),
+    }),
+  ).toEqual([])
+})
+
+test('act-pass card effects ignore contexts without a previous actor', () => {
+  const duel = setupMockedDuel({ activePlayer: { board: 'burrick' } })
+  const effect = vi.fn()
+
+  createActPassCardEffect('burrick', effect).run({
+    action: passActTurn(),
+    previousState: { duel },
+    state: { duel },
+    dispatch: vi.fn(),
+    getState: () => ({ duel }),
+  })
+
+  expect(effect).not.toHaveBeenCalled()
 })
 
 test('runs one on-play effect for every successfully bulk-summoned card', () => {

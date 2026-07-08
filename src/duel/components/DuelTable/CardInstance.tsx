@@ -6,7 +6,7 @@ import {
 } from '../../hooks'
 import { playCard } from '../../state'
 import type { CardInstance as CardInstanceType } from '../../types'
-import { canCardBePlayed } from '../../utils'
+import { canCardBePlayed, isPlayerHumanControlled } from '../../utils'
 import { getDisplayCardFromInstance } from './getDisplayCardFromInstance'
 
 interface CardInstanceProps {
@@ -26,6 +26,7 @@ export const CardInstance = ({ instance }: CardInstanceProps) => {
     }
 
     if (instance.stack !== 'hand') return undefined
+    if (!isPlayerHumanControlled(duelState, instance.ownerId)) return undefined
 
     const payload = {
       playerId: instance.ownerId,

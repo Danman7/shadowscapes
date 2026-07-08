@@ -19,6 +19,7 @@ import {
   drawInitialHands,
   duelReducer,
   initiateDuelFromUsers,
+  initiateSoloRandomAiDuel,
   passActTurn,
   passPlayTurn,
   playCard,
@@ -71,6 +72,39 @@ test('initiates duel players from two users', () => {
     discard: [],
     hasActedThisPhase: false,
   })
+})
+
+test('initiates a solo random AI duel mode', () => {
+  const state = duelReducer(
+    undefined,
+    initiateSoloRandomAiDuel({
+      human: mockOrderUser,
+      ai: mockChaosUser,
+    }),
+  )
+
+  expect(state.mode).toEqual({
+    type: 'solo-random-ai',
+    humanPlayerId: mockOrderUser.id,
+    aiPlayerId: mockChaosUser.id,
+  })
+  expect(state.players[mockOrderUser.id]).toMatchObject({
+    id: mockOrderUser.id,
+    coins: INITIAL_PLAYER_COINS,
+    hand: [],
+    board: [],
+    discard: [],
+  })
+  expect(state.players[mockChaosUser.id]).toMatchObject({
+    id: mockChaosUser.id,
+    coins: INITIAL_PLAYER_COINS,
+    hand: [],
+    board: [],
+    discard: [],
+  })
+  expect(Object.keys(state.cards)).toHaveLength(
+    mockOrderUser.activeDeck.length + mockChaosUser.activeDeck.length,
+  )
 })
 
 test('selects the active player with a coin toss', () => {
@@ -688,6 +722,24 @@ test('rejects card copies from missing, invalid, or non-discard sources', () => 
   ).toEqual(initialState)
 })
 
+test('rejects a card copy when corrupted source data creates a non-character copy', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { discard: 'haunt' },
+  })
+  const playerId = initialState.playerOrder[0]
+  const sourceCardInstanceId = initialState.players[playerId].discard[0]
+  const corruptedState = structuredClone(initialState)
+
+  corruptedState.cards[sourceCardInstanceId].baseId = 'bookOfAsh'
+
+  expect(
+    duelReducer(
+      corruptedState,
+      summonCardCopy({ playerId, sourceCardInstanceId, life: 1 }),
+    ),
+  ).toEqual(corruptedState)
+})
+
 test('rejects summons with an invalid source, owner, or instance card', () => {
   const initialState = setupMockedDuel({
     activePlayer: { hand: ['novice', 'yoraSkull'] },
@@ -766,6 +818,17 @@ test('does not damage invalid or non-positive character targets', () => {
       damageCharacter({ cardInstanceId: boardCardId, amount: 0 }),
     ),
   ).toEqual(initialState)
+
+  const missingPlayerState = structuredClone(initialState)
+
+  delete missingPlayerState.players[playerId]
+
+  expect(
+    duelReducer(
+      missingPlayerState,
+      damageCharacter({ cardInstanceId: boardCardId, amount: 1 }),
+    ),
+  ).toEqual(missingPlayerState)
 })
 
 test('adjusts charges only for a character currently on its owner board', () => {
@@ -779,14 +842,30 @@ test('adjusts charges only for a character currently on its owner board', () => 
     initialState,
     adjustCharacterCharges({ cardInstanceId: boardCardId, amount: -1 }),
   )
+  const overAdjustedState = duelReducer(
+    initialState,
+    adjustCharacterCharges({ cardInstanceId: boardCardId, amount: -5 }),
+  )
 
   expect(adjustedState.cards[boardCardId]).toMatchObject({ charges: 0 })
+  expect(overAdjustedState.cards[boardCardId]).toMatchObject({ charges: 0 })
   expect(
     duelReducer(
       initialState,
       adjustCharacterCharges({ cardInstanceId: handCardId, amount: -1 }),
     ),
   ).toEqual(initialState)
+
+  const missingPlayerState = structuredClone(initialState)
+
+  delete missingPlayerState.players[playerId]
+
+  expect(
+    duelReducer(
+      missingPlayerState,
+      adjustCharacterCharges({ cardInstanceId: boardCardId, amount: 1 }),
+    ),
+  ).toEqual(missingPlayerState)
 })
 
 test('does not adjust income for a missing player', () => {

@@ -4,7 +4,9 @@ import {
   attackCharacter,
   passActTurn,
   playCard,
+  summonCard,
 } from '../state'
+import { chaosEffects } from './chaosEffects'
 import { selectCardEffectTarget } from './targetedCardEffect'
 
 test('Zombie summons the last discarded Zombie for free on play', () => {
@@ -70,6 +72,32 @@ test('Zombie safely skips its summon without a discarded Zombie', () => {
   })
 })
 
+test('Zombie safely skips its summon when effect state has no player', () => {
+  const previousDuel = setupMockedDuel({
+    activePlayer: { hand: 'zombie' },
+  })
+  const playerId = previousDuel.playerOrder[0]
+  const zombieId = previousDuel.players[playerId].hand[0]
+  const stateDuel = structuredClone(previousDuel)
+  const getStateDuel = structuredClone(previousDuel)
+  const dispatch = vi.fn()
+
+  stateDuel.players[playerId].hand = []
+  stateDuel.players[playerId].board = [zombieId]
+  stateDuel.cards[zombieId].stack = 'board'
+  delete getStateDuel.players[playerId]
+
+  chaosEffects[0].run({
+    action: summonCard({ playerId, cardInstanceId: zombieId, from: 'hand' }),
+    previousState: { duel: previousDuel },
+    state: { duel: stateDuel },
+    dispatch,
+    getState: () => ({ duel: getStateDuel }),
+  })
+
+  expect(dispatch).not.toHaveBeenCalled()
+})
+
 test('Book of Ash summons a one-life copy of a selected discarded character', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
@@ -120,6 +148,52 @@ test('Book of Ash summons a one-life copy of a selected discarded character', ()
   expect(state.pendingPlayedCardId).toBeNull()
 })
 
+test('Book of Ash targeted effect ignores missing books and invalid targets', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      board: 'bookOfAsh',
+      discard: 'haunt',
+    },
+    phase: 'play',
+  })
+  const playerId = state.playerOrder[0]
+  const bookId = state.players[playerId].board[0]
+  const targetId = state.players[playerId].discard[0]
+  const action = selectCardEffectTarget({ targetCardInstanceId: targetId })
+  const missingBookDuel = structuredClone(state)
+  const invalidTargetDuel = structuredClone(state)
+  const missingBookDispatch = vi.fn()
+  const invalidTargetDispatch = vi.fn()
+
+  state.pendingPlayedCardId = bookId
+  missingBookDuel.pendingPlayedCardId = bookId
+  invalidTargetDuel.pendingPlayedCardId = bookId
+  delete missingBookDuel.cards[bookId]
+  invalidTargetDuel.cards[targetId].type = 'instance'
+
+  chaosEffects[1].run({
+    action,
+    previousState: { duel: state },
+    state: { duel: state },
+    dispatch: missingBookDispatch,
+    getState: () => ({ duel: missingBookDuel }),
+  })
+  chaosEffects[1].run({
+    action,
+    previousState: { duel: state },
+    state: { duel: state },
+    dispatch: invalidTargetDispatch,
+    getState: () => ({ duel: invalidTargetDuel }),
+  })
+
+  expect(missingBookDispatch).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: 'duel/summonCardCopy' }),
+  )
+  expect(invalidTargetDispatch).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: 'duel/summonCardCopy' }),
+  )
+})
+
 test("Burrick spends a charge to damage the target's adjacent cards", () => {
   const initialState = setupMockedDuel({
     activePlayer: { board: 'burrick' },
@@ -146,6 +220,96 @@ test("Burrick spends a charge to damage the target's adjacent cards", () => {
     board: [defenderId],
     discard: [leftZombieId, rightZombieId],
   })
+})
+
+test('Burrick attack effect ignores unrelated and invalid attack actions', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = state.playerOrder
+  const attackerId = state.players[attackerPlayerId].board[0]
+  const defenderId = state.players[defenderPlayerId].board[0]
+  const invalidAttackState = { ...state, phase: 'play' as const }
+  const unrelatedDispatch = vi.fn()
+  const invalidAttackDispatch = vi.fn()
+
+  chaosEffects[2].run({
+    action: { type: 'unrelated' },
+    previousState: { duel: state },
+    state: { duel: state },
+    dispatch: unrelatedDispatch,
+    getState: () => ({ duel: state }),
+  })
+  chaosEffects[2].run({
+    action: attackCharacter({ attackerId, defenderId }),
+    previousState: { duel: invalidAttackState },
+    state: { duel: invalidAttackState },
+    dispatch: invalidAttackDispatch,
+    getState: () => ({ duel: invalidAttackState }),
+  })
+
+  expect(unrelatedDispatch).not.toHaveBeenCalled()
+  expect(invalidAttackDispatch).not.toHaveBeenCalled()
+})
+
+test('Burrick attack effect ignores valid attacks from non-Burrick characters', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = state.playerOrder
+  const attackerId = state.players[attackerPlayerId].board[0]
+  const defenderId = state.players[defenderPlayerId].board[0]
+  const dispatch = vi.fn()
+
+  chaosEffects[2].run({
+    action: attackCharacter({ attackerId, defenderId }),
+    previousState: { duel: state },
+    state: { duel: state },
+    dispatch,
+    getState: () => ({ duel: state }),
+  })
+
+  expect(dispatch).not.toHaveBeenCalled()
+})
+
+test('Burrick attack effect ignores invalid current attacker state', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: 'burrick' },
+    inactivePlayer: { board: 'zombie' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = state.playerOrder
+  const attackerId = state.players[attackerPlayerId].board[0]
+  const defenderId = state.players[defenderPlayerId].board[0]
+  const instanceAttackerState = structuredClone(state)
+  const discardedAttackerState = structuredClone(state)
+  const instanceDispatch = vi.fn()
+  const discardedDispatch = vi.fn()
+
+  instanceAttackerState.cards[attackerId].type = 'instance'
+  discardedAttackerState.cards[attackerId].stack = 'discard'
+
+  chaosEffects[2].run({
+    action: attackCharacter({ attackerId, defenderId }),
+    previousState: { duel: state },
+    state: { duel: instanceAttackerState },
+    dispatch: instanceDispatch,
+    getState: () => ({ duel: instanceAttackerState }),
+  })
+  chaosEffects[2].run({
+    action: attackCharacter({ attackerId, defenderId }),
+    previousState: { duel: state },
+    state: { duel: discardedAttackerState },
+    dispatch: discardedDispatch,
+    getState: () => ({ duel: discardedAttackerState }),
+  })
+
+  expect(instanceDispatch).not.toHaveBeenCalled()
+  expect(discardedDispatch).not.toHaveBeenCalled()
 })
 
 test('Burrick ignores adjacent non-character cards', () => {

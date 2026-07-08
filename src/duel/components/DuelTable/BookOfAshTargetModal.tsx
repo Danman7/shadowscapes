@@ -3,12 +3,13 @@ import { cardsText } from '../../../l10n'
 import { Modal } from '../../../shared/components'
 import { selectCardEffectTarget } from '../../cardEffects'
 import { useDuelDispatch, useDuelState } from '../../hooks'
-import { isCharacterInstance } from '../../utils'
+import { isCharacterInstance, isPlayerHumanControlled } from '../../utils'
 import { getDisplayCardFromInstance } from './getDisplayCardFromInstance'
 
 export const BookOfAshTargetModal = () => {
   const dispatch = useDuelDispatch()
-  const { cards, pendingPlayedCardId, players } = useDuelState()
+  const duelState = useDuelState()
+  const { cards, pendingPlayedCardId, players } = duelState
   const pendingCard = pendingPlayedCardId
     ? cards[pendingPlayedCardId]
     : undefined
@@ -25,6 +26,10 @@ export const BookOfAshTargetModal = () => {
   const discardedCharacterIds = player.discard.filter((cardId) =>
     isCharacterInstance(cards[cardId]),
   )
+  const canHumanSelectTarget = isPlayerHumanControlled(
+    duelState,
+    pendingCard.ownerId,
+  )
 
   if (discardedCharacterIds.length === 0) return null
 
@@ -35,8 +40,13 @@ export const BookOfAshTargetModal = () => {
           <Card
             card={getDisplayCardFromInstance(cards[cardId])}
             key={cardId}
-            onClick={() =>
-              dispatch(selectCardEffectTarget({ targetCardInstanceId: cardId }))
+            onClick={
+              canHumanSelectTarget
+                ? () =>
+                    dispatch(
+                      selectCardEffectTarget({ targetCardInstanceId: cardId }),
+                    )
+                : undefined
             }
           />
         ))}

@@ -2,6 +2,7 @@ import type { CardBaseId } from '../cards'
 import { EMPTY_PLAYER, INITIAL_PLAYER_COINS } from '../duel/constants'
 import type {
   CardInstance,
+  DuelMode,
   DuelPlayer,
   DuelState,
   Phase,
@@ -47,6 +48,7 @@ export interface MockedDuelPlayerOptions {
 export interface SetupMockedDuelOptions {
   activePlayer?: MockedDuelPlayerOptions
   inactivePlayer?: MockedDuelPlayerOptions
+  mode?: DuelMode
   phase?: Phase
 }
 
@@ -105,6 +107,7 @@ export const setupMockedDuel = (
   return {
     round: 0,
     phase: options.phase ?? 'setup',
+    mode: options.mode ?? { type: 'hot-seat' },
     playerOrder: [activePlayer.id, inactivePlayer.id],
     players: {
       [activePlayer.id]: activePlayer,

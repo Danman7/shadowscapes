@@ -4,7 +4,11 @@ import { selectCardEffectTarget } from '../cardEffects/targetedCardEffect'
 import { ATTACK_ANIMATION_DELAY_MS } from '../constants'
 import { attackCharacter } from '../state'
 import type { CardInstance, CardInstanceId } from '../types'
-import { canCardBeEffectTarget, isCharacterInstance } from '../utils'
+import {
+  canCardBeEffectTarget,
+  isCharacterInstance,
+  isPlayerHumanControlled,
+} from '../utils'
 import { useDuelDispatch } from './useDuelDispatch'
 import { useDuelState } from './useDuelState'
 
@@ -16,7 +20,7 @@ interface PendingAttack {
 export const useCombatCardInteractions = () => {
   const dispatch = useDuelDispatch()
   const duelState = useDuelState()
-  const { actPlayerId, pendingPlayedCardId, phase, players } = duelState
+  const { actPlayerId, cards, pendingPlayedCardId, phase, players } = duelState
   const [selectedAttackerId, setSelectedAttackerId] =
     useState<CardInstanceId | null>(null)
   const [pendingAttack, setPendingAttack] = useState<PendingAttack | null>(null)
@@ -45,6 +49,17 @@ export const useCombatCardInteractions = () => {
   const getBoardCardOnClick = useCallback(
     (card: CardInstance) => {
       if (phase === 'play') {
+        const pendingCard = pendingPlayedCardId
+          ? cards[pendingPlayedCardId]
+          : undefined
+
+        if (
+          !pendingCard ||
+          !isPlayerHumanControlled(duelState, pendingCard.ownerId)
+        ) {
+          return undefined
+        }
+
         if (!canCardBeEffectTarget(duelState, card.id)) return undefined
 
         return () =>
@@ -52,6 +67,7 @@ export const useCombatCardInteractions = () => {
       }
 
       if (phase !== 'act' || !actPlayerId || pendingAttack) return undefined
+      if (!isPlayerHumanControlled(duelState, actPlayerId)) return undefined
 
       if (card.ownerId === actPlayerId) {
         const actingPlayer = players[actPlayerId]
@@ -78,9 +94,11 @@ export const useCombatCardInteractions = () => {
     },
     [
       actPlayerId,
+      cards,
       dispatch,
       duelState,
       pendingAttack,
+      pendingPlayedCardId,
       phase,
       players,
       selectedAttackerId,

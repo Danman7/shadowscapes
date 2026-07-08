@@ -1,4 +1,5 @@
 import { setupMockedDuel } from '../../../user'
+import { canActPlayerPass } from './canActPlayerPass'
 import { canCharacterAttack } from './canCharacterAttack'
 import { getReadyCharacters } from './getReadyCharacters'
 
@@ -70,4 +71,17 @@ test('accepts a valid character attack', () => {
 
 test('returns no ready characters for a missing player', () => {
   expect(getReadyCharacters(setupMockedDuel(), 'missing')).toEqual([])
+})
+
+test('rejects act pass without a valid acting player', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: 'novice' },
+    phase: 'act',
+  })
+  const missingPlayerState = structuredClone(state)
+
+  missingPlayerState.actPlayerId = 'missing'
+
+  expect(canActPlayerPass({ ...state, actPlayerId: null })).toBe(false)
+  expect(canActPlayerPass(missingPlayerState)).toBe(false)
 })

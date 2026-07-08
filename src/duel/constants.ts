@@ -3,6 +3,7 @@ import { DuelPlayer, DuelState } from './types'
 export const INITIAL_DUAL_STATE: DuelState = {
   round: 0,
   phase: 'setup',
+  mode: { type: 'hot-seat' },
   playerOrder: ['', ''],
   players: {},
   cards: {},

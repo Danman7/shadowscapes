@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../../user'
-import { duelReducer, initiateDuelFromUsers } from '../../state'
+import {
+  duelReducer,
+  initiateDuelFromUsers,
+  initiateSoloRandomAiDuel,
+} from '../../state'
 import { DuelProvider } from '../DuelProvider/DuelProvider'
 import { DuelTable } from './DuelTable'
 
@@ -62,8 +66,30 @@ const InitialDuel = () => {
   )
 }
 
+const SoloRandomAiDuel = () => {
+  const [initialState] = useState(() =>
+    duelReducer(
+      undefined,
+      initiateSoloRandomAiDuel({
+        human: mockOrderUser,
+        ai: mockChaosUser,
+      }),
+    ),
+  )
+
+  return (
+    <DuelProvider preloadedState={initialState}>
+      <DuelTable />
+    </DuelProvider>
+  )
+}
+
 export const InitialState: Story = {
   render: () => <InitialDuel />,
+}
+
+export const SoloRandomAi: Story = {
+  render: () => <SoloRandomAiDuel />,
 }
 
 export const EveryStack: Story = {

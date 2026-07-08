@@ -1,6 +1,6 @@
 import { messages } from '../../l10n/en'
 import { passActTurn, passPlayTurn } from '../state'
-import { canActPlayerPass } from '../utils'
+import { canActPlayerPass, isPlayerHumanControlled } from '../utils'
 import { useCombatInteraction } from './useCombatInteraction'
 import { useDuelDispatch } from './useDuelDispatch'
 import { useDuelState } from './useDuelState'
@@ -17,7 +17,11 @@ export const usePhaseButton = (): PhaseButtonOptions | null => {
   const { phase, playerOrder, players } = duelState
   const activePlayer = players[playerOrder[0]]
 
-  if (phase === 'play' && !activePlayer.hasActedThisPhase) {
+  if (
+    phase === 'play' &&
+    isPlayerHumanControlled(duelState, activePlayer.id) &&
+    !activePlayer.hasActedThisPhase
+  ) {
     return {
       label: messages.ui.passLabel,
       onClick: () => dispatch(passPlayTurn()),
@@ -26,6 +30,8 @@ export const usePhaseButton = (): PhaseButtonOptions | null => {
 
   if (
     phase === 'act' &&
+    duelState.actPlayerId &&
+    isPlayerHumanControlled(duelState, duelState.actPlayerId) &&
     !combatInteraction.isAttackPending &&
     canActPlayerPass(duelState)
   ) {

@@ -1,5 +1,7 @@
 export * from './actPhase'
 export * from './cardInstance'
 export * from './createCardInstance'
+export * from './duelMode'
 export * from './playPhase'
+export * from './randomAi'
 export * from './shuffle'

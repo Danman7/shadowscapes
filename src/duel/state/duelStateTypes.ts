@@ -4,6 +4,11 @@ import type { CardInstanceId, PlayerId, Stack } from '../types'
 
 export type InitiateDuelPayload = [User, User]
 
+export interface InitiateSoloRandomAiDuelPayload {
+  human: User
+  ai: User
+}
+
 export interface PlayCardPayload {
   playerId: PlayerId
   cardInstanceId: CardInstanceId

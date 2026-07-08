@@ -6,8 +6,10 @@ import {
   usePlayTurnCompletion,
   usePlayersDraw,
   usePlayersInitialDraw,
+  useRandomAiController,
   useRefreshCompletion,
 } from '../../hooks'
+import { getTablePlayerIds } from '../../utils'
 import { CardInstance } from './CardInstance'
 import { BookOfAshTargetModal } from './BookOfAshTargetModal'
 import { CombatInteractionProvider } from './CombatInteractionProvider'
@@ -24,15 +26,19 @@ export const DuelTable = () => (
 const DuelTableContent = () => {
   usePlayersInitialDraw()
   usePlayersDraw()
+  useRandomAiController()
   usePlayTurnCompletion()
   useActTurnCompletion()
   useRefreshCompletion()
 
   const duelState = useDuelState()
   const { actPlayerId, cards, phase, playerOrder, players, round } = duelState
-  const activePlayer = players[playerOrder[0]]
-  const inactivePlayer = players[playerOrder[1]]
+  const { bottomPlayerId, topPlayerId } = getTablePlayerIds(duelState)
+  const bottomPlayer = players[bottomPlayerId]
+  const topPlayer = players[topPlayerId]
   const isActPhase = phase === 'act'
+  const isPlayerTakingTurn = (playerId: string) =>
+    isActPhase ? actPlayerId === playerId : playerOrder[0] === playerId
 
   return (
     <div
@@ -42,8 +48,8 @@ const DuelTableContent = () => {
       data-testid="duel-table"
     >
       <PlayerBadge
-        player={inactivePlayer}
-        isActive={isActPhase && actPlayerId === inactivePlayer.id}
+        player={topPlayer}
+        isActive={isPlayerTakingTurn(topPlayer.id)}
         className="absolute top-2 left-1/2 -translate-x-1/2"
       />
       {/* Row 1: inactive discard / hand / deck */}
@@ -51,10 +57,10 @@ const DuelTableContent = () => {
         className="col-1 row-1 grid place-items-center"
         data-testid="inactive-discard"
       >
-        {inactivePlayer.discard.length > 0 && (
+        {topPlayer.discard.length > 0 && (
           <FaceDownStack
             label={messages.ui.discardLabel}
-            amount={inactivePlayer.discard.length}
+            amount={topPlayer.discard.length}
           />
         )}
       </section>
@@ -63,7 +69,7 @@ const DuelTableContent = () => {
         className="player-hand player-hand--inactive col-2 row-1"
         data-testid="inactive-hand"
       >
-        {inactivePlayer.hand.map((cardId) => (
+        {topPlayer.hand.map((cardId) => (
           <CardBack key={cardId} />
         ))}
       </section>
@@ -72,10 +78,10 @@ const DuelTableContent = () => {
         className="col-3 row-1 grid place-items-center"
         data-testid="inactive-deck"
       >
-        {inactivePlayer.deck.length > 0 && (
+        {topPlayer.deck.length > 0 && (
           <FaceDownStack
             label={messages.ui.deckLabel}
-            amount={inactivePlayer.deck.length}
+            amount={topPlayer.deck.length}
           />
         )}
       </section>
@@ -85,7 +91,7 @@ const DuelTableContent = () => {
         className="col-[1/4] row-2 justify-center items-end flex gap-2"
         data-testid="inactive-board"
       >
-        {inactivePlayer.board.map((cardId) => (
+        {topPlayer.board.map((cardId) => (
           <CardInstance key={cardId} instance={cards[cardId]} />
         ))}
       </section>
@@ -104,7 +110,7 @@ const DuelTableContent = () => {
         className="col-[1/4] row-4 flex justify-center gap-2"
         data-testid="active-board"
       >
-        {activePlayer.board.map((cardId) => (
+        {bottomPlayer.board.map((cardId) => (
           <CardInstance key={cardId} instance={cards[cardId]} />
         ))}
       </section>
@@ -114,10 +120,10 @@ const DuelTableContent = () => {
         className="col-1 row-5 grid place-items-center"
         data-testid="active-discard"
       >
-        {activePlayer.discard.length > 0 && (
+        {bottomPlayer.discard.length > 0 && (
           <FaceDownStack
             label={messages.ui.discardLabel}
-            amount={activePlayer.discard.length}
+            amount={bottomPlayer.discard.length}
           />
         )}
       </section>
@@ -126,7 +132,7 @@ const DuelTableContent = () => {
         className="player-hand player-hand--active col-2 row-5"
         data-testid="active-hand"
       >
-        {activePlayer.hand.map((cardId) => (
+        {bottomPlayer.hand.map((cardId) => (
           <CardInstance key={cardId} instance={cards[cardId]} />
         ))}
       </section>
@@ -135,17 +141,17 @@ const DuelTableContent = () => {
         className="col-3 row-5 grid place-items-center"
         data-testid="active-deck"
       >
-        {activePlayer.deck.length > 0 && (
+        {bottomPlayer.deck.length > 0 && (
           <FaceDownStack
             label={messages.ui.deckLabel}
-            amount={activePlayer.deck.length}
+            amount={bottomPlayer.deck.length}
           />
         )}
       </section>
 
       <PlayerBadge
-        player={activePlayer}
-        isActive={!isActPhase || actPlayerId === activePlayer.id}
+        player={bottomPlayer}
+        isActive={isPlayerTakingTurn(bottomPlayer.id)}
         className="absolute bottom-2 left-1/2 -translate-x-1/2"
       />
 

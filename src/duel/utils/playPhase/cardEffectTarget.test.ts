@@ -10,6 +10,49 @@ test('hasCardEffectTarget returns false for a missing player', () => {
   expect(hasCardEffectTarget(state, 'yoraSkull', 'missing-player')).toBe(false)
 })
 
+test('canCardBeEffectTarget rejects invalid pending and target state', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      board: ['yoraSkull', 'novice'],
+    },
+    phase: 'play',
+  })
+  const playerId = state.playerOrder[0]
+  const [skullId, noviceId] = state.players[playerId].board
+
+  state.pendingPlayedCardId = skullId
+
+  expect(
+    canCardBeEffectTarget({ ...state, phase: 'act' }, noviceId),
+  ).toBe(false)
+  expect(
+    canCardBeEffectTarget(
+      { ...state, pendingPlayedCardId: null },
+      noviceId,
+    ),
+  ).toBe(false)
+  expect(canCardBeEffectTarget(state, 'missing-card')).toBe(false)
+
+  const pendingInHandState = setupMockedDuel({
+    activePlayer: {
+      hand: 'yoraSkull',
+      board: 'novice',
+    },
+    phase: 'play',
+  })
+  const pendingInHandPlayerId = pendingInHandState.playerOrder[0]
+
+  pendingInHandState.pendingPlayedCardId =
+    pendingInHandState.players[pendingInHandPlayerId].hand[0]
+
+  expect(
+    canCardBeEffectTarget(
+      pendingInHandState,
+      pendingInHandState.players[pendingInHandPlayerId].board[0],
+    ),
+  ).toBe(false)
+})
+
 test('Book of Ash targets only owner discard characters', () => {
   const state = setupMockedDuel({
     activePlayer: {

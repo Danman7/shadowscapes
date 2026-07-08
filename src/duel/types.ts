@@ -11,6 +11,14 @@ export const phases = ['setup', 'draw', 'play', 'act', 'refresh'] as const
 
 export type Phase = (typeof phases)[number]
 
+export type DuelMode =
+  | { type: 'hot-seat' }
+  | {
+      type: 'solo-random-ai'
+      humanPlayerId: PlayerId
+      aiPlayerId: PlayerId
+    }
+
 interface SharedCardInstance {
   id: CardInstanceId
   baseId: CardBaseId
@@ -49,6 +57,7 @@ export interface DuelPlayer {
 export interface DuelState {
   round: number
   phase: Phase
+  mode: DuelMode
   playerOrder: [PlayerId, PlayerId]
   players: Record<PlayerId, DuelPlayer>
   cards: Record<CardInstanceId, CardInstance>
