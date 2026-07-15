@@ -65,7 +65,7 @@ This section describes the current implementation so it can be used as context f
 
 - A duel has two players.
 - Player order is randomized when the duel is initiated.
-- Each player starts with `30` coins.
+- Each player starts with `20` coins.
 - Each player starts with `0` income.
 - Each user's `activeDeck` is converted into unique card instances, assigned to that player, placed in the deck stack, and shuffled.
 - The duel starts at round `0` in the `setup` phase.
@@ -106,14 +106,20 @@ The phase model is `setup`, `draw`, `play`, `act`, and `refresh`.
 2. `draw`: Both players draw `1` card from deck to hand. The current active player's character stun counters are reduced, then the duel moves to `play`.
 3. `play`: Players alternate one play turn each. The active player may play one affordable card from hand or pass. Playing a card spends coins equal to its current cost and marks that player as having acted for the phase. After the active player's play turn completes, player order rotates. When both players have acted, the duel moves to `act`.
 4. `act`: Players take act turns using `actPlayerId`. A ready character can attack an opposing board character. Attacking marks the attacker as having acted and deals damage equal to its strength. Defenders with `0` or less life move to discard. A player may pass if they still have ready characters, and the turn also completes automatically when they have no ready characters. When both players have acted, the duel moves to `refresh`.
-5. `refresh`: The round increments by `1`. Both players reset `hasActedThisPhase`. Characters reset `didAct` to `false`. Players with positive income gain `1` coin. The duel then returns to `draw`.
+5. `refresh`: The round increments by `1`. Both players reset `hasActedThisPhase`. Characters reset `didAct` to `false`. Each player gains coins equal to their income, capped at `3` coins per refresh. The duel then returns to `draw`.
 
 ### Economy
 
-- Starting coins: `30`.
+- Starting coins: `20`.
 - Starting income: `0`.
 - Card costs are paid when cards are played from hand.
-- Refresh currently grants `1` coin to any player whose income is greater than `0`. The implementation does not currently add the income value itself as coins.
+- Refresh grants coins equal to the player's income, with a minimum gain of `0` and a maximum gain of `3` coins.
+
+### Victory
+
+- A player loses immediately when they spend their last coin and reach `0` coins. The opponent becomes the winner and the duel becomes terminal.
+- The duel table shows the winner in a non-dismissible modal. Starting a new duel through the existing initiation actions resets the winner.
+- Simulations treat coin depletion as the primary win condition. If a simulation instead stops because both decks are empty or it reaches its step limit, remaining coins decide the winner first, followed by the total current life of character cards on board. Equal coins and board life produce a tie.
 
 ### Current Card Bases
 
@@ -126,12 +132,12 @@ Order cards:
 
 Chaos cards:
 
-- `zombie`: Character, cost `1`, life `1`, default strength `1`, Undead, common.
-- `burrick`: Character, cost `2`, life `2`, default strength `1`, Beast, common.
-- `haunt`: Character, cost `3`, life `3`, strength `2`, Undead and Hammerite, common.
-- `bookOfAsh`: Instance, cost `3`, Necromancer artifact, elite.
+- `zombie`: Character, cost `1`, life `1`, default strength `1`, Undead, common. On play, summons the last Zombie in its owner's discard pile.
+- `burrick`: Character, cost `2`, life `2`, default strength `1`, Beast, common. Gains a charge when passing. When attacking with a charge, spends it to also damage characters adjacent to the target.
+- `haunt`: Character, cost `3`, life `3`, strength `2`, Undead and Hammerite, common. When attacked by a damaged character, deals its damage first and cancels the incoming attack if that attacker is defeated.
+- `bookOfAsh`: Instance, cost `3`, Necromancer artifact, elite. Targets a discarded character and summons a stunned, `1`-life copy of it.
 
-The Chaos cards have base definitions and display text, but only Order effects are currently registered in the card effects middleware.
+The current Order and Chaos card mechanics are implemented. Both factions' effect registrations are included in the card effects middleware.
 
 ### Current Deck Mocks
 
@@ -140,12 +146,9 @@ The Chaos cards have base definitions and display text, but only Order effects a
 
 ### Current Design Gaps For Gameplay Advice
 
-- There is no win/loss condition yet.
 - There is no player health total yet.
 - Deck-out behavior is only whatever `moveCard` can naturally do when a deck is empty.
 - Only board character combat is implemented; direct player attacks are not.
-- Chaos card rules in display text are not fully implemented yet.
-- Income currently behaves as a positive-income flag for refresh coin gain rather than a scaling resource value.
 
 ## License
 

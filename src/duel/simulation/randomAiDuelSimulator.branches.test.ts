@@ -24,6 +24,7 @@ const createDuelState = (
   round: 0,
   phase: 'play',
   mode: { type: 'hot-seat' },
+  winnerId: null,
   playerOrder: [...playerIds],
   players: {
     [playerIds[0]]: createPlayer(playerIds[0]),

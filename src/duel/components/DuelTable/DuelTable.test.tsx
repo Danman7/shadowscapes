@@ -17,13 +17,14 @@ const renderDuelTable = (
   )
 
 const DuelStateProbe = () => {
-  const { actPlayerId, phase, playerOrder } = useDuelState()
+  const { actPlayerId, phase, playerOrder, winnerId } = useDuelState()
 
   return (
     <>
       <output data-testid="duel-phase">{phase}</output>
       <output data-testid="active-player-id">{playerOrder[0]}</output>
       <output data-testid="act-player-id">{actPlayerId}</output>
+      <output data-testid="winner-id">{winnerId}</output>
     </>
   )
 }
@@ -201,7 +202,7 @@ test('only makes affordable active-hand cards playable', () => {
 test('pays for a character, keeps it on board, and hands over after one second', () => {
   vi.useFakeTimers()
   const initialState = setupMockedDuel({
-    activePlayer: { coins: 1, hand: 'novice' },
+    activePlayer: { coins: 2, hand: 'novice' },
     phase: 'play',
   })
   const firstPlayerId = initialState.playerOrder[0]
@@ -233,12 +234,43 @@ test('pays for a character, keeps it on board, and hands over after one second',
   ).toBeInTheDocument()
 })
 
+test('shows a terminal winner modal and stops automation after the last coin is spent', () => {
+  vi.useFakeTimers()
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 3, hand: 'yoraSkull', board: 'novice' },
+    phase: 'play',
+  })
+  const [loserId, winnerId] = initialState.playerOrder
+  const winnerName = initialState.players[winnerId].name
+
+  renderDuelTable(initialState)
+
+  fireEvent.click(screen.getByRole('button', { name: "Saint Yora's Skull card" }))
+
+  const dialog = screen.getByRole('dialog', { name: `${winnerName} wins!` })
+
+  expect(dialog).toHaveTextContent(messages.ui.duelCompleteMessage)
+  expect(
+    within(dialog).queryByRole('button', { name: messages.ui.closeLabel }),
+  ).toBeNull()
+  expect(screen.getByTestId('winner-id')).toHaveTextContent(winnerId)
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(loserId)
+  expect(
+    screen.queryByRole('dialog', { name: "Saint Yora's Skull" }),
+  ).toBeNull()
+
+  act(() => vi.advanceTimersByTime(2000))
+
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(loserId)
+  expect(screen.getByTestId('duel-phase')).toHaveTextContent('play')
+})
+
 test('keeps a targeted instance pending until its board target is selected', () => {
   vi.useFakeTimers()
 
   renderDuelTable(
     setupMockedDuel({
-      activePlayer: { coins: 3, hand: 'yoraSkull', board: 'novice' },
+      activePlayer: { coins: 4, hand: 'yoraSkull', board: 'novice' },
       phase: 'play',
     }),
   )

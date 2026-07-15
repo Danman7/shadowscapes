@@ -39,6 +39,14 @@ bookOfAshSelectionState.pendingPlayedCardId =
     bookOfAshSelectionState.playerOrder[0]
   ].board[0]
 
+const winnerState = setupMockedDuel({
+  activePlayer: { coins: 0, board: 'novice' },
+  inactivePlayer: { board: 'haunt' },
+  phase: 'play',
+})
+
+winnerState.winnerId = winnerState.playerOrder[1]
+
 const meta = {
   title: 'Duel/Duel Table',
   component: DuelTable,
@@ -103,6 +111,14 @@ export const EveryStack: Story = {
 export const BookOfAshSelection: Story = {
   render: () => (
     <DuelProvider preloadedState={bookOfAshSelectionState}>
+      <DuelTable />
+    </DuelProvider>
+  ),
+}
+
+export const Winner: Story = {
+  render: () => (
+    <DuelProvider preloadedState={winnerState}>
       <DuelTable />
     </DuelProvider>
   ),

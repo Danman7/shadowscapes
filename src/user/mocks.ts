@@ -108,6 +108,7 @@ export const setupMockedDuel = (
     round: 0,
     phase: options.phase ?? 'setup',
     mode: options.mode ?? { type: 'hot-seat' },
+    winnerId: null,
     playerOrder: [activePlayer.id, inactivePlayer.id],
     players: {
       [activePlayer.id]: activePlayer,

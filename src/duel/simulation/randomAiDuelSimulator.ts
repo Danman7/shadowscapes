@@ -31,7 +31,13 @@ import { withSeededRandom } from './seededRandom'
 export type SimulationPlayerKey = 'player1' | 'player2'
 export type SimulationPlayerLabels = Record<SimulationPlayerKey, string>
 export type RandomAiDuelOutcomeReason = 'coin-zero' | 'decks-empty' | 'max-steps'
-export type RandomAiDuelCoinWinner = SimulationPlayerKey | 'tie'
+export type RandomAiDuelWinner = SimulationPlayerKey | 'tie'
+export type RandomAiDuelCoinWinner = RandomAiDuelWinner
+export type RandomAiDuelWinCondition =
+  | 'coin-zero'
+  | 'coins-left'
+  | 'board-life'
+  | 'tie'
 export type RandomAiDuelEventType =
   | 'draw'
   | 'play'
@@ -70,6 +76,7 @@ export interface SimulatedPlayerFinalState {
   deckCount: number
   handCount: number
   boardCount: number
+  boardLife: number
   discardCount: number
   boardCards: CardBaseId[]
   handCards: CardBaseId[]
@@ -87,13 +94,18 @@ export interface RandomAiDuelRecord {
   finalRound: number
   steps: number
   outcomeReason: RandomAiDuelOutcomeReason
+  winner: RandomAiDuelWinner
+  winCondition: RandomAiDuelWinCondition
   coinWinner: RandomAiDuelCoinWinner
 }
 
 export interface RandomAiDuelBatchAggregate {
   outcomeReasons: Record<RandomAiDuelOutcomeReason, number>
+  winners: Record<RandomAiDuelWinner, number>
+  winConditions: Record<RandomAiDuelWinCondition, number>
   coinWinners: Record<RandomAiDuelCoinWinner, number>
   averageFinalCoins: Record<SimulationPlayerKey, number>
+  averageFinalBoardLife: Record<SimulationPlayerKey, number>
   averageRounds: number
   averageSteps: number
   playedCards: Record<SimulationPlayerKey, CardPlayCounts>
@@ -182,6 +194,13 @@ const getPlayerCardBaseIds = (
   stack: Stack,
 ): CardBaseId[] => player[stack].map((cardId) => state.cards[cardId].baseId)
 
+export const getPlayerBoardLife = (state: DuelState, player: DuelPlayer): number =>
+  player.board.reduce((totalLife, cardId) => {
+    const card = state.cards[cardId]
+
+    return card?.type === 'character' ? totalLife + card.life : totalLife
+  }, 0)
+
 const summarizePlayer = (
   state: DuelState,
   playerKey: SimulationPlayerKey,
@@ -198,6 +217,7 @@ const summarizePlayer = (
     deckCount: player.deck.length,
     handCount: player.hand.length,
     boardCount: player.board.length,
+    boardLife: getPlayerBoardLife(state, player),
     discardCount: player.discard.length,
     boardCards: getPlayerCardBaseIds(state, player, 'board'),
     handCards: getPlayerCardBaseIds(state, player, 'hand'),
@@ -210,7 +230,9 @@ export const getRandomAiDuelStopReason = (
 ): RandomAiDuelOutcomeReason | null => {
   const players = state.playerOrder.map((playerId) => state.players[playerId])
 
-  if (players.some((player) => player.coins <= 0)) return 'coin-zero'
+  if (state.winnerId || players.some((player) => player.coins <= 0)) {
+    return 'coin-zero'
+  }
   if (players.every((player) => player.deck.length === 0)) return 'decks-empty'
 
   return null
@@ -223,6 +245,50 @@ const getCoinWinner = (
   if (finalPlayers.player2.coins > finalPlayers.player1.coins) return 'player2'
 
   return 'tie'
+}
+
+export interface RandomAiDuelWinnerResult {
+  winner: RandomAiDuelWinner
+  winCondition: RandomAiDuelWinCondition
+}
+
+export const getRandomAiDuelWinner = (
+  finalPlayers: Record<SimulationPlayerKey, SimulatedPlayerFinalState>,
+  outcomeReason: RandomAiDuelOutcomeReason,
+): RandomAiDuelWinnerResult => {
+  const { player1, player2 } = finalPlayers
+
+  if (outcomeReason === 'coin-zero') {
+    const player1Depleted = player1.coins <= 0
+    const player2Depleted = player2.coins <= 0
+
+    if (player1Depleted !== player2Depleted) {
+      return {
+        winner: player1Depleted ? 'player2' : 'player1',
+        winCondition: 'coin-zero',
+      }
+    }
+
+    if (player1Depleted && player2Depleted) {
+      return { winner: 'tie', winCondition: 'tie' }
+    }
+  }
+
+  if (player1.coins !== player2.coins) {
+    return {
+      winner: player1.coins > player2.coins ? 'player1' : 'player2',
+      winCondition: 'coins-left',
+    }
+  }
+
+  if (player1.boardLife !== player2.boardLife) {
+    return {
+      winner: player1.boardLife > player2.boardLife ? 'player1' : 'player2',
+      winCondition: 'board-life',
+    }
+  }
+
+  return { winner: 'tie', winCondition: 'tie' }
 }
 
 const mergePlayCounts = (
@@ -297,6 +363,10 @@ export const simulateRandomAiDuel = ({
       player1: summarizePlayer(finalState, 'player1', users[0].id),
       player2: summarizePlayer(finalState, 'player2', users[1].id),
     }
+    const { winner, winCondition } = getRandomAiDuelWinner(
+      finalPlayers,
+      finalReason,
+    )
 
     addEvent({ type: 'end', reason: finalReason })
 
@@ -311,6 +381,8 @@ export const simulateRandomAiDuel = ({
       finalRound: finalState.round,
       steps,
       outcomeReason: finalReason,
+      winner,
+      winCondition,
       coinWinner: getCoinWinner(finalPlayers),
     }
   })
@@ -525,9 +597,22 @@ const aggregateRandomAiDuels = (
     player2: 0,
     tie: 0,
   }
+  const winners = {
+    player1: 0,
+    player2: 0,
+    tie: 0,
+  }
+  const winConditions = {
+    'coin-zero': 0,
+    'coins-left': 0,
+    'board-life': 0,
+    tie: 0,
+  }
 
   duels.forEach((duel) => {
     outcomeReasons[duel.outcomeReason] += 1
+    winners[duel.winner] += 1
+    winConditions[duel.winCondition] += 1
     coinWinners[duel.coinWinner] += 1
     mergePlayCounts(playedCards, duel.playedCards)
   })
@@ -536,6 +621,8 @@ const aggregateRandomAiDuels = (
 
   return {
     outcomeReasons,
+    winners,
+    winConditions,
     coinWinners,
     averageFinalCoins: {
       player1:
@@ -544,6 +631,18 @@ const aggregateRandomAiDuels = (
       player2:
         duels.reduce((sum, duel) => sum + duel.finalPlayers.player2.coins, 0) /
         divisor,
+    },
+    averageFinalBoardLife: {
+      player1:
+        duels.reduce(
+          (sum, duel) => sum + duel.finalPlayers.player1.boardLife,
+          0,
+        ) / divisor,
+      player2:
+        duels.reduce(
+          (sum, duel) => sum + duel.finalPlayers.player2.boardLife,
+          0,
+        ) / divisor,
     },
     averageRounds:
       duels.reduce((sum, duel) => sum + duel.finalRound, 0) / divisor,
@@ -579,6 +678,12 @@ const formatCoinWinner = (
 ): string =>
   coinWinner === 'tie' ? coinWinner : formatPlayerLabel(playerLabels, coinWinner)
 
+const formatWinner = (
+  playerLabels: SimulationPlayerLabels,
+  winner: RandomAiDuelWinner,
+): string =>
+  winner === 'tie' ? winner : formatPlayerLabel(playerLabels, winner)
+
 export const formatRandomAiDuelBatchMarkdown = (
   result: RandomAiDuelBatchResult,
 ): string => {
@@ -595,8 +700,11 @@ export const formatRandomAiDuelBatchMarkdown = (
     '## Aggregate',
     '',
     `Outcome reasons: coin-zero ${result.aggregate.outcomeReasons['coin-zero']}, decks-empty ${result.aggregate.outcomeReasons['decks-empty']}, max-steps ${result.aggregate.outcomeReasons['max-steps']}`,
-    `Coin winners: ${player1Label} ${result.aggregate.coinWinners.player1}, ${player2Label} ${result.aggregate.coinWinners.player2}, tie ${result.aggregate.coinWinners.tie}`,
+    `Winners: ${player1Label} ${result.aggregate.winners.player1}, ${player2Label} ${result.aggregate.winners.player2}, tie ${result.aggregate.winners.tie}`,
+    `Win conditions: coin-zero ${result.aggregate.winConditions['coin-zero']}, coins-left ${result.aggregate.winConditions['coins-left']}, board-life ${result.aggregate.winConditions['board-life']}, tie ${result.aggregate.winConditions.tie}`,
+    `Coin winners (diagnostic): ${player1Label} ${result.aggregate.coinWinners.player1}, ${player2Label} ${result.aggregate.coinWinners.player2}, tie ${result.aggregate.coinWinners.tie}`,
     `Average final coins: ${player1Label} ${formatNumber(result.aggregate.averageFinalCoins.player1)}, ${player2Label} ${formatNumber(result.aggregate.averageFinalCoins.player2)}`,
+    `Average final board life: ${player1Label} ${formatNumber(result.aggregate.averageFinalBoardLife.player1)}, ${player2Label} ${formatNumber(result.aggregate.averageFinalBoardLife.player2)}`,
     `Average rounds: ${formatNumber(result.aggregate.averageRounds)}`,
     `Average steps: ${formatNumber(result.aggregate.averageSteps)}`,
     '',
@@ -607,13 +715,13 @@ export const formatRandomAiDuelBatchMarkdown = (
     '',
     '## Duel Outcomes',
     '',
-    `| Duel | Reason | Coin winner | ${player1Label} coins | ${player2Label} coins | Rounds | Steps | ${player1Label} played | ${player2Label} played |`,
-    '| --- | --- | --- | ---: | ---: | ---: | ---: | --- | --- |',
+    `| Duel | Reason | Winner | Win condition | ${player1Label} coins | ${player1Label} board life | ${player2Label} coins | ${player2Label} board life | Coin winner | Rounds | Steps | ${player1Label} played | ${player2Label} played |`,
+    '| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | --- | --- |',
   ]
 
   result.duels.forEach((duel) => {
     lines.push(
-      `| ${duel.duelIndex + 1} | ${duel.outcomeReason} | ${formatCoinWinner(result.playerLabels, duel.coinWinner)} | ${duel.finalPlayers.player1.coins} | ${duel.finalPlayers.player2.coins} | ${duel.finalRound} | ${duel.steps} | ${formatCardCounts(duel.playedCards.player1)} | ${formatCardCounts(duel.playedCards.player2)} |`,
+      `| ${duel.duelIndex + 1} | ${duel.outcomeReason} | ${formatWinner(result.playerLabels, duel.winner)} | ${duel.winCondition} | ${duel.finalPlayers.player1.coins} | ${duel.finalPlayers.player1.boardLife} | ${duel.finalPlayers.player2.coins} | ${duel.finalPlayers.player2.boardLife} | ${formatCoinWinner(result.playerLabels, duel.coinWinner)} | ${duel.finalRound} | ${duel.steps} | ${formatCardCounts(duel.playedCards.player1)} | ${formatCardCounts(duel.playedCards.player2)} |`,
     )
   })
 

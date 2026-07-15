@@ -67,7 +67,7 @@ test('AI plays a random affordable card during its play turn', () => {
   vi.useFakeTimers()
   vi.spyOn(Math, 'random').mockReturnValue(0)
   const state = setupMockedDuel({
-    inactivePlayer: { coins: 1, hand: ['zombie', 'haunt'] },
+    inactivePlayer: { coins: 2, hand: ['zombie', 'haunt'] },
     mode: soloMode,
     phase: 'play',
   })
@@ -141,7 +141,7 @@ test("AI selects a random allied board target for Saint Yora's Skull", () => {
   vi.spyOn(Math, 'random').mockReturnValue(0)
   const state = setupMockedDuel({
     inactivePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: 'zombie',
     },
@@ -189,7 +189,7 @@ test('AI selects a random discarded character target for Book of Ash', () => {
   vi.spyOn(Math, 'random').mockReturnValue(0)
   const state = setupMockedDuel({
     inactivePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'bookOfAsh',
       discard: ['haunt', 'zombie'],
     },

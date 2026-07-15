@@ -58,6 +58,7 @@ export interface DuelState {
   round: number
   phase: Phase
   mode: DuelMode
+  winnerId: PlayerId | null
   playerOrder: [PlayerId, PlayerId]
   players: Record<PlayerId, DuelPlayer>
   cards: Record<CardInstanceId, CardInstance>

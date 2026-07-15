@@ -18,6 +18,8 @@ export const messages = {
     closeLabel: 'Close',
     deckLabel: 'Deck',
     discardLabel: 'Disc.',
+    duelCompleteMessage: 'The duel is over.',
+    duelWinnerTitle: '{name} wins!',
     passLabel: 'Pass',
   },
   phase: {

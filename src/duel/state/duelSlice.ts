@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { UnknownAction } from '@reduxjs/toolkit'
 import { getCardBase } from '../../cards'
 import {
-  INCOME_PER_TURN,
   INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
   INITIAL_DUAL_STATE as initialState,
+  MAX_REFRESH_INCOME,
 } from '../constants'
 import type {
   CardInstance,
@@ -203,6 +204,12 @@ export const duelSlice = createSlice({
       })
       player.hasActedThisPhase = true
       state.pendingPlayedCardId = cardInstanceId
+
+      if (player.coins === 0) {
+        state.winnerId =
+          state.playerOrder.find((orderedPlayerId) => orderedPlayerId !== playerId) ??
+          null
+      }
     },
     summonCard: (state, action: PayloadAction<SummonCardPayload>) => {
       const { playerId, cardInstanceId, from } = action.payload
@@ -442,7 +449,7 @@ export const duelSlice = createSlice({
         const player = state.players[playerId]
 
         player.hasActedThisPhase = false
-        if (player.income > 0) player.coins += INCOME_PER_TURN
+        player.coins += Math.min(Math.max(player.income, 0), MAX_REFRESH_INCOME)
 
         player.board.forEach((cardId) => {
           const card = state.cards[cardId]
@@ -479,4 +486,17 @@ export const {
   summonCardCopy,
 } = duelSlice.actions
 
-export const duelReducer = duelSlice.reducer
+export const duelReducer = (
+  state: DuelState | undefined,
+  action: UnknownAction,
+): DuelState => {
+  if (
+    state?.winnerId &&
+    !initiateDuelFromUsers.match(action) &&
+    !initiateSoloRandomAiDuel.match(action)
+  ) {
+    return state
+  }
+
+  return duelSlice.reducer(state, action)
+}

@@ -1,8 +1,8 @@
 import {
   DEFAULT_CHARACTER_STRENGTH,
-  INCOME_PER_TURN,
   INITIAL_CARDS_DRAWN,
   INITIAL_PLAYER_COINS,
+  MAX_REFRESH_INCOME,
 } from '../constants'
 import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
@@ -299,6 +299,37 @@ test('plays a character with explicit player, instance, and base identity', () =
   expect(completedState.phase).toBe('play')
 })
 
+test('declares the opponent winner when a player spends their last coin', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 1, hand: 'novice' },
+    phase: 'play',
+  })
+  const [playerId, opponentId] = initialState.playerOrder
+  const cardInstanceId = initialState.players[playerId].hand[0]
+  const winningState = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId, cardBaseId: 'novice' }),
+  )
+
+  expect(winningState.players[playerId].coins).toBe(0)
+  expect(winningState.winnerId).toBe(opponentId)
+  expect(duelReducer(winningState, completePlayTurn())).toBe(winningState)
+})
+
+test('can initiate a fresh duel after a winner is declared', () => {
+  const winningState = setupMockedDuel()
+
+  winningState.winnerId = winningState.playerOrder[1]
+
+  const restartedState = duelReducer(
+    winningState,
+    initiateDuelFromUsers([mockOrderUser, mockChaosUser]),
+  )
+
+  expect(restartedState.winnerId).toBeNull()
+  expect(restartedState.phase).toBe('setup')
+})
+
 test('does not play Book of Ash without a discarded character target', () => {
   const initialState = setupMockedDuel({
     activePlayer: { coins: 3, hand: 'bookOfAsh' },
@@ -343,7 +374,7 @@ test('does not play a targeted instance without a valid board target', () => {
 
 test('does not complete a play turn while awaiting a card effect target', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'yoraSkull', board: 'novice' },
+    activePlayer: { coins: 4, hand: 'yoraSkull', board: 'novice' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
@@ -361,7 +392,7 @@ test('does not complete a play turn while awaiting a card effect target', () => 
 
 test('does not complete a play turn while awaiting a discarded character target', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'bookOfAsh', discard: 'haunt' },
+    activePlayer: { coins: 4, hand: 'bookOfAsh', discard: 'haunt' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
@@ -397,7 +428,7 @@ test('clears a stale pending instance while completing play', () => {
 
 test('does not discard a resolving instance missing from the player board', () => {
   const initialState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'bookOfAsh', discard: 'haunt' },
+    activePlayer: { coins: 4, hand: 'bookOfAsh', discard: 'haunt' },
     phase: 'play',
   })
   const playerId = initialState.playerOrder[0]
@@ -1129,7 +1160,7 @@ test('refreshes stats and income, keeps the rotated initiative, then draws for b
     phase: 'draw',
     playerOrder: [firstPlayerId, secondPlayerId],
   })
-  expect(refreshedState.players[firstPlayerId].coins).toBe(2 + INCOME_PER_TURN)
+  expect(refreshedState.players[firstPlayerId].coins).toBe(3)
   expect(refreshedState.players[secondPlayerId].coins).toBe(3)
   expect(refreshedState.cards[firstCardId]).toMatchObject({
     didAct: false,
@@ -1141,6 +1172,23 @@ test('refreshes stats and income, keeps the rotated initiative, then draws for b
   expect(drawnState.phase).toBe('play')
   expect(drawnState.players[firstPlayerId].hand).toHaveLength(1)
   expect(drawnState.players[secondPlayerId].hand).toHaveLength(1)
+})
+
+test.each([
+  { income: -1, expectedGain: 0 },
+  { income: 0, expectedGain: 0 },
+  { income: 2, expectedGain: 2 },
+  { income: MAX_REFRESH_INCOME, expectedGain: MAX_REFRESH_INCOME },
+  { income: MAX_REFRESH_INCOME + 2, expectedGain: MAX_REFRESH_INCOME },
+])('grants $expectedGain refresh coins for $income income', ({ income, expectedGain }) => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 4, income },
+    phase: 'refresh',
+  })
+  const playerId = initialState.playerOrder[0]
+  const refreshedState = duelReducer(initialState, completeRefresh())
+
+  expect(refreshedState.players[playerId].coins).toBe(4 + expectedGain)
 })
 
 test('ignores refresh completion outside the refresh phase', () => {

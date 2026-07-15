@@ -68,7 +68,7 @@ test('Novice leaves other hand copies alone without a higher-life ally', () => {
 
 test('Temple Guard gains life only when the opponent has more post-entry cards', () => {
   const outnumberedState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'templeGuard' },
+    activePlayer: { coins: 4, hand: 'templeGuard' },
     inactivePlayer: { board: ['zombie', 'haunt'] },
     phase: 'play',
   })
@@ -90,7 +90,7 @@ test('Temple Guard gains life only when the opponent has more post-entry cards',
   )
 
   const tiedState = setupMockedDuel({
-    activePlayer: { coins: 3, hand: 'templeGuard' },
+    activePlayer: { coins: 4, hand: 'templeGuard' },
     inactivePlayer: { board: 'zombie' },
     phase: 'play',
   })
@@ -132,7 +132,7 @@ test('a summoned Temple Guard also resolves its on-play effect', () => {
 test('Elevated Acolyte draws on play when it is alone on board', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 2,
+      coins: 3,
       deck: 'novice',
       hand: 'acolyte',
     },
@@ -162,7 +162,7 @@ test('Elevated Acolyte draws on play when it is alone on board', () => {
 test('Elevated Acolyte gains income instead when it has an ally', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 2,
+      coins: 3,
       deck: 'novice',
       hand: 'acolyte',
       board: 'templeGuard',
@@ -230,7 +230,7 @@ test('Elevated Acolyte effect ignores missing players and non-board entries', ()
 test("Saint Yora's Skull stays pending, then buffs its target and adjacent allies", () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: ['novice', 'acolyte', 'templeGuard'],
     },
@@ -277,7 +277,7 @@ test("Saint Yora's Skull stays pending, then buffs its target and adjacent allie
 test("Saint Yora's Skull rejects an opponent's character as its target", () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: 'novice',
     },
@@ -308,7 +308,7 @@ test("Saint Yora's Skull rejects an opponent's character as its target", () => {
 test("Saint Yora's Skull skips the adjacent buff when boards are tied", () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: ['novice', 'acolyte'],
     },
@@ -337,7 +337,7 @@ test("Saint Yora's Skull skips the adjacent buff when boards are tied", () => {
 test("Saint Yora's Skull ignores non-character adjacent cards", () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: ['novice', 'bookOfAsh'],
     },
@@ -371,7 +371,7 @@ test("Saint Yora's Skull ignores non-character adjacent cards", () => {
 test("Saint Yora's Skull effect resolves without buffs when required state is missing", () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'yoraSkull',
       board: 'novice',
     },

@@ -85,7 +85,7 @@ test('Novice does not summon hand copies without a higher-life ally', () => {
 test('Temple Guard displays its bonus life when outnumbered post-play', () => {
   renderDuelTable(
     setupMockedDuel({
-      activePlayer: { coins: 3, hand: 'templeGuard' },
+      activePlayer: { coins: 4, hand: 'templeGuard' },
       inactivePlayer: { board: ['zombie', 'haunt'] },
       phase: 'play',
     }),
@@ -99,7 +99,7 @@ test('Temple Guard displays its bonus life when outnumbered post-play', () => {
 test('Temple Guard keeps its base life when the post-play boards are tied', () => {
   renderDuelTable(
     setupMockedDuel({
-      activePlayer: { coins: 3, hand: 'templeGuard' },
+      activePlayer: { coins: 4, hand: 'templeGuard' },
       inactivePlayer: { board: 'zombie' },
       phase: 'play',
     }),
@@ -114,7 +114,7 @@ test('Book of Ash prompts for a discarded character and summons a one-life copy'
   renderDuelTable(
     setupMockedDuel({
       activePlayer: {
-        coins: 3,
+        coins: 4,
         hand: 'bookOfAsh',
         discard: ['haunt', 'zombie'],
       },

@@ -2,7 +2,9 @@ import { setupMockedDuel } from '../../user'
 import type { UserDeck } from '../../user'
 import {
   formatRandomAiDuelBatchMarkdown,
+  getPlayerBoardLife,
   getRandomAiDuelStopReason,
+  getRandomAiDuelWinner,
   simulateRandomAiDuel,
   simulateRandomAiDuelBatch,
 } from './randomAiDuelSimulator'
@@ -83,6 +85,66 @@ test('detects coin-zero stop state', () => {
   state.players[state.playerOrder[0]].coins = 0
 
   expect(getRandomAiDuelStopReason(state)).toBe('coin-zero')
+})
+
+test('uses coin depletion before secondary simulation conditions', () => {
+  const finalPlayers = structuredClone(
+    simulateRandomAiDuel({ decks: [[], []], seed: 'primary-winner' })
+      .finalPlayers,
+  )
+
+  finalPlayers.player1.coins = 0
+  finalPlayers.player1.boardLife = 20
+  finalPlayers.player2.coins = 1
+  finalPlayers.player2.boardLife = 0
+
+  expect(getRandomAiDuelWinner(finalPlayers, 'coin-zero')).toEqual({
+    winner: 'player2',
+    winCondition: 'coin-zero',
+  })
+})
+
+test('uses remaining coins, then board life, then a tie for secondary outcomes', () => {
+  const basePlayers = simulateRandomAiDuel({
+    decks: [[], []],
+    seed: 'secondary-winners',
+  }).finalPlayers
+  const coinPlayers = structuredClone(basePlayers)
+  const boardLifePlayers = structuredClone(basePlayers)
+
+  coinPlayers.player1.coins = 4
+  coinPlayers.player1.boardLife = 0
+  coinPlayers.player2.coins = 3
+  coinPlayers.player2.boardLife = 20
+  boardLifePlayers.player1.boardLife = 2
+  boardLifePlayers.player2.boardLife = 5
+
+  expect(getRandomAiDuelWinner(coinPlayers, 'decks-empty')).toEqual({
+    winner: 'player1',
+    winCondition: 'coins-left',
+  })
+  expect(getRandomAiDuelWinner(boardLifePlayers, 'decks-empty')).toEqual({
+    winner: 'player2',
+    winCondition: 'board-life',
+  })
+  expect(getRandomAiDuelWinner(basePlayers, 'max-steps')).toEqual({
+    winner: 'tie',
+    winCondition: 'tie',
+  })
+})
+
+test('counts only current character life as board presence', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: ['templeGuard', 'yoraSkull'] },
+  })
+  const player = state.players[state.playerOrder[0]]
+  const character = state.cards[player.board[0]]
+
+  if (character.type !== 'character') throw new Error('Expected a character')
+
+  character.life = 5
+
+  expect(getPlayerBoardLife(state, player)).toBe(5)
 })
 
 test('stops at max steps when no other stop condition is met', () => {
@@ -201,7 +263,13 @@ test('formats a markdown summary for ChatGPT analysis', () => {
     'Players: Order Hammerites (player1) vs Chaos Undead + Burricks (player2)',
   )
   expect(formatRandomAiDuelBatchMarkdown(result)).toContain(
-    'Coin winners: Order Hammerites (player1)',
+    'Winners: Order Hammerites (player1)',
+  )
+  expect(formatRandomAiDuelBatchMarkdown(result)).toContain('Win conditions:')
+  expect(formatRandomAiDuelBatchMarkdown(result)).toContain(
+    'Average final board life:',
   )
   expect(formatRandomAiDuelBatchMarkdown(result)).toContain('| Duel | Reason |')
+  expect(result.aggregate.winners.player1 + result.aggregate.winners.player2 + result.aggregate.winners.tie).toBe(1)
+  expect(Object.values(result.aggregate.winConditions).reduce((sum, count) => sum + count, 0)).toBe(1)
 })

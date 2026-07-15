@@ -9,10 +9,12 @@ import {
   useRandomAiController,
   useRefreshCompletion,
 } from '../../hooks'
+import type { DuelState } from '../../types'
 import { getTablePlayerIds } from '../../utils'
 import { CardInstance } from './CardInstance'
 import { BookOfAshTargetModal } from './BookOfAshTargetModal'
 import { CombatInteractionProvider } from './CombatInteractionProvider'
+import { DuelWinnerModal } from './DuelWinnerModal'
 import { FaceDownStack } from './FaceDownStack'
 import { PhaseButton } from './PhaseButton'
 import { PlayerBadge } from './PlayerBadge'
@@ -24,6 +26,24 @@ export const DuelTable = () => (
 )
 
 const DuelTableContent = () => {
+  const duelState = useDuelState()
+  const { players, winnerId } = duelState
+  const winner = winnerId ? players[winnerId] : undefined
+
+  return (
+    <>
+      {!winner && <DuelAutomation />}
+      <DuelTableBoard duelState={duelState} />
+      {winner ? (
+        <DuelWinnerModal winnerName={winner.name} />
+      ) : (
+        <BookOfAshTargetModal />
+      )}
+    </>
+  )
+}
+
+const DuelAutomation = () => {
   usePlayersInitialDraw()
   usePlayersDraw()
   useRandomAiController()
@@ -31,7 +51,14 @@ const DuelTableContent = () => {
   useActTurnCompletion()
   useRefreshCompletion()
 
-  const duelState = useDuelState()
+  return null
+}
+
+interface DuelTableBoardProps {
+  duelState: DuelState
+}
+
+const DuelTableBoard = ({ duelState }: DuelTableBoardProps) => {
   const { actPlayerId, cards, phase, playerOrder, players, round } = duelState
   const { bottomPlayerId, topPlayerId } = getTablePlayerIds(duelState)
   const bottomPlayer = players[bottomPlayerId]
@@ -155,7 +182,6 @@ const DuelTableContent = () => {
         className="absolute bottom-2 left-1/2 -translate-x-1/2"
       />
 
-      <BookOfAshTargetModal />
     </div>
   )
 }

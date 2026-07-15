@@ -12,7 +12,7 @@ import { selectCardEffectTarget } from './targetedCardEffect'
 test('Zombie summons the last discarded Zombie for free on play', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 1,
+      coins: 2,
       hand: 'zombie',
       discard: ['zombie', 'haunt'],
     },
@@ -34,7 +34,7 @@ test('Zombie summons the last discarded Zombie for free on play', () => {
   const state = store.getState().duel
 
   expect(state.players[playerId]).toMatchObject({
-    coins: 0,
+    coins: 1,
     hand: [],
     board: [playedZombieId, discardedZombieId],
     discard: [initialState.players[playerId].discard[1]],
@@ -48,7 +48,7 @@ test('Zombie summons the last discarded Zombie for free on play', () => {
 test('Zombie safely skips its summon without a discarded Zombie', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 1,
+      coins: 2,
       hand: 'zombie',
       discard: 'haunt',
     },
@@ -101,7 +101,7 @@ test('Zombie safely skips its summon when effect state has no player', () => {
 test('Book of Ash summons a one-life copy of a selected discarded character', () => {
   const initialState = setupMockedDuel({
     activePlayer: {
-      coins: 3,
+      coins: 4,
       hand: 'bookOfAsh',
       discard: 'haunt',
     },
