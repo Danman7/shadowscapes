@@ -89,7 +89,7 @@ test('AI plays a random affordable card during its play turn', () => {
   expect(screen.getByTestId('ai-hand-size')).toHaveTextContent('1')
 })
 
-test('AI passes play when its board lead is at least three cards', () => {
+test('AI plays a useful card despite having a large board lead', () => {
   vi.useFakeTimers()
   const state = setupMockedDuel({
     activePlayer: { board: 'novice' },
@@ -110,8 +110,8 @@ test('AI passes play when its board lead is at least three cards', () => {
   act(() => vi.advanceTimersByTime(AUTOMATED_ACTION_DELAY_MS))
 
   expect(screen.getByTestId('ai-has-acted')).toHaveTextContent('true')
-  expect(screen.getByTestId('ai-board-size')).toHaveTextContent('4')
-  expect(screen.getByTestId('ai-hand-size')).toHaveTextContent('1')
+  expect(screen.getByTestId('ai-board-size')).toHaveTextContent('5')
+  expect(screen.getByTestId('ai-hand-size')).toHaveTextContent('0')
 })
 
 test('AI passes play when it has no playable cards', () => {
@@ -184,7 +184,7 @@ test('AI leaves a pending target effect alone when no valid targets exist', () =
   expect(screen.getByTestId('ai-board-size')).toHaveTextContent('1')
 })
 
-test('AI selects a random discarded character target for Book of Ash', () => {
+test('AI prioritizes a discarded Zombie target for Book of Ash', () => {
   vi.useFakeTimers()
   vi.spyOn(Math, 'random').mockReturnValue(0)
   const state = setupMockedDuel({
@@ -206,16 +206,17 @@ test('AI selects a random discarded character target for Book of Ash', () => {
   const dialog = screen.getByRole('dialog', { name: 'Book of Ash' })
 
   expect(
-    within(dialog).queryByRole('button', { name: 'Haunt card' }),
+    within(dialog).queryByRole('button', { name: 'Zombie card' }),
   ).not.toBeInTheDocument()
   expect(
-    within(dialog).getByRole('article', { name: 'Haunt card' }),
+    within(dialog).getByRole('article', { name: 'Zombie card' }),
   ).toBeInTheDocument()
 
   act(() => vi.advanceTimersByTime(AUTOMATED_ACTION_DELAY_MS))
 
   expect(screen.queryByRole('dialog', { name: 'Book of Ash' })).toBeNull()
-  expect(screen.getByTestId('ai-haunt-life')).toHaveTextContent('1')
+  expect(screen.getByTestId('ai-zombie-life')).toHaveTextContent('1')
+  expect(screen.getByTestId('ai-board-size')).toHaveTextContent('2')
 })
 
 test('AI does not resolve a pending human-owned target effect', () => {

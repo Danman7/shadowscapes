@@ -18,12 +18,11 @@ import type { DuelPlayer, DuelState, Phase, PlayerId, Stack } from '../types'
 import {
   canActPlayerPass,
   canActTurnComplete,
-  getRandomAiAttackPairs,
-  getRandomAiEffectTargetIds,
-  getRandomAiPlayableCardIds,
+  getPreferredRandomAiAttackPairs,
+  getPreferredRandomAiEffectTargetIds,
+  getPreferredRandomAiPlayableCardIds,
   isAwaitingCardEffectTarget,
   selectRandomItem,
-  shouldRandomAiPassPlayTurn,
 } from '../utils'
 import type { RandomSeed } from './seededRandom'
 import { withSeededRandom } from './seededRandom'
@@ -139,7 +138,7 @@ export interface SimulateRandomAiDuelBatchOptions {
 
 const simulationPlayerKeys = ['player1', 'player2'] as const
 const defaultMaxSteps = 1000
-const defaultRuns = 20
+export const DEFAULT_RANDOM_AI_DUEL_RUNS = 100
 const defaultPlayerLabels = {
   player1: 'Player 1',
   player2: 'Player 2',
@@ -452,7 +451,9 @@ const runPlayStep = ({
   const playerKey = playerKeyById[activePlayerId]
 
   if (isAwaitingCardEffectTarget(state)) {
-    const targetCardId = selectRandomItem(getRandomAiEffectTargetIds(state))
+    const targetCardId = selectRandomItem(
+      getPreferredRandomAiEffectTargetIds(state),
+    )
     const pendingCard = state.pendingPlayedCardId
       ? state.cards[state.pendingPlayedCardId]
       : undefined
@@ -478,14 +479,9 @@ const runPlayStep = ({
     return true
   }
 
-  if (shouldRandomAiPassPlayTurn(state, activePlayerId)) {
-    addEvent({ type: 'pass-play', playerId: activePlayerId, playerKey })
-    store.dispatch(passPlayTurn())
-    completePlayTurnIfReady(store)
-    return true
-  }
-
-  const cardId = selectRandomItem(getRandomAiPlayableCardIds(state, activePlayerId))
+  const cardId = selectRandomItem(
+    getPreferredRandomAiPlayableCardIds(state, activePlayerId),
+  )
   const card = cardId ? state.cards[cardId] : undefined
 
   if (!cardId || !card) {
@@ -530,7 +526,9 @@ const runActStep = ({
   if (!actPlayerId) return false
 
   const playerKey = playerKeyById[actPlayerId]
-  const attackPair = selectRandomItem(getRandomAiAttackPairs(state, actPlayerId))
+  const attackPair = selectRandomItem(
+    getPreferredRandomAiAttackPairs(state, actPlayerId),
+  )
 
   if (attackPair) {
     const attacker = state.cards[attackPair.attackerId]
@@ -564,7 +562,7 @@ export const simulateRandomAiDuelBatch = ({
   decks,
   seed,
   playerLabels: playerLabelOverrides,
-  runs = defaultRuns,
+  runs = DEFAULT_RANDOM_AI_DUEL_RUNS,
   maxSteps = defaultMaxSteps,
 }: SimulateRandomAiDuelBatchOptions): RandomAiDuelBatchResult => {
   const playerLabels = normalizePlayerLabels(playerLabelOverrides)

@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import {
+  DEFAULT_RANDOM_AI_DUEL_RUNS,
   formatRandomAiDuelBatchMarkdown,
   simulateRandomAiDuelBatch,
 } from '../src/duel/simulation'
@@ -61,7 +62,7 @@ const getNumberArg = (name: string, fallback: number): number => {
 const sanitizeFilePart = (value: string): string =>
   value.replace(/[^a-zA-Z0-9._-]/g, '-')
 
-const runs = getNumberArg('runs', 20)
+const runs = getNumberArg('runs', DEFAULT_RANDOM_AI_DUEL_RUNS)
 const maxSteps = getNumberArg('max-steps', 1000)
 const seed = getArgValue('seed') ?? 'random-ai-duels'
 const outputDir = getArgValue('out-dir') ?? 'simulation-results'

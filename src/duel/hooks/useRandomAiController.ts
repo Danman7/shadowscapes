@@ -12,13 +12,12 @@ import {
 import type { DuelState } from '../types'
 import {
   canActPlayerPass,
-  getRandomAiAttackPairs,
-  getRandomAiEffectTargetIds,
-  getRandomAiPlayableCardIds,
+  getPreferredRandomAiAttackPairs,
+  getPreferredRandomAiEffectTargetIds,
+  getPreferredRandomAiPlayableCardIds,
   isAwaitingCardEffectTarget,
   isPlayerAiControlled,
   selectRandomItem,
-  shouldRandomAiPassPlayTurn,
 } from '../utils'
 import { useDuelDispatch } from './useDuelDispatch'
 import { useDuelState } from './useDuelState'
@@ -42,7 +41,7 @@ const getRandomAiAction = (state: DuelState): UnknownAction | null => {
       }
 
       const targetCardInstanceId = selectRandomItem(
-        getRandomAiEffectTargetIds(state),
+        getPreferredRandomAiEffectTargetIds(state),
       )
 
       return targetCardInstanceId
@@ -54,12 +53,8 @@ const getRandomAiAction = (state: DuelState): UnknownAction | null => {
       return null
     }
 
-    if (shouldRandomAiPassPlayTurn(state, activePlayerId)) {
-      return passPlayTurn()
-    }
-
     const cardInstanceId = selectRandomItem(
-      getRandomAiPlayableCardIds(state, activePlayerId),
+      getPreferredRandomAiPlayableCardIds(state, activePlayerId),
     )
     const card = cardInstanceId ? state.cards[cardInstanceId] : undefined
 
@@ -80,7 +75,7 @@ const getRandomAiAction = (state: DuelState): UnknownAction | null => {
     }
 
     const attackPair = selectRandomItem(
-      getRandomAiAttackPairs(state, actPlayerId),
+      getPreferredRandomAiAttackPairs(state, actPlayerId),
     )
 
     if (attackPair) return attackCharacter(attackPair)

@@ -52,6 +52,16 @@ test('simulated duel batches are deterministic for the same seed', () => {
   expect(second).toEqual(first)
 })
 
+test('simulated duel batches default to one hundred runs', () => {
+  const result = simulateRandomAiDuelBatch({
+    decks: [[], []],
+    seed: 'default-runs',
+  })
+
+  expect(result.runs).toBe(100)
+  expect(result.duels).toHaveLength(100)
+})
+
 test('labels simulation players with deck identities', () => {
   const result = simulateRandomAiDuel({
     decks: [characterDeck, chaosDeck],
@@ -101,6 +111,21 @@ test('uses coin depletion before secondary simulation conditions', () => {
   expect(getRandomAiDuelWinner(finalPlayers, 'coin-zero')).toEqual({
     winner: 'player2',
     winCondition: 'coin-zero',
+  })
+})
+
+test('ties when both players deplete their coins', () => {
+  const finalPlayers = structuredClone(
+    simulateRandomAiDuel({ decks: [[], []], seed: 'double-depleted' })
+      .finalPlayers,
+  )
+
+  finalPlayers.player1.coins = 0
+  finalPlayers.player2.coins = 0
+
+  expect(getRandomAiDuelWinner(finalPlayers, 'coin-zero')).toEqual({
+    winner: 'tie',
+    winCondition: 'tie',
   })
 })
 
@@ -202,7 +227,65 @@ test('logs target events when a random AI plays a targeted card', () => {
   expect(result.events.map((event) => event.type)).toContain('target')
 })
 
-test('logs play passes when a player has a large board lead', () => {
+test('uses preferred play, target, and attack candidates during simulation', () => {
+  const result = simulateRandomAiDuel({
+    decks: [
+      [
+        'novice',
+        'novice',
+        'novice',
+        'templeGuard',
+        'templeGuard',
+        'templeGuard',
+        'acolyte',
+        'acolyte',
+        'acolyte',
+        'yoraSkull',
+      ],
+      [
+        'zombie',
+        'zombie',
+        'zombie',
+        'burrick',
+        'burrick',
+        'haunt',
+        'haunt',
+        'haunt',
+        'bookOfAsh',
+        'bookOfAsh',
+      ],
+    ],
+    seed: 'integration',
+    maxSteps: 300,
+  })
+  const chaosRoundFiveAttacks = result.events.filter(
+    (event) =>
+      event.type === 'attack' &&
+      event.playerKey === 'player2' &&
+      event.round === 5,
+  )
+
+  expect(result.events).toContainEqual(
+    expect.objectContaining({
+      type: 'play',
+      playerKey: 'player2',
+      cardBaseId: 'bookOfAsh',
+    }),
+  )
+  expect(result.events).toContainEqual(
+    expect.objectContaining({
+      type: 'target',
+      playerKey: 'player2',
+      cardBaseId: 'bookOfAsh',
+      targetBaseId: 'zombie',
+    }),
+  )
+  expect(chaosRoundFiveAttacks[0]).toEqual(
+    expect.objectContaining({ attackerBaseId: 'burrick' }),
+  )
+})
+
+test('does not strategically pass play while useful cards are available', () => {
   const result = simulateRandomAiDuel({
     decks: [
       Array.from({ length: 12 }, () => 'novice'),
@@ -214,12 +297,9 @@ test('logs play passes when a player has a large board lead', () => {
 
   expect(
     result.events.some(
-      (event) =>
-        event.type === 'pass-play' &&
-        event.playerKey === 'player1' &&
-        event.note === undefined,
+      (event) => event.type === 'pass-play' && event.note === undefined,
     ),
-  ).toBe(true)
+  ).toBe(false)
 })
 
 test('logs unplayable-card passes and act passes', () => {

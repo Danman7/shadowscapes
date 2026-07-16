@@ -316,6 +316,25 @@ test('declares the opponent winner when a player spends their last coin', () => 
   expect(duelReducer(winningState, completePlayTurn())).toBe(winningState)
 })
 
+test('leaves the winner unset when a player spends their last coin without an opponent', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 1, hand: 'novice' },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].hand[0]
+
+  initialState.playerOrder = [playerId, playerId]
+
+  const state = duelReducer(
+    initialState,
+    playCard({ playerId, cardInstanceId, cardBaseId: 'novice' }),
+  )
+
+  expect(state.players[playerId].coins).toBe(0)
+  expect(state.winnerId).toBeNull()
+})
+
 test('can initiate a fresh duel after a winner is declared', () => {
   const winningState = setupMockedDuel()
 
@@ -849,6 +868,12 @@ test('does not damage invalid or non-positive character targets', () => {
       damageCharacter({ cardInstanceId: boardCardId, amount: 0 }),
     ),
   ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      damageCharacter({ cardInstanceId: 'missing', amount: 1 }),
+    ),
+  ).toEqual(initialState)
 
   const missingPlayerState = structuredClone(initialState)
 
@@ -897,6 +922,25 @@ test('adjusts charges only for a character currently on its owner board', () => 
       adjustCharacterCharges({ cardInstanceId: boardCardId, amount: 1 }),
     ),
   ).toEqual(missingPlayerState)
+  expect(
+    duelReducer(
+      initialState,
+      adjustCharacterCharges({ cardInstanceId: 'missing', amount: 1 }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('initializes charges when adjusting a character without them', () => {
+  const initialState = setupMockedDuel({ activePlayer: { board: 'novice' } })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].board[0]
+
+  const state = duelReducer(
+    initialState,
+    adjustCharacterCharges({ cardInstanceId, amount: 1 }),
+  )
+
+  expect(state.cards[cardInstanceId]).toMatchObject({ charges: 1 })
 })
 
 test('does not adjust income for a missing player', () => {
@@ -992,6 +1036,36 @@ test('Haunt damages a damaged attacker before it can deal combat damage', () => 
   expect(state.players[attackerPlayerId].board).toEqual([])
   expect(state.players[attackerPlayerId].discard).toEqual([attackerId])
   expect(state.cards[defenderId]).toMatchObject({ life: 3, stack: 'board' })
+})
+
+test('a damaged attacker that survives Haunt retaliation still deals damage', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'templeGuard' },
+    inactivePlayer: { board: 'haunt' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const defenderId = initialState.players[defenderPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+
+  if (
+    preparedState.cards[attackerId].type !== 'character' ||
+    preparedState.cards[defenderId].type !== 'character'
+  ) {
+    throw new Error('Expected character instances')
+  }
+
+  preparedState.cards[attackerId].life = 2
+  preparedState.cards[defenderId].strength = 1
+
+  const state = duelReducer(
+    preparedState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+
+  expect(state.cards[attackerId]).toMatchObject({ life: 1, stack: 'board' })
+  expect(state.cards[defenderId]).toMatchObject({ life: 1, stack: 'board' })
 })
 
 test('rejects stunned, repeated, wrong-player, and non-character attacks', () => {
