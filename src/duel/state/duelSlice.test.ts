@@ -837,6 +837,16 @@ test('adjusts life only for a character currently on its owner board', () => {
   expect(
     duelReducer(
       initialState,
+      adjustCharacterLife({
+        cardInstanceId: handCardId,
+        amount: 2,
+        stack: 'hand',
+      }),
+    ).cards[handCardId],
+  ).toMatchObject({ life: 3 })
+  expect(
+    duelReducer(
+      initialState,
       adjustCharacterLife({ cardInstanceId: handCardId, amount: 2 }),
     ),
   ).toEqual(initialState)

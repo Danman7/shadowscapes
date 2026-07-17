@@ -12,9 +12,11 @@ export const categories = [
   'necromancer',
   'artifact',
   'beast',
+  'priest',
+  'pagan',
 ] as const
 
-type Category = (typeof categories)[number]
+export type Category = (typeof categories)[number]
 
 export interface SharedCardBase<TBaseId extends string = string> {
   baseId: TBaseId

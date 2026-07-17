@@ -43,11 +43,13 @@ export interface SummonCardCopyPayload {
 export interface AdjustCharacterLifePayload {
   cardInstanceId: CardInstanceId
   amount: number
+  stack?: Stack
 }
 
 export interface AdjustCharacterChargesPayload {
   cardInstanceId: CardInstanceId
   amount: number
+  stack?: Stack
 }
 
 export interface DamageCharacterPayload {

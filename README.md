@@ -129,6 +129,7 @@ Order cards:
 - `acolyte`: Character, cost `2`, life `2`, default strength `1`, Hammerite, common. On play, draws a card if alone on your board; otherwise gains `1` income.
 - `templeGuard`: Character, cost `3`, life `3`, strength `2`, Hammerite, common. On play, gains `1` life if the opponent has more cards on board.
 - `yoraSkull`: Instance, cost `3`, Hammerite artifact, elite, targets an allied character. The target gains `2` life. If the opponent has more cards on board, adjacent allied characters gain `1` life.
+- `markander`: Character, cost `4`, life `4`, strength `1`, Hammerite Priest, elite. While in hand, loses a charge whenever its owner plays a Hammerite and is summoned for free when its charges reach `0`.
 
 Chaos cards:
 
@@ -136,6 +137,7 @@ Chaos cards:
 - `burrick`: Character, cost `2`, life `2`, default strength `1`, Beast, common. Gains a charge when passing. When attacking with a charge, spends it to also damage characters adjacent to the target.
 - `haunt`: Character, cost `3`, life `3`, strength `2`, Undead and Hammerite, common. When attacked by a damaged character, deals its damage first and cancels the incoming attack if that attacker is defeated.
 - `bookOfAsh`: Instance, cost `3`, Necromancer artifact, elite. Targets a discarded character and summons a stunned, `1`-life copy of it.
+- `viktoriaQueen`: Character, cost `5`, life `2`, default strength `1`, Pagan, elite. Gains `1` life whenever its owner plays a Beast, regardless of Viktoria's current stack.
 
 The current Order and Chaos card mechanics are implemented. Both factions' effect registrations are included in the card effects middleware.
 

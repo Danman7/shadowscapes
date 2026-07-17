@@ -119,3 +119,33 @@ export const setupMockedDuel = (
     actPlayerId: options.phase === 'act' ? activePlayer.id : null,
   }
 }
+
+export const mockPlayer1: User = {
+  id: 'user1',
+  name: 'Bafford',
+  activeDeck: [
+    'novice',
+    'novice',
+    'templeGuard',
+    'templeGuard',
+    'acolyte',
+    'acolyte',
+    'yoraSkull',
+    'markander',
+  ],
+}
+
+export const mockPlayer2: User = {
+  id: 'user2',
+  name: 'Constantine',
+  activeDeck: [
+    'zombie',
+    'zombie',
+    'haunt',
+    'haunt',
+    'bookOfAsh',
+    'burrick',
+    'burrick',
+    'viktoriaQueen',
+  ],
+}

@@ -6,6 +6,7 @@ import {
 } from '../cards/bases/orderConstants'
 import type { CardBaseId } from '../cards/bases'
 import type { Phase } from '../duel/types'
+import { viktoriaLifeBuff } from '../cards/bases/chaosConstants'
 
 type CardMessage = {
   name: string
@@ -67,6 +68,13 @@ export const cardsText = {
         "I owe my transcendence to the Book of Ash, that tome of legend I recovered so long ago from the sands of long forgotten kings. Within its pages lie the secrets of life, death...and undeath. -- Azaran the Cruel's last mortal words",
     },
 
+    viktoriaQueen: {
+      name: 'Viktoria - Maw Queen',
+      description: `Every time you play a Beast, Viktoria gains ${viktoriaLifeBuff} life.`,
+      flavor:
+        'Bow to the Woodsie Lord and offer up your flesheye so that his Eye of Stone may see, Manfool! Bids he then the spruces to singer him an anthems! And the Woodsie Lord binders them fleshes to stone!',
+    },
+
     novice: {
       name: 'Novice',
       description:
@@ -93,6 +101,14 @@ export const cardsText = {
       name: "Saint Yora's Skull",
       description: `Select an ally on board. It gains ${yoraDirectBuff} life. Also, adjacent allies gain ${yoraIndirectBuff} life if opponent has more cards on board.`,
       flavor: 'Yora was a builder of vision and devout keeper of the faith.',
+    },
+
+    markander: {
+      name: 'Markander',
+      description:
+        'Every time you play a Hammerite, Markander loses a charge. On 0 charges, summon Markander for free.',
+      flavor:
+        "Our master is old, and the Master Forgers do jostle each other for precedence. But, I spy not on my betters. 'Tis in The Builder's Hands.",
     },
   },
 } as const satisfies {

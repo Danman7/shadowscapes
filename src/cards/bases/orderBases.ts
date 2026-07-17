@@ -30,4 +30,13 @@ export const orderBases = defineCardBases('order', {
     rank: 'elite',
     cost: 3,
   },
+  markander: {
+    type: 'character',
+    categories: ['hammerite', 'priest'],
+    rank: 'elite',
+    cost: 4,
+    life: 4,
+    strength: 1,
+    charges: 5,
+  },
 })

@@ -43,31 +43,27 @@ test('renders the player names', () => {
 test('renders the current round and phase in the center bar', () => {
   renderDuelTable({ ...setupMockedDuel(), phase: 'act' })
 
-  expect(
-    screen.getByText(`Round 1: ${messages.phase.act}`),
-  ).toBeInTheDocument()
+  expect(screen.getByText(`Round 1: ${messages.phase.act}`)).toBeInTheDocument()
 })
 
 test('renders cards in the correct player stacks', () => {
-  renderDuelTable(
-    {
-      ...setupMockedDuel({
-        activePlayer: {
-          hand: 'novice',
-          deck: ['templeGuard', 'yoraSkull'],
-          board: 'templeGuard',
-          discard: 'acolyte',
-        },
-        inactivePlayer: {
-          hand: ['zombie', 'haunt'],
-          deck: 'bookOfAsh',
-          board: 'haunt',
-          discard: ['zombie', 'zombie'],
-        },
-      }),
-      phase: 'play',
-    },
-  )
+  renderDuelTable({
+    ...setupMockedDuel({
+      activePlayer: {
+        hand: 'novice',
+        deck: ['templeGuard', 'yoraSkull'],
+        board: 'templeGuard',
+        discard: 'acolyte',
+      },
+      inactivePlayer: {
+        hand: ['zombie', 'haunt'],
+        deck: 'bookOfAsh',
+        board: 'haunt',
+        discard: ['zombie', 'zombie'],
+      },
+    }),
+    phase: 'play',
+  })
 
   expect(
     within(screen.getByTestId('active-hand')).getByRole('button', {
@@ -125,9 +121,10 @@ test('uses compact cards on the board and full cards in the active hand', () => 
     }),
   )
 
-  const activeBoardCard = within(
-    screen.getByTestId('active-board'),
-  ).getByRole('article', { name: 'Temple Guard card' })
+  const activeBoardCard = within(screen.getByTestId('active-board')).getByRole(
+    'article',
+    { name: 'Temple Guard card' },
+  )
   const inactiveBoardCard = within(
     screen.getByTestId('inactive-board'),
   ).getByRole('article', { name: 'Haunt card' })
@@ -154,7 +151,7 @@ test('does not render empty decks or discard piles', () => {
   ).not.toBeInTheDocument()
 })
 
-test('draws initial hands, completes the draw phase, and enters play', () => {
+test('draws initial hands, completes the draw phase, and enters play', async () => {
   renderDuelTable(
     setupMockedDuel({
       activePlayer: { deck: mockOrderUser.activeDeck },
@@ -162,20 +159,20 @@ test('draws initial hands, completes the draw phase, and enters play', () => {
     }),
   )
 
-  expect(screen.getByTestId('duel-phase')).toHaveTextContent('play')
+  expect(await screen.findByTestId('duel-phase')).toHaveTextContent('play')
   expect(
-    within(screen.getByTestId('active-hand')).getAllByRole('button'),
+    await within(screen.getByTestId('active-hand')).findAllByRole('button'),
   ).toHaveLength(4)
   expect(
-    within(screen.getByTestId('inactive-hand')).getAllByRole('article'),
+    await within(screen.getByTestId('inactive-hand')).findAllByRole('article'),
   ).toHaveLength(4)
   expect(
-    within(screen.getByTestId('active-deck')).getByText(
+    await within(screen.getByTestId('active-deck')).findByText(
       `${messages.ui.deckLabel} 3`,
     ),
   ).toBeInTheDocument()
   expect(
-    within(screen.getByTestId('inactive-deck')).getByText(
+    await within(screen.getByTestId('inactive-deck')).findByText(
       `${messages.ui.deckLabel} 1`,
     ),
   ).toBeInTheDocument()
@@ -196,7 +193,9 @@ test('only makes affordable active-hand cards playable', () => {
   expect(
     activeHand.getByRole('article', { name: 'Temple Guard card' }),
   ).not.toHaveClass('card-glow')
-  expect(screen.getByRole('button', { name: messages.ui.passLabel })).toBeVisible()
+  expect(
+    screen.getByRole('button', { name: messages.ui.passLabel }),
+  ).toBeVisible()
 })
 
 test('pays for a character, keeps it on board, and hands over after one second', () => {
@@ -216,11 +215,17 @@ test('pays for a character, keeps it on board, and hands over after one second',
       name: 'Novice card',
     }),
   ).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
-  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+  expect(
+    screen.queryByRole('button', { name: messages.ui.passLabel }),
+  ).toBeNull()
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    firstPlayerId,
+  )
 
   act(() => vi.advanceTimersByTime(999))
-  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    firstPlayerId,
+  )
 
   act(() => vi.advanceTimersByTime(1))
 
@@ -245,7 +250,9 @@ test('shows a terminal winner modal and stops automation after the last coin is 
 
   renderDuelTable(initialState)
 
-  fireEvent.click(screen.getByRole('button', { name: "Saint Yora's Skull card" }))
+  fireEvent.click(
+    screen.getByRole('button', { name: "Saint Yora's Skull card" }),
+  )
 
   const dialog = screen.getByRole('dialog', { name: `${winnerName} wins!` })
 
@@ -275,7 +282,9 @@ test('keeps a targeted instance pending until its board target is selected', () 
     }),
   )
 
-  fireEvent.click(screen.getByRole('button', { name: "Saint Yora's Skull card" }))
+  fireEvent.click(
+    screen.getByRole('button', { name: "Saint Yora's Skull card" }),
+  )
 
   expect(
     within(screen.getByTestId('active-board')).getByRole('article', {
@@ -327,15 +336,21 @@ test('passes both turns and enters act with the first player active', () => {
   fireEvent.click(screen.getByRole('button', { name: messages.ui.passLabel }))
   act(() => vi.advanceTimersByTime(1000))
 
-  expect(screen.getByRole('button', { name: messages.ui.passLabel })).toBeVisible()
+  expect(
+    screen.getByRole('button', { name: messages.ui.passLabel }),
+  ).toBeVisible()
 
   fireEvent.click(screen.getByRole('button', { name: messages.ui.passLabel }))
   act(() => vi.advanceTimersByTime(1000))
 
   expect(screen.getByTestId('duel-phase')).toHaveTextContent('act')
-  expect(screen.getByTestId('active-player-id')).toHaveTextContent(firstPlayerId)
+  expect(screen.getByTestId('active-player-id')).toHaveTextContent(
+    firstPlayerId,
+  )
   expect(screen.getByTestId('act-player-id')).toHaveTextContent(firstPlayerId)
-  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
+  expect(
+    screen.queryByRole('button', { name: messages.ui.passLabel }),
+  ).toBeNull()
 })
 
 test('selects a bottom attacker, animates upward, then deals damage', () => {
@@ -429,7 +444,9 @@ test('automatically hands over an act turn when every character is stunned', () 
 
   renderDuelTable(initialState)
 
-  expect(screen.queryByRole('button', { name: messages.ui.passLabel })).toBeNull()
+  expect(
+    screen.queryByRole('button', { name: messages.ui.passLabel }),
+  ).toBeNull()
   expect(screen.getByTestId('act-player-id')).toHaveTextContent(firstPlayerId)
 
   act(() => vi.advanceTimersByTime(999))

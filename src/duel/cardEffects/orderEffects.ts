@@ -5,13 +5,18 @@ import {
   yoraIndirectBuff,
 } from '../../cards/bases/orderConstants'
 import {
+  adjustCharacterCharges,
   adjustCharacterLife,
   adjustPlayerIncome,
   drawCard,
   summonAllCopies,
+  summonCard,
 } from '../state/duelSlice'
 import { getAdjacentBoardCardIds, isCharacterInstance } from '../utils'
-import { createOnPlayCardEffect } from './onPlayEffect'
+import {
+  createOnPlayCardEffect,
+  createOnPlayCategoryEffect,
+} from './onPlayEffect'
 import { createTargetedCardEffect } from './targetedCardEffect'
 
 const noviceOnPlay = createOnPlayCardEffect(
@@ -125,9 +130,62 @@ const yoraSkullTargetedEffect = createTargetedCardEffect(
   },
 )
 
+const markanderHammeriteOnPlay = createOnPlayCategoryEffect(
+  'hammerite',
+  ({ dispatch, getState, playerId }) => {
+    const state = getState().duel
+    const player = state.players[playerId]
+
+    if (!player) return
+
+    const markanderIds = player.hand.filter((cardId) => {
+      const card = state.cards[cardId]
+
+      return (
+        isCharacterInstance(card) &&
+        card.baseId === 'markander' &&
+        (card.charges ?? 0) > 0
+      )
+    })
+
+    markanderIds.forEach((markanderId) => {
+      const markander = getState().duel.cards[markanderId]
+
+      if (
+        !isCharacterInstance(markander) ||
+        markander.stack !== 'hand' ||
+        (markander.charges ?? 0) <= 0
+      ) {
+        return
+      }
+
+      const shouldSummon = markander.charges === 1
+
+      dispatch(
+        adjustCharacterCharges({
+          cardInstanceId: markanderId,
+          amount: -1,
+          stack: 'hand',
+        }),
+      )
+
+      if (!shouldSummon) return
+
+      dispatch(
+        summonCard({
+          playerId,
+          cardInstanceId: markanderId,
+          from: 'hand',
+        }),
+      )
+    })
+  },
+)
+
 export const orderEffects = [
   noviceOnPlay,
   templeGuardOnPlay,
   acolyteOnPlay,
   yoraSkullTargetedEffect,
+  markanderHammeriteOnPlay,
 ] as const

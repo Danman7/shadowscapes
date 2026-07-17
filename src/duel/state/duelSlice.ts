@@ -278,11 +278,12 @@ export const duelSlice = createSlice({
     ) => {
       const card = state.cards[action.payload.cardInstanceId]
       const player = card ? state.players[card.ownerId] : undefined
+      const stack = action.payload.stack ?? 'board'
 
       if (
         !isCharacterInstance(card) ||
-        card.stack !== 'board' ||
-        !player?.board.includes(card.id)
+        card.stack !== stack ||
+        !player?.[stack].includes(card.id)
       ) {
         return
       }
@@ -295,11 +296,12 @@ export const duelSlice = createSlice({
     ) => {
       const card = state.cards[action.payload.cardInstanceId]
       const player = card ? state.players[card.ownerId] : undefined
+      const stack = action.payload.stack ?? 'board'
 
       if (
         !isCharacterInstance(card) ||
-        card.stack !== 'board' ||
-        !player?.board.includes(card.id)
+        card.stack !== stack ||
+        !player?.[stack].includes(card.id)
       ) {
         return
       }

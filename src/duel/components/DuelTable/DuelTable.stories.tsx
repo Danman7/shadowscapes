@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
-import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../../user'
+import {
+  mockChaosUser,
+  mockOrderUser,
+  mockPlayer1,
+  mockPlayer2,
+  setupMockedDuel,
+} from '../../../user'
 import {
   duelReducer,
   initiateDuelFromUsers,
@@ -61,10 +67,7 @@ type Story = StoryObj<typeof meta>
 
 const InitialDuel = () => {
   const [initialState] = useState(() =>
-    duelReducer(
-      undefined,
-      initiateDuelFromUsers([mockOrderUser, mockChaosUser]),
-    ),
+    duelReducer(undefined, initiateDuelFromUsers([mockPlayer1, mockPlayer2])),
   )
 
   return (

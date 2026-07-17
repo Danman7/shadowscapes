@@ -1,5 +1,7 @@
+import { viktoriaLifeBuff } from '../../cards/bases/chaosConstants'
 import {
   adjustCharacterCharges,
+  adjustCharacterLife,
   attackCharacter,
   damageCharacter,
   summonCardCopy,
@@ -10,11 +12,15 @@ import {
   getAdjacentBoardCardIds,
   isCharacterInstance,
 } from '../utils'
+import { stacks } from '../types'
 import type { CardInstanceId, DuelState, PlayerId } from '../types'
 import type { ActionEffectRegistration } from './actionEffectsMiddleware'
 import { createActPassCardEffect } from './actPassEffect'
 import type { CardEffectsState } from './onPlayEffect'
-import { createOnPlayCardEffect } from './onPlayEffect'
+import {
+  createOnPlayCardEffect,
+  createOnPlayCategoryEffect,
+} from './onPlayEffect'
 import { createTargetedCardEffect } from './targetedCardEffect'
 
 const getLastDiscardedZombieId = (
@@ -124,9 +130,38 @@ const burrickPassEffect = createActPassCardEffect(
   },
 )
 
+const viktoriaBeastOnPlay = createOnPlayCategoryEffect(
+  'beast',
+  ({ dispatch, getState, playerId }) => {
+    const state = getState().duel
+    const player = state.players[playerId]
+
+    if (!player) return
+
+    stacks.forEach((stack) => {
+      player[stack].forEach((cardInstanceId) => {
+        const card = state.cards[cardInstanceId]
+
+        if (!isCharacterInstance(card) || card.baseId !== 'viktoriaQueen') {
+          return
+        }
+
+        dispatch(
+          adjustCharacterLife({
+            cardInstanceId,
+            amount: viktoriaLifeBuff,
+            stack,
+          }),
+        )
+      })
+    })
+  },
+)
+
 export const chaosEffects = [
   zombieOnPlay,
   bookOfAshTargetedEffect,
   burrickAttackEffect,
   burrickPassEffect,
+  viktoriaBeastOnPlay,
 ] as const

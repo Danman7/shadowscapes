@@ -1,6 +1,7 @@
 import type { UnknownAction } from '@reduxjs/toolkit'
 
-import type { CardBaseId } from '../../cards'
+import { getCardBase } from '../../cards'
+import type { CardBaseId, Category } from '../../cards'
 import {
   playCard,
   summonAllCopies,
@@ -72,6 +73,36 @@ export const createOnPlayCardEffect = (
       const card = context.state.duel.cards[cardInstanceId]
 
       if (card?.baseId !== cardBaseId) return
+
+      effect({ ...context, cardInstanceId, playerId })
+    })
+  },
+})
+
+export const createOnPlayCategoryEffect = (
+  category: Category,
+  effect: OnPlayEffect,
+): ActionEffectRegistration<CardEffectsState> => ({
+  matches: isBoardEntryAction,
+  run: (context) => {
+    const action = context.action
+
+    if (!isBoardEntryAction(action)) return
+
+    const playerId = action.payload.playerId
+    const cardIds = getNewBoardCardIds(context)
+
+    cardIds.forEach((cardInstanceId) => {
+      const card = context.state.duel.cards[cardInstanceId]
+
+      if (
+        !card ||
+        !getCardBase(card.baseId).categories.some(
+          (cardCategory) => cardCategory === category,
+        )
+      ) {
+        return
+      }
 
       effect({ ...context, cardInstanceId, playerId })
     })

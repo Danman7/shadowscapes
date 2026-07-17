@@ -129,6 +129,80 @@ test('a summoned Temple Guard also resolves its on-play effect', () => {
   })
 })
 
+test('Markander loses a charge for every Hammerite and summons for free at zero', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      coins: 4,
+      hand: ['markander', 'novice', 'novice', 'novice'],
+      board: 'acolyte',
+    },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const player = initialState.players[playerId]
+  const markanderId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'markander',
+  )!
+  const playedNoviceId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'novice',
+  )!
+  const markander = initialState.cards[markanderId]
+
+  if (markander.type === 'character') markander.charges = 3
+
+  const store = createAppStore(initialState)
+
+  store.dispatch(
+    playCard({
+      playerId,
+      cardInstanceId: playedNoviceId,
+      cardBaseId: 'novice',
+    }),
+  )
+
+  const state = store.getState().duel
+
+  expect(state.players[playerId]).toMatchObject({
+    coins: 3,
+    hand: [],
+    board: expect.arrayContaining([markanderId, playedNoviceId]),
+  })
+  expect(state.cards[markanderId]).toMatchObject({
+    charges: 0,
+    stack: 'board',
+    turnsStunned: 1,
+  })
+})
+
+test('Markander ignores cards that are not Hammerites', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { coins: 2, hand: ['markander', 'zombie'] },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const player = initialState.players[playerId]
+  const markanderId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'markander',
+  )!
+  const zombieId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'zombie',
+  )!
+  const store = createAppStore(initialState)
+
+  store.dispatch(
+    playCard({
+      playerId,
+      cardInstanceId: zombieId,
+      cardBaseId: 'zombie',
+    }),
+  )
+
+  expect(store.getState().duel.cards[markanderId]).toMatchObject({
+    charges: 5,
+    stack: 'hand',
+  })
+})
+
 test('Elevated Acolyte draws on play when it is alone on board', () => {
   const initialState = setupMockedDuel({
     activePlayer: {

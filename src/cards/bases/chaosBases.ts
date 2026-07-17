@@ -32,4 +32,11 @@ export const chaosBases = defineCardBases('chaos', {
     rank: 'elite',
     cost: 3,
   },
+  viktoriaQueen: {
+    type: 'character',
+    categories: ['pagan'],
+    rank: 'elite',
+    life: 2,
+    cost: 5,
+  },
 })

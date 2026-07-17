@@ -1,11 +1,6 @@
 import { createAppStore } from '../../redux'
 import { setupMockedDuel } from '../../user'
-import {
-  attackCharacter,
-  passActTurn,
-  playCard,
-  summonCard,
-} from '../state'
+import { attackCharacter, passActTurn, playCard, summonCard } from '../state'
 import { chaosEffects } from './chaosEffects'
 import { selectCardEffectTarget } from './targetedCardEffect'
 
@@ -96,6 +91,74 @@ test('Zombie safely skips its summon when effect state has no player', () => {
   })
 
   expect(dispatch).not.toHaveBeenCalled()
+})
+
+test('Viktoria gains life in every stack whenever her owner plays a Beast', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      coins: 3,
+      deck: 'viktoriaQueen',
+      hand: ['viktoriaQueen', 'burrick'],
+      board: 'viktoriaQueen',
+      discard: 'viktoriaQueen',
+    },
+    phase: 'play',
+  })
+  const playerId = initialState.playerOrder[0]
+  const player = initialState.players[playerId]
+  const viktoriaIds = [
+    player.deck[0],
+    player.hand[0],
+    player.board[0],
+    player.discard[0],
+  ]
+  const burrickId = player.hand[1]
+  const store = createAppStore(initialState)
+
+  store.dispatch(
+    playCard({
+      playerId,
+      cardInstanceId: burrickId,
+      cardBaseId: 'burrick',
+    }),
+  )
+
+  const state = store.getState().duel
+
+  viktoriaIds.forEach((cardId) => {
+    expect(state.cards[cardId]).toMatchObject({ life: 3 })
+  })
+  expect(state.cards[viktoriaIds[1]]).toMatchObject({
+    stack: 'hand',
+  })
+})
+
+test('Viktoria gains life when a Beast is summoned but ignores other cards', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: {
+      hand: ['burrick', 'zombie'],
+      board: 'viktoriaQueen',
+    },
+  })
+  const playerId = initialState.playerOrder[0]
+  const player = initialState.players[playerId]
+  const viktoriaId = player.board[0]
+  const burrickId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'burrick',
+  )!
+  const zombieId = player.hand.find(
+    (cardId) => initialState.cards[cardId].baseId === 'zombie',
+  )!
+  const store = createAppStore(initialState)
+
+  store.dispatch(
+    summonCard({ playerId, cardInstanceId: zombieId, from: 'hand' }),
+  )
+  store.dispatch(
+    summonCard({ playerId, cardInstanceId: burrickId, from: 'hand' }),
+  )
+
+  expect(store.getState().duel.cards[viktoriaId]).toMatchObject({ life: 3 })
 })
 
 test('Book of Ash summons a one-life copy of a selected discarded character', () => {
