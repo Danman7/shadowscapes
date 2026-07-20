@@ -132,6 +132,9 @@ export const mockPlayer1: User = {
     'acolyte',
     'yoraSkull',
     'markander',
+    'cook',
+    'speedPotion',
+    'flashBomb',
   ],
 }
 
@@ -147,5 +150,8 @@ export const mockPlayer2: User = {
     'burrick',
     'burrick',
     'viktoriaQueen',
+    'cook',
+    'speedPotion',
+    'flashBomb',
   ],
 }

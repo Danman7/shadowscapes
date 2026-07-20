@@ -13,8 +13,7 @@ export const getDisplayCardFromInstance = (
       cost: instance.cost,
       life: instance.life,
       strength: instance.strength,
-      charges: instance.charges,
-      turnsStunned: instance.turnsStunned,
+      traits: instance.traits,
     }
   }
 

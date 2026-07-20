@@ -21,9 +21,10 @@ export const CardInstance = ({ instance }: CardInstanceProps) => {
   const card = getDisplayCardFromInstance(instance)
 
   const getOnClick = () => {
-    if (isOnBoard) {
-      return combatInteraction.getBoardCardOnClick(instance)
-    }
+    const interactionOnClick = combatInteraction.getCardOnClick(instance)
+
+    if (interactionOnClick) return interactionOnClick
+    if (isOnBoard) return undefined
 
     if (instance.stack !== 'hand') return undefined
     if (!isPlayerHumanControlled(duelState, instance.ownerId)) return undefined

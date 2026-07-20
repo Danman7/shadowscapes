@@ -9,11 +9,9 @@ import type { CardBase } from '../../types'
 import { isCharacter } from '../../utils'
 import { BsFillLightningChargeFill } from 'react-icons/bs'
 import { FaFistRaised } from 'react-icons/fa'
-import { GiStarSwirl } from 'react-icons/gi'
+import { GiStarSwirl, GiWingfoot } from 'react-icons/gi'
 
-export type DisplayCard = CardBase<CardBaseId> & {
-  turnsStunned?: number
-}
+export type DisplayCard = CardBase<CardBaseId>
 
 export interface CardProps {
   card: DisplayCard
@@ -34,15 +32,15 @@ export const Card = ({
 
   const cardText = cardsText.cards[baseId]
   const isCardCharacter = isCharacter(card)
-  const hasCharges = isCardCharacter && card.charges
+  const charges = isCardCharacter ? card.traits?.charges : undefined
+  const hasCharges = Boolean(charges)
+  const hasHaste = isCardCharacter && Boolean(card.traits?.haste)
   const cost = card.cost
   const life = isCardCharacter ? card.life : undefined
   const strength = isCardCharacter
     ? (card.strength ?? 1)
     : undefined
-  const turnsStunned = isCardCharacter
-    ? (card.turnsStunned ?? 0)
-    : 0
+  const turnsStunned = isCardCharacter ? (card.traits?.stunned ?? 0) : 0
   const isStunned = turnsStunned > 0
   const borderColor = factionBorderColorClassNames[faction]
 
@@ -119,7 +117,16 @@ export const Card = ({
           <>
             <dt className="sr-only">Charges</dt>
             <dd className="flex items-center">
-              <BsFillLightningChargeFill /> {card.charges}
+              <BsFillLightningChargeFill /> {charges}
+            </dd>
+          </>
+        )}
+
+        {hasHaste && (
+          <>
+            <dt className="sr-only">Haste</dt>
+            <dd className="flex items-center">
+              <GiWingfoot aria-hidden="true" />
             </dd>
           </>
         )}

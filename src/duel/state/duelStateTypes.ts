@@ -52,6 +52,22 @@ export interface AdjustCharacterChargesPayload {
   stack?: Stack
 }
 
+export interface AdjustCharacterStunPayload {
+  cardInstanceId: CardInstanceId
+  amount: number
+  stack?: Stack
+}
+
+export interface GrantCharacterHastePayload {
+  cardInstanceId: CardInstanceId
+  stack?: Stack
+}
+
+export interface StripCharacterTraitsPayload {
+  cardInstanceId: CardInstanceId
+  stack?: Stack
+}
+
 export interface DamageCharacterPayload {
   cardInstanceId: CardInstanceId
   amount: number

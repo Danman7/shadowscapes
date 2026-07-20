@@ -30,11 +30,9 @@ export const createCardInstance = (
     type: 'character',
     life: base.life,
     strength: base.strength ?? DEFAULT_CHARACTER_STRENGTH,
-    turnsStunned: 0,
+    traits: { ...base.traits },
     didAct: false,
   }
-
-  if (base.charges !== undefined) character.charges = base.charges
 
   return character
 }

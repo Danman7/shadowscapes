@@ -48,7 +48,7 @@ const getStrength = (card: KnownCardBase) =>
   card.type === 'character' ? (card.strength ?? 1) : empty
 
 const getCharges = (card: KnownCardBase) =>
-  card.type === 'character' ? (card.charges ?? empty) : empty
+  card.type === 'character' ? (card.traits?.charges ?? empty) : empty
 
 const getTarget = (card: KnownCardBase) =>
   card.type === 'instance' ? (card.target ?? empty) : empty
@@ -90,7 +90,8 @@ const toCsv = (cardRows: readonly CardExportRow[]) =>
     ),
   ].join('\n')
 
-const defaultOutputPath = 'cards.csv'
+const timestamp = new Date().toISOString().replaceAll(':', '-')
+const defaultOutputPath = `cards-${timestamp}.csv`
 const outputPath = process.argv[2] ?? defaultOutputPath
 const csv = `${toCsv(rows)}\n`
 

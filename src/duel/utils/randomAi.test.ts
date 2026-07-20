@@ -156,6 +156,52 @@ test('falls back to a valid instance when no character is playable', () => {
   ).toEqual(['yoraSkull'])
 })
 
+test('avoids paying to play Markander while any other card is playable', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      coins: 4,
+      hand: ['markander', 'speedPotion', 'novice'],
+      board: 'templeGuard',
+    },
+    phase: 'play',
+  })
+
+  expect(
+    getPreferredRandomAiPlayableCardIds(state, mockOrderUser.id).map(
+      (cardId) => state.cards[cardId].baseId,
+    ),
+  ).toEqual(['novice'])
+
+  const instanceFallbackState = setupMockedDuel({
+    activePlayer: {
+      coins: 4,
+      hand: ['markander', 'yoraSkull'],
+      board: 'novice',
+    },
+    phase: 'play',
+  })
+
+  expect(
+    getPreferredRandomAiPlayableCardIds(
+      instanceFallbackState,
+      mockOrderUser.id,
+    ).map((cardId) => instanceFallbackState.cards[cardId].baseId),
+  ).toEqual(['yoraSkull'])
+})
+
+test('pays to play Markander when he is the only legal play', () => {
+  const state = setupMockedDuel({
+    activePlayer: { coins: 4, hand: 'markander' },
+    phase: 'play',
+  })
+
+  expect(
+    getPreferredRandomAiPlayableCardIds(state, mockOrderUser.id).map(
+      (cardId) => state.cards[cardId].baseId,
+    ),
+  ).toEqual(['markander'])
+})
+
 test('returns no preferred effect targets without a resolvable pending card', () => {
   const state = setupMockedDuel({
     activePlayer: { board: ['novice', 'yoraSkull'] },
@@ -243,6 +289,69 @@ test('falls back to another valid Book of Ash target without Zombies', () => {
   state.pendingPlayedCardId = player.board[0]
 
   expect(getPreferredRandomAiEffectTargetIds(state)).toEqual(player.discard)
+})
+
+test('prefers above-default-strength targets for Speed Potion', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      hand: ['novice', 'templeGuard', 'haunt'],
+      board: 'speedPotion',
+    },
+    phase: 'play',
+  })
+  const player = state.players[mockOrderUser.id]
+
+  state.pendingPlayedCardId = player.board[0]
+
+  expect(getPreferredRandomAiEffectTargetIds(state)).toEqual(
+    player.hand.slice(1),
+  )
+})
+
+test('prefers Burrick for Speed Potion when no stronger target exists', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      hand: ['novice', 'burrick', 'acolyte'],
+      board: 'speedPotion',
+    },
+    phase: 'play',
+  })
+  const player = state.players[mockOrderUser.id]
+
+  state.pendingPlayedCardId = player.board[0]
+
+  expect(getPreferredRandomAiEffectTargetIds(state)).toEqual([player.hand[1]])
+})
+
+test('Speed Potion falls back to every valid target', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      hand: ['novice', 'acolyte'],
+      board: 'speedPotion',
+    },
+    phase: 'play',
+  })
+  const player = state.players[mockOrderUser.id]
+
+  state.pendingPlayedCardId = player.board[0]
+
+  expect(getPreferredRandomAiEffectTargetIds(state)).toEqual(player.hand)
+})
+
+test('prefers above-default-strength targets for Flash Bomb', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: 'flashBomb' },
+    inactivePlayer: { board: ['zombie', 'templeGuard', 'haunt'] },
+    phase: 'play',
+  })
+  const activePlayer = state.players[mockOrderUser.id]
+  const opponent = state.players[mockChaosUser.id]
+
+  state.pendingPlayedCardId = activePlayer.board[0]
+
+  expect(getPreferredRandomAiEffectTargetIds(state)).toEqual(
+    opponent.board.slice(1),
+  )
 })
 
 test('finds valid random AI attack pairs', () => {

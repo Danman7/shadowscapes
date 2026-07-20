@@ -25,7 +25,7 @@ export const canCharacterAttack = (
       attackerPlayer?.board.includes(attackerId) &&
       defenderPlayer?.board.includes(defenderId) &&
       !attackerPlayer.hasActedThisPhase &&
-      attacker.turnsStunned === 0 &&
+      (attacker.traits.stunned ?? 0) === 0 &&
       !attacker.didAct,
   )
 }

@@ -15,7 +15,7 @@ export const chaosBases = defineCardBases('chaos', {
     rank: 'common',
     cost: 2,
     life: 2,
-    charges: 1,
+    traits: { charges: 1 },
   },
   haunt: {
     type: 'character',
@@ -37,6 +37,6 @@ export const chaosBases = defineCardBases('chaos', {
     categories: ['pagan'],
     rank: 'elite',
     life: 2,
-    cost: 5,
+    cost: 4,
   },
 })

@@ -1,3 +1,4 @@
+export * from './applyBoardEntryStun'
 export * from './getAdjacentBoardCardIds'
 export * from './isCharacterInstance'
 export * from './moveCard'

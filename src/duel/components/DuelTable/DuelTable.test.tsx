@@ -440,7 +440,7 @@ test('automatically hands over an act turn when every character is stunned', () 
   if (initialState.cards[cardId].type !== 'character') {
     throw new Error('Expected a character')
   }
-  initialState.cards[cardId].turnsStunned = 1
+  initialState.cards[cardId].traits.stunned = 1
 
   renderDuelTable(initialState)
 

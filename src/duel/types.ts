@@ -1,4 +1,4 @@
-import { CardBaseId } from '../cards'
+import type { CardBaseId, CharacterTraits } from '../cards'
 
 export type PlayerId = string
 export type CardInstanceId = string
@@ -35,8 +35,7 @@ export interface CharacterCardInstance extends SharedCardInstance {
   type: 'character'
   life: number
   strength: number
-  charges?: number
-  turnsStunned: number
+  traits: CharacterTraits
   didAct: boolean
 }
 

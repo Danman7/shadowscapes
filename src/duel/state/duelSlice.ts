@@ -14,8 +14,10 @@ import type {
   DuelMode,
   DuelPlayer,
   DuelState,
+  Stack,
 } from '../types'
 import {
+  applyBoardEntryStun,
   canActPlayerPass,
   canActTurnComplete,
   canCardBePlayed,
@@ -31,10 +33,12 @@ import {
 import type {
   AdjustCharacterChargesPayload,
   AdjustCharacterLifePayload,
+  AdjustCharacterStunPayload,
   AdjustPlayerIncomePayload,
   AttackCharacterPayload,
   DamageCharacterPayload,
   DrawCardPayload,
+  GrantCharacterHastePayload,
   InitiateDuelPayload,
   InitiateSoloRandomAiDuelPayload,
   PlayCardPayload,
@@ -42,6 +46,7 @@ import type {
   SummonAllCopiesPayload,
   SummonCardCopyPayload,
   SummonCardPayload,
+  StripCharacterTraitsPayload,
 } from './duelStateTypes'
 
 const decrementPlayerCharactersStun = (state: DuelState, playerId: string) => {
@@ -58,6 +63,25 @@ const isDamagedCharacter = (card: CharacterCardInstance): boolean => {
   const base = getCardBase(card.baseId)
 
   return base.type === 'character' && card.life < base.life
+}
+
+const getCharacterInStack = (
+  state: DuelState,
+  cardInstanceId: CardInstanceId,
+  stack: Stack = 'board',
+): CharacterCardInstance | undefined => {
+  const card = state.cards[cardInstanceId]
+  const player = card ? state.players[card.ownerId] : undefined
+
+  if (
+    !isCharacterInstance(card) ||
+    card.stack !== stack ||
+    !player?.[stack].includes(card.id)
+  ) {
+    return undefined
+  }
+
+  return card
 }
 
 const createDuelStateFromUsers = (
@@ -183,8 +207,8 @@ export const duelSlice = createSlice({
 
       state.playerOrder.forEach((playerId) => {
         moveCard({ state, playerId, from: 'deck', to: 'hand' })
+        decrementPlayerCharactersStun(state, playerId)
       })
-      decrementPlayerCharactersStun(state, state.playerOrder[0])
       state.phase = 'play'
     },
     playCard: (state, action: PayloadAction<PlayCardPayload>) => {
@@ -268,7 +292,7 @@ export const duelSlice = createSlice({
       if (!isCharacterInstance(copy)) return
 
       copy.life = life
-      copy.turnsStunned += 1
+      applyBoardEntryStun(copy)
       state.cards[copy.id] = copy
       player.board.push(copy.id)
     },
@@ -294,19 +318,73 @@ export const duelSlice = createSlice({
       state,
       action: PayloadAction<AdjustCharacterChargesPayload>,
     ) => {
-      const card = state.cards[action.payload.cardInstanceId]
-      const player = card ? state.players[card.ownerId] : undefined
       const stack = action.payload.stack ?? 'board'
+      const card = getCharacterInStack(
+        state,
+        action.payload.cardInstanceId,
+        stack,
+      )
 
-      if (
-        !isCharacterInstance(card) ||
-        card.stack !== stack ||
-        !player?.[stack].includes(card.id)
-      ) {
-        return
+      if (!card) return
+
+      card.traits.charges = Math.max(
+        0,
+        (card.traits.charges ?? 0) + action.payload.amount,
+      )
+    },
+    adjustCharacterStun: (
+      state,
+      action: PayloadAction<AdjustCharacterStunPayload>,
+    ) => {
+      const stack = action.payload.stack ?? 'board'
+      const card = getCharacterInStack(
+        state,
+        action.payload.cardInstanceId,
+        stack,
+      )
+
+      if (!card) return
+
+      const stunned = Math.max(
+        0,
+        (card.traits.stunned ?? 0) + action.payload.amount,
+      )
+
+      if (stunned === 0) {
+        delete card.traits.stunned
+      } else {
+        card.traits.stunned = stunned
       }
+    },
+    grantCharacterHaste: (
+      state,
+      action: PayloadAction<GrantCharacterHastePayload>,
+    ) => {
+      const stack = action.payload.stack ?? 'board'
+      const card = getCharacterInStack(
+        state,
+        action.payload.cardInstanceId,
+        stack,
+      )
 
-      card.charges = Math.max(0, (card.charges ?? 0) + action.payload.amount)
+      if (!card) return
+
+      card.traits.haste = true
+    },
+    stripCharacterTraits: (
+      state,
+      action: PayloadAction<StripCharacterTraitsPayload>,
+    ) => {
+      const stack = action.payload.stack ?? 'board'
+      const card = getCharacterInStack(
+        state,
+        action.payload.cardInstanceId,
+        stack,
+      )
+
+      if (!card) return
+
+      card.traits = {}
     },
     damageCharacter: (
       state,
@@ -394,8 +472,6 @@ export const duelSlice = createSlice({
         state.playerOrder.forEach((playerId) => {
           state.players[playerId].hasActedThisPhase = false
         })
-      } else {
-        decrementPlayerCharactersStun(state, state.playerOrder[0])
       }
     },
     attackCharacter: (state, action: PayloadAction<AttackCharacterPayload>) => {
@@ -410,7 +486,11 @@ export const duelSlice = createSlice({
 
       attacker.didAct = true
 
-      if (defender.baseId === 'haunt' && isDamagedCharacter(attacker)) {
+      if (
+        defender.baseId === 'haunt' &&
+        (defender.traits.stunned ?? 0) === 0 &&
+        isDamagedCharacter(attacker)
+      ) {
         damageCharacterById(state, attacker.id, defender.strength)
 
         if (attacker.stack !== 'board') return
@@ -468,6 +548,7 @@ export const duelSlice = createSlice({
 export const {
   adjustCharacterCharges,
   adjustCharacterLife,
+  adjustCharacterStun,
   adjustPlayerIncome,
   attackCharacter,
   completeActTurn,
@@ -477,6 +558,7 @@ export const {
   damageCharacter,
   drawCard,
   drawInitialHands,
+  grantCharacterHaste,
   initiateDuelFromUsers,
   initiateSoloRandomAiDuel,
   passActTurn,
@@ -486,6 +568,7 @@ export const {
   summonAllCopies,
   summonCard,
   summonCardCopy,
+  stripCharacterTraits,
 } = duelSlice.actions
 
 export const duelReducer = (

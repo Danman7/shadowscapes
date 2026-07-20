@@ -1,4 +1,5 @@
 import type { CardInstanceId, DuelState, PlayerId } from '../types'
+import { DEFAULT_CHARACTER_STRENGTH } from '../constants'
 import { canCharacterAttack } from './actPhase/canCharacterAttack'
 import { getAdjacentBoardCardIds } from './cardInstance/getAdjacentBoardCardIds'
 import { isCharacterInstance } from './cardInstance/isCharacterInstance'
@@ -87,7 +88,18 @@ export const getPreferredRandomAiPlayableCardIds = (
   const opponentId = getOpponentPlayerId(state, playerId)
   const opponent = opponentId ? state.players[opponentId] : undefined
 
-  if (!player || !opponent) return playableCardIds
+  if (!player) return playableCardIds
+
+  const nonMarkanderCardIds = playableCardIds.filter(
+    (cardId) => state.cards[cardId]?.baseId !== 'markander',
+  )
+  const markanderCardIds = playableCardIds.filter(
+    (cardId) => state.cards[cardId]?.baseId === 'markander',
+  )
+
+  if (!opponent) {
+    return getFirstNonEmptyTier([nonMarkanderCardIds, markanderCardIds])
+  }
 
   const hasYoraTripleTarget =
     opponent.board.length > player.board.length &&
@@ -117,9 +129,11 @@ export const getPreferredRandomAiPlayableCardIds = (
         state.cards[cardId]?.baseId === 'burrick' && hasBurrickTripleTarget,
     ),
     playableCardIds.filter((cardId) =>
-      isCharacterInstance(state.cards[cardId]),
+      isCharacterInstance(state.cards[cardId]) &&
+      state.cards[cardId]?.baseId !== 'markander',
     ),
-    playableCardIds,
+    nonMarkanderCardIds,
+    markanderCardIds,
   ])
 }
 
@@ -132,6 +146,30 @@ export const getPreferredRandomAiEffectTargetIds = (
     : undefined
 
   if (!pendingCard) return targetCardIds
+
+  if (
+    pendingCard.baseId === 'speedPotion' ||
+    pendingCard.baseId === 'flashBomb'
+  ) {
+    const strongTargetIds = targetCardIds.filter((cardId) => {
+      const card = state.cards[cardId]
+
+      return (
+        isCharacterInstance(card) &&
+        card.strength > DEFAULT_CHARACTER_STRENGTH
+      )
+    })
+
+    if (strongTargetIds.length > 0) return strongTargetIds
+
+    if (pendingCard.baseId === 'speedPotion') {
+      const burrickTargetIds = targetCardIds.filter(
+        (cardId) => state.cards[cardId]?.baseId === 'burrick',
+      )
+
+      if (burrickTargetIds.length > 0) return burrickTargetIds
+    }
+  }
 
   if (pendingCard.baseId === 'yoraSkull') {
     const player = state.players[pendingCard.ownerId]
@@ -205,7 +243,7 @@ export const getPreferredRandomAiAttackPairs = (
       return (
         isCharacterInstance(attacker) &&
         attacker.baseId === 'burrick' &&
-        (attacker.charges ?? 0) > 0 &&
+        (attacker.traits.charges ?? 0) > 0 &&
         hasTwoAdjacentCharacters(state, defenderId)
       )
     },

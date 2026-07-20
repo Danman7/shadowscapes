@@ -12,33 +12,35 @@ import type { UserDeck } from '../src/user'
 
 const defaultPlayerLabels = {
   player1: 'Order Hammerites',
-  player2: 'Chaos Undead + Burricks',
+  player2: 'Chaos Undead',
 } satisfies SimulationPlayerLabels
 
 const defaultDecks = [
   [
     'novice',
     'novice',
-    'novice',
     'templeGuard',
     'templeGuard',
-    'templeGuard',
-    'acolyte',
     'acolyte',
     'acolyte',
     'yoraSkull',
+    'markander',
+    'cook',
+    'speedPotion',
+    'flashBomb',
   ],
   [
     'zombie',
     'zombie',
-    'zombie',
     'burrick',
     'burrick',
     'haunt',
     'haunt',
-    'haunt',
     'bookOfAsh',
-    'bookOfAsh',
+    'viktoriaQueen',
+    'cook',
+    'speedPotion',
+    'flashBomb',
   ],
 ] satisfies [UserDeck, UserDeck]
 

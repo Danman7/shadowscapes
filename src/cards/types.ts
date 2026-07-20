@@ -14,9 +14,18 @@ export const categories = [
   'beast',
   'priest',
   'pagan',
+  'servant',
+  'alchemical',
+  'equipment',
 ] as const
 
 export type Category = (typeof categories)[number]
+
+export interface CharacterTraits {
+  charges?: number
+  stunned?: number
+  haste?: true
+}
 
 export interface SharedCardBase<TBaseId extends string = string> {
   baseId: TBaseId
@@ -29,7 +38,11 @@ export interface SharedCardBase<TBaseId extends string = string> {
 export type InstanceCardBase<TBaseId extends string = string> =
   SharedCardBase<TBaseId> & {
     type: 'instance'
-    target?: 'allied-character' | 'discarded-character'
+    target?:
+      | 'allied-character'
+      | 'discarded-character'
+      | 'allied-hand-character'
+      | 'enemy-board-character'
   }
 
 export type CharacterCardBase<TBaseId extends string = string> =
@@ -37,7 +50,7 @@ export type CharacterCardBase<TBaseId extends string = string> =
     type: 'character'
     life: number
     strength?: number
-    charges?: number
+    traits?: CharacterTraits
   }
 
 export type CardBase<TBaseId extends string = string> =

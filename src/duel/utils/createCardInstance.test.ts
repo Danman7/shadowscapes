@@ -14,7 +14,7 @@ test('creates a card instance with a unique id', () => {
     cost: 1,
     life: 1,
     strength: 1,
-    turnsStunned: 0,
+    traits: {},
     didAct: false,
   })
 
@@ -35,6 +35,25 @@ test('creates a non-character instance with its mutable cost', () => {
     type: 'instance',
     cost: 3,
   })
+
+  vi.restoreAllMocks()
+})
+
+test('clones base traits for each character instance', () => {
+  vi.spyOn(crypto, 'randomUUID')
+    .mockReturnValueOnce('2cbe7ba0-77b3-47ba-bf57-6930bd2cbeec')
+    .mockReturnValueOnce('3cbe7ba0-77b3-47ba-bf57-6930bd2cbeec')
+
+  const first = createCardInstance('burrick', 'user1', 'hand')
+  const second = createCardInstance('burrick', 'user1', 'hand')
+
+  if (first.type !== 'character' || second.type !== 'character') {
+    throw new Error('Expected characters')
+  }
+
+  first.traits.charges = 0
+
+  expect(second.traits).toEqual({ charges: 1 })
 
   vi.restoreAllMocks()
 })

@@ -1,5 +1,4 @@
 import { getCardBase, isCharacter } from '../../../cards'
-import type { CharacterCardBase } from '../../../cards'
 import { DEFAULT_CHARACTER_STRENGTH } from '../../constants'
 import type {
   CardInstance,
@@ -9,6 +8,7 @@ import type {
   PlayerId,
   Stack,
 } from '../../types'
+import { applyBoardEntryStun } from './applyBoardEntryStun'
 import { isCharacterInstance } from './isCharacterInstance'
 
 interface MoveCardOptions {
@@ -31,24 +31,21 @@ const updateCharacterForStack = (
   stack: Stack,
 ) => {
   if (stack === 'board') {
-    card.turnsStunned += 1
+    applyBoardEntryStun(card)
     card.didAct = false
     return
   }
 
   if (stack !== 'discard') return
 
-  const base = getCardBase(card.baseId) as CharacterCardBase
+  const base = getCardBase(card.baseId)
+
+  if (!isCharacter(base)) return
 
   card.cost = base.cost
   card.life = base.life
   card.strength = base.strength ?? DEFAULT_CHARACTER_STRENGTH
-  if (base.charges === undefined) {
-    delete card.charges
-  } else {
-    card.charges = base.charges
-  }
-  card.turnsStunned = 0
+  card.traits = { ...base.traits }
   card.didAct = false
 }
 

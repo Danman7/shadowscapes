@@ -46,7 +46,7 @@ export const useCombatCardInteractions = () => {
     return () => window.clearTimeout(timeoutId)
   }, [dispatch, pendingAttack])
 
-  const getBoardCardOnClick = useCallback(
+  const getCardOnClick = useCallback(
     (card: CardInstance) => {
       if (phase === 'play') {
         const pendingCard = pendingPlayedCardId
@@ -66,6 +66,7 @@ export const useCombatCardInteractions = () => {
           dispatch(selectCardEffectTarget({ targetCardInstanceId: card.id }))
       }
 
+      if (card.stack !== 'board') return undefined
       if (phase !== 'act' || !actPlayerId || pendingAttack) return undefined
       if (!isPlayerHumanControlled(duelState, actPlayerId)) return undefined
 
@@ -74,7 +75,7 @@ export const useCombatCardInteractions = () => {
 
         if (
           !isCharacterInstance(card) ||
-          card.turnsStunned > 0 ||
+          (card.traits.stunned ?? 0) > 0 ||
           card.didAct ||
           actingPlayer.hasActedThisPhase
         ) {
@@ -125,7 +126,7 @@ export const useCombatCardInteractions = () => {
   return {
     clearSelection,
     getBoardCardClassName,
-    getBoardCardOnClick,
+    getCardOnClick,
     isAttackPending: pendingAttack !== null,
     isCardSelected,
   }

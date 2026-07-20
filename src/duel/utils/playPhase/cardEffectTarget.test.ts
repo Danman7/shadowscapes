@@ -75,3 +75,56 @@ test('Book of Ash targets only owner discard characters', () => {
   expect(canCardBeEffectTarget(state, discardedInstanceId)).toBe(false)
   expect(canCardBeEffectTarget(state, opponentDiscardedCharacterId)).toBe(false)
 })
+
+test('Speed Potion targets only allied characters in hand', () => {
+  const state = setupMockedDuel({
+    activePlayer: {
+      hand: ['novice', 'yoraSkull'],
+      board: 'speedPotion',
+    },
+    inactivePlayer: { hand: 'burrick' },
+    phase: 'play',
+  })
+  const [playerId, opponentId] = state.playerOrder
+  const potionId = state.players[playerId].board[0]
+  const [alliedCharacterId, alliedInstanceId] = state.players[playerId].hand
+  const enemyCharacterId = state.players[opponentId].hand[0]
+
+  state.pendingPlayedCardId = potionId
+
+  expect(hasCardEffectTarget(state, 'speedPotion', playerId)).toBe(true)
+  expect(canCardBeEffectTarget(state, alliedCharacterId)).toBe(true)
+  expect(canCardBeEffectTarget(state, alliedInstanceId)).toBe(false)
+  expect(canCardBeEffectTarget(state, enemyCharacterId)).toBe(false)
+})
+
+test('Flash Bomb targets only enemy board characters', () => {
+  const state = setupMockedDuel({
+    activePlayer: { board: ['flashBomb', 'novice'] },
+    inactivePlayer: { board: ['bookOfAsh', 'templeGuard'] },
+    phase: 'play',
+  })
+  const [playerId, opponentId] = state.playerOrder
+  const [bombId, alliedCharacterId] = state.players[playerId].board
+  const [enemyInstanceId, enemyCharacterId] =
+    state.players[opponentId].board
+
+  state.pendingPlayedCardId = bombId
+
+  expect(hasCardEffectTarget(state, 'flashBomb', playerId)).toBe(true)
+  expect(canCardBeEffectTarget(state, enemyCharacterId)).toBe(true)
+  expect(canCardBeEffectTarget(state, enemyInstanceId)).toBe(false)
+  expect(canCardBeEffectTarget(state, alliedCharacterId)).toBe(false)
+})
+
+test('targeted neutral instances cannot be played without a valid target', () => {
+  const state = setupMockedDuel({
+    activePlayer: { hand: ['speedPotion', 'flashBomb', 'yoraSkull'] },
+    inactivePlayer: { board: 'bookOfAsh' },
+    phase: 'play',
+  })
+  const playerId = state.playerOrder[0]
+
+  expect(hasCardEffectTarget(state, 'speedPotion', playerId)).toBe(false)
+  expect(hasCardEffectTarget(state, 'flashBomb', playerId)).toBe(false)
+})

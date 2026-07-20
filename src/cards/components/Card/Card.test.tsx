@@ -60,7 +60,7 @@ test('renders a character card with charges', () => {
   })
 
   expect(getStatValue(cardElement, 'Charges')).toHaveTextContent(
-    String(card.charges),
+    String(card.traits.charges),
   )
 })
 
@@ -68,7 +68,7 @@ test('renders a stunned character card', () => {
   const card = cardBases['templeGuard']
   const turnsStunned = 2
 
-  render(<Card card={{ ...card, turnsStunned }} />)
+  render(<Card card={{ ...card, traits: { stunned: turnsStunned } }} />)
 
   const cardElement = screen.getByRole('article', {
     name: `${cardsText.cards[card.baseId].name} card`,
@@ -78,6 +78,16 @@ test('renders a stunned character card', () => {
   expect(getStatValue(cardElement, 'Stunned')).toHaveTextContent(
     String(turnsStunned),
   )
+})
+
+test('renders Haste in a character card footer', () => {
+  render(
+    <Card card={{ ...cardBases['novice'], traits: { haste: true } }} />,
+  )
+
+  const cardElement = screen.getByRole('article', { name: 'Novice card' })
+
+  expect(getStatValue(cardElement, 'Haste')).toBeInTheDocument()
 })
 
 test('renders a compact card with its effect and an accessible inspection target', () => {

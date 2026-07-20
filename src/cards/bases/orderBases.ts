@@ -37,6 +37,6 @@ export const orderBases = defineCardBases('order', {
     cost: 4,
     life: 4,
     strength: 1,
-    charges: 5,
+    traits: { charges: 5 },
   },
 })

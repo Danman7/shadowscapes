@@ -36,7 +36,7 @@ test('Zombie summons the last discarded Zombie for free on play', () => {
   })
   expect(state.cards[discardedZombieId]).toMatchObject({
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
   })
 })
 
@@ -205,7 +205,7 @@ test('Book of Ash summons a one-life copy of a selected discarded character', ()
     baseId: 'haunt',
     life: 1,
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
   })
   expect(state.cards[bookId]).toMatchObject({ stack: 'discard' })
   expect(state.pendingPlayedCardId).toBeNull()
@@ -275,7 +275,7 @@ test("Burrick spends a charge to damage the target's adjacent cards", () => {
 
   expect(state.cards[attackerId]).toMatchObject({
     baseId: 'burrick',
-    charges: 0,
+    traits: { charges: 0 },
     didAct: true,
   })
   expect(state.cards[defenderId]).toMatchObject({ life: 2, stack: 'board' })
@@ -412,14 +412,14 @@ test('Burrick does not splash damage without a charge', () => {
   if (preparedState.cards[attackerId].type !== 'character') {
     throw new Error('Expected a Burrick character')
   }
-  preparedState.cards[attackerId].charges = 0
+  preparedState.cards[attackerId].traits.charges = 0
 
   const store = createAppStore(preparedState)
 
   store.dispatch(attackCharacter({ attackerId, defenderId }))
 
   expect(store.getState().duel.cards[attackerId]).toMatchObject({
-    charges: 0,
+    traits: { charges: 0 },
   })
   expect(store.getState().duel.players[defenderPlayerId].board).toEqual(
     initialState.players[defenderPlayerId].board,
@@ -438,16 +438,16 @@ test('Burrick gains a charge when it passes while ready to act', () => {
   if (preparedState.cards[burrickId].type !== 'character') {
     throw new Error('Expected a Burrick character')
   }
-  preparedState.cards[burrickId].charges = 0
+  preparedState.cards[burrickId].traits.charges = 0
 
   const store = createAppStore(preparedState)
 
   store.dispatch(passActTurn())
 
   expect(store.getState().duel.cards[burrickId]).toMatchObject({
-    charges: 1,
+    traits: { charges: 1 },
   })
-  expect(store.getState().duel.cards[zombieId]).not.toHaveProperty('charges')
+  expect(store.getState().duel.cards[zombieId]).toMatchObject({ traits: {} })
 })
 
 test('Burrick does not gain a charge when it was stunned during the pass', () => {
@@ -462,14 +462,14 @@ test('Burrick does not gain a charge when it was stunned during the pass', () =>
   if (preparedState.cards[burrickId].type !== 'character') {
     throw new Error('Expected a Burrick character')
   }
-  preparedState.cards[burrickId].charges = 0
-  preparedState.cards[burrickId].turnsStunned = 1
+  preparedState.cards[burrickId].traits.charges = 0
+  preparedState.cards[burrickId].traits.stunned = 1
 
   const store = createAppStore(preparedState)
 
   store.dispatch(passActTurn())
 
   expect(store.getState().duel.cards[burrickId]).toMatchObject({
-    charges: 0,
+    traits: { charges: 0, stunned: 1 },
   })
 })

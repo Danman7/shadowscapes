@@ -47,7 +47,7 @@ test('moves a targeted character to the board and stuns it', () => {
   expect(state.players[playerId].board).toEqual([cardId])
   expect(state.cards[cardId]).toMatchObject({
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
     didAct: false,
   })
 })
@@ -64,7 +64,7 @@ test('resets a character when moving it to discard', () => {
     cost: 9,
     life: 8,
     strength: 7,
-    turnsStunned: 2,
+    traits: { stunned: 2, haste: true },
     didAct: true,
   })
 
@@ -82,7 +82,7 @@ test('resets a character when moving it to discard', () => {
     cost: 1,
     life: 1,
     strength: 1,
-    turnsStunned: 0,
+    traits: {},
     didAct: false,
   })
 })
@@ -95,7 +95,7 @@ test('resets a charged character when moving it to discard', () => {
 
   if (card.type !== 'character') throw new Error('Expected a character')
 
-  card.charges = 0
+  card.traits.charges = 0
 
   expect(
     moveCard({
@@ -108,7 +108,7 @@ test('resets a charged character when moving it to discard', () => {
   ).toEqual([cardId])
   expect(card).toMatchObject({
     stack: 'discard',
-    charges: 1,
+    traits: { charges: 1 },
   })
 })
 
@@ -159,7 +159,7 @@ test('rejects moving a corrupted character with a non-character base to discard'
     type: 'character',
     life: 1,
     strength: 1,
-    turnsStunned: 0,
+    traits: {},
     didAct: false,
   } as CharacterCardInstance
 
@@ -189,11 +189,26 @@ test('decrements positive stun without going below zero', () => {
 
   if (card.type !== 'character') throw new Error('Expected a character')
 
-  card.turnsStunned = 2
+  card.traits.stunned = 2
   reduceTurnsStunned(card)
-  expect(card.turnsStunned).toBe(1)
+  expect(card.traits.stunned).toBe(1)
 
-  card.turnsStunned = 0
+  card.traits.stunned = 0
   reduceTurnsStunned(card)
-  expect(card.turnsStunned).toBe(0)
+  expect(card.traits.stunned).toBeUndefined()
+})
+
+test('keeps a Hasted character ready when it enters the board', () => {
+  const state = setupMockedDuel({ activePlayer: { hand: 'novice' } })
+  const playerId = state.playerOrder[0]
+  const cardId = state.players[playerId].hand[0]
+  const card = state.cards[cardId]
+
+  if (card.type !== 'character') throw new Error('Expected a character')
+
+  card.traits.haste = true
+
+  moveCard({ state, playerId, cardId, from: 'hand', to: 'board' })
+
+  expect(card.traits).toEqual({ haste: true })
 })

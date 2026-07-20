@@ -39,7 +39,7 @@ test('Novice summons every remaining hand copy when a higher-life ally exists', 
   expect(state.players[playerId].hand).toEqual([])
   expect(state.players[playerId].coins).toBe(2)
   noviceIds.forEach((cardId) => {
-    expect(state.cards[cardId]).toMatchObject({ turnsStunned: 1 })
+    expect(state.cards[cardId]).toMatchObject({ traits: { stunned: 1 } })
   })
 })
 
@@ -125,7 +125,7 @@ test('a summoned Temple Guard also resolves its on-play effect', () => {
   expect(store.getState().duel.cards[guardId]).toMatchObject({
     life: 4,
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
   })
 })
 
@@ -148,7 +148,7 @@ test('Markander loses a charge for every Hammerite and summons for free at zero'
   )!
   const markander = initialState.cards[markanderId]
 
-  if (markander.type === 'character') markander.charges = 3
+  if (markander.type === 'character') markander.traits.charges = 3
 
   const store = createAppStore(initialState)
 
@@ -168,9 +168,8 @@ test('Markander loses a charge for every Hammerite and summons for free at zero'
     board: expect.arrayContaining([markanderId, playedNoviceId]),
   })
   expect(state.cards[markanderId]).toMatchObject({
-    charges: 0,
     stack: 'board',
-    turnsStunned: 1,
+    traits: { charges: 0, stunned: 1 },
   })
 })
 
@@ -198,8 +197,8 @@ test('Markander ignores cards that are not Hammerites', () => {
   )
 
   expect(store.getState().duel.cards[markanderId]).toMatchObject({
-    charges: 5,
     stack: 'hand',
+    traits: { charges: 5 },
   })
 })
 

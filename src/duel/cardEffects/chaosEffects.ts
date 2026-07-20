@@ -89,7 +89,7 @@ const burrickAttackEffect: ActionEffectRegistration<CardEffectsState> = {
       previousAttacker.baseId !== 'burrick' ||
       !isCharacterInstance(attacker) ||
       attacker.stack !== 'board' ||
-      (previousAttacker.charges ?? 0) <= 0
+      (previousAttacker.traits.charges ?? 0) <= 0
     ) {
       return
     }

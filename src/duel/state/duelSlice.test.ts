@@ -8,6 +8,7 @@ import { mockChaosUser, mockOrderUser, setupMockedDuel } from '../../user/mocks'
 import {
   adjustCharacterCharges,
   adjustCharacterLife,
+  adjustCharacterStun,
   adjustPlayerIncome,
   attackCharacter,
   completeActTurn,
@@ -20,6 +21,7 @@ import {
   duelReducer,
   initiateDuelFromUsers,
   initiateSoloRandomAiDuel,
+  grantCharacterHaste,
   passActTurn,
   passPlayTurn,
   playCard,
@@ -27,6 +29,7 @@ import {
   summonAllCopies,
   summonCard,
   summonCardCopy,
+  stripCharacterTraits,
 } from './duelSlice'
 
 beforeEach(() => {
@@ -618,7 +621,7 @@ test('stuns a character when it enters the board', () => {
   expect(card).toMatchObject({
     type: 'character',
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
     didAct: false,
   })
 })
@@ -643,7 +646,7 @@ test('summons a character for free without consuming the play turn', () => {
   })
   expect(state.cards[cardId]).toMatchObject({
     stack: 'board',
-    turnsStunned: 1,
+    traits: { stunned: 1 },
   })
   expect(state.pendingPlayedCardId).toBeNull()
 })
@@ -677,7 +680,7 @@ test('summons every matching character copy in source order', () => {
   noviceIds.forEach((cardId) => {
     expect(state.cards[cardId]).toMatchObject({
       stack: 'board',
-      turnsStunned: 1,
+      traits: { stunned: 1 },
     })
   })
 })
@@ -720,7 +723,7 @@ test('summons a one-life copy of a discarded character', () => {
     ownerId: playerId,
     stack: 'board',
     life: 1,
-    turnsStunned: 1,
+    traits: { stunned: 1 },
   })
 })
 
@@ -913,8 +916,12 @@ test('adjusts charges only for a character currently on its owner board', () => 
     adjustCharacterCharges({ cardInstanceId: boardCardId, amount: -5 }),
   )
 
-  expect(adjustedState.cards[boardCardId]).toMatchObject({ charges: 0 })
-  expect(overAdjustedState.cards[boardCardId]).toMatchObject({ charges: 0 })
+  expect(adjustedState.cards[boardCardId]).toMatchObject({
+    traits: { charges: 0 },
+  })
+  expect(overAdjustedState.cards[boardCardId]).toMatchObject({
+    traits: { charges: 0 },
+  })
   expect(
     duelReducer(
       initialState,
@@ -950,7 +957,85 @@ test('initializes charges when adjusting a character without them', () => {
     adjustCharacterCharges({ cardInstanceId, amount: 1 }),
   )
 
-  expect(state.cards[cardInstanceId]).toMatchObject({ charges: 1 })
+  expect(state.cards[cardInstanceId]).toMatchObject({
+    traits: { charges: 1 },
+  })
+})
+
+test('grants Haste only to a character in the requested stack', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { hand: ['novice', 'yoraSkull'] },
+  })
+  const playerId = initialState.playerOrder[0]
+  const [characterId, instanceId] = initialState.players[playerId].hand
+
+  const grantedState = duelReducer(
+    initialState,
+    grantCharacterHaste({ cardInstanceId: characterId, stack: 'hand' }),
+  )
+
+  expect(grantedState.cards[characterId]).toMatchObject({
+    traits: { haste: true },
+  })
+  expect(
+    duelReducer(
+      initialState,
+      grantCharacterHaste({ cardInstanceId: characterId }),
+    ),
+  ).toEqual(initialState)
+  expect(
+    duelReducer(
+      initialState,
+      grantCharacterHaste({ cardInstanceId: instanceId, stack: 'hand' }),
+    ),
+  ).toEqual(initialState)
+})
+
+test('adjusts stun and removes the trait when it reaches zero', () => {
+  const initialState = setupMockedDuel({ activePlayer: { board: 'novice' } })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].board[0]
+  const stunnedState = duelReducer(
+    initialState,
+    adjustCharacterStun({ cardInstanceId, amount: 2 }),
+  )
+  const readyState = duelReducer(
+    stunnedState,
+    adjustCharacterStun({ cardInstanceId, amount: -5 }),
+  )
+
+  expect(stunnedState.cards[cardInstanceId]).toMatchObject({
+    traits: { stunned: 2 },
+  })
+  expect(
+    readyState.cards[cardInstanceId].type === 'character'
+      ? readyState.cards[cardInstanceId].traits.stunned
+      : undefined,
+  ).toBeUndefined()
+})
+
+test('strips all character traits without changing combat state', () => {
+  const initialState = setupMockedDuel({ activePlayer: { board: 'burrick' } })
+  const playerId = initialState.playerOrder[0]
+  const cardInstanceId = initialState.players[playerId].board[0]
+  const card = initialState.cards[cardInstanceId]
+
+  if (card.type !== 'character') throw new Error('Expected a character')
+
+  card.traits = { charges: 4, haste: true, stunned: 2 }
+  card.didAct = true
+  card.life = 7
+
+  const state = duelReducer(
+    initialState,
+    stripCharacterTraits({ cardInstanceId }),
+  )
+
+  expect(state.cards[cardInstanceId]).toMatchObject({
+    life: 7,
+    didAct: true,
+    traits: {},
+  })
 })
 
 test('does not adjust income for a missing player', () => {
@@ -965,7 +1050,7 @@ test('does not adjust income for a missing player', () => {
   ).toEqual(stateBeforeAction)
 })
 
-test('reduces stun once at the start of each owner play turn', () => {
+test('reduces every board character stun when the draw phase begins', () => {
   const initialState = setupMockedDuel({
     activePlayer: { board: 'novice' },
     inactivePlayer: { board: 'haunt' },
@@ -983,18 +1068,18 @@ test('reduces stun once at the start of each owner play turn', () => {
     throw new Error('Expected character instances')
   }
 
-  preparedState.cards[firstCardId].turnsStunned = 2
-  preparedState.cards[secondCardId].turnsStunned = 1
+  preparedState.cards[firstCardId].traits.stunned = 2
+  preparedState.cards[secondCardId].traits.stunned = 1
 
   const firstPlayState = duelReducer(preparedState, drawForPlayers())
-  expect(firstPlayState.cards[firstCardId]).toMatchObject({ turnsStunned: 1 })
-  expect(firstPlayState.cards[secondCardId]).toMatchObject({ turnsStunned: 1 })
-
-  const secondPlayState = duelReducer(
-    duelReducer(firstPlayState, passPlayTurn()),
-    completePlayTurn(),
-  )
-  expect(secondPlayState.cards[secondCardId]).toMatchObject({ turnsStunned: 0 })
+  expect(firstPlayState.cards[firstCardId]).toMatchObject({
+    traits: { stunned: 1 },
+  })
+  expect(
+    firstPlayState.cards[secondCardId].type === 'character'
+      ? firstPlayState.cards[secondCardId].traits.stunned
+      : undefined,
+  ).toBeUndefined()
 })
 
 test('deals strength damage, permits stunned defenders, and marks the attacker', () => {
@@ -1011,7 +1096,7 @@ test('deals strength damage, permits stunned defenders, and marks the attacker',
   if (preparedState.cards[defenderId].type !== 'character') {
     throw new Error('Expected a character defender')
   }
-  preparedState.cards[defenderId].turnsStunned = 2
+  preparedState.cards[defenderId].traits.stunned = 2
 
   const state = duelReducer(
     preparedState,
@@ -1019,7 +1104,10 @@ test('deals strength damage, permits stunned defenders, and marks the attacker',
   )
 
   expect(state.cards[attackerId]).toMatchObject({ didAct: true, strength: 2 })
-  expect(state.cards[defenderId]).toMatchObject({ life: 1, turnsStunned: 2 })
+  expect(state.cards[defenderId]).toMatchObject({
+    life: 1,
+    traits: { stunned: 2 },
+  })
 })
 
 test('Haunt damages a damaged attacker before it can deal combat damage', () => {
@@ -1046,6 +1134,38 @@ test('Haunt damages a damaged attacker before it can deal combat damage', () => 
   expect(state.players[attackerPlayerId].board).toEqual([])
   expect(state.players[attackerPlayerId].discard).toEqual([attackerId])
   expect(state.cards[defenderId]).toMatchObject({ life: 3, stack: 'board' })
+})
+
+test('a stunned Haunt does not retaliate before combat damage', () => {
+  const initialState = setupMockedDuel({
+    activePlayer: { board: 'templeGuard' },
+    inactivePlayer: { board: 'haunt' },
+    phase: 'act',
+  })
+  const [attackerPlayerId, defenderPlayerId] = initialState.playerOrder
+  const attackerId = initialState.players[attackerPlayerId].board[0]
+  const defenderId = initialState.players[defenderPlayerId].board[0]
+  const preparedState = structuredClone(initialState)
+  const attacker = preparedState.cards[attackerId]
+  const defender = preparedState.cards[defenderId]
+
+  if (attacker.type !== 'character' || defender.type !== 'character') {
+    throw new Error('Expected character instances')
+  }
+
+  attacker.life = 1
+  defender.traits.stunned = 1
+
+  const state = duelReducer(
+    preparedState,
+    attackCharacter({ attackerId, defenderId }),
+  )
+
+  expect(state.cards[attackerId]).toMatchObject({ life: 1, stack: 'board' })
+  expect(state.cards[defenderId]).toMatchObject({
+    life: 1,
+    traits: { stunned: 1 },
+  })
 })
 
 test('a damaged attacker that survives Haunt retaliation still deals damage', () => {
@@ -1094,7 +1214,7 @@ test('rejects stunned, repeated, wrong-player, and non-character attacks', () =>
   if (stunnedState.cards[attackerId].type !== 'character') {
     throw new Error('Expected a character attacker')
   }
-  stunnedState.cards[attackerId].turnsStunned = 1
+  stunnedState.cards[attackerId].traits.stunned = 1
 
   expect(
     duelReducer(stunnedState, attackCharacter({ attackerId, defenderId })),
@@ -1145,7 +1265,7 @@ test('discards defeated characters and restores all base combat stats', () => {
     cost: 9,
     life: 1,
     strength: 7,
-    turnsStunned: 3,
+    traits: { stunned: 3, haste: true },
     didAct: true,
   })
 
@@ -1161,7 +1281,7 @@ test('discards defeated characters and restores all base combat stats', () => {
     cost: 1,
     life: 1,
     strength: DEFAULT_CHARACTER_STRENGTH,
-    turnsStunned: 0,
+    traits: {},
     didAct: false,
   })
 })
@@ -1235,7 +1355,7 @@ test('refreshes stats and income, keeps the rotated initiative, then draws for b
     throw new Error('Expected a character')
   }
   preparedState.cards[firstCardId].didAct = true
-  preparedState.cards[firstCardId].turnsStunned = 2
+  preparedState.cards[firstCardId].traits.stunned = 2
 
   const refreshedState = duelReducer(preparedState, completeRefresh())
 
@@ -1248,7 +1368,7 @@ test('refreshes stats and income, keeps the rotated initiative, then draws for b
   expect(refreshedState.players[secondPlayerId].coins).toBe(3)
   expect(refreshedState.cards[firstCardId]).toMatchObject({
     didAct: false,
-    turnsStunned: 2,
+    traits: { stunned: 2 },
   })
 
   const drawnState = duelReducer(refreshedState, drawForPlayers())

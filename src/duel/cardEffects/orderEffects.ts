@@ -144,7 +144,7 @@ const markanderHammeriteOnPlay = createOnPlayCategoryEffect(
       return (
         isCharacterInstance(card) &&
         card.baseId === 'markander' &&
-        (card.charges ?? 0) > 0
+        (card.traits.charges ?? 0) > 0
       )
     })
 
@@ -154,12 +154,12 @@ const markanderHammeriteOnPlay = createOnPlayCategoryEffect(
       if (
         !isCharacterInstance(markander) ||
         markander.stack !== 'hand' ||
-        (markander.charges ?? 0) <= 0
+        (markander.traits.charges ?? 0) <= 0
       ) {
         return
       }
 
-      const shouldSummon = markander.charges === 1
+      const shouldSummon = markander.traits.charges === 1
 
       dispatch(
         adjustCharacterCharges({

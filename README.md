@@ -87,16 +87,17 @@ A card base is the reusable card definition. A card instance is a concrete copy 
 
 Characters are persistent board cards:
 
-- Character instances have `life`, `strength`, `turnsStunned`, and `didAct`.
+- Character instances have `life`, `strength`, `traits`, and `didAct`.
+- Character traits currently include numeric `charges`, numeric `stunned`, and marker `haste` values. Strip removes the complete trait record without changing other combat state.
 - If a character base omits strength, the instance defaults to `1` strength.
-- When a character enters the board, it gains `1` stun turn and cannot attack until its stun reaches `0`.
-- When a character is moved to discard, its cost, life, strength, stun, and action state reset from its base definition.
+- When a character enters the board, it gains `1` stunned trait turn and cannot attack until the trait is removed. Haste prevents this entry stun and persists on the board.
+- When a character is moved to discard, its cost, life, strength, traits, and action state reset from its base definition.
 
 Instances are non-character cards:
 
 - Instance cards can be played from hand during the play phase.
 - They enter the board as a pending played card, resolve an effect or target if required, and then move to discard.
-- A targeted instance with `target: 'allied-character'` can only be played if the player has an allied character on board.
+- Target definitions cover allied board characters, allied hand characters, discarded characters, and enemy board characters. A targeted instance can only be played when at least one matching target exists.
 
 ### Round Structure
 
@@ -139,7 +140,15 @@ Chaos cards:
 - `bookOfAsh`: Instance, cost `3`, Necromancer artifact, elite. Targets a discarded character and summons a stunned, `1`-life copy of it.
 - `viktoriaQueen`: Character, cost `5`, life `2`, default strength `1`, Pagan, elite. Gains `1` life whenever its owner plays a Beast, regardless of Viktoria's current stack.
 
-The current Order and Chaos card mechanics are implemented. Both factions' effect registrations are included in the card effects middleware.
+Neutral cards:
+
+- `cook`: Character, cost `2`, life `1`, default strength `1`, Servant, common. Draws a card on play.
+- `speedPotion`: Instance, cost `2`, Alchemical Equipment, common. Gives an allied hand character Haste.
+- `flashBomb`: Instance, cost `4`, Equipment, common. Strips an enemy board character and then stuns it.
+
+The current Order, Chaos, and Neutral card mechanics are registered with the card effects middleware.
+
+The random AI avoids paying to play Markander while another legal card exists. For Speed Potion and Flash Bomb targets it prefers characters above the default strength; Speed Potion next prefers Burrick before falling back to a random valid character.
 
 ### Current Deck Mocks
 

@@ -13,6 +13,8 @@ export const getReadyCharacters = (
     .map((cardId) => state.cards[cardId])
     .filter(
       (card): card is CharacterCardInstance =>
-        isCharacterInstance(card) && card.turnsStunned === 0 && !card.didAct,
+        isCharacterInstance(card) &&
+        (card.traits.stunned ?? 0) === 0 &&
+        !card.didAct,
     )
 }

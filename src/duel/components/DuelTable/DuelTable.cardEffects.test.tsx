@@ -20,7 +20,7 @@ const EffectStateProbe = () => {
   const stunnedBoardCards = activePlayer.board.filter((cardId) => {
     const card = cards[cardId]
 
-    return card.type === 'character' && card.turnsStunned > 0
+    return card.type === 'character' && (card.traits.stunned ?? 0) > 0
   })
 
   return (
@@ -156,6 +156,61 @@ test('Book of Ash target modal stays hidden without discarded characters', () =>
   renderDuelTable(state)
 
   expect(screen.queryByRole('dialog', { name: 'Book of Ash' })).toBeNull()
+})
+
+test('Speed Potion lets the player target an allied hand character', () => {
+  renderDuelTable(
+    setupMockedDuel({
+      activePlayer: { coins: 3, hand: ['speedPotion', 'novice'] },
+      phase: 'play',
+    }),
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Speed Potion card' }))
+
+  const activeHand = within(screen.getByTestId('active-hand'))
+  const target = activeHand.getByRole('button', { name: 'Novice card' })
+
+  fireEvent.click(target)
+
+  expect(within(target).getByText('Haste')).toBeInTheDocument()
+  expect(
+    within(screen.getByTestId('active-discard')).getByText(
+      `${messages.ui.discardLabel} 1`,
+    ),
+  ).toBeInTheDocument()
+})
+
+test('Flash Bomb strips an enemy board character before stunning it', () => {
+  const state = setupMockedDuel({
+    activePlayer: { coins: 5, hand: 'flashBomb' },
+    inactivePlayer: { board: 'burrick' },
+    phase: 'play',
+  })
+  const opponentId = state.playerOrder[1]
+  const targetId = state.players[opponentId].board[0]
+  const targetCard = state.cards[targetId]
+
+  if (targetCard.type !== 'character') throw new Error('Expected a character')
+
+  targetCard.traits.haste = true
+
+  renderDuelTable(state)
+
+  fireEvent.click(screen.getByRole('button', { name: 'Flash Bomb card' }))
+
+  const inactiveBoard = within(screen.getByTestId('inactive-board'))
+  const target = inactiveBoard.getByRole('button', { name: 'Burrick card' })
+
+  fireEvent.click(target)
+
+  const resolvedTarget = inactiveBoard.getByRole('article', {
+    name: 'Burrick card',
+  })
+
+  expect(within(resolvedTarget).getByText('Stunned')).toBeInTheDocument()
+  expect(within(resolvedTarget).queryByText('Haste')).toBeNull()
+  expect(within(resolvedTarget).queryByText('Charges')).toBeNull()
 })
 
 const getActiveBoardCardLife = (cardName: string) => {

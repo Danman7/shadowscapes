@@ -55,7 +55,16 @@ export const Stunned: Story = {
   args: {
     card: {
       ...cardBases['templeGuard'],
-      turnsStunned: 1,
+      traits: { stunned: 1 },
+    },
+  },
+}
+
+export const Haste: Story = {
+  args: {
+    card: {
+      ...cardBases['templeGuard'],
+      traits: { haste: true },
     },
   },
 }
