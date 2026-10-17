@@ -14,6 +14,7 @@ describe('duel setup', () => {
     });
 
     expect(duel).toEqual({
+      cards: {},
       startingCoins: 10,
       activePlayer: 0,
       players: [
@@ -32,6 +33,23 @@ describe('duel setup', () => {
           discard: [],
         },
       ],
+    });
+  });
+});
+
+describe('card setup', () => {
+  it('tracks two Novice instances independently and gives Markander five charges even in deck', () => {
+    const duel = createDuel({
+      startingCoins: 10,
+      startingPlayer: 0,
+      decks: [['n1', 'n2', 'a', 'b', 'c', 'm'], []],
+      cards: { n1: 'novice', n2: 'novice', m: 'markander' },
+    });
+
+    expect(duel.cards).toEqual({
+      n1: { definitionId: 'novice', strength: 1 },
+      n2: { definitionId: 'novice', strength: 1 },
+      m: { definitionId: 'markander', strength: 4, charges: 5 },
     });
   });
 });

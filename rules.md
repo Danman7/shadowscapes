@@ -12,6 +12,7 @@ This document records the rules agreed during design. Items under “Open decisi
 
 - Factions are Chaos, Order, and Shadow, plus Neutral cards.
 - Each deck uses cards from one faction and may include Neutral cards.
+- Factions contain sub-factions that may work together. Card categories record affiliations such as Hammerite and Undead; these can cross faction boundaries (Haunt is a Chaos Hammerite).
 - Elite cards allow at most one copy of each card per deck.
 - Common cards allow at most two copies of each card per deck.
 - Deck size is not fixed yet.
@@ -20,8 +21,8 @@ This document records the rules agreed during design. Items under “Open decisi
 
 - Each player has four zones: deck, hand, board, and discard.
 - The two card types are instant and character.
-- All cards have a name, categories, faction, coin cost, description, and flavor text. Cards also have an elite or common classification.
-- Characters additionally have strength and may have abilities or statuses, such as stealth, hidden, counter, or stunned. Counter and stunned have no agreed mechanics yet.
+- All cards have a name, categories, faction, coin cost, description, and an elite or common classification. Flavor text is deferred.
+- Characters additionally have strength and may have abilities or statuses, such as stealth, hidden, counter, or stunned. Counter has no agreed mechanic yet; Markander uses charges, which are distinct from counter.
 - Instants resolve their effects and go to discard rather than remaining on the board.
 - Characters remain on the board until removed. A character at zero or lower strength goes to discard.
 
@@ -43,6 +44,8 @@ Drawing from an empty deck does nothing and has no penalty.
 ### Play a card
 
 - Play one card from hand, pay its coin cost, and resolve its effects.
+- Reject a play that costs more coins than the player has. Paying exactly the remaining coins is legal but immediately loses the duel, before the card leaves hand or resolves.
+- Flash Bomb and Book of Ash require an explicitly selected eligible target. Reject a missing or invalid target before spending coins. Playable-card information accounts for available coins and eligible targets.
 - When playing a character, choose its insertion position in the board row.
 - An instant goes to discard after resolving.
 - Playing a card uses the turn's action; the player cannot also take a normal attack action that turn.
@@ -121,18 +124,36 @@ Drawing from an empty deck does nothing and has no penalty.
 - If paying a card's cost reduces its player's coins to zero, the duel ends before that card's effects resolve. A pending income or healing effect cannot prevent this defeat.
 - There is no board-points victory condition.
 
-## Card effects
+## Summons and effect resolution
 
-Planned effect concepts include:
+- **Summon** means putting a character on the board through an effect without paying its coin cost or consuming another turn action. Summoning triggers on-play effects and counts as entering play for allied Hammerite reactions.
+- Novice and Zombie summons enter immediately to the right of the summoning character. Multiple summons retain source order. For Novice, process deck copies in deck order, then hand copies in hand order.
+- Book of Ash's copy and Markander's automatic arrival enter at the right end of the owner's board.
+- Fully resolve a character's on-play effect, including nested summons and deaths, before resolving reactions such as Markander's automatic arrival.
+- Remove a summoned card from its source zone before resolving its on-play effect. A Zombie cannot repeatedly revive itself from discard.
+- A character entering from a pile starts with its printed strength and without applied statuses. Markander's charges persist when the same instance moves between zones.
 
-- Summoning another copy if one exists and specified conditions are met.
-- Summoning a character automatically for free under specified conditions.
-- Boosting self or neighboring characters.
-- Making neighboring characters attack.
-- Generating or stealing coins.
-- Applying hidden or other statuses.
+## Initial cards
 
-These concepts are supported design directions; their exact triggers, targets, timing, and amounts still need individual card definitions.
+Numbers are provisional. These cards follow Thief lore; the initial matchup is Order Hammerites against a Chaos Undead horde with Neutral support.
+
+| Card | Faction | Categories | Class | Type | Cost | Strength | Effect |
+| --- | --- | --- | --- | --- | ---: | ---: | --- |
+| Novice | Order | Hammerite | Common | Character | 1 | 1 | On play, if another allied Hammerite has greater current strength, summon all other Novices from your deck and hand. |
+| Temple Guard | Order | Hammerite | Common | Character | 3 | 3 | On play, gain 1 strength if the opponent has more characters on board, counting after this character enters. The boost persists. |
+| Markander | Order | Hammerite, Priest | Elite | Character | 5 | 4 | Starts with 5 charges from duel setup. Each other allied Hammerite entering play, including summons, removes 1 charge, stopping at zero. At zero, summon Markander if in deck or hand, never from discard. If already on board, he stays there. |
+| Zombie | Chaos | Undead | Common | Character | 1 | 1 | On play, summon all Zombies in your discard. |
+| Haunt | Chaos | Undead, Hammerite | Common | Character | 3 | 3 | On play, deal 1 damage without retaliation to the strongest eligible opposing character, using current strength. Its owner chooses among ties. Hidden characters are ineligible. With no eligible target, do nothing. |
+| Book of Ash | Chaos | Necromancer, Artifact | Elite | Instant | 4 | — | Select a character in your discard and summon a new copy with 1 strength, printed abilities, and fresh starting charges. Its on-play effect triggers. The original stays in discard; damage, boosts, and applied statuses are not copied. |
+| Cook | Neutral | Servant | Common | Character | 2 | 1 | On play, draw a card. |
+| Flash Bomb | Neutral | Equipment | Common | Instant | 2 | — | Select an eligible opposing character on board and apply stun 1. |
+
+## Stun
+
+- Only characters can be stunned. Stun 1 prevents acting through the end of the character owner's next turn, when it expires.
+- A stunned character cannot attack (including attacks granted by effects) or manually activate abilities. Passive and triggered effects continue.
+- Stun does not prevent the character from being targeted or attacked. Hidden still prevents targeting.
+- The owner can still take their turn's action with another character, play a card, or earn a coin.
 
 ## Presentation
 
@@ -154,5 +175,5 @@ These concepts are supported design directions; their exact triggers, targets, t
 - Detailed activated-ability costs, targeting, and any limits on abilities that do not consume the turn.
 - For each multi-target attack, including the charged attack against three adjacent characters: valid targets, whether combat is simultaneous or sequential, and whether it permits retaliation. These details belong to the specific attack or ability.
 - Target selection, order, and eligibility for attacks granted to neighbors, including whether a hidden participant is revealed and how deaths affect remaining attacks.
-- Ordering of simultaneous triggers, automatic summons, deaths, and other chained effects.
-- Exact mechanics for counter, stunned, and future statuses.
+- Ordering of simultaneous reactions beyond the initial card set. The on-play-before-reactions rule above is settled.
+- Exact mechanics for counter and future statuses; stacking or extending stun beyond the initial stun-1 effect.
