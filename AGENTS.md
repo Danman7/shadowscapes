@@ -28,4 +28,16 @@ Run the relevant tests during each cycle. Before handing off, run `npm run check
 
 ## Documentation
 
-Keep `README.md` accurate about what is implemented and how to run the project. Keep game rules in `rules.md` rather than duplicating them here. Issue tracking has not been selected yet.
+Keep `README.md` accurate about what is implemented and how to run the project. Keep game rules in `rules.md` rather than duplicating them here.
+
+## Agent skills
+
+### Issue tracker
+
+Track issues and specs in GitHub Issues for `Danman7/shadowscapes`.
+Before reading or publishing tickets, read `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Use a single-context layout. Before exploring domain concepts or
+architectural decisions, read `docs/agents/domain.md`.
