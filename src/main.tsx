@@ -1,14 +1,17 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { App } from './App';
-import './style.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+import { App } from "./App";
+import "./style.css";
 
-const root = document.getElementById('root');
+const root = document.getElementById("root");
 
-if (!root) throw new Error('Missing app root.');
+if (!root) throw new Error("Missing app root.");
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 );

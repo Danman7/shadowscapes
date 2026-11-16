@@ -158,6 +158,8 @@ Numbers are provisional. These cards follow Thief lore; the initial matchup is O
 ## Presentation
 
 - Cards initially use text, rounded boxes, and modest shadows, with no card images or sprites.
+- Card faces use a 5:7 aspect ratio, with the complete effect description visible. Names, coin costs, and categories remain visible; characters also show strength, while instants have no strength badge.
+- Faction accents are red for Order, green for Chaos, purple for Shadow, and gray for Neutral. Compact icons identify coin cost, strength, and instant type.
 - Cards are two-sided, with identifying information and character strength on the front and a generic diagonal-striped back.
 - Draw: appear in the deck, flip, and move to hand.
 - Play: move from hand to board.

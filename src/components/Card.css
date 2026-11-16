@@ -1,0 +1,107 @@
+.game-card {
+  --faction: var(--text-color);
+  --faction-tint: var(--background-color);
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 5 / 7;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 13px;
+  box-shadow: 0 4px 10px var(--card-shadow-color);
+}
+
+.game-card[data-classification="elite"] {
+  border: 2px solid var(--gold-color);
+  padding: 3px;
+}
+
+.game-card[data-faction="Order"] {
+  --faction: var(--order-color);
+  --faction-tint: var(--order-tint);
+}
+
+.game-card[data-faction="Chaos"] {
+  --faction: var(--chaos-color);
+  --faction-tint: var(--chaos-tint);
+}
+
+.game-card[data-faction="Shadow"] {
+  --faction: var(--shadow-color);
+  --faction-tint: var(--shadow-tint);
+}
+
+.card-face {
+  height: 100%;
+  border: 1px solid var(--faction);
+  border-radius: 8px;
+}
+
+.card-face--front {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  padding: 12px;
+  background: var(--faction-tint);
+}
+
+.card-topline,
+.card-bottomline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.card-name {
+  line-height: 1.15;
+}
+
+.card-description {
+  flex: 1;
+}
+
+.card-bottomline {
+  min-height: 30px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-divider-color);
+}
+
+.card-type {
+  color: var(--card-muted-color);
+  font-size: 11px;
+}
+.card-type svg {
+  color: var(--faction);
+  font-size: 14px;
+}
+
+.card-strength {
+  color: var(--card-strength-color);
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.card-face--back {
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--card-back-stripe-color) 0 6px,
+    var(--card-back-color) 6px 12px
+  );
+}
+
+.card-back-mark {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border: 1px solid var(--card-back-border-color);
+  border-radius: 50%;
+  color: var(--card-back-mark-color);
+  background: var(--card-back-color);
+  font-family: Georgia, serif;
+  font-size: 36px;
+}
